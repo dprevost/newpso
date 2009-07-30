@@ -12,13 +12,24 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-subdirs_list = [
-        'Common']
-        #,
-        #'Nucleus',
-        #'Quasar',
-        #'API']
+import UnitTest
+
+common_list = ['DirAccess.c',
+               'ErrorHandler.c',
+               'MemoryFile.c',
+               'Options.c',
+               'ProcessLock.c',
+               'ThreadLock.c',
+               'Timer.c']
 
 def build(bld):
-   bld.add_subdirs( subdirs_list )
+   print ' building in Common'
+   common_lib = bld.new_task_gen(
+      features = 'cc cstaticlib',
+      source = common_list,
+      includes='. ..',
+      target='Common')
+
+   bld.add_subdirs(['Tests'])
+
 

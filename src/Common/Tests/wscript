@@ -12,13 +12,25 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-subdirs_list = [
-        'Common']
-        #,
-        #'Nucleus',
-        #'Quasar',
-        #'API']
-
 def build(bld):
-   bld.add_subdirs( subdirs_list )
+   print ' building in Tests'
+   
+   obj = bld.new_task_gen(
+      features     = 'cc cprogram',
+      source       = 'TimerTest.c',
+      target       = 'TimerTest',
+      includes     = '../..',
+      install_path = None,
+      lib          = bld.env['CMOCKERY'],
+      uselib_local = 'Common') 
+   if bld.env['CMOCKERY'] and bld.env['MORE_TESTS']:
+      obj.unit_test = 1
+
+   bld.add_subdirs([
+        'DirAccess',
+        'Error',
+        'MemFile',
+        'Options',
+        'ProcessLock',
+        'ThreadLock'])
 
