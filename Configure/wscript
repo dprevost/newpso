@@ -1,0 +1,402 @@
+#! /usr/bin/env python
+# encoding: utf-8
+# :mode=python:  - For jedit
+
+# Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
+#  
+# This file is free software; as a special exception the author gives
+# unlimited permission to copy and/or distribute it, with or without 
+# modifications, as long as this notice is preserved.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+import Utils, platform
+import sys
+import Options
+
+srcdir = '..'
+blddir = '../build'
+
+#from the adv demo of waf
+type_size_str = '''
+#include <stdio.h>
+int is_big_endian()
+{
+	long one = 1;
+	return !(*((char *)(&one)));
+}
+int main()
+{
+	if (is_big_endian()) printf("bigendian=1\\n");
+	else printf("bigendian=0\\n");
+	printf("float_size=%d\\n", sizeof(float));
+	printf("double_size=%d\\n", sizeof(double));
+	printf("long_double_size=%d\\n", sizeof(long double));
+	printf("void_ptr_size=%d\\n", sizeof(void *));
+	return 0;
+}
+'''
+
+compiler_test_str = '''
+#ifndef {0}
+#  error
+#endif
+int main() {{
+return 0; 
+}}
+'''
+
+from Configure import conf
+
+@conf
+def check_features(self):
+
+	mp = self.check(fragment=type_size_str, execute=1)
+	t = Utils.to_hashtable(mp)
+
+	try:
+		is_big = int(t['bigendian'])
+	except KeyError:
+		raise Configure.ConfigurationError('endian test failed '+code)
+
+	if is_big: strbig = 'big endian'
+	else: strbig = 'little endian'
+	self.check_message_custom('endianness', '', strbig)
+
+	self.check_message_custom('int size', '', t['int_size'])
+	self.check_message_custom('long int size', '', t['long_int_size'])
+	self.check_message_custom('long long int size', '', t['long_long_int_size'])
+	self.check_message_custom('double size', '', t['double_size'])
+
+	self.define_cond('IS_BIGENDIAN', is_big)
+	self.define_cond('INT_SIZE', int(t['int_size']))
+	self.define_cond('LONG_INT_SIZE', int(t['long_int_size']))
+	self.define_cond('LONG_LONG_INT_SIZE', int(t['long_long_int_size']))
+	self.define_cond('DOUBLE_SIZE', int(t['double_size']))
+
+	return is_big
+
+
+def configure(conf):
+   print '  executing the configuration in m4'
+   print '#define HAVE__BOOL 1 - fix me'
+
+   if conf.check_cc(lib='pthread'):
+      conf.env.append_value('LIB', 'pthread')
+   
+#   if conf.check_cc(ccflags='-Wall'):
+#      conf.env.append_value('CCFLAGS', '-Wall')
+#   conf.check_cc(lib='pthread', ccflags='-Wall', defines=['var=foo', 'x=y'], uselib_store='M')
+#	conf.env.append_value('CCFLAGS', '-DHAVE_CONFIG_H')
+
+   conf.check_cc(header_name='assert.h')
+   conf.check_cc(header_name='ctype.h')
+   conf.check_cc(header_name='dirent.h')
+   conf.check_cc(header_name='errno.h')
+   conf.check_cc(header_name='fcntl.h')
+   conf.check_cc(header_name='inttypes..h')
+   conf.check_cc(header_name='limits.h')
+   conf.check_cc(header_name='semaphore.h')
+   conf.check_cc(header_name='signal.h')
+   conf.check_cc(header_name='stdarg.h')
+   conf.check_cc(header_name='stdbool.h')
+   conf.check_cc(header_name='stddef.h')
+   conf.check_cc(header_name='stdint.h')
+   conf.check_cc(header_name='stdlib.h')
+   conf.check_cc(header_name='string.h')
+   conf.check_cc(header_name='sys/ipc.h')
+   conf.check_cc(header_name='sys/mman.h')
+   conf.check_cc(header_name='sys/param.h')
+   conf.check_cc(header_name='sys/sem.h')
+   conf.check_cc(header_name='sys/semaphore.h')
+   conf.check_cc(header_name='sys/time.h')
+   conf.check_cc(header_name='sys/wait.h')
+   conf.check_cc(header_name='time.h')
+   conf.check_cc(header_name='timers.h')  # for Tru64
+   conf.check_cc(header_name='unistd.h')
+
+   use_dbc = Options.options.use_dbc
+   if use_dbc:
+      conf.define('USE_DBC', 1)
+      if conf.check_cc(
+         fragment='''#include <stdarg.h>
+            #include <stddef.h>
+            #include <setjmp.h>
+            #include <google/cmockery.h>
+            int main() { 
+            return 0; }''',
+         define_name='HAVE_GOOGLE_CMOCKERY_H',
+         execute=0,
+         define_ret=0,
+         msg='Checking for header google/cmockery.h'):
+         print 'zsdfgt'
+         conf.env.append_value('CMOCKERY', 'cmockery')
+         conf.define('PSO_UNIT_TESTS', 1)
+
+   conf.env['MORE_TESTS'] = Options.options.more_tests
+   
+   conf.check_cc(function_name='access', header_name="unistd.h")
+
+   # Testing for ptrdiff_t
+   conf.check_cc(
+      fragment='''#include <stdio.h>
+         #include <stddef.h>
+         int main() { 
+         ptrdiff_t num = 12345;
+         return 0; }''',
+      define_name='HAVE_PTRDIFF_T',
+      execute=0,
+      define_ret=0,
+      msg='Checking for type ptrdiff_t')
+   
+	# Testing for pid_t
+   conf.check_cc(
+      fragment='''#include <sys/types.h>
+         int main() { 
+         pid_t num = 12345;
+         return 0; }''',
+      define_name='HAVE_PID_T',
+      execute=0,
+      define_ret=0,
+      msg='Checking for type pid_t')
+
+   # Testing for %zd in printf format
+   conf.check_cc(
+      fragment='''#include <stdio.h>           
+         int main() { 
+         size_t num = 12345;
+         if ( printf("%zd", num) == 5 )
+            return 0; 
+         return -1; }''',
+      define_name='HAVE_PRINTF_SIZE_T',
+      execute=0,
+      define_ret=0,
+      msg='Checking for printf format for size_t')
+
+	# Testing for %td in printf format
+   conf.check_cc(
+      fragment='''#include <stdio.h>
+         #include <stddef.h>
+         int main() { 
+         ptrdiff_t num = 12345;
+         if ( printf("%td", num) == 5 )
+            return 0; 
+         return -1; }''',
+      define_name='HAVE_PRINTF_PTRDIFF_T',
+      execute=0,
+      define_ret=0,
+      msg='Checking for printf format for ptrdiff_t')
+
+	# Testing for %td in printf format
+   conf.check_cc(
+      fragment='''
+         #include <sys/types.h>
+         #include <sys/ipc.h>
+         #include <sys/sem.h>
+         int main() {
+            struct semun s;
+            return 0;
+            } ''',
+      define_name='HAVE_STRUCT_SEMUN',
+      execute=0,
+      define_ret=0,
+      msg='Checking for struct semun')
+
+	# Testing for mprotect
+   conf.check_cc(
+      fragment='''
+         #include <stdio.h>
+         #include <stdlib.h>
+         #include <sys/types.h>
+         #include <sys/mman.h>
+         int main() {
+            char *p;
+            char c;
+            p = malloc(1024);
+            mprotect(p, 1024, PROT_READ);
+         }''',
+      define_name='HAVE_MPROTECT',
+      execute=0,
+      define_ret=0,
+      msg='Checking for mprotect')
+
+   # Test multiple things (mainly sizes of types) with some C code
+   mp = conf.check(fragment=type_size_str, execute=1)
+   t = Utils.to_hashtable(mp)
+
+   try:
+      is_big = int(t['bigendian'])
+   except KeyError:
+      raise conf.fatal('endian test failed '+code)
+
+   if is_big: strbig = 'big endian'
+   else: strbig = 'little endian'
+   conf.check_message_custom('endianness', '', strbig)
+
+   conf.check_message_custom('float size',       '', t['float_size'])
+   conf.check_message_custom('double size',      '', t['double_size'])
+   conf.check_message_custom('long double size', '', t['long_double_size'])
+   conf.check_message_custom('void * size',      '', t['void_ptr_size'])
+
+   conf.define_cond('IS_BIGENDIAN', is_big)
+   conf.define('SIZEOF_FLOAT',       int(t['float_size']))
+   conf.define('SIZEOF_DOUBLE',      int(t['double_size']))
+   conf.define('SIZEOF_LONG_DOUBLE', int(t['long_double_size']))
+   conf.define('SIZEOF_VOID_P',    int(t['void_ptr_size']))
+
+   '''
+      All the stuff needed to implement concurrency
+      (locks, memory barriers, etc)'''
+
+   # http://predef.sourceforge.net/precomp.html
+   if sys.platform == 'win32':
+
+      out = conf.check_cc(fragment='''
+#define _QUOTEME(x) #x
+#define QUOTEME(x) _QUOTEME(x)
+#include <stdio.h>
+int main() { 
+printf("%s\\n",QUOTEME( _MSC_FULL_VER ) );
+return 0; }
+            ''', execute=1,msg='Checking for the compiler version')
+      conf.define('COMPILER_NAME', 'msvc')
+      conf.define('COMPILER_VERSION', out)
+
+   elif conf.check_cc(
+      fragment=compiler_test_str.format('__xlc__'),
+      execute=0,
+      define_ret=0,
+      msg='Checking for the xlc compiler'):
+
+      out = conf.check_cc(fragment='''
+#define _QUOTEME(x) #x
+#define QUOTEME(x) _QUOTEME(x)
+#include <stdio.h>
+int main() { 
+printf("%s\\n",QUOTEME( __xlc__ ) );
+return 0; }
+            ''', execute=1,msg='Checking for the compiler version')
+      conf.define('COMPILER_NAME', 'xlc')
+      conf.define('COMPILER_VERSION', out)
+      conf.define('PSO_USE_XLC', 1)
+      if platform.machine() == 'ppc':
+         conf.define('PSO_USE_PPC_XLC', 1)
+      else:
+         raise conf.fatal('Supported compiler but on unsupported hardware')
+
+   elif conf.check_cc(
+      fragment=compiler_test_str.format('__INTEL_COMPILER'),
+      execute=0,
+      define_ret=0,
+      msg='Checking for the Intel compiler'):
+
+      out = conf.check_cc(fragment='''
+#define _QUOTEME(x) #x
+#define QUOTEME(x) _QUOTEME(x)
+#include <stdio.h>
+int main() { 
+#if defined(__INTEL_COMPILER_BUILD_DATE)
+printf("%s_%s\\n", QUOTEME(__INTEL_COMPILER), QUOTEME(__INTEL_COMPILER_BUILD_DATE) );
+#else
+printf("%s\\n", QUOTEME(__INTEL_COMPILER) );
+#endif
+return 0; }
+            ''', execute=1,msg='Checking for the compiler version')
+      conf.define('COMPILER_NAME', 'icc')
+      conf.define('COMPILER_VERSION', out)
+      conf.define('PSO_USE_ICC', 1)
+      if platform.machine() == 'i386':
+         conf.define('PSO_USE_I386_GCC', 1)
+      elif platform.machine() == 'i486':
+         conf.define('PSO_USE_I386_GCC', 1)
+      elif platform.machine() == 'i586':
+         conf.define('PSO_USE_I386_GCC', 1)
+      elif platform.machine() == 'i686':
+         conf.define('PSO_USE_I386_GCC', 1)
+      elif platform.machine() == 'x86_64':
+         conf.define('PSO_USE_X86_64_GCC', 1)
+      else:
+         raise conf.fatal('Supported compiler but on unsupported hardware')
+
+   elif conf.check_cc(
+      fragment=compiler_test_str.format('__PATHCC__'),
+      execute=0,
+      define_ret=0,
+      msg='Checking for the PathScale compiler'):
+
+      out = conf.check_cc(fragment='''
+#define _QUOTEME(x) #x
+#define QUOTEME(x) _QUOTEME(x)
+#include <stdio.h>
+int main() { 
+printf( "%s.%s.%s\\n", QUOTEME(__PATHCC__), QUOTEME(__PATHCC_MINOR__), QUOTEME(__PATHCC_PATCHLEVEL__) );
+return 0; }
+            ''', execute=1,msg='Checking for the compiler version')
+      conf.define('COMPILER_NAME', 'PathScale')
+      conf.define('COMPILER_VERSION', out)
+      conf.define('PSO_USE_PATHSCALE', 1)
+      if platform.machine() == 'i386':
+         conf.define('PSO_USE_I386_GCC', 1)
+      elif platform.machine() == 'i486':
+         conf.define('PSO_USE_I386_GCC', 1)
+      elif platform.machine() == 'i586':
+         conf.define('PSO_USE_I386_GCC', 1)
+      elif platform.machine() == 'i686':
+         conf.define('PSO_USE_I386_GCC', 1)
+      elif platform.machine() == 'x86_64':
+         conf.define('PSO_USE_X86_64_GCC', 1)
+      else:
+         raise conf.fatal('Supported compiler but on unsupported hardware')
+
+   # The test for gcc must come after the tests for some other
+   # compilers since some defined __GNUC__ (Intel for example). 
+
+   elif conf.check_cc(
+      fragment=compiler_test_str.format('__GNUC__'),
+      execute=0,
+      define_ret=0,
+      msg='Checking for the gcc compiler'):
+
+      out = conf.check_cc(fragment='''
+#define _QUOTEME(x) #x
+#define QUOTEME(x) _QUOTEME(x)
+#include <stdio.h>
+int main() { 
+#if defined(__GNUC_PATCHLEVEL__)
+printf( "%s.%s.%s\\n", QUOTEME(__GNUC__), QUOTEME(__GNUC_MINOR__), QUOTEME(__GNUC_PATCHLEVEL__) );
+#else
+printf( "%s.%s\\n", QUOTEME(__GNUC__), QUOTEME(__GNUC_MINOR__) );
+#endif
+return 0; }
+            ''', execute=1,msg='Checking for the compiler version')
+      conf.define('COMPILER_NAME', 'gcc')
+      conf.define('COMPILER_VERSION', out)
+      conf.define('PSO_USE_GCC', 1)
+      if platform.machine() == 'i386':
+         conf.define('PSO_USE_I386_GCC', 1)
+      elif platform.machine() == 'i486':
+         conf.define('PSO_USE_I386_GCC', 1)
+      elif platform.machine() == 'i586':
+         conf.define('PSO_USE_I386_GCC', 1)
+      elif platform.machine() == 'i686':
+         conf.define('PSO_USE_I386_GCC', 1)
+      elif platform.machine() == 'x86_64':
+         conf.define('PSO_USE_X86_64_GCC', 1)
+      elif platform.machine() == 'sparc':
+         conf.define('PSO_USE_SPARC_GCC', 1)
+      elif platform.machine() == 'powerpc':
+         conf.define('PSO_USE_PPC_GCC', 1)
+      else:
+         raise conf.fatal('Supported compiler but on unsupported hardware')
+
+   else:
+      raise conf.fatal('Unsupported compiler')
+   
+   conf.define('BUILD_CPU', platform.machine() )
+   
+   print conf.env["CC"]
+   
+   print 'zz' + conf.env["COMPILER_NAME"]
+
