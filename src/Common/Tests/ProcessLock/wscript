@@ -78,3 +78,32 @@ def build(bld):
       lib          = bld.env['CMOCKERY'],
       uselib_local = 'Common') 
 
+   obj = bld.new_task_gen(
+      features     = 'cc cprogram',
+      source       = 'LockShouldFailStd.c',
+      target       = 'LockShouldFailStd',
+      includes     = '../../..',
+      install_path = None,
+      lib          = bld.env['CMOCKERY'],
+      uselib_local = 'Common') 
+
+   obj = bld.new_task_gen(
+      features     = 'cc cprogram',
+      source       = 'LockShouldFailTry.c',
+      target       = 'LockShouldFailTry',
+      includes     = '../../..',
+      install_path = None,
+      lib          = bld.env['CMOCKERY'],
+      uselib_local = 'Common') 
+
+   obj = bld.new_task_gen(
+      features     = 'cc cprogram',
+      source       = 'LockShouldFail.c',
+      target       = 'LockShouldFail',
+      includes     = '../../..',
+      install_path = None,
+      lib          = bld.env['CMOCKERY'],
+      uselib_local = 'Common') 
+   if bld.env['CMOCKERY'] and bld.env['MORE_TESTS']:
+      obj.unit_test = 1
+
