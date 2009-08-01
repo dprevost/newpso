@@ -67,11 +67,10 @@ struct localData
  * switches are done and with time slices of 1/1000 sec. (on many
  * modern OSes), it would force us to run the test for a lot longer).
  *
- * [DEFAULT_FAILURE_RATE 10000 --> 0.01% failure]
+ * [DEFAULT_FAILURE_RATE 1000 --> 0.1% failure]
  */
-#define DEFAULT_FAILURE_RATE   10000
-#define DEFAULT_NUM_CHILDREN       4
-#define DEFAULT_TIME             300
+#define DEFAULT_FAILURE_RATE   1000
+#define DEFAULT_TIME            300
 
 #define CHECK_TIMER 1345 /* Check the time every CHECK_TIMER loops */
 
@@ -99,8 +98,7 @@ int main( int argc, char* argv[] )
    int dumId;
    psocOptionHandle handle;
    char *argument;
-   struct psocOptStruct opts[3] = { 
-      { 'i', "identifier", 1, "identifier",    "Identifier for the process (do not used)" },
+   struct psocOptStruct opts[2] = { 
       { 'r', "rate",       1, "rateOfFailure", "Inverse rate: 1000 means a rate of 0.1%" },
       { 't', "time",       1, "timeInSecs",    "Time to run the tests" }
    };
@@ -109,14 +107,14 @@ int main( int argc, char* argv[] )
    psocInitErrorHandler( &errorHandler );
    psocInitTimer( &timer );   
 
-   ok = psocSetSupportedOptions( 3, opts, &handle );
+   ok = psocSetSupportedOptions( 2, opts, &handle );
    assert( ok );
    
    errcode = psocValidateUserOptions( handle, argc, argv, 1 );
    assert( errcode >= 0 );
    if ( errcode > 0 ) {
       psocShowUsage( handle, "LockShouldFailTry", "" );
-      return 0;
+      return 1;
    }
    
    if ( psocGetShortOptArgument( handle, 't', &argument ) ) {
@@ -173,7 +171,7 @@ int main( int argc, char* argv[] )
             psocReleaseProcessLock( &data->lock );
          }
             
-         break;
+         return 0;
       }
          
       if ( (loop%failureRate) != 0 ) {
@@ -189,18 +187,14 @@ int main( int argc, char* argv[] )
          psocCalculateTimer( &timer, &sec, &nanoSec );
          
          elapsedTime = sec*US_PER_SEC + nanoSec/1000;
-         if ( elapsedTime > maxTime ) {
-            psocFiniErrorHandler( &errorHandler );
-            psocFiniErrorDefs();
-            return 1;
-         }
+         if ( elapsedTime > maxTime ) break;
       }
    } /* For loop */
 
    psocFiniErrorHandler( &errorHandler );
    psocFiniErrorDefs();
 
-   return 0;
+   return 1;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

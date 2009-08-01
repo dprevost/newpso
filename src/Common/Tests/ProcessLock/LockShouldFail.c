@@ -35,9 +35,6 @@
 #endif
 
 #define DEFAULT_NUM_CHILDREN   4
-#define DEFAULT_TIME          30
-
-#define CHECK_TIMER 1345 /* Check the time every CHECK_TIMER loops */
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -147,13 +144,13 @@ void test_std( void ** state )
    for ( i = 0; i < numChilds; ++i ) {
 #if defined(WIN32)
       _cwait( &childStatus, childPid[i], _WAIT_CHILD );
-      if ( childStatus != 0 ) foundError = true;
+      if ( childStatus == 0 ) foundError = true;
 #else
       waitpid( childPid[i], &childStatus, 0 );
-      if ( WEXITSTATUS(childStatus) != 0 ) foundError = true;
+      if ( WEXITSTATUS(childStatus) == 0 ) foundError = true;
 #endif
    }
-   assert_false( foundError );
+   assert_true( foundError );
 
    free( processName );
    free( childPid );
@@ -209,13 +206,13 @@ void test_try( void ** state )
    for ( i = 0; i < numChilds; ++i ) {
 #if defined(WIN32)
       _cwait( &childStatus, childPid[i], _WAIT_CHILD );
-      if ( childStatus != 0 ) foundError = true;
+      if ( childStatus == 0 ) foundError = true;
 #else
       waitpid( childPid[i], &childStatus, 0 );
-      if ( WEXITSTATUS(childStatus) != 0 ) foundError = true;
+      if ( WEXITSTATUS(childStatus) == 0 ) foundError = true;
 #endif
    }
-   assert_false( foundError );
+   assert_true( foundError );
 
    free( processName );
    free( childPid );
