@@ -1,0 +1,112 @@
+/* -*- c++ -*- */
+/* :mode=c++:  - For jedit, previous line for emacs */
+/*
+ * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
+ *
+ * This file is part of Photon (photonsoftware.org).
+ *
+ * This file may be distributed and/or modified under the terms of the
+ * GNU General Public License version 2 or version 3 as published by the 
+ * Free Software Foundation and appearing in the file COPYING.GPL2 and 
+ * COPYING.GPL3 included in the packaging of this software.
+ *
+ * Licensees holding a valid Photon Commercial license can use this file 
+ * in accordance with the terms of their license.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ */
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+#ifndef PHOTON_DATA_DEF_BUILDER_USER
+#define PHOTON_DATA_DEF_BUILDER_USER
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+#include <stdlib.h>
+#include <string>
+
+#include <photon/psoCommon.h>
+#include <photon/DataDefinition>
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+namespace pso {
+
+/** 
+ * This class is a helper class to build the data definition of
+ * Photon objects when this definition is user-defined.
+ *
+ * How it works: you populate your definition with AddField(). When
+ * done, you retrieve the definition as an array of bytes and its length
+ * and you use that information to create a new data definition in
+ * shared memory (using the class ::DataDefinition).
+ *
+ * What's different about this class? You add a "description" for each of
+ * your field and the builder will insert a null byte to separate them.
+ * This will allow DataDefinition::GetNext() to display your definition
+ * in a loop as strings.
+ *
+ * It should be noted that you do not have to use this class, the data-record
+ * definition can be set or retrieved directly as an array of bytes.
+ */
+class PHOTON_EXPORT DataDefBuilderUser
+{
+public:
+
+   /**
+    * Construct a helper class data definition builder
+    */
+   DataDefBuilderUser( int numFields );
+
+   virtual ~DataDefBuilderUser();
+
+   /**
+    * Add a field to the definition. Fields must be added in order.
+    *
+    * \param[in]  fieldDescription Your description/definition of the field.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void AddField( std::string fieldDescription );
+
+   /** 
+    * Retrieve the data definition as an array of bytes.
+    *
+    * \return The definition of the fields as an array of bytes.
+    */
+   const unsigned char * GetDefinition();
+
+   /** 
+    * Returns the length, in bytes, of the definition.
+    *
+    * \return The length, in bytes, of the definition
+    */
+   psoUint32 GetDefLength();
+
+private:
+
+   /// The definition of the data fields
+   unsigned char * fields;
+
+   /// Number of fields in the definition
+   int numFields;
+
+   /// Current number of added fields
+   int currentField;
+
+   /// Current length of the buffer
+   int currentLength;
+
+};
+
+} // End of namespace
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+#endif // PHOTON_DATA_DEF_BUILDER_USER
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+

@@ -1,0 +1,298 @@
+/* -*- c++ -*- */
+/* :mode=c++:  - For jedit, previous line for emacs */
+/*
+ * Copyright (C) 2008-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ *
+ * This file is part of Photon (photonsoftware.org).
+ *
+ * This file may be distributed and/or modified under the terms of the
+ * GNU General Public License version 2 or version 3 as published by the 
+ * Free Software Foundation and appearing in the file COPYING.GPL2 and 
+ * COPYING.GPL3 included in the packaging of this software.
+ *
+ * Licensees holding a valid Photon Commercial license can use this file 
+ * in accordance with the terms of their license.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ */
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+#ifndef PHOTON_FAST_MAP_H_CPP
+#define PHOTON_FAST_MAP_H_CPP
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+#include <photon/psoCommon.h>
+#include <string>
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+namespace pso {
+
+// Forward declarations
+class Session;
+class DataDefinition;
+class KeyDefinition;
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+/**
+ * Photon read-only hash maps (fast maps).
+ *
+ * The features of fast maps are very similar to the features of standard 
+ * hash maps with one major exception - no locks are required to access 
+ * the data and special procedures are implemented for the occasional 
+ * updates:.
+ *
+ * <ol>
+ *   <li>
+ *     when a map is open in read-only mode (FastMap::Open), the 
+ *     end-of-this-unit-of-work calls (Session::psoCommit, 
+ *     Session::psoRollback) will check if a new version of the map 
+ *     exist and if indeed this is the case, the new version will be 
+ *     use instead of the old one.
+ *   </li>
+ *
+ *   <li>
+ *     when a map is open for editing (pso::FastMapEditor) a working copy 
+ *     of the map is created in shared memory and the map can be updated
+ *     (no locks again since only the updater can access the working copy). 
+ *     When the session is committed, the working version becomes the 
+ *     latest version and can be open/accessed by readers. And, of course, 
+ *     the same procedure applies if you have a set of maps that must be 
+ *     changed together.
+ *
+ *     If Session::psoRollback is called, all changes done to the working 
+ *     copy are erased.
+ *   </li>
+ * </ol>
+ * 
+ * Note: the old versions are removed from memory when all readers have 
+ * updated their versions. Even if a program is only doing read access to 
+ * shared-memory data, it is important to add Session::psoCommit once in a 
+ * while to refresh the read-only objects periodically.
+ */
+class PHOTON_EXPORT FastMap
+{
+public:
+
+   /**
+    * This constructor does nothing.
+    *
+    * You must use Open to access an in-memory HashMap object - otherwise
+    * a pso::Exception will be thrown.
+    */
+   FastMap();
+
+   /** 
+    * Open an existing read-only hash map (see psoSession::CreateObject to 
+    * create a new object).
+    *
+    * \param[in] session The session we belong to.
+    * \param[in]  hashMapName The fully qualified name of the hash map. 
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   FastMap( Session & session, const std::string & hashMapName );
+
+   /**
+    * The destructor will close the hash map if not closed.
+    *
+    * This method won't throw an exception on error.
+    */
+   virtual ~FastMap();
+
+   /**
+    * \brief Close a hash map.
+    *
+    * This function terminates the current access to the hash map in shared 
+    * memory (the hash map itself is untouched).
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void Close();
+   
+   /**
+    * \brief Retrieve the data definition of the hash map.
+    *
+    * This function returns a new object. It is the responsability of the
+    * caller to delete the object.
+    *
+    * \return A new data definition of the hash map.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   DataDefinition * GetDataDefinition();
+
+   /**
+    * \brief Retrieve the key definition of the hash map.
+    *
+    * This function returns a new object. It is the responsability of the
+    * caller to delete the object.
+    *
+    * \return A new key definition of the hash map.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   KeyDefinition * GetKeyDefinition();
+                          
+   /** 
+    * Retrieve the data item identified by the given key from the hash map.
+    *
+    * Data items which were added by another session and are not yet committed 
+    * will not be seen by this function. Likewise, 
+    * destroyed data items (even if not yet committed) are invisible.
+    *
+    * \param[in]  key The key of the item to be retrieved.
+    * \param[in]  keyLength The length of the \em key buffer (in bytes).
+    * \param[out] buffer The buffer provided by the user to hold the content of
+    *             the data item. Memory allocation for this buffer is the
+    *             responsability of the caller.
+    * \param[in]  bufferLength The length of \em buffer (in bytes).
+    * \param[out] returnedLength The actual number of bytes in the data item.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void Get( const void * key,
+             psoUint32    keyLength,
+             void       * buffer,
+             psoUint32    bufferLength,
+             psoUint32  & returnedLength );
+
+   /** 
+    * Iterate through the hash map.
+    *
+    * Data items which were added by another session and are not yet committed 
+    * will not be seen by the iterator. Likewise, destroyed data items (even if
+    * not yet committed) are invisible.
+    *
+    * Data items retrieved this way will not be sorted.
+    *
+    * \param[out] key The key buffer provided by the user to hold the content of
+    *             the key associated with the first element. Memory allocation 
+    *             for this buffer is the responsability of the caller.
+    * \param[in]  keyLength The length of the \em key buffer (in bytes).
+    * \param[out] buffer The buffer provided by the user to hold the content of
+    *             the first element. Memory allocation for this buffer is the
+    *             responsability of the caller.
+    * \param[in]  bufferLength The length of \em buffer (in bytes).
+    * \param[out] retKeyLength The actual number of bytes in the key
+    * \param[out] retDataLength The actual number of bytes in the data item.
+    *
+    * \return 0 on success or PSO_IS_EMPTY if the hash map is empty.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   int GetFirst( void      * key,
+                 psoUint32   keyLength,
+                 void      * buffer,
+                 psoUint32   bufferLength,
+                 psoUint32 & retKeyLength,
+                 psoUint32 & retDataLength );
+
+   /** 
+    * Iterate through the hash map.
+    *
+    * Data items which were added by another session and are not yet committed 
+    * will not be seen by the iterator. Likewise, destroyed data items (even if
+    * not yet committed) are invisible.
+    *
+    * Evidently, you must call psoHashMap::GetFirst to initialize the iterator. 
+    * Not so evident - calling psoHashMap::Get will reset the iteration to the
+    * data item retrieved by this function (they use the same internal storage). 
+    * If this cause a problem, please let us know.
+    *
+    * Data items retrieved this way will not be sorted.
+    *
+    * \param[out] key The key buffer provided by the user to hold the content of
+    *             the key associated with the data element. Memory allocation 
+    *             for this buffer is the responsability of the caller.
+    * \param[in]  keyLength The length of the \em key buffer (in bytes).
+    * \param[out] buffer The buffer provided by the user to hold the content of
+    *             the data element. Memory allocation for this buffer is the
+    *             responsability of the caller.
+    * \param[in]  bufferLength The length of \em buffer (in bytes).
+    * \param[out] retKeyLength The actual number of bytes in the key
+    * \param[out] retDataLength The actual number of bytes in the data item.
+    *
+    * \return 0 on success or PSO_REACHED_THE_END when the iteration reaches
+    *           the end of the hash map.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   int GetNext( void      * key,
+                psoUint32   keyLength,
+                void      * buffer,
+                psoUint32   bufferLength,
+                psoUint32 & retKeyLength,
+                psoUint32 & retDataLength );
+   
+   /**
+    * \brief Retrieve the data definition of the last accessed record.
+    *
+    * Hah maps will usually contain data records with an identical layout (data 
+    * definition of the items). This layout was defined when the map was 
+    * created. 
+    *
+    * You can also insert and retrieve data records with different layouts if
+    * the object was created with the flag PSO_MULTIPLE_DATA_DEFINITIONS. The
+    * layout defined when a map is created is then used as the default one.
+    * 
+    * The DataDefinition object returned by this method can be used to 
+    * access the layout on a record-by-record base.
+    *
+    * Note: you only need to get this object once. The hidden fields 
+    * associated with this object will be updated after each record is
+    * retrieved. The object will point to the data definition of the 
+    * map itself when initially constructed.
+    * 
+    * This function returns a new object. It is the responsability of the
+    * caller to delete the object.
+    *
+    * \return A new data definition of the hash map.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   DataDefinition * GetRecordDefinition();
+
+   /** 
+    * Open an existing read-only hash map (see psoSession::CreateObject to 
+    * create a new object).
+    *
+    * \param[in] session The session we belong to.
+    * \param[in]  hashMapName The fully qualified name of the hash map. 
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void Open( Session & session, const std::string & hashMapName );
+
+   /**
+    * Return the status of the hash map.
+    *
+    * \param[out] status A reference to the status structure.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void Status( psoObjStatus & status );
+
+protected:
+
+   /// Pointer to the psoaFastMap struct.
+   PSO_HANDLE m_objectHandle;
+
+   /// The psoaSession struct (we belong to).
+   PSO_HANDLE m_sessionHandle;
+   
+};
+
+} // End of namespace
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+#endif // PHOTON_FAST_MAP_H_CPP
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+

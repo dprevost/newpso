@@ -1,0 +1,323 @@
+/* -*- c++ -*- */
+/* :mode=c++:  - For jedit, previous line for emacs */
+/*
+ * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ *
+ * This file is part of Photon (photonsoftware.org).
+ *
+ * This file may be distributed and/or modified under the terms of the
+ * GNU General Public License version 2 or version 3 as published by the 
+ * Free Software Foundation and appearing in the file COPYING.GPL2 and 
+ * COPYING.GPL3 included in the packaging of this software.
+ *
+ * Licensees holding a valid Photon Commercial license can use this file 
+ * in accordance with the terms of their license.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ */
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+#ifndef PSO_FOLDER_H_CPP
+#define PSO_FOLDER_H_CPP
+
+#include <photon/psoCommon.h>
+#include <string>
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+namespace pso {
+
+// Forward declarations
+class Session;
+class DataDefinition;
+class KeyDefinition;
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+/**
+ * Folders allow the organization of the data containers in a tree-like
+ * structure (similar to a filesystem).
+ *
+ * If a flat structure is preferred, simply make all your data containers
+ * children of the top folder ("/") - for example, "/MyQueue", "/MyMap", etc.
+ */
+class PHOTON_EXPORT Folder
+{
+public:
+
+   /**
+    * This constructor does nothing.
+    *
+    * You must use Open to access an in-memory Folder object - otherwise
+    * a pso::Exception will be thrown.
+    */
+   Folder();
+
+   /**
+    * Opens a Folder object.
+    *
+    * \param[in] session The session we belong to.
+    * \param[in] folderName The name of the folder. 
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   Folder( Session & session, const std::string & folderName );
+
+   /**
+    * The destructor will close the folder if not closed.
+    *
+    * This method won't throw an exception on error.
+    */
+   virtual ~Folder();
+
+   /**
+    * \brief Close a folder.
+    *
+    * This function terminates the current access to the folder in shared memory
+    * (the folder itself is untouched).
+    *
+    * \warning Closing an object does not automatically commit or rollback 
+    * objects that were created or destroyed. You still must use either 
+    * psoSession::Commit or psoSession::Rollback to end the current unit of 
+    * work.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void Close();
+
+   /**
+    * Create a new folder in shared memory as a child of the current folder.
+    *
+    * The creation of the folder only becomes permanent after a call to 
+    * Session::Commit.
+    *
+    * \param[in] folderName The name of the folder. 
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void CreateFolder( const std::string & folderName );
+
+   /**
+    * Create a new object in shared memory as a child of the current folder.
+    *
+    * This overloaded method should be used for objects not requiring
+    * a key definition (queues, etc.).
+    *
+    * The creation of the object only becomes permanent after a call to 
+    * Session::Commit.
+    *
+    * \param[in] objectName The name of the object. 
+    * \param[in] definition The type of object to create and more.
+    * \param[in] dataDefinition The definition of the data fields.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void CreateQueue( const std::string   & objectName,
+                     psoObjectDefinition & definition,
+                     DataDefinition      & dataDefinition );
+
+   /**
+    * Create a new object in shared memory as a child of the current folder.
+    *
+    * This overloaded method should be used for objects not requiring
+    * a key definition (queues, etc.). It also uses the name of an
+    * existing data definition instead of requiring a DataDefinition
+    * object.
+    *
+    * The creation of the object only becomes permanent after a call to 
+    * Session::Commit.
+    *
+    * \param[in] objectName The name of the object. 
+    * \param[in] definition The type of object to create and more.
+    * \param[in] dataDefName The name of an existing data definition for
+    *                        the data fields of the object. This name is 
+    *                        case sensitive.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void CreateQueue( const std::string   & objectName,
+                     psoObjectDefinition & definition,
+                     const std::string   & dataDefName );
+
+   /**
+    * Create a new object in shared memory as a child of the current folder.
+    *
+    * This overloaded method should be used for objects requiring
+    * a key definition (hash maps, etc.).
+    *
+    * The creation of the object only becomes permanent after a call to 
+    * Session::Commit.
+    *
+    * \param[in] objectName The name of the object. 
+    * \param[in] definition The type of object to create and more.
+    * \param[in] dataDefinition The definition of the data fields.
+    * \param[in] keyDefinition  The definition of the key. 
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void CreateMap( const std::string   & objectName,
+                   psoObjectDefinition & definition,
+                   DataDefinition      & dataDefinition,
+                   KeyDefinition       & keyDefinition );
+
+   /**
+    * Create a new object in shared memory as a child of the current folder.
+    *
+    * This overloaded method should be used for objects requiring
+    * a key definition (hash maps, etc.). It also uses the names of 
+    * both an existing data definition and a key definition instead 
+    * of requiring a DataDefinition object and a KeyDefinition object.
+    *
+    * The creation of the object only becomes permanent after a call to 
+    * Session::Commit.
+    *
+    * \param[in] objectName The name of the object. 
+    * \param[in] definition The type of object to create and more.
+    * \param[in] dataDefName The name of the data definition for
+    *                        the data fields of the object.
+    * \param[in] keyDefName  The name of the definition of the key of 
+    *                        the object.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void CreateMap( const std::string   & objectName,
+                   psoObjectDefinition & definition,
+                   const std::string   & datakeyDefName,
+                   const std::string   & keyDefName );
+
+   /**
+    * Destroy an object, child of the current folder, in shared memory.
+    *
+    * The destruction of the object only becomes permanent after a call to 
+    * Session::Commit.
+    *
+    * \param[in]  objectName The name of the object. 
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void DestroyObject( const std::string & objectName );
+
+   /**
+    * \brief Retrieve the basic definition of the object, a child of the
+    * folder.
+    *
+    * \param[in]  objectName The name of the object. 
+    * \param[out] definition The definition of the object 
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void GetDefinition( const std::string    & objectName,
+                       psoObjectDefinition  & definition );
+   
+   /**
+    * \brief Retrieve the data definition of the the object, a child of the
+    * folder.
+    *
+    * This function may return a new object. It is the responsability of
+    * the caller to delete the object.
+    *
+    * \param[in]  objectName The name of the object. 
+    *
+    * \return A new DataDefinition object or NULL if the object is
+    *         a Folder.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   DataDefinition * GetDataDefinition( const std::string & objectName );
+   
+   /** 
+    * Iterate through the folder - no data items are removed from the 
+    * folder by this function.
+    *
+    * Data items which were added by another session and are not yet 
+    * committed will not be seen by the iterator. Likewise, destroyed 
+    * data items (even if not yet committed) are invisible.
+    *
+    * \param[out] entry The data structure provided by the user to 
+    *             hold the content of each item in the folder. Memory 
+    *             allocation for this buffer is the responsability of 
+    *             the caller.
+    *
+    * \return 0 on success or PSO_IS_EMPTY if the folder is empty.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   int GetFirst( psoFolderEntry & entry );
+
+   /**
+    * \brief Retrieve the key definition of the the object, a child of the
+    * folder.
+    *
+    * This function may return a new object. It is the responsability of
+    * the caller to delete the object.
+    *
+    * \param[in]  objectName The name of the object. 
+    * 
+    * \return A new KeyDefinition object or NULL if the object does not
+    *         have a key definition (Folders, Queues, etc.).
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   KeyDefinition * GetKeyDefinition( const std::string & objectName );
+
+   /** 
+    * Iterate through the folder.
+    *
+    * Data items which were added by another session and are not yet 
+    * committed will not be seen by the iterator. Likewise, destroyed 
+    * data items (even if not yet committed) are invisible.
+    *
+    * Evidently, you must call Folder::GetFirst to initialize the iterator. 
+    *
+    * \param[out] entry The data structure provided by the user to 
+    *             hold the content of each item in the folder. Memory 
+    *             allocation for this buffer is the responsability of 
+    *             the caller.
+    *
+    * \return 0 on success or PSO_REACHED_THE_END when the iteration reaches
+    *           the end of the folder.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   int GetNext( psoFolderEntry & entry );
+   
+   /**
+    * Opens a Folder object.
+    *
+    * \param[in] session The session we belong to.
+    * \param[in] folderName The name of the folder. 
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void Open( Session & session, const std::string & folderName );
+
+   /**
+    * Return the status of the folder.
+    *
+    * \param[out] status A pointer to the status structure.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void Status( psoObjStatus & status );
+
+private:
+
+   /// Pointer to the psoaFolder struct.
+   PSO_HANDLE m_objectHandle;
+
+   /// The psoaSession struct (we belong to).
+   PSO_HANDLE m_sessionHandle;
+
+};
+
+} // End of namespace
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+#endif // PSO_FOLDER_H_CPP
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+

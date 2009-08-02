@@ -1,0 +1,279 @@
+/* -*- c++ -*- */
+/* :mode=c++:  - For jedit, previous line for emacs */
+/*
+ * Copyright (C) 2008-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ *
+ * This file is part of Photon (photonsoftware.org).
+ *
+ * This file may be distributed and/or modified under the terms of the
+ * GNU General Public License version 2 or version 3 as published by the 
+ * Free Software Foundation and appearing in the file COPYING.GPL2 and 
+ * COPYING.GPL3 included in the packaging of this software.
+ *
+ * Licensees holding a valid Photon Commercial license can use this file 
+ * in accordance with the terms of their license.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ */
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+#ifndef PSO_LIFO_H_CPP
+#define PSO_LIFO_H_CPP
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+#include <photon/psoCommon.h>
+#include <string>
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+namespace pso {
+
+// Forward declarations
+class Session;
+class DataDefinition;
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+/**
+ * Photon LIFO queues (Last In, First Out - also known as stacks).
+ */
+class PHOTON_EXPORT Lifo
+{
+public:
+
+   /**
+    * This constructor does nothing.
+    *
+    * You must use Open to access an in-memory LIFO queue object - otherwise
+    * a pso::Exception will be thrown.
+    */
+   Lifo();
+
+   /** 
+    * Open an existing LIFO queue.
+    *
+    * \param[in] session The session we belong to.
+    * \param[in] queueName The fully qualified name of the queue. 
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   Lifo( Session & session, const std::string & queueName );
+
+   /**
+    * The destructor will close the queue if not closed.
+    *
+    * This method won't throw an exception on error.
+    */
+   virtual ~Lifo();
+
+   /**
+    * \brief Close a LIFO queue.
+    *
+    * This function terminates the current access to the queue in shared 
+    * memory (the queue itself, in shared memory is untouched).
+    *
+    * \warning Closing an object does not automatically commit or rollback 
+    * data items that were inserted or removed. You still must use either 
+    * psoSession::Commit or psoSession::Rollback to end the current unit of 
+    * work.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void Close();
+   
+   /**
+    * \brief Retrieve the data definition of the queue.
+    *
+    * This function returns a new object. It is the responsability of the
+    * caller to delete the object.
+    *
+    * \return definition A new data definition of the queue.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   DataDefinition * GetDataDefinition();
+
+   /** 
+    * \brief Initiates an iteratation through the queue - no data items are 
+    * removed from the queue by this function.
+    *
+    * Data items which were added by another session and are not yet committed 
+    * will not be seen by the iterator. Likewise, destroyed data items (even
+    * if not yet committed) are invisible.
+    *
+    * \param[out]  buffer The buffer provided by the user to hold the content of
+    *              the first element. Memory allocation for this buffer is the
+    *              responsability of the caller.
+    * \param[in]   bufferLength The length of \em buffer (in bytes).
+    * \param[out]  returnedLength The actual number of bytes copied in the 
+    *              data buffer.
+    *
+    * \return 0 on success or PSO_IS_EMPTY if the queue is empty.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   int GetFirst( void      * buffer,
+                 psoUint32   bufferLength,
+                 psoUint32 & returnedLength );
+
+   /** 
+    * Iterate through the queue - no data items are removed from the queue
+    * by this function.
+    *
+    * Data items which were added by another session and are not yet committed 
+    * will not be seen by the iterator. Likewise, destroyed data items (even if
+    * not yet committed) are invisible.
+    *
+    * Evidently, you must call ::GetFirst to initialize the iterator. 
+    * Not so evident - calling ::Pop will reset the iteration to the
+    * last element (they use the same internal storage). If this cause a 
+    * problem, please let us know.
+    *
+    * \param[out]  buffer The buffer provided by the user to hold the content of
+    *              the next element. Memory allocation for this buffer is the
+    *              responsability of the caller.
+    * \param[in]   bufferLength The length of \em buffer (in bytes).
+    * \param[out]  returnedLength The actual number of bytes copied in the 
+    *              data buffer.
+    *
+    * \return 0 on success or PSO_REACHED_THE_END when the iteration reaches
+    *           the end of the queue.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   int GetNext( void      * buffer,
+                psoUint32   bufferLength,
+                psoUint32 & returnedLength );
+
+   /**
+    * \brief Retrieve the data definition of the last accessed record.
+    *
+    * Queues will usually contain data records with an identical layout (data 
+    * definition of the items). This layout was defined when the queue was 
+    * created. 
+    *
+    * You can also insert and retrieve data records with different layouts if
+    * the object was created with the flag PSO_MULTIPLE_DATA_DEFINITIONS. The
+    * layout defined when a queue is created is then used as the default one.
+    * 
+    * The DataDefinition object returned by this method can be used to 
+    * access the layout on a record-by-record base.
+    *
+    * Note: you only need to get this object once. The hidden fields 
+    * associated with this object will be updated after each record is
+    * retrieved. The object will point to the data definition of the 
+    * queue itself when initially constructed.
+    * 
+    * This function returns a new object. It is the responsability of the
+    * caller to delete the object.
+    *
+    * \return A new data definition of the items retrieved from the queue.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   DataDefinition * GetRecordDefinition();
+
+   /** 
+    * Open an existing LIFO queue.
+    *
+    * \param[in] session The session we belong to.
+    * \param[in] queueName The fully qualified name of the queue. 
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void Open( Session & session, const std::string & queueName );
+
+   /** 
+    * Remove the first item from the end of a LIFO queue and return it 
+    * to the caller.
+    *
+    * Data items which were added by another session and are not yet committed 
+    * will not be seen by this function. Likewise, destroyed data items (even if
+    * not yet committed) are invisible.
+    *
+    * The removals only become permanent after a call to psoSession::Commit.
+    *
+    * \param[out]  buffer The buffer provided by the user to hold the content of
+    *              the data item. Memory allocation for this buffer is the
+    *              responsability of the caller.
+    * \param[in]   bufferLength The length of \em buffer (in bytes).
+    * \param[out]  returnedLength The actual number of bytes copied in the 
+    *              data buffer.
+    *
+    * \return 0 on success or PSO_IS_EMPTY if the queue is empty or
+    *           PSO_ITEM_IS_IN_USE if all existing items are "invisible".
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   int Pop( void      * buffer,
+            psoUint32   bufferLength,
+            psoUint32 & returnedLength );
+
+   /**
+    * Insert a data element at the end of the LIFO queue.
+    *
+    * The additions only become permanent after a call to psoSession::Commit.
+    *
+    * \param[in]  pItem  The data item to be inserted.
+    * \param[in]  length The length of \em pItem (in bytes).
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void Push( const void * pItem, 
+              psoUint32    length );
+
+   /**
+    * Insert a data record at the end of the LIFO queue.
+    *
+    * The additions only become permanent after a call to psoSession::Commit.
+    *
+    * The additional argument of this overloaded function, \em dataDefinition,
+    * is used to provide an alternate data definition if the queue supports
+    * this feature.
+    *
+    * This could be used to implement inheritance of the data records or
+    * to build a mismatched collection of records.
+    *
+    * \param[in]  pItem  The data item to be inserted.
+    * \param[in]  length The length of \em pItem (in bytes).
+    * \param[in]  dataDefinition The data definition for this specific 
+    *             data record. The queue must have been created with 
+    *             the appropriate flag to support this feature.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void Push( const void           * pItem, 
+              psoUint32              length,
+              const DataDefinition & dataDefinition );
+
+   /**
+    * Return the status of the queue.
+    *
+    * \param[out] status A reference to the status structure.
+    *
+    * \exception pso::Exception An abnormal error occured.
+    */
+   void Status( psoObjStatus & status );
+
+private:
+
+   /// Pointer to the psoaLifo struct.
+   PSO_HANDLE m_objectHandle;
+
+   /// The psoaSession struct (we belong to).
+   PSO_HANDLE m_sessionHandle;
+
+};
+
+} // End of namespace
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+#endif /* PSO_LIFO_H_CPP */
+
+// --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
