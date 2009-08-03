@@ -46,13 +46,11 @@ void test_pass( void ** state )
    
    psonTxStatusInit( &status, SET_OFFSET( pTx ) );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 5, "Test1", 
-                             1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
    assert_true( ok );
    
    ok = psonFolderInsertObject( pFolder,
                                 "test2",
-                                "Test2",
                                 5,
                                 &def,
                                 &fields,
@@ -78,21 +76,18 @@ void test_pass( void ** state )
    ok = psonQueueInsert( pQueue,
                          data1,
                          strlen(data1),
-                         NULL,
                          PSON_QUEUE_LAST,
                          &context );
    assert_true( ok );
    ok = psonQueueInsert( pQueue,
                          data2,
                          strlen(data2),
-                         NULL,
                          PSON_QUEUE_LAST,
                          &context );
    assert_true( ok );
    ok = psonQueueInsert( pQueue,
                          data3,
                          strlen(data3),
-                         NULL,
                          PSON_QUEUE_LAST,
                          &context );
    assert_true( ok );
@@ -108,21 +103,18 @@ void test_pass( void ** state )
    ok = psonQueueInsert( pQueue,
                          data1,
                          strlen(data1),
-                         NULL,
                          PSON_QUEUE_LAST,
                          &context );
    assert_true( ok );
    ok = psonQueueInsert( pQueue,
                          data2,
                          strlen(data2),
-                         NULL,
                          PSON_QUEUE_LAST,
                          &context );
    assert_true( ok );
    ok = psonQueueInsert( pQueue,
                          data3,
                          strlen(data3),
-                         NULL,
                          PSON_QUEUE_LAST,
                          &context );
    assert_true( ok );
@@ -215,21 +207,18 @@ void test_pass( void ** state )
    ok = psonQueueInsert( pQueue,
                          data1,
                          strlen(data1),
-                         NULL,
                          PSON_QUEUE_LAST,
                          &context );
    assert_true( ok );
    ok = psonQueueInsert( pQueue,
                          data2,
                          strlen(data2),
-                         NULL,
                          PSON_QUEUE_LAST,
                          &context );
    assert_true( ok );
    ok = psonQueueInsert( pQueue,
                          data3,
                          strlen(data3),
-                         NULL,
                          PSON_QUEUE_LAST,
                          &context );
    assert_true( ok );
@@ -258,21 +247,18 @@ void test_pass( void ** state )
    ok = psonQueueInsert( pQueue,
                          data1,
                          strlen(data1),
-                         NULL,
                          PSON_QUEUE_LAST,
                          &context );
    assert_true( ok );
    ok = psonQueueInsert( pQueue,
                          data2,
                          strlen(data2),
-                         NULL,
                          PSON_QUEUE_LAST,
                          &context );
    assert_true( ok );
    ok = psonQueueInsert( pQueue,
                          data3,
                          strlen(data3),
-                         NULL,
                          PSON_QUEUE_LAST,
                          &context );
    assert_true( ok );

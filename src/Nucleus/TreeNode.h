@@ -46,14 +46,14 @@ struct psonObjectDescriptor
    /** 
     * The length in bytes of the name as originally entered.
     */
-   int nameLengthInBytes;
+//   int nameLengthInBytes;
    
    /** 
     * The original name (not including the parent folder name).
     * This name does include the trailing zero ('\0'),
     * and can be used as a valid C string!
     */
-   char originalName[1];
+//   char originalName[1];
    
 };
 
@@ -75,10 +75,10 @@ struct psonTreeNode
    size_t txCounter;
   
    /** In units of char, not bytes. */
-   size_t myNameLength;
+ //  size_t myNameLength;
    
    /** Offset to the original string naming this object. */
-   ptrdiff_t myNameOffset;
+//   ptrdiff_t myNameOffset;
 
    /** Offset to the string used for the key (lowercase of the original). */
    ptrdiff_t myHashItem;
@@ -99,16 +99,12 @@ typedef struct psonTreeNode psonTreeNode;
 static inline 
 void psonTreeNodeInit( psonTreeNode * pNode,
                        ptrdiff_t      txStatusOffset,
-                       uint32_t       originalNameLength,
-                       ptrdiff_t      originalNameOffset,
                        ptrdiff_t      parentOffset,
                        ptrdiff_t      hashItemOffset )
 {
    PSO_PRE_CONDITION( pNode != NULL );
    
    pNode->txCounter      = 0;
-   pNode->myNameLength   = originalNameLength;
-   pNode->myNameOffset   = originalNameOffset;
    pNode->txStatusOffset = txStatusOffset;
    pNode->myParentOffset = parentOffset;
    pNode->myHashItem     = hashItemOffset;
@@ -122,8 +118,6 @@ void psonTreeNodeFini( psonTreeNode * pNode )
    PSO_PRE_CONDITION( pNode != NULL );
    
    pNode->txCounter      = 0;
-   pNode->myNameLength   = 0;
-   pNode->myNameOffset   = PSON_NULL_OFFSET;
    pNode->txStatusOffset = PSON_NULL_OFFSET;
    pNode->myParentOffset = PSON_NULL_OFFSET;
    pNode->myHashItem     = PSON_NULL_OFFSET;

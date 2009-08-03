@@ -37,7 +37,6 @@ void psonFastMapReleaseNoLock( psonFastMap        * pHashMap,
 bool psonFastMapCopy( psonFastMap        * pOldMap, 
                       psonFastMap        * pNewMap,
                       psonHashTxItem     * pHashItem,
-                      const char         * origName,
                       psonSessionContext * pContext )
 {
    int errcode;
@@ -45,7 +44,6 @@ bool psonFastMapCopy( psonFastMap        * pOldMap,
    PSO_PRE_CONDITION( pOldMap   != NULL );
    PSO_PRE_CONDITION( pNewMap   != NULL );
    PSO_PRE_CONDITION( pHashItem != NULL );
-   PSO_PRE_CONDITION( origName  != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    
    errcode = psonMemObjectInit( &pNewMap->memObject, 
@@ -61,8 +59,6 @@ bool psonFastMapCopy( psonFastMap        * pOldMap,
 
    psonTreeNodeInit( &pNewMap->nodeObject,
                      SET_OFFSET(&pHashItem->txStatus),
-                     pOldMap->nodeObject.myNameLength,
-                     SET_OFFSET(origName),
                      pOldMap->nodeObject.myParentOffset,
                      SET_OFFSET(pHashItem) );
    
@@ -373,8 +369,6 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
                       size_t                numberOfBlocks,
                       size_t                expectedNumOfItems,
                       psonTxStatus        * pTxStatus,
-                      uint32_t              origNameLength,
-                      char                * origName,
                       ptrdiff_t             hashItemOffset,
                       psoObjectDefinition * pDefinition,
                       psonKeyDefinition   * pKeyDefinition,
@@ -386,14 +380,12 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
    PSO_PRE_CONDITION( pHashMap        != NULL );
    PSO_PRE_CONDITION( pContext        != NULL );
    PSO_PRE_CONDITION( pTxStatus       != NULL );
-   PSO_PRE_CONDITION( origName        != NULL );
    PSO_PRE_CONDITION( pDefinition     != NULL );
    PSO_PRE_CONDITION( pKeyDefinition  != NULL );
    PSO_PRE_CONDITION( pDataDefinition != NULL );
    PSO_PRE_CONDITION( hashItemOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( parentOffset   != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
-   PSO_PRE_CONDITION( origNameLength > 0 );
    
    errcode = psonMemObjectInit( &pHashMap->memObject, 
                                 PSON_IDENT_MAP,
@@ -408,8 +400,6 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
 
    psonTreeNodeInit( &pHashMap->nodeObject,
                      SET_OFFSET(pTxStatus),
-                     origNameLength,
-                     SET_OFFSET(origName),
                      parentOffset,
                      hashItemOffset );
 
@@ -440,7 +430,6 @@ bool psonFastMapInsert( psonFastMap        * pHashMap,
                         uint32_t             keyLength, 
                         const void         * pItem,
                         uint32_t             itemLength,
-                        psonDataDefinition * pDefinition,
                         psonSessionContext * pContext )
 {
    psoErrors errcode;
@@ -465,13 +454,7 @@ bool psonFastMapInsert( psonFastMap        * pHashMap,
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
       return false;
    }
-   if ( pDefinition == NULL ) {
-      pHashItem->dataDefOffset = PSON_NULL_OFFSET;
-   }
-   else {
-      pHashItem->dataDefOffset = SET_OFFSET(pDefinition);
-   }
-      
+   
    return true;
 }
 
@@ -540,7 +523,6 @@ bool psonFastMapReplace( psonFastMap        * pHashMap,
                          uint32_t             keyLength, 
                          const void         * pData,
                          uint32_t             dataLength,
-                         psonDataDefinition * pDefinition,
                          psonSessionContext * pContext )
 {
    psoErrors errcode = PSO_OK;
@@ -564,12 +546,6 @@ bool psonFastMapReplace( psonFastMap        * pHashMap,
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
       return false;
-   }
-   if ( pDefinition == NULL ) {
-      pHashItem->dataDefOffset = PSON_NULL_OFFSET;
-   }
-   else {
-      pHashItem->dataDefOffset = SET_OFFSET(pDefinition);
    }
    
    return true;

@@ -47,9 +47,6 @@ struct psonHashItem
    /** Next item in this bucket */
    ptrdiff_t     nextItem;
    
-   /** Offset to the data definition for this specific item */
-   ptrdiff_t  dataDefOffset;
-
    uint32_t      keyLength;
    ptrdiff_t     dataOffset;
    uint32_t      dataLength;

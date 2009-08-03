@@ -40,7 +40,7 @@ void setup_test()
 
    psonTxStatusInit( &hashItem.txStatus, SET_OFFSET( context.pTransaction ) );
    
-   ok = psonFastMapInit( pOldMap, 0, 1, 0, &hashItem.txStatus, 4, "Map1", 
+   ok = psonFastMapInit( pOldMap, 0, 1, 0, &hashItem.txStatus,
                          SET_OFFSET(pOldMap), &def, &keyDef, 
                          &fields, &context );
    assert( ok );
@@ -50,7 +50,6 @@ void setup_test()
                            7,
                            (const void *) data1,
                            8,
-                           NULL,
                            &context );
    assert( ok );
    ok = psonFastMapInsert( pOldMap,
@@ -58,7 +57,6 @@ void setup_test()
                            7,
                            (const void *) data2,
                            8,
-                           NULL,
                            &context );
    assert( ok );
 }
@@ -80,7 +78,6 @@ void test_null_context( void ** state )
    expect_assert_failure( psonFastMapCopy( pOldMap, 
                                            pNewMap,
                                            &hashItem,
-                                           "Map1",
                                            NULL ) );
 #endif
    return;
@@ -93,21 +90,6 @@ void test_null_hash_item( void ** state )
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonFastMapCopy( pOldMap, 
                                            pNewMap,
-                                           NULL,
-                                           "Map1",
-                                           &context ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_null_name( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonFastMapCopy( pOldMap, 
-                                           pNewMap,
-                                           &hashItem,
                                            NULL,
                                            &context ) );
 #endif
@@ -122,7 +104,6 @@ void test_null_new_map( void ** state )
    expect_assert_failure( psonFastMapCopy( pOldMap, 
                                            NULL,
                                            &hashItem,
-                                           "Map1",
                                            &context ) );
 #endif
    return;
@@ -136,7 +117,6 @@ void test_null_old_map( void ** state )
    expect_assert_failure( psonFastMapCopy( NULL, 
                                            pNewMap,
                                            &hashItem,
-                                           "Map1",
                                            &context ) );
 #endif
    return;
@@ -154,7 +134,6 @@ void test_pass( void ** state )
    ok = psonFastMapCopy( pOldMap, 
                          pNewMap,
                          &hashItem,
-                         "Map1",
                          &context );
    
    ok = psonFastMapGet( pNewMap,
@@ -190,7 +169,6 @@ int main()
    const UnitTest tests[] = {
       unit_test_setup_teardown( test_null_context,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_hash_item, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_name,       setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_new_map,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_old_map,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_pass,            setup_test, teardown_test )

@@ -38,8 +38,8 @@ void setup_test()
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
 
    ok = psonQueueInit( pQueue, 
-                       0, 1, &status, 6, 
-                       "Queue1", SET_OFFSET(pQueue), 
+                       0, 1, &status,
+                       SET_OFFSET(pQueue), 
                        &def, &fields, &context );
    assert( ok );
 }
@@ -60,7 +60,6 @@ void test_null_context( void ** state )
    expect_assert_failure( psonQueueInsertNow( pQueue,
                                               data,
                                               8,
-                                              NULL,
                                               PSON_QUEUE_FIRST,
                                               NULL ) );
 #endif
@@ -75,7 +74,6 @@ void test_null_item( void ** state )
    expect_assert_failure( psonQueueInsertNow( pQueue,
                                               NULL,
                                               8,
-                                              NULL,
                                               PSON_QUEUE_FIRST,
                                               &context ) );
 #endif
@@ -90,7 +88,6 @@ void test_null_queue( void ** state )
    expect_assert_failure( psonQueueInsertNow( NULL,
                                               data,
                                               8,
-                                              NULL,
                                               PSON_QUEUE_FIRST,
                                               &context ) );
 #endif
@@ -105,7 +102,6 @@ void test_wrong_flag( void ** state )
    expect_assert_failure( psonQueueInsertNow( pQueue,
                                               data,
                                               8,
-                                              NULL,
                                               PSON_QUEUE_FIRST+23390,
                                               &context ) );
 #endif
@@ -120,7 +116,6 @@ void test_zero_length( void ** state )
    expect_assert_failure( psonQueueInsertNow( pQueue,
                                               data,
                                               0,
-                                              NULL,
                                               PSON_QUEUE_FIRST,
                                               &context ) );
 #endif
@@ -137,7 +132,6 @@ void test_pass( void ** state )
    ok = psonQueueInsertNow( pQueue,
                             data,
                             8,
-                            NULL,
                             PSON_QUEUE_FIRST,
                             &context );
    assert_true( ok );
@@ -146,7 +140,6 @@ void test_pass( void ** state )
    ok = psonQueueInsertNow( pQueue,
                             data,
                             8,
-                            NULL,
                             PSON_QUEUE_LAST,
                             &context );
    assert_true( ok );

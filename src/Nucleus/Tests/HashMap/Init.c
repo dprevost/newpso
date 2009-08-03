@@ -54,8 +54,6 @@ void test_null_context( void ** state )
                                            1, 
                                            0, 
                                            &status, 
-                                           4, 
-                                           "Map1", 
                                            SET_OFFSET(pHashMap), 
                                            &def, 
                                            &keyDef,
@@ -75,8 +73,6 @@ void test_null_datadef( void ** state )
                                            1, 
                                            0, 
                                            &status, 
-                                           4, 
-                                           "Map1", 
                                            SET_OFFSET(pHashMap), 
                                            &def, 
                                            &keyDef,
@@ -96,8 +92,6 @@ void test_null_definition( void ** state )
                                            1, 
                                            0, 
                                            &status, 
-                                           4, 
-                                           "Map1", 
                                            SET_OFFSET(pHashMap), 
                                            NULL, 
                                            &keyDef,
@@ -117,8 +111,6 @@ void test_null_hash( void ** state )
                                            1, 
                                            0, 
                                            &status, 
-                                           4, 
-                                           "Map1", 
                                            SET_OFFSET(pHashMap), 
                                            &def, 
                                            &keyDef,
@@ -138,8 +130,6 @@ void test_null_item_offset( void ** state )
                                            1, 
                                            0, 
                                            &status, 
-                                           4, 
-                                           "Map1", 
                                            PSON_NULL_OFFSET, 
                                            &def, 
                                            &keyDef,
@@ -159,32 +149,9 @@ void test_null_keydef( void ** state )
                                            1, 
                                            0, 
                                            &status, 
-                                           4, 
-                                           "Map1", 
                                            SET_OFFSET(pHashMap), 
                                            &def, 
                                            NULL,
-                                           &fields,
-                                           &context ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_null_name( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonHashMapInit( pHashMap, 
-                                           0, 
-                                           1, 
-                                           0, 
-                                           &status, 
-                                           4, 
-                                           NULL, 
-                                           SET_OFFSET(pHashMap), 
-                                           &def, 
-                                           &keyDef,
                                            &fields,
                                            &context ) );
 #endif
@@ -201,8 +168,6 @@ void test_null_parent( void ** state )
                                            1, 
                                            0, 
                                            &status, 
-                                           4, 
-                                           "Map1", 
                                            SET_OFFSET(pHashMap), 
                                            &def, 
                                            &keyDef,
@@ -222,8 +187,6 @@ void test_null_status( void ** state )
                                            1, 
                                            0, 
                                            NULL, 
-                                           4, 
-                                           "Map1", 
                                            SET_OFFSET(pHashMap), 
                                            &def, 
                                            &keyDef,
@@ -243,29 +206,6 @@ void test_zero_blocks( void ** state )
                                            0, 
                                            0, 
                                            &status, 
-                                           4, 
-                                           "Map1", 
-                                           SET_OFFSET(pHashMap), 
-                                           &def, 
-                                           &keyDef,
-                                           &fields,
-                                           &context ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_zero_length( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonHashMapInit( pHashMap, 
-                                           0, 
-                                           1, 
-                                           0, 
-                                           &status, 
-                                           0, 
-                                           "Map1", 
                                            SET_OFFSET(pHashMap), 
                                            &def, 
                                            &keyDef,
@@ -287,8 +227,6 @@ void test_pass( void ** state )
                          1, 
                          0, 
                          &status, 
-                         4, 
-                         "Map1", 
                          SET_OFFSET(pHashMap), 
                          &def, 
                          &keyDef,
@@ -313,11 +251,9 @@ int main()
       unit_test_setup_teardown( test_null_hash,        setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_item_offset, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_keydef,      setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_name,        setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_parent,      setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_status,      setup_test, teardown_test ),
       unit_test_setup_teardown( test_zero_blocks,      setup_test, teardown_test ),
-      unit_test_setup_teardown( test_zero_length,      setup_test, teardown_test ),
       unit_test_setup_teardown( test_pass,             setup_test, teardown_test )
    };
 

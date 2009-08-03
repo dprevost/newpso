@@ -351,8 +351,6 @@ bool psonQueueInit( psonQueue           * pQueue,
                     ptrdiff_t             parentOffset,
                     size_t                numberOfBlocks,
                     psonTxStatus        * pTxStatus,
-                    uint32_t              origNameLength,
-                    char                * origName,
                     ptrdiff_t             hashItemOffset,
                     psoObjectDefinition * pDefinition,
                     psonDataDefinition  * pDataDefinition,
@@ -363,13 +361,11 @@ bool psonQueueInit( psonQueue           * pQueue,
    PSO_PRE_CONDITION( pQueue          != NULL );
    PSO_PRE_CONDITION( pContext        != NULL );
    PSO_PRE_CONDITION( pTxStatus       != NULL );
-   PSO_PRE_CONDITION( origName        != NULL );
    PSO_PRE_CONDITION( pDefinition     != NULL );
    PSO_PRE_CONDITION( pDataDefinition != NULL );
    PSO_PRE_CONDITION( hashItemOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( parentOffset   != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
-   PSO_PRE_CONDITION( origNameLength > 0 );
    
    errcode = psonMemObjectInit( &pQueue->memObject, 
                                 PSON_IDENT_QUEUE,
@@ -384,8 +380,6 @@ bool psonQueueInit( psonQueue           * pQueue,
 
    psonTreeNodeInit( &pQueue->nodeObject,
                      SET_OFFSET(pTxStatus),
-                     origNameLength,
-                     SET_OFFSET(origName),
                      parentOffset,
                      hashItemOffset );
 
@@ -402,7 +396,6 @@ bool psonQueueInit( psonQueue           * pQueue,
 bool psonQueueInsert( psonQueue          * pQueue,
                       const void         * pItem, 
                       uint32_t             length ,
-                      psonDataDefinition * pDefinition,
                       enum psonQueueEnum   firstOrLast,
                       psonSessionContext * pContext )
 {
@@ -441,12 +434,6 @@ bool psonQueueInsert( psonQueue          * pQueue,
       psonLinkNodeInit( &pQueueItem->node );
       pQueueItem->dataLength = length;
       memcpy( pQueueItem->data, pItem, length );
-      if ( pDefinition == NULL ) {
-         pQueueItem->dataDefOffset = PSON_NULL_OFFSET;
-      }
-      else {
-         pQueueItem->dataDefOffset = SET_OFFSET(pDefinition);
-      }
    
       ok = psonTxAddOps( (psonTx*)pContext->pTransaction,
                          PSON_TX_ADD_DATA,
@@ -505,7 +492,6 @@ the_exit:
 bool psonQueueInsertNow( psonQueue          * pQueue,
                          const void         * pItem, 
                          uint32_t             length ,
-                         psonDataDefinition * pDefinition,
                          enum psonQueueEnum   firstOrLast,
                          psonSessionContext * pContext )
 {
@@ -543,12 +529,6 @@ bool psonQueueInsertNow( psonQueue          * pQueue,
       psonLinkNodeInit( &pQueueItem->node );
       pQueueItem->dataLength = length;
       memcpy( pQueueItem->data, pItem, length );
-      if ( pDefinition == NULL ) {
-         pQueueItem->dataDefOffset = PSON_NULL_OFFSET;
-      }
-      else {
-         pQueueItem->dataDefOffset = SET_OFFSET(pDefinition);
-      }
       
       if ( firstOrLast == PSON_QUEUE_FIRST ) {
          psonLinkedListPutFirst( &pQueue->listOfElements,

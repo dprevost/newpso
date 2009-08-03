@@ -586,8 +586,6 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
                       size_t                numberOfBlocks,
                       size_t                expectedNumOfItems,
                       psonTxStatus        * pTxStatus,
-                      uint32_t              origNameLength,
-                      char                * origName,
                       ptrdiff_t             hashItemOffset,
                       psoObjectDefinition * pDefinition,
                       psonKeyDefinition   * pKeyDefinition,
@@ -599,14 +597,12 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
    PSO_PRE_CONDITION( pHashMap        != NULL );
    PSO_PRE_CONDITION( pContext        != NULL );
    PSO_PRE_CONDITION( pTxStatus       != NULL );
-   PSO_PRE_CONDITION( origName        != NULL );
    PSO_PRE_CONDITION( pDefinition     != NULL );
    PSO_PRE_CONDITION( pKeyDefinition  != NULL );
    PSO_PRE_CONDITION( pDataDefinition != NULL );
    PSO_PRE_CONDITION( hashItemOffset  != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( parentOffset    != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
-   PSO_PRE_CONDITION( origNameLength > 0 );
    
    errcode = psonMemObjectInit( &pHashMap->memObject, 
                                 PSON_IDENT_HASH_MAP,
@@ -621,8 +617,6 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
 
    psonTreeNodeInit( &pHashMap->nodeObject,
                      SET_OFFSET(pTxStatus),
-                     origNameLength,
-                     SET_OFFSET(origName),
                      parentOffset,
                      hashItemOffset );
 
@@ -653,7 +647,6 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
                         uint32_t             keyLength, 
                         const void         * pData,
                         uint32_t             itemLength,
-                        psonDataDefinition * pDefinition,
                         psonSessionContext * pContext )
 {
    psonHashTxItem* pHashItem = NULL, * previousHashItem = NULL;
@@ -711,12 +704,6 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
                                   &pHashItem,
                                   pContext );
       if ( errcode != PSO_OK ) goto the_exit;
-      if ( pDefinition == NULL ) {
-         pHashItem->dataDefOffset = PSON_NULL_OFFSET;
-      }
-      else {
-         pHashItem->dataDefOffset = SET_OFFSET(pDefinition);
-      }
 
       ok = psonTxAddOps( (psonTx*)pContext->pTransaction,
                          PSON_TX_ADD_DATA,
@@ -853,7 +840,6 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
                          uint32_t             keyLength, 
                          const void         * pData,
                          uint32_t             itemLength,
-                         psonDataDefinition * pDefinition,
                          psonSessionContext * pContext )
 {
    psonHashTxItem * pHashItem, * pNewHashItem;
@@ -908,12 +894,6 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
                                   &pNewHashItem,
                                   pContext );
       if ( errcode != PSO_OK ) goto the_exit;
-      if ( pDefinition == NULL ) {
-         pNewHashItem->dataDefOffset = PSON_NULL_OFFSET;
-      }
-      else {
-         pNewHashItem->dataDefOffset = SET_OFFSET(pDefinition);
-      }
 
       ok = psonTxAddOps( (psonTx*)pContext->pTransaction,
                          PSON_TX_REMOVE_DATA,

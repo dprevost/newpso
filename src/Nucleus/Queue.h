@@ -54,9 +54,6 @@ struct psonQueueItem
 
    psonLinkNode node;
 
-   /** Offset to the data definition for this specific item */
-   ptrdiff_t  dataDefOffset;
-
    size_t dataLength;
    
    unsigned char data[1];
@@ -133,8 +130,6 @@ bool psonQueueInit( psonQueue           * pQueue,
                     ptrdiff_t             parentOffset,
                     size_t                numberOfBlocks,
                     psonTxStatus        * pTxStatus,
-                    uint32_t              origNameLength,
-                    char                * origName,
                     ptrdiff_t             hashItemOffset,
                     psoObjectDefinition * pDefinition,
                     psonDataDefinition  * pDataDefinition,
@@ -144,7 +139,6 @@ PHOTON_ENGINE_EXPORT
 bool psonQueueInsert( psonQueue          * pQueue,
                       const void         * pItem, 
                       uint32_t             length,
-                      psonDataDefinition * pDefinition,
                       enum psonQueueEnum   firstOrLast,
                       psonSessionContext * pContext );
 
@@ -152,7 +146,6 @@ PHOTON_ENGINE_EXPORT
 bool psonQueueInsertNow( psonQueue          * pQueue,
                          const void         * pItem, 
                          uint32_t             length,
-                         psonDataDefinition * pDefinition,
                          enum psonQueueEnum   firstOrLast,
                          psonSessionContext * pContext );
 

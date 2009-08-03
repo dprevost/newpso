@@ -55,7 +55,6 @@ bool psonAPIFolderCreateFolder( psonFolder          * pFolder,
    uint32_t strLength, i;
    uint32_t first = 0;
    const char * name = objectName;
-   char * lowerName = NULL;
    bool ok;
    psoObjectDefinition definition = { PSO_FOLDER, 0, 0, 0 };
    
@@ -74,19 +73,12 @@ bool psonAPIFolderCreateFolder( psonFolder          * pFolder,
       goto error_handler;
    }
 
-   lowerName = (char*)malloc( (strLength+1)*sizeof(char) );
-   if ( lowerName == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-
    /* lowercase the string and check for separators */
    for ( i = 0; i < strLength; ++i ) {
       if ( name[i] == '/' || name[i] == '\\' ) {
          errcode = PSO_INVALID_OBJECT_NAME;
          goto error_handler;
       }
-      lowerName[i] = (char) tolower( name[i] );
    }
    
    /*
@@ -97,7 +89,6 @@ bool psonAPIFolderCreateFolder( psonFolder          * pFolder,
     */
    if ( psonLock(&pFolder->memObject, pContext) ) {
       ok = psonFolderInsertObject( pFolder,
-                                   &(lowerName[first]),
                                    &(name[first]),
                                    strLength, 
                                    &definition,
@@ -114,13 +105,9 @@ bool psonAPIFolderCreateFolder( psonFolder          * pFolder,
       goto error_handler;
    }
    
-   free( lowerName );
-   
    return true;
 
 error_handler:
-
-   if ( lowerName != NULL ) free( lowerName );
 
    /*
     * On failure, errcode would be non-zero, unless the failure occurs in
@@ -150,7 +137,6 @@ bool psonAPIFolderCreateObject( psonFolder          * pFolder,
    uint32_t strLength, i;
    uint32_t first = 0;
    const char * name = objectName;
-   char * lowerName = NULL;
    bool ok;
    
    PSO_PRE_CONDITION( pFolder     != NULL );
@@ -174,19 +160,12 @@ bool psonAPIFolderCreateObject( psonFolder          * pFolder,
       goto error_handler;
    }
 
-   lowerName = (char*)malloc( (strLength+1)*sizeof(char) );
-   if ( lowerName == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-
    /* lowercase the string and check for separators */
    for ( i = 0; i < strLength; ++i ) {
       if ( name[i] == '/' || name[i] == '\\' ) {
          errcode = PSO_INVALID_OBJECT_NAME;
          goto error_handler;
       }
-      lowerName[i] = (char) tolower( name[i] );
    }
    
    /*
@@ -197,7 +176,6 @@ bool psonAPIFolderCreateObject( psonFolder          * pFolder,
     */
    if ( psonLock(&pFolder->memObject, pContext) ) {
       ok = psonFolderInsertObject( pFolder,
-                                   &(lowerName[first]),
                                    &(name[first]),
                                    strLength, 
                                    pDefinition,
@@ -214,13 +192,9 @@ bool psonAPIFolderCreateObject( psonFolder          * pFolder,
       goto error_handler;
    }
    
-   free( lowerName );
-   
    return true;
 
 error_handler:
-
-   if ( lowerName != NULL ) free( lowerName );
 
    /*
     * On failure, errcode would be non-zero, unless the failure occurs in
@@ -244,7 +218,6 @@ bool psonAPIFolderDestroyObject( psonFolder         * pFolder,
    uint32_t strLength, i;
    uint32_t first = 0;
    const char * name = objectName;
-   char * lowerName = NULL;
    bool ok;
    
    PSO_PRE_CONDITION( pFolder    != NULL );
@@ -262,19 +235,12 @@ bool psonAPIFolderDestroyObject( psonFolder         * pFolder,
       goto error_handler;
    }
 
-   lowerName = (char *) malloc( (strLength+1)*sizeof(char) );
-   if ( lowerName == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-
-   /* lowecase the string and check for separators */
+   /* check for separators */
    for ( i = 0; i < strLength; ++i ) {
       if ( name[i] == '/' || name[i] == '\\' ) {
          errcode = PSO_INVALID_OBJECT_NAME;
          goto error_handler;
       }
-      lowerName[i] = (char) tolower( name[i] );
    }
    
    /*
@@ -285,7 +251,7 @@ bool psonAPIFolderDestroyObject( psonFolder         * pFolder,
     */
    if ( psonLock(&pFolder->memObject, pContext) ) {
       ok = psonFolderDeleteObject( pFolder,
-                                   &(lowerName[first]), 
+                                   &(name[first]), 
                                    strLength,
                                    pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
@@ -296,13 +262,9 @@ bool psonAPIFolderDestroyObject( psonFolder         * pFolder,
       goto error_handler;
    }
    
-   free( lowerName );
-   
    return true;
 
 error_handler:
-
-   if ( lowerName != NULL ) free( lowerName );
 
    /*
     * On failure, errcode would be non-zero, unless the failure occurs in
@@ -327,7 +289,6 @@ bool psonAPIFolderGetDefinition( psonFolder          * pFolder,
 {
    psoErrors errcode = PSO_OK;
    bool ok;
-   char * lowerName = NULL;
    int i;
    
    PSO_PRE_CONDITION( pFolder          != NULL );
@@ -348,19 +309,12 @@ bool psonAPIFolderGetDefinition( psonFolder          * pFolder,
       goto error_handler;
    }
 
-   lowerName = (char*)malloc( (strLength+1)*sizeof(char) );
-   if ( lowerName == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-
-   /* lowercase the string and check for separators */
+   /* check for separators */
    for ( i = 0; i < strLength; ++i ) {
       if ( objectName[i] == '/' || objectName[i] == '\\' ) {
          errcode = PSO_INVALID_OBJECT_NAME;
          goto error_handler;
       }
-      lowerName[i] = (char) tolower( objectName[i] );
    }
 
    /*
@@ -371,7 +325,7 @@ bool psonAPIFolderGetDefinition( psonFolder          * pFolder,
     */
    if ( psonLock(&pFolder->memObject, pContext) ) {
       ok = psonFolderGetDefinition( pFolder,
-                                    lowerName, 
+                                    objectName,
                                     strLength, 
                                     pDefinition,
                                     ppDataDefinition,
@@ -385,13 +339,9 @@ bool psonAPIFolderGetDefinition( psonFolder          * pFolder,
       goto error_handler;
    }
    
-   free( lowerName );
-   
    return true;
 
 error_handler:
-
-   if ( lowerName != NULL ) free( lowerName );
 
    /*
     * On failure, errcode would be non-zero, unless the failure occurs in
@@ -954,8 +904,7 @@ bool psonFolderEditObject( psonFolder         * pFolder,
          goto the_exit;
       }
       
-      descLength = offsetof(psonObjectDescriptor, originalName) + 
-          (partialLength+1) * sizeof(char);
+      descLength = sizeof(psonObjectDescriptor);
       pDescNew = (psonObjectDescriptor *) malloc( descLength );
       if ( pDescNew == NULL ) {
          psonFreeBlocks( pContext->pAllocator, PSON_ALLOC_API_OBJ,
@@ -1014,7 +963,6 @@ bool psonFolderEditObject( psonFolder         * pFolder,
          ok = psonFastMapCopy( pMap, /* old, */
                                (psonFastMap *)ptr,
                                pHashItemNew,
-                               pDescNew->originalName,
                                pContext );
          PSO_POST_CONDITION( ok == true || ok == false );
          pDescNew->nodeOffset = SET_OFFSET(ptr) + offsetof(psonFastMap,nodeObject);
@@ -1824,8 +1772,6 @@ bool psonFolderInit( psonFolder         * pFolder,
                      size_t               numberOfBlocks,
                      size_t               expectedNumOfChilds,
                      psonTxStatus       * pTxStatus,
-                     uint32_t             origNameLength,
-                     char               * origName,
                      ptrdiff_t            hashItemOffset,
                      psonSessionContext * pContext )
 {
@@ -1834,11 +1780,9 @@ bool psonFolderInit( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pFolder   != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pTxStatus != NULL );
-   PSO_PRE_CONDITION( origName  != NULL );
    PSO_PRE_CONDITION( hashItemOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( parentOffset   != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks  > 0 );
-   PSO_PRE_CONDITION( origNameLength > 0 );
    
    errcode = psonMemObjectInit( &pFolder->memObject, 
                                 PSON_IDENT_FOLDER,
@@ -1853,8 +1797,6 @@ bool psonFolderInit( psonFolder         * pFolder,
 
    psonTreeNodeInit( &pFolder->nodeObject,
                      SET_OFFSET(pTxStatus),
-                     origNameLength,
-                     SET_OFFSET(origName),
                      parentOffset,
                      hashItemOffset );
 
@@ -1878,7 +1820,6 @@ bool psonFolderInit( psonFolder         * pFolder,
 
 bool psonFolderInsertObject( psonFolder          * pFolder,
                              const char          * objectName,
-                             const char          * originalName,
                              uint32_t              strLength, 
                              psoObjectDefinition * pDefinition,
                              psonDataDefinition  * pDataDefinition,
@@ -1905,7 +1846,6 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
 
    PSO_PRE_CONDITION( pFolder      != NULL );
    PSO_PRE_CONDITION( objectName   != NULL )
-   PSO_PRE_CONDITION( originalName != NULL )
    PSO_PRE_CONDITION( pContext     != NULL );
    PSO_PRE_CONDITION( pDefinition  != NULL );
    if ( pDefinition->type != PSO_FOLDER ) {
@@ -1966,8 +1906,7 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
          errcode = PSO_NOT_ENOUGH_PSO_MEMORY;
          goto the_exit;
       }
-      descLength = offsetof(psonObjectDescriptor, originalName) + 
-          (partialLength+1) * sizeof(char);
+      descLength = sizeof(psonObjectDescriptor);
       pDesc = (psonObjectDescriptor *) malloc( descLength );
       if ( pDesc == NULL ) {
          psonFreeBlocks( pContext->pAllocator, PSON_ALLOC_API_OBJ,
@@ -1978,8 +1917,6 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
       memset( pDesc, 0, descLength );
       pDesc->apiType = pDefinition->type;
       pDesc->offset = SET_OFFSET( ptr );
-      pDesc->nameLengthInBytes = partialLength * sizeof(char);
-      memcpy( pDesc->originalName, originalName, pDesc->nameLengthInBytes );
 
       errcode = psonHashTxInsert( &pFolder->hashObj, 
                                   bucket,
@@ -2045,8 +1982,6 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
                              SET_OFFSET(pFolder),
                              numBlocks,
                              objTxStatus,
-                             partialLength,
-                             pDesc->originalName,
                              SET_OFFSET(pHashItem),
                              pDefinition,
                              pDataDefinition,
@@ -2061,8 +1996,6 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
                               numBlocks,
                               expectedNumOfChilds,
                               objTxStatus,
-                              partialLength,
-                              pDesc->originalName,
                               SET_OFFSET(pHashItem),
                               pContext );
          pDesc->nodeOffset = SET_OFFSET(ptr) + offsetof(psonFolder,nodeObject);
@@ -2075,8 +2008,6 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
                                numBlocks,
                                expectedNumOfChilds,
                                objTxStatus,
-                               partialLength,
-                               pDesc->originalName,
                                SET_OFFSET(pHashItem),
                                pDefinition,
                                pKeyDefinition,
@@ -2092,8 +2023,6 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
                                numBlocks,
                                expectedNumOfChilds,
                                objTxStatus,
-                               partialLength,
-                               pDesc->originalName,
                                SET_OFFSET(pHashItem),
                                pDefinition,
                                pKeyDefinition,
@@ -2167,7 +2096,6 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
 
    ok = psonFolderInsertObject( pNextFolder,
                                 &objectName[partialLength+1],
-                                &originalName[partialLength+1],
                                 strLength - partialLength - 1,
                                 pDefinition,
                                 pDataDefinition,

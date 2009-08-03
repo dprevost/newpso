@@ -36,7 +36,7 @@ void setup_empty()
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 5, "Test1", 1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
    assert( ok );
 }
 
@@ -52,12 +52,11 @@ void setup_test()
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 5, "Test1", 1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
    assert( ok );
    
    ok = psonFolderInsertObject( pFolder,
                                 "test2",
-                                "Test2",
                                 5,
                                 &def,
                                 NULL,
@@ -69,7 +68,6 @@ void setup_test()
    
    ok = psonFolderInsertObject( pFolder,
                                 "test3",
-                                "Test3",
                                 5,
                                 &def,
                                 NULL,

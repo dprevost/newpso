@@ -39,13 +39,12 @@ void test_pass( void ** state )
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
    
-   ok = psonFolderInit( pFolder1, 0, 1, 0, &status, 5, "Test1", 1234, &context );
+   ok = psonFolderInit( pFolder1, 0, 1, 0, &status, 1234, &context );
    assert_true( ok );
    
    /* Create "/Test2" */   
    ok = psonFolderInsertObject( pFolder1,
                                 "test2",
-                                "Test2",
                                 5,
                                 &def,
                                 NULL,
@@ -58,7 +57,6 @@ void test_pass( void ** state )
    /* Try to create "/Test2" again - must fail */   
    ok = psonFolderInsertObject( pFolder1,
                                 "test2",
-                                "Test5",
                                 5,
                                 &def,
                                 NULL,
@@ -72,7 +70,6 @@ void test_pass( void ** state )
    /* Create "/Test3" */   
    ok = psonFolderInsertObject( pFolder1,
                                 "test3",
-                                "Test3",
                                 5,
                                 &def,
                                 NULL,
@@ -96,7 +93,6 @@ void test_pass( void ** state )
    /* Create "/Test2/Test4" from "/Test2" */   
    ok = psonFolderInsertObject( pFolder2,
                                 "test4",
-                                "Test4",
                                 5,
                                 &def,
                                 NULL,
@@ -109,7 +105,6 @@ void test_pass( void ** state )
    /* Create "/Test2/Test2" */   
    ok = psonFolderInsertObject( pFolder2,
                                 "test2",
-                                "Test2",
                                 5,
                                 &def,
                                 NULL,
@@ -147,15 +142,11 @@ void test_pass( void ** state )
    assert_true( ok );
    
    GET_PTR( pDescriptor, folderItem.pHashItem->dataOffset, psonObjectDescriptor );
-   assert_true( memcmp( pDescriptor->originalName, 
-                "Test4", 
-                5*sizeof(char) ) == 0 );
    
    /* Create "/Test2/Test4/Test5 from "/" */
    
    ok = psonFolderInsertObject( pFolder1,
                                 "test2/test4/test5",
-                                "Test2/Test4/Test5",
                                 17,
                                 &def,
                                 NULL,

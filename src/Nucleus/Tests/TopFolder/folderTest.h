@@ -104,8 +104,6 @@ psonFolder* initTopFolderTest( psonSessionContext* pContext )
    objTxStatus.status = PSON_TXS_ADDED;
 
    pFolder->nodeObject.txCounter      = 0;
-   pFolder->nodeObject.myNameLength   = 0;
-   pFolder->nodeObject.myNameOffset   = PSON_NULL_OFFSET;
    pFolder->nodeObject.txStatusOffset = SET_OFFSET(&objTxStatus);
    pFolder->nodeObject.myParentOffset = PSON_NULL_OFFSET;
 

@@ -326,8 +326,6 @@ bool psonSetInit( psonSet           * pSet,
 
    psonTreeNodeInit( &pSet->nodeObject,
                      SET_OFFSET(pTxStatus),
-                     origNameLength,
-                     SET_OFFSET(origName),
                      parentOffset,
                      hashItemOffset );
 

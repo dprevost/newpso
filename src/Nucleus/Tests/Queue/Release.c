@@ -39,15 +39,14 @@ void setup_test()
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
 
    ok = psonQueueInit( pQueue, 
-                       0, 1, &status, 6, 
-                       "Queue1", SET_OFFSET(pQueue), 
+                       0, 1, &status,
+                       SET_OFFSET(pQueue), 
                        &def, &fields, &context );
    assert( ok );
    
    ok = psonQueueInsert( pQueue,
                          data,
                          8,
-                         NULL,
                          PSON_QUEUE_FIRST,
                          &context );
    assert( ok );
@@ -55,7 +54,6 @@ void setup_test()
    ok = psonQueueInsert( pQueue,
                          data,
                          6,
-                         NULL,
                          PSON_QUEUE_LAST,
                          &context );
    assert( ok );

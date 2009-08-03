@@ -41,13 +41,12 @@ void test_pass( void ** state )
    
    psonTxStatusInit( &status, SET_OFFSET( pTx ) );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 5, "Test1", 1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
    assert_true( ok );
    
    /* Test 1 */
    ok = psonFolderInsertObject( pFolder,
                                 "test2",
-                                "Test2",
                                 5,
                                 &folderDef,
                                 NULL,
@@ -59,7 +58,6 @@ void test_pass( void ** state )
    
    ok = psonFolderInsertObject( pFolder,
                                 "test3",
-                                "Test3",
                                 5,
                                 &mapDef,
                                 &fields,
@@ -82,7 +80,6 @@ void test_pass( void ** state )
    /* Test 2 */
    ok = psonFolderInsertObject( pFolder,
                                 "test2",
-                                "Test2",
                                 5,
                                 &folderDef,
                                 NULL,
@@ -94,7 +91,6 @@ void test_pass( void ** state )
    
    ok = psonFolderInsertObject( pFolder,
                                 "test3",
-                                "Test3",
                                 5,
                                 &mapDef,
                                 &fields,
@@ -149,7 +145,6 @@ void test_pass( void ** state )
    /* Test 3 */
    ok = psonFolderInsertObject( pFolder,
                                 "test2",
-                                "Test2",
                                 5,
                                 &folderDef,
                                 NULL,
@@ -161,7 +156,6 @@ void test_pass( void ** state )
    
    ok = psonFolderInsertObject( pFolder,
                                 "test3",
-                                "Test3",
                                 5,
                                 &mapDef,
                                 &fields,
@@ -191,7 +185,6 @@ void test_pass( void ** state )
    /* Test 4 */
    ok = psonFolderInsertObject( pFolder,
                                 "test2",
-                                "Test2",
                                 5,
                                 &folderDef,
                                 NULL,
@@ -203,7 +196,6 @@ void test_pass( void ** state )
    
    ok = psonFolderInsertObject( pFolder,
                                 "test3",
-                                "Test3",
                                 5,
                                 &mapDef,
                                 &fields,

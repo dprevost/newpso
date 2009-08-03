@@ -50,13 +50,11 @@ void test_pass( void ** state )
    
    psonTxStatusInit( &status, SET_OFFSET( pTx ) );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 5, "Test1", 
-                             1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
    assert_true( ok );
    
    ok = psonFolderInsertObject( pFolder,
                                 "test2",
-                                "Test2",
                                 5,
                                 &def,
                                 &fields,
@@ -83,7 +81,6 @@ void test_pass( void ** state )
                            strlen(key1),
                            data1,
                            strlen(data1),
-                           NULL,
                            &context );
    assert_true( ok );
    ok = psonHashMapInsert( pHashMap,
@@ -91,7 +88,6 @@ void test_pass( void ** state )
                            strlen(key2),
                            data2,
                            strlen(data2),
-                           NULL,
                            &context );
    assert_true( ok );
    ok = psonHashMapInsert( pHashMap,
@@ -99,7 +95,6 @@ void test_pass( void ** state )
                            strlen(key3),
                            data3,
                            strlen(data3),
-                           NULL,
                            &context );
    assert_true( ok );
    
@@ -116,7 +111,6 @@ void test_pass( void ** state )
                            strlen(key1),
                            data1,
                            strlen(data1),
-                           NULL,
                            &context );
    assert_true( ok );
    ok = psonHashMapInsert( pHashMap,
@@ -124,7 +118,6 @@ void test_pass( void ** state )
                            strlen(key2),
                            data2,
                            strlen(data2),
-                           NULL,
                            &context );
    assert_true( ok );
    ok = psonHashMapInsert( pHashMap,
@@ -132,7 +125,6 @@ void test_pass( void ** state )
                            strlen(key3),
                            data3,
                            strlen(data3),
-                           NULL,
                            &context );
    assert_true( ok );
    
@@ -195,7 +187,6 @@ void test_pass( void ** state )
                            strlen(key1),
                            data1,
                            strlen(data1),
-                           NULL,
                            &context );
    assert_true( ok );
    ok = psonHashMapInsert( pHashMap,
@@ -203,7 +194,6 @@ void test_pass( void ** state )
                            strlen(key2),
                            data2,
                            strlen(data2),
-                           NULL,
                            &context );
    assert_true( ok );
    ok = psonHashMapInsert( pHashMap,
@@ -211,7 +201,6 @@ void test_pass( void ** state )
                            strlen(key3),
                            data3,
                            strlen(data3),
-                           NULL,
                            &context );
    assert_true( ok );
    
@@ -243,7 +232,6 @@ void test_pass( void ** state )
                            strlen(key1),
                            data1,
                            strlen(data1),
-                           NULL,
                            &context );
    assert_true( ok );
    ok = psonHashMapInsert( pHashMap,
@@ -251,7 +239,6 @@ void test_pass( void ** state )
                            strlen(key2),
                            data2,
                            strlen(data2),
-                           NULL,
                            &context );
    assert_true( ok );
    ok = psonHashMapInsert( pHashMap,
@@ -259,7 +246,6 @@ void test_pass( void ** state )
                            strlen(key3),
                            data3,
                            strlen(data3),
-                           NULL,
                            &context );
    assert_true( ok );
    

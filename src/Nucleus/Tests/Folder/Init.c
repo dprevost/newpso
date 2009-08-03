@@ -52,8 +52,6 @@ void test_null_context( void ** state )
                                           1,
                                           0,
                                           &status,
-                                          5,
-                                          "Test1",
                                           1234,
                                           NULL ) );
 #endif
@@ -70,8 +68,6 @@ void test_null_folder( void ** state )
                                           1,
                                           0,
                                           &status,
-                                          5,
-                                          "Test1",
                                           1234,
                                           &context ) );
 #endif
@@ -88,27 +84,7 @@ void test_null_item_off( void ** state )
                                           1,
                                           0,
                                           &status,
-                                          5,
-                                          "Test1",
                                           PSON_NULL_OFFSET,
-                                          &context ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_null_name( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonFolderInit( pFolder, 
-                                          0,
-                                          1,
-                                          0,
-                                          &status,
-                                          5,
-                                          NULL,
-                                          1234,
                                           &context ) );
 #endif
    return;
@@ -124,8 +100,6 @@ void test_null_parent_off( void ** state )
                                           1,
                                           0,
                                           &status,
-                                          5,
-                                          "Test1",
                                           1234,
                                           &context ) );
 #endif
@@ -142,8 +116,6 @@ void test_null_status( void ** state )
                                           1,
                                           0,
                                           NULL,
-                                          5,
-                                          "Test1",
                                           1234,
                                           &context ) );
 #endif
@@ -160,26 +132,6 @@ void test_zero_blocks( void ** state )
                                           0,
                                           0,
                                           &status,
-                                          5,
-                                          "Test1",
-                                          1234,
-                                          &context ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_zero_length( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonFolderInit( pFolder, 
-                                          0,
-                                          1,
-                                          0,
-                                          &status,
-                                          0,
-                                          "Test1",
                                           1234,
                                           &context ) );
 #endif
@@ -193,7 +145,7 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    bool ok;
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 5, "Test1", 1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
    assert_true( ok );
    
 #endif
@@ -210,11 +162,9 @@ int main()
       unit_test_setup_teardown( test_null_context,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_folder,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_item_off,   setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_name,       setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_parent_off, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_status,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_zero_blocks,     setup_test, teardown_test ),
-      unit_test_setup_teardown( test_zero_length,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_pass,            setup_test, teardown_test )
    };
 

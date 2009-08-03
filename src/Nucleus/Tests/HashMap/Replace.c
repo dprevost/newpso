@@ -41,7 +41,7 @@ void setup_test()
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
    
-   ok = psonHashMapInit( pHashMap, 0, 1, 0, &status, 4, "Map1", 
+   ok = psonHashMapInit( pHashMap, 0, 1, 0, &status,
                          SET_OFFSET(pHashMap), 
                          &def, &keyDef,
                          &fields, &context );
@@ -52,7 +52,6 @@ void setup_test()
                            6,
                            (const void *) data1,
                            strlen(data1),
-                           NULL,
                            &context );
    assert( ok );
    
@@ -94,7 +93,6 @@ void test_null_context( void ** state )
                                               6,
                                               (const void *) data2,
                                               strlen(data2),
-                                              NULL,
                                               NULL ) );
 #endif
    return;
@@ -110,7 +108,6 @@ void test_null_data( void ** state )
                                               6,
                                               NULL,
                                               strlen(data2),
-                                              NULL,
                                               &context ) );
 #endif
    return;
@@ -126,7 +123,6 @@ void test_null_hash( void ** state )
                                               6,
                                               (const void *) data2,
                                               strlen(data2),
-                                              NULL,
                                               &context ) );
 #endif
    return;
@@ -142,7 +138,6 @@ void test_null_key( void ** state )
                                               6,
                                               (const void *) data2,
                                               strlen(data2),
-                                              NULL,
                                               &context ) );
 #endif
    return;
@@ -158,7 +153,6 @@ void test_zero_length_data( void ** state )
                                               6,
                                               (const void *) data2,
                                               0,
-                                              NULL,
                                               &context ) );
 #endif
    return;
@@ -174,7 +168,6 @@ void test_zero_length_key( void ** state )
                                               0,
                                               (const void *) data2,
                                               strlen(data2),
-                                              NULL,
                                               &context ) );
 #endif
    return;
@@ -193,7 +186,6 @@ void test_pass( void ** state )
                             6,
                             (const void *) data2,
                             strlen(data2),
-                            NULL,
                             &context );
    assert_true( ok );
    

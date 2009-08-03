@@ -42,7 +42,7 @@ void setup_test()
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
    
-   ok = psonFastMapInit( pHashMap, 0, 1, 0, &status, 4, "Map1", 
+   ok = psonFastMapInit( pHashMap, 0, 1, 0, &status,
                          SET_OFFSET(pHashMap), &def, &keyDef, 
                          &fields, &context );
    assert( ok );
@@ -52,7 +52,6 @@ void setup_test()
                            6,
                            (const void *) data,
                            7,
-                           NULL,
                            &context );
    assert( ok );
 }

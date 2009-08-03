@@ -81,7 +81,6 @@ PHOTON_ENGINE_EXPORT
 bool psonFastMapCopy( psonFastMap        * pHashMap, 
                       psonFastMap        * pNewHashMap,
                       psonHashTxItem     * pHashItem,
-                      const char         * origName,
                       psonSessionContext * pContext );
 
 PHOTON_ENGINE_EXPORT
@@ -126,8 +125,6 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
                       size_t                numberOfBlocks,
                       size_t                expectedNumOfChilds,
                       psonTxStatus        * pTxStatus,
-                      uint32_t              origNameLength,
-                      char                * origName,
                       ptrdiff_t             hashItemOffset,
                       psoObjectDefinition * pDefinition,
                       psonKeyDefinition   * pKeyDefinition,
@@ -140,7 +137,6 @@ bool psonFastMapInsert( psonFastMap        * pHashMap,
                         uint32_t             keyLength,
                         const void         * pItem,
                         uint32_t             itemLength,
-                        psonDataDefinition * pDefinition,
                         psonSessionContext * pContext );
 
 PHOTON_ENGINE_EXPORT
@@ -154,7 +150,6 @@ bool psonFastMapReplace( psonFastMap        * pHashMap,
                          uint32_t             keyLength,
                          const void         * pItem,
                          uint32_t             itemLength,
-                         psonDataDefinition * pDefinition,
                          psonSessionContext * pContext );
 
 PHOTON_ENGINE_EXPORT

@@ -37,7 +37,7 @@ void setup_test()
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
    
-   ok = psonHashMapInit( pHashMap, 0, 1, 0, &status, 4, "Map1", 
+   ok = psonHashMapInit( pHashMap, 0, 1, 0, &status,
                          SET_OFFSET(pHashMap), 
                          &def, &keyDef,
                          &fields, &context );
@@ -62,7 +62,6 @@ void test_null_context( void ** state )
                                              strlen("my key 1"),
                                              "my data 1",
                                              strlen("my data 1"),
-                                             NULL,
                                              NULL ) );
 #endif
    return;
@@ -78,7 +77,6 @@ void test_null_data( void ** state )
                                              strlen("my key 1"),
                                              NULL,
                                              strlen("my data 1"),
-                                             NULL,
                                              &context ) );
 #endif
    return;
@@ -94,7 +92,6 @@ void test_null_hash( void ** state )
                                              strlen("my key 1"),
                                              "my data 1",
                                              strlen("my data 1"),
-                                             NULL,
                                              &context ) );
 #endif
    return;
@@ -110,7 +107,6 @@ void test_null_key( void ** state )
                                              strlen("my key 1"),
                                              "my data 1",
                                              strlen("my data 1"),
-                                             NULL,
                                              &context ) );
 #endif
    return;
@@ -126,7 +122,6 @@ void test_zero_length_data( void ** state )
                                              strlen("my key 1"),
                                              "my data 1",
                                              0,
-                                             NULL,
                                              &context ) );
 #endif
    return;
@@ -142,7 +137,6 @@ void test_zero_length_key( void ** state )
                                              0,
                                              "my data 1",
                                              strlen("my data 1"),
-                                             NULL,
                                              &context ) );
 #endif
    return;
@@ -160,7 +154,6 @@ void test_pass( void ** state )
                            strlen("my key 1"),
                            "my data 1",
                            strlen("my data 1"),
-                           NULL,
                            &context );
    assert_true( ok );
    assert_true( pHashMap->nodeObject.txCounter == 1 );
@@ -170,7 +163,6 @@ void test_pass( void ** state )
                            strlen("my key 2"),
                            "my data 2",
                            strlen("my data 2"),
-                           NULL,
                            &context );
    assert_true( ok );
    assert_true( pHashMap->nodeObject.txCounter == 2 );

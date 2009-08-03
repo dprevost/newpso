@@ -94,11 +94,10 @@ bool psonTopFolderCreateFolder( psonFolder          * pFolder,
                                 psonSessionContext  * pContext )
 {
    psoErrors errcode = PSO_OK;
-   uint32_t strLength, i;
+   uint32_t strLength;
    bool ok;
    uint32_t first = 0;
    const char * name = objectName;
-   char * lowerName = NULL;
    psoObjectDefinition definition = { PSO_FOLDER, 0, 0, 0 };
 
    PSO_PRE_CONDITION( pFolder     != NULL );
@@ -116,17 +115,6 @@ bool psonTopFolderCreateFolder( psonFolder          * pFolder,
       goto error_handler;
    }
 
-   lowerName = (char*)malloc( (strLength+1)*sizeof(char) );
-   if ( lowerName == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-
-   /* lowecase the string */
-   for ( i = 0; i < strLength; ++i ) {
-      lowerName[i] = (char) tolower( name[i] );
-   }
-   
    /* strip the first char if a separator */
    if ( name[0] == '/' || name[0] == '\\' ) {
       first = 1;
@@ -145,7 +133,6 @@ bool psonTopFolderCreateFolder( psonFolder          * pFolder,
     */
    if ( psonLock( &pFolder->memObject, pContext ) ) {
       ok = psonFolderInsertObject( pFolder,
-                                   &(lowerName[first]),
                                    &(name[first]),
                                    strLength, 
                                    &definition,
@@ -162,13 +149,9 @@ bool psonTopFolderCreateFolder( psonFolder          * pFolder,
       goto error_handler;
    }
    
-   free( lowerName );
-   
    return true;
 
 error_handler:
-
-   if ( lowerName != NULL ) free( lowerName );
 
    /*
     * On failure, errcode would be non-zero, unless the failure occurs in
@@ -192,11 +175,10 @@ bool psonTopFolderCreateObject( psonFolder          * pFolder,
                                 psonSessionContext  * pContext )
 {
    psoErrors errcode = PSO_OK;
-   uint32_t strLength, i;
+   uint32_t strLength;
    bool ok;
    uint32_t first = 0;
    const char * name = objectName;
-   char * lowerName = NULL;
 
    PSO_PRE_CONDITION( pFolder     != NULL );
    PSO_PRE_CONDITION( objectName  != NULL );
@@ -217,17 +199,6 @@ bool psonTopFolderCreateObject( psonFolder          * pFolder,
       goto error_handler;
    }
 
-   lowerName = (char*)malloc( (strLength+1)*sizeof(char) );
-   if ( lowerName == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-
-   /* lowecase the string */
-   for ( i = 0; i < strLength; ++i ) {
-      lowerName[i] = (char) tolower( name[i] );
-   }
-   
    /* strip the first char if a separator */
    if ( name[0] == '/' || name[0] == '\\' ) {
       first = 1;
@@ -246,7 +217,6 @@ bool psonTopFolderCreateObject( psonFolder          * pFolder,
     */
    if ( psonLock( &pFolder->memObject, pContext ) ) {
       ok = psonFolderInsertObject( pFolder,
-                                   &(lowerName[first]),
                                    &(name[first]),
                                    strLength, 
                                    pDefinition,
@@ -263,13 +233,9 @@ bool psonTopFolderCreateObject( psonFolder          * pFolder,
       goto error_handler;
    }
    
-   free( lowerName );
-   
    return true;
 
 error_handler:
-
-   if ( lowerName != NULL ) free( lowerName );
 
    /*
     * On failure, errcode would be non-zero, unless the failure occurs in
@@ -290,10 +256,9 @@ bool psonTopFolderDestroyObject( psonFolder         * pFolder,
                                  psonSessionContext * pContext )
 {
    psoErrors errcode = PSO_OK;
-   uint32_t strLength, i;
+   uint32_t strLength;
    uint32_t first = 0;
    const char * name = objectName;
-   char * lowerName = NULL;
    bool ok;
    
    PSO_PRE_CONDITION( pFolder    != NULL );
@@ -311,17 +276,6 @@ bool psonTopFolderDestroyObject( psonFolder         * pFolder,
       goto error_handler;
    }
 
-   lowerName = (char *) malloc( (strLength+1)*sizeof(char) );
-   if ( lowerName == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-
-   /* lowecase the string */
-   for ( i = 0; i < strLength; ++i ) {
-      lowerName[i] = (char) tolower( name[i] );
-   }
-   
    /* strip the first char if a separator */
    if ( name[0] == '/' || name[0] == '\\' ) {
       first = 1;
@@ -340,7 +294,7 @@ bool psonTopFolderDestroyObject( psonFolder         * pFolder,
     */
    if ( psonLock( &pFolder->memObject, pContext ) ) {
       ok = psonFolderDeleteObject( pFolder,
-                                   &(lowerName[first]), 
+                                   &(name[first]), 
                                    strLength,
                                    pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
@@ -351,13 +305,9 @@ bool psonTopFolderDestroyObject( psonFolder         * pFolder,
       goto error_handler;
    }
    
-   free( lowerName );
-   
    return true;
 
 error_handler:
-
-   if ( lowerName != NULL ) free( lowerName );
 
    /*
     * On failure, errcode would be non-zero, unless the failure occurs in
@@ -380,11 +330,10 @@ bool psonTopFolderEditObject( psonFolder         * pFolder,
                               psonSessionContext * pContext )
 {
    psoErrors errcode = PSO_OK;
-   uint32_t strLength, i;
+   uint32_t strLength;
    bool ok;
    uint32_t first = 0;
    const char * name = objectName;
-   char * lowerName = NULL;
 
    PSO_PRE_CONDITION( pFolder     != NULL );
    PSO_PRE_CONDITION( pFolderItem != NULL );
@@ -402,17 +351,6 @@ bool psonTopFolderEditObject( psonFolder         * pFolder,
       goto error_handler;
    }
 
-   lowerName = (char *) malloc( (strLength+1)*sizeof(char) );
-   if ( lowerName == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-
-   /* lowercase the string */
-   for ( i = 0; i < strLength; ++i ) {
-      lowerName[i] = (char) tolower( name[i] );
-   }
-   
    /* strip the first char if a separator */
    if ( name[0] == '/' || name[0] == '\\' ) {
       first = 1;
@@ -440,7 +378,7 @@ bool psonTopFolderEditObject( psonFolder         * pFolder,
        */
       if ( psonLock( &pFolder->memObject, pContext ) ) {
          ok = psonFolderEditObject( pFolder,
-                                    &(lowerName[first]), 
+                                    &(name[first]), 
                                     strLength, 
                                     objectType,
                                     pFolderItem,
@@ -454,13 +392,9 @@ bool psonTopFolderEditObject( psonFolder         * pFolder,
       }
    }
    
-   free( lowerName );
-   
    return true;
 
 error_handler:
-
-   if ( lowerName != NULL ) free( lowerName );
 
    /*
     * On failure, errcode would be non-zero, unless the failure occurs in
@@ -484,12 +418,11 @@ bool psonTopFolderGetDef( psonFolder          * pFolder,
                           psonSessionContext  * pContext )
 {
    psoErrors errcode = PSO_OK;
-   uint32_t strLength, i;
+   uint32_t strLength;
    bool ok;
    uint32_t first = 0;
 
    const char * name = objectName;
-   char * lowerName = NULL;
 
    PSO_PRE_CONDITION( pFolder          != NULL );
    PSO_PRE_CONDITION( objectName       != NULL );
@@ -512,17 +445,6 @@ bool psonTopFolderGetDef( psonFolder          * pFolder,
       goto error_handler;
    }
 
-   lowerName = (char *) malloc( (strLength+1)*sizeof(char) );
-   if ( lowerName == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-
-   /* lowercase the string */
-   for ( i = 0; i < strLength; ++i ) {
-      lowerName[i] = (char) tolower( name[i] );
-   }
-   
    /* strip the first char if a separator */
    if ( name[0] == '/' || name[0] == '\\' ) {
       first = 1;
@@ -550,7 +472,7 @@ bool psonTopFolderGetDef( psonFolder          * pFolder,
        */
       if ( psonLock( &pFolder->memObject, pContext ) ) {
          ok = psonFolderGetDefinition( pFolder,
-                                       &(lowerName[first]), 
+                                       &(name[first]), 
                                        strLength, 
                                        pDefinition,
                                        ppDataDefinition,
@@ -565,13 +487,9 @@ bool psonTopFolderGetDef( psonFolder          * pFolder,
       }
    }
    
-   free( lowerName );
-   
    return true;
 
 error_handler:
-
-   if ( lowerName != NULL ) free( lowerName );
 
    /*
     * On failure, errcode would be non-zero, unless the failure occurs in
@@ -594,12 +512,11 @@ bool psonTopFolderGetDefLength( psonFolder          * pFolder,
                                 psonSessionContext  * pContext )
 {
    psoErrors errcode = PSO_OK;
-   uint32_t strLength, i;
+   uint32_t strLength;
    bool ok;
    uint32_t first = 0;
 
    const char * name = objectName;
-   char * lowerName = NULL;
 
    PSO_PRE_CONDITION( pFolder        != NULL );
    PSO_PRE_CONDITION( objectName     != NULL );
@@ -618,17 +535,6 @@ bool psonTopFolderGetDefLength( psonFolder          * pFolder,
       goto error_handler;
    }
 
-   lowerName = (char *) malloc( (strLength+1)*sizeof(char) );
-   if ( lowerName == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-
-   /* lowercase the string */
-   for ( i = 0; i < strLength; ++i ) {
-      lowerName[i] = (char) tolower( name[i] );
-   }
-   
    /* strip the first char if a separator */
    if ( name[0] == '/' || name[0] == '\\' ) {
       first = 1;
@@ -650,7 +556,7 @@ bool psonTopFolderGetDefLength( psonFolder          * pFolder,
        */
       if ( psonLock( &pFolder->memObject, pContext ) ) {
          ok = psonFolderGetDefLength( pFolder,
-                                      &(lowerName[first]), 
+                                      &(name[first]), 
                                       strLength, 
                                       pDataDefLength,
                                       pKeyDefLength,
@@ -664,13 +570,9 @@ bool psonTopFolderGetDefLength( psonFolder          * pFolder,
       }
    }
    
-   free( lowerName );
-   
    return true;
 
 error_handler:
-
-   if ( lowerName != NULL ) free( lowerName );
 
    /*
     * On failure, errcode would be non-zero, unless the failure occurs in
@@ -692,12 +594,11 @@ bool psonTopFolderGetStatus( psonFolder         * pFolder,
                              psonSessionContext * pContext )
 {
    psoErrors errcode = PSO_OK;
-   uint32_t strLength, i;
+   uint32_t strLength;
    bool ok;
    uint32_t first = 0;
 
    const char * name = objectName;
-   char * lowerName = NULL;
 
    PSO_PRE_CONDITION( pFolder    != NULL );
    PSO_PRE_CONDITION( pStatus    != NULL );
@@ -715,17 +616,6 @@ bool psonTopFolderGetStatus( psonFolder         * pFolder,
       goto error_handler;
    }
 
-   lowerName = (char *) malloc( (strLength+1)*sizeof(char) );
-   if ( lowerName == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-
-   /* lowecase the string */
-   for ( i = 0; i < strLength; ++i ) {
-      lowerName[i] = (char) tolower( name[i] );
-   }
-   
    /* strip the first char if a separator */
    if ( name[0] == '/' || name[0] == '\\' ) {
       first = 1;
@@ -756,7 +646,7 @@ bool psonTopFolderGetStatus( psonFolder         * pFolder,
        */
       if ( psonLock( &pFolder->memObject, pContext ) ) {
          ok = psonFolderGetStatus( pFolder,
-                                   &(lowerName[first]), 
+                                   &(name[first]), 
                                    strLength, 
                                    pStatus,
                                    pContext );
@@ -769,13 +659,9 @@ bool psonTopFolderGetStatus( psonFolder         * pFolder,
       }
    }
    
-   free( lowerName );
-   
    return true;
 
 error_handler:
-
-   if ( lowerName != NULL ) free( lowerName );
 
    /*
     * On failure, errcode would be non-zero, unless the failure occurs in
@@ -798,10 +684,9 @@ bool psonTopFolderOpenObject( psonFolder         * pFolder,
                               psonSessionContext * pContext )
 {
    psoErrors errcode = PSO_OK;
-   uint32_t strLength, i;
+   uint32_t strLength;
    uint32_t first = 0;
    const char * name = objectName;
-   char * lowerName = NULL;
    bool ok;
 
    PSO_PRE_CONDITION( pFolder     != NULL );
@@ -820,17 +705,6 @@ bool psonTopFolderOpenObject( psonFolder         * pFolder,
       goto error_handler;
    }
 
-   lowerName = (char *) malloc( (strLength+1)*sizeof(char) );
-   if ( lowerName == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-
-   /* lowercase the string */
-   for ( i = 0; i < strLength; ++i ) {
-      lowerName[i] = (char) tolower( name[i] );
-   }
-   
    /* strip the first char if a separator */
    if ( name[0] == '/' || name[0] == '\\' ) {
       first = 1;
@@ -858,7 +732,7 @@ bool psonTopFolderOpenObject( psonFolder         * pFolder,
        */
       if ( psonLock( &pFolder->memObject, pContext ) ) {
          ok = psonFolderGetObject( pFolder,
-                                   &(lowerName[first]), 
+                                   &(name[first]), 
                                    strLength, 
                                    objectType,
                                    pFolderItem,
@@ -872,13 +746,9 @@ bool psonTopFolderOpenObject( psonFolder         * pFolder,
       }
    }
    
-   free( lowerName );
-   
    return true;
 
 error_handler:
-
-   if ( lowerName != NULL ) free( lowerName );
 
    /*
     * On failure, errcode would be non-zero, unless the failure occurs in

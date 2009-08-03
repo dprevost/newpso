@@ -39,12 +39,11 @@ void setup_test()
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 5, "Test1", 1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
    assert( ok );
    
    ok = psonFolderInsertObject( pFolder,
                                 "test2",
-                                "Test2",
                                 5,
                                 &def,
                                 NULL,
@@ -193,8 +192,6 @@ void test_pass( void ** state )
                              &context );
    assert_true( ok );
    GET_PTR( pDescriptor, folderItem.pHashItem->dataOffset, psonObjectDescriptor );
-   assert_true( memcmp( pDescriptor->originalName, 
-                "Test2", 5*sizeof(char) ) == 0 );
    GET_PTR( pNode, pDescriptor->nodeOffset, psonTreeNode);
    GET_PTR( txItemStatus, pNode->txStatusOffset, psonTxStatus );
    assert_true( txItemStatus->parentCounter == 1 );
@@ -211,7 +208,6 @@ void test_pass( void ** state )
       
    ok = psonFolderInsertObject( pFolder,
                                 "test4",
-                                "Test4",
                                 5,
                                 &def,
                                 NULL,
@@ -229,8 +225,6 @@ void test_pass( void ** state )
                              &context );
    assert_true( ok );
    GET_PTR( pDescriptor, folderItem.pHashItem->dataOffset, psonObjectDescriptor );
-   assert_true( memcmp( pDescriptor->originalName, 
-                "Test4", 5*sizeof(char) ) == 0 );
    GET_PTR( pNode, pDescriptor->nodeOffset, psonTreeNode);
    GET_PTR( txItemStatus, pNode->txStatusOffset, psonTxStatus );
    assert_true( txItemStatus->parentCounter == 1 );

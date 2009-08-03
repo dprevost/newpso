@@ -35,7 +35,7 @@ void setup_test()
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 5, "Test1", 1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
    assert( ok );
 }
 
@@ -55,7 +55,6 @@ void test_null_context( void ** state )
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonFolderInsertObject( pFolder,
                                                   "test2",
-                                                  "Test2",
                                                   5,
                                                   &def,
                                                   NULL,
@@ -74,7 +73,6 @@ void test_null_definition( void ** state )
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonFolderInsertObject( pFolder,
                                                   "test2",
-                                                  "Test2",
                                                   5,
                                                   NULL,
                                                   NULL,
@@ -93,7 +91,6 @@ void test_null_folder( void ** state )
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonFolderInsertObject( NULL,
                                                   "test2",
-                                                  "Test2",
                                                   5,
                                                   &def,
                                                   NULL,
@@ -111,26 +108,6 @@ void test_null_name( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonFolderInsertObject( pFolder,
-                                                  NULL,
-                                                  "Test2",
-                                                  5,
-                                                  &def,
-                                                  NULL,
-                                                  NULL,
-                                                  1,
-                                                  0,
-                                                  &context ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_null_orig_name( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonFolderInsertObject( pFolder,
-                                                  "test2",
                                                   NULL,
                                                   5,
                                                   &def,
@@ -151,7 +128,6 @@ void test_wrong_type( void ** state )
    pFolder->memObject.objType = PSON_IDENT_HASH_MAP;
    expect_assert_failure( psonFolderInsertObject( pFolder,
                                                   "test2",
-                                                  "Test2",
                                                   5,
                                                   &def,
                                                   NULL,
@@ -170,7 +146,6 @@ void test_zero_blocks( void ** state )
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonFolderInsertObject( pFolder,
                                                   "test2",
-                                                  "Test2",
                                                   5,
                                                   &def,
                                                   NULL,
@@ -189,7 +164,6 @@ void test_zero_length( void ** state )
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonFolderInsertObject( pFolder,
                                                   "test2",
-                                                  "Test2",
                                                   0,
                                                   &def,
                                                   NULL,
@@ -210,7 +184,6 @@ void test_pass( void ** state )
    
    ok = psonFolderInsertObject( pFolder,
                                 "test2",
-                                "Test2",
                                 5,
                                 &def,
                                 NULL,
@@ -223,7 +196,6 @@ void test_pass( void ** state )
    
    ok = psonFolderInsertObject( pFolder,
                                 "test3",
-                                "Test3",
                                 5,
                                 &def,
                                 NULL,
@@ -252,7 +224,6 @@ int main()
       unit_test_setup_teardown( test_null_definition, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_folder,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_name,       setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_orig_name,  setup_test, teardown_test ),
       unit_test_setup_teardown( test_wrong_type,      setup_test, teardown_test ),
       unit_test_setup_teardown( test_zero_blocks,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_zero_length,     setup_test, teardown_test ),

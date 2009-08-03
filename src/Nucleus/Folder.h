@@ -231,15 +231,12 @@ bool psonFolderInit( psonFolder         * pFolder,
                      size_t               numberOfBlocks,
                      size_t               expectedNumOfChilds,
                      psonTxStatus       * pTxStatus,
-                     uint32_t             origNameLength,
-                     char               * origName,
                      ptrdiff_t            hashItemOffset,
                      psonSessionContext * pContext );
 
 PHOTON_ENGINE_EXPORT
 bool psonFolderInsertObject( psonFolder          * pFolder,
                              const char          * objectName,
-                             const char          * originalName,
                              uint32_t              strLength,
                              psoObjectDefinition * pDefinition,
                              psonDataDefinition  * pDataDefinition,
