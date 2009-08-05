@@ -23,6 +23,7 @@
 psonFolder * pFolder;
 psonSessionContext context;
 psonTxStatus status;
+pson2TreeNode2 node;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -34,8 +35,10 @@ void setup_test()
    pFolder = initFolderTest( &context );
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   pson2TreeNode2Init( &node, SET_OFFSET( pFolder ), PSO_FOLDER,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, &node, &context );
    assert( ok );
    
    ok = psonFolderInsertObject( pFolder,
@@ -156,8 +159,8 @@ void test_pass( void ** state )
                                 5,
                                 &context );
    assert_true( ok );
-   assert_true( pFolder->nodeObject.txCounter == 1 );
-   
+   assert_true( node.txCounter == 1 );
+
    ok = psonFolderDeleteObject( pFolder,
                                 "test3",
                                 5,

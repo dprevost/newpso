@@ -226,12 +226,12 @@ bool psonTxCommit( psonTx             * pTx,
    psonLinkNode  * pLinkNode = NULL;
    psonFolder    * parentFolder,    * pChildFolder;
    psonMemObject * pChildMemObject, * parentMemObject;
-   psonTreeNode  * pChildNode;
+   pson2TreeNode2  * pChildNode, * parentNode;
    psonTxStatus  * pChildStatus;
    psonHashMap   * pHashMap;
    psonQueue     * pQueue;
    psonHashTxItem  * pHashItem;
-   psonObjectDescriptor * pDesc;
+//   pson2TreeNode2 * pDesc;
    bool ok, okLock, okDelete;
 #ifdef USE_DBC
    int pOps_invalid_type = 0;
@@ -277,8 +277,8 @@ bool psonTxCommit( psonTx             * pTx,
          pOps->transType == PSON_TX_REMOVE_OBJECT ) {
 
          GET_PTR( pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR( pDesc, pHashItem->dataOffset, psonObjectDescriptor );
-         GET_PTR( pChildMemObject, pDesc->memOffset, psonMemObject );
+         GET_PTR( pChildNode, pHashItem->dataOffset, pson2TreeNode2 );
+         GET_PTR( pChildMemObject, pChildNode->offset, psonMemObject );
          
          okLock = psonLockTx( pTx, pChildMemObject, pContext );
          PSO_POST_CONDITION( okLock == true || okLock == false );
@@ -338,12 +338,13 @@ bool psonTxCommit( psonTx             * pTx,
 
          GET_PTR( parentFolder, pOps->parentOffset, psonFolder );
          GET_PTR( pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR( pDesc, pHashItem->dataOffset, psonObjectDescriptor );
-         GET_PTR( pChildMemObject, pDesc->memOffset, psonMemObject );
+         GET_PTR( pChildNode, pHashItem->dataOffset, pson2TreeNode2 );
+         GET_PTR( pChildMemObject, pChildNode->offset, psonMemObject );
          pChildStatus = &pHashItem->txStatus;
+         GET_PTR( parentNode, parentFolder->nodeOffset, pson2TreeNode2 );
          
          psonTxStatusClearTx( pChildStatus );
-         parentFolder->nodeObject.txCounter--;
+         parentNode->txCounter--;
 
          /* If needed */
          psonFolderResize( parentFolder, pContext );
@@ -356,7 +357,8 @@ bool psonTxCommit( psonTx             * pTx,
 
          GET_PTR( parentFolder, pOps->parentOffset, psonFolder );
          GET_PTR( pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR( pDesc, pHashItem->dataOffset, psonObjectDescriptor );
+         GET_PTR( pChildNode, pHashItem->dataOffset, pson2TreeNode2 );
+         GET_PTR( parentNode, parentFolder->nodeOffset, pson2TreeNode2 );
 
          pChildMemObject = NULL;
          psonFolderCommitEdit( parentFolder, pHashItem, pOps->childType, 
@@ -375,7 +377,7 @@ bool psonTxCommit( psonTx             * pTx,
             txHashDelete( pTx, pChildMemObject );
          }
          
-         parentFolder->nodeObject.txCounter--;
+         parentNode->txCounter--;
 
          /* If needed */
          psonFolderResize( parentFolder, pContext );
@@ -388,9 +390,8 @@ bool psonTxCommit( psonTx             * pTx,
 
          GET_PTR( parentFolder, pOps->parentOffset, psonFolder );
          GET_PTR( pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR( pDesc, pHashItem->dataOffset, psonObjectDescriptor );
-         GET_PTR( pChildMemObject, pDesc->memOffset, psonMemObject );
-         GET_PTR( pChildNode, pDesc->nodeOffset, psonTreeNode );
+         GET_PTR( pChildNode, pHashItem->dataOffset, pson2TreeNode2 );
+         GET_PTR( pChildMemObject, pChildNode->offset, psonMemObject );
          pChildStatus = &pHashItem->txStatus;
 
          if ( pChildStatus->usageCounter > 0 || 
@@ -471,12 +472,12 @@ bool psonTxRollback( psonTx             * pTx,
    psonLinkNode  * pLinkNode = NULL;
    psonFolder    * parentFolder,    * pChildFolder;
    psonMemObject * pChildMemObject, * parentMemObject;
-   psonTreeNode  * pChildNode;
+   pson2TreeNode2  * pChildNode, * parentNode;
    psonTxStatus  * pChildStatus;
    psonHashMap   * pHashMap;
    psonQueue     * pQueue;
    psonHashTxItem  * pHashItem;
-   psonObjectDescriptor * pDesc;
+//   pson2TreeNode2 * pDesc;
    bool isRemoved, ok, okLock, okDelete;
 #ifdef USE_DBC
    int pOps_invalid_type = 0;
@@ -520,8 +521,8 @@ bool psonTxRollback( psonTx             * pTx,
          pOps->transType == PSON_TX_REMOVE_OBJECT ) {
 
          GET_PTR( pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR( pDesc, pHashItem->dataOffset, psonObjectDescriptor );
-         GET_PTR( pChildMemObject, pDesc->memOffset, psonMemObject );
+         GET_PTR( pChildNode, pHashItem->dataOffset, pson2TreeNode2 );
+         GET_PTR( pChildMemObject, pChildNode->offset, psonMemObject );
          
          okLock = psonLockTx( pTx, pChildMemObject, pContext );
          PSO_POST_CONDITION( okLock == true || okLock == false );
@@ -583,9 +584,8 @@ bool psonTxRollback( psonTx             * pTx,
 
          GET_PTR( parentFolder, pOps->parentOffset, psonFolder );
          GET_PTR( pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR( pDesc, pHashItem->dataOffset, psonObjectDescriptor );
-         GET_PTR( pChildMemObject, pDesc->memOffset, psonMemObject );
-         GET_PTR( pChildNode, pDesc->nodeOffset, psonTreeNode );
+         GET_PTR( pChildNode, pHashItem->dataOffset, pson2TreeNode2 );
+         GET_PTR( pChildMemObject, pChildNode->offset, psonMemObject );
          pChildStatus = &pHashItem->txStatus;
 
          if ( pChildStatus->usageCounter > 0 || 
@@ -627,12 +627,12 @@ bool psonTxRollback( psonTx             * pTx,
 
          GET_PTR( parentFolder, pOps->parentOffset, psonFolder );
          GET_PTR( pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR( pDesc, pHashItem->dataOffset, psonObjectDescriptor );
+         GET_PTR( parentNode, parentFolder->nodeOffset, pson2TreeNode2 );
          
          psonFolderRollbackEdit( parentFolder, pHashItem, pOps->childType, 
                                  &isRemoved, pContext );
          
-         parentFolder->nodeObject.txCounter--;
+         parentNode->txCounter--;
 
          /* If needed */
          psonFolderResize( parentFolder, pContext );
@@ -645,12 +645,13 @@ bool psonTxRollback( psonTx             * pTx,
 
          GET_PTR( parentFolder, pOps->parentOffset, psonFolder );
          GET_PTR( pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR( pDesc, pHashItem->dataOffset, psonObjectDescriptor );
-         GET_PTR( pChildMemObject, pDesc->memOffset, psonMemObject );
+         GET_PTR( parentNode, parentFolder->nodeOffset, pson2TreeNode2 );
+//         GET_PTR( pDesc, pHashItem->dataOffset, pson2TreeNode2 );
+//         GET_PTR( pChildMemObject, pDesc->memOffset, psonMemObject );
          pChildStatus = &pHashItem->txStatus;
 
          psonTxStatusClearTx( pChildStatus );
-         parentFolder->nodeObject.txCounter--;
+         parentNode->txCounter--;
 
          /* If needed */
          psonFolderResize( parentFolder, pContext );

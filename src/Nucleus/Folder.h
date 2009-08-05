@@ -69,9 +69,10 @@ struct psonFolder
    struct psonMemObject memObject;
 
    /** Basic info for all leaves and branches of our tree. */
-   struct psonTreeNode  nodeObject;
-
-   struct psonHashTx      hashObj;
+//   struct psonTreeNode  nodeObject;
+   ptrdiff_t nodeOffset;
+   
+   struct psonHashTx hashObj;
    
    /*
     * This field cannot be set or modified by the API. It is set to false
@@ -231,7 +232,9 @@ bool psonFolderInit( psonFolder         * pFolder,
                      size_t               numberOfBlocks,
                      size_t               expectedNumOfChilds,
                      psonTxStatus       * pTxStatus,
-                     ptrdiff_t            hashItemOffset,
+//                     ptrdiff_t            hashItemOffset,
+                     pson2TreeNode2 * pNode,
+                     // ptrdiff_t            nodeOffset,
                      psonSessionContext * pContext );
 
 PHOTON_ENGINE_EXPORT

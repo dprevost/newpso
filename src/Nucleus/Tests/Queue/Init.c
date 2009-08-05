@@ -25,6 +25,7 @@ psonSessionContext context;
 psonTxStatus status;
 psoObjectDefinition def = { PSO_QUEUE, 0, 0, 0 };
 psonDataDefinition fields;
+pson2TreeNode2 queueNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -33,6 +34,8 @@ void setup_test()
    pQueue = initQueueTest( &context );
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   pson2TreeNode2Init( &queueNode, SET_OFFSET( pQueue ), PSO_QUEUE,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -51,8 +54,7 @@ void test_null_context( void ** state )
    expect_assert_failure( psonQueueInit( pQueue, 
                                          0,
                                          1,
-                                         &status,
-                                         SET_OFFSET(pQueue),
+                                         &queueNode,
                                          &def,
                                          &fields,
                                          NULL ) );
@@ -68,8 +70,7 @@ void test_null_datadef( void ** state )
    expect_assert_failure( psonQueueInit( pQueue, 
                                          0,
                                          1,
-                                         &status,
-                                         SET_OFFSET(pQueue),
+                                         &queueNode,
                                          &def,
                                          NULL,
                                          &context ) );
@@ -85,8 +86,7 @@ void test_null_definition( void ** state )
    expect_assert_failure( psonQueueInit( pQueue, 
                                          0,
                                          1,
-                                         &status,
-                                         SET_OFFSET(pQueue),
+                                         &queueNode,
                                          NULL,
                                          &fields,
                                          &context ) );
@@ -96,14 +96,13 @@ void test_null_definition( void ** state )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void test_null_hashitem( void ** state )
+void test_null_node( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonQueueInit( pQueue, 
                                          0,
                                          1,
-                                         &status,
-                                         PSON_NULL_OFFSET,
+                                         NULL,
                                          &def,
                                          &fields,
                                          &context ) );
@@ -119,8 +118,7 @@ void test_null_parent( void ** state )
    expect_assert_failure( psonQueueInit( pQueue, 
                                          PSON_NULL_OFFSET,
                                          1,
-                                         &status,
-                                         SET_OFFSET(pQueue),
+                                         &queueNode,
                                          &def,
                                          &fields,
                                          &context ) );
@@ -136,8 +134,7 @@ void test_null_queue( void ** state )
    expect_assert_failure( psonQueueInit( NULL, 
                                          0,
                                          1,
-                                         &status,
-                                         SET_OFFSET(pQueue),
+                                         &queueNode,
                                          &def,
                                          &fields,
                                          &context ) );
@@ -146,21 +143,6 @@ void test_null_queue( void ** state )
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_null_status( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonQueueInit( pQueue, 
-                                         0,
-                                         1,
-                                         NULL,
-                                         SET_OFFSET(pQueue),
-                                         &def,
-                                         &fields,
-                                         &context ) );
-#endif
-   return;
-}
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -170,8 +152,7 @@ void test_zero_blocks( void ** state )
    expect_assert_failure( psonQueueInit( pQueue, 
                                          0,
                                          0,
-                                         &status,
-                                         SET_OFFSET(pQueue),
+                                         &queueNode,
                                          &def,
                                          &fields,
                                          &context ) );
@@ -189,8 +170,7 @@ void test_pass( void ** state )
    ok = psonQueueInit( pQueue, 
                        0,
                        1,
-                       &status,
-                       SET_OFFSET(pQueue),
+                       &queueNode,
                        &def,
                        &fields,
                        &context );
@@ -210,10 +190,9 @@ int main()
       unit_test_setup_teardown( test_null_context,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_datadef,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_definition, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_hashitem,   setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_node,       setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_parent,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_queue,      setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_status,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_zero_blocks,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_pass,            setup_test, teardown_test )
    };

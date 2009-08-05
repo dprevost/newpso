@@ -89,6 +89,7 @@ psonFolder* initFolderTest( psonSessionContext * pContext )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 psonTxStatus objTxStatus;
+pson2TreeNode2 topnode;
 
 psonFolder* initTopFolderTest( psonSessionContext * pContext )
 {
@@ -105,10 +106,10 @@ psonFolder* initTopFolderTest( psonSessionContext * pContext )
    psonTxStatusInit( &objTxStatus, SET_OFFSET(pContext->pTransaction) );
    objTxStatus.status = PSON_TXS_ADDED;
 
-   pFolder->nodeObject.txCounter      = 0;
-   pFolder->nodeObject.txStatusOffset = SET_OFFSET(&objTxStatus);
-   pFolder->nodeObject.myParentOffset = PSON_NULL_OFFSET;
-
+   pson2TreeNode2Init( &topnode, SET_OFFSET( pFolder ), PSO_FOLDER,
+                     SET_OFFSET( &objTxStatus ), PSON_NULL_OFFSET );
+   pFolder->nodeOffset = SET_OFFSET( &topnode );
+   
    errcode = psonHashTxInit( &pFolder->hashObj, 
                              SET_OFFSET(&pFolder->memObject),
                              25, 

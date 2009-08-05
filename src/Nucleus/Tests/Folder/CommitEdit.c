@@ -25,6 +25,7 @@ psonSessionContext context;
 psonMemObject * pOldMemObj = NULL;
 psonFolderItem folderItem;
 psonTxStatus status;
+pson2TreeNode2 node;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -39,8 +40,10 @@ void setup_test()
    pFolder = initFolderTest( &context );
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   pson2TreeNode2Init( &node, SET_OFFSET( pFolder ), PSO_FOLDER,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, &node, &context );
    assert( ok );
    
    ok = psonFolderInsertObject( pFolder,

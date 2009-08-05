@@ -35,13 +35,16 @@ void test_pass( void ** state )
    psonKeyDefinition key;
    psoObjectDefinition folderDef = { PSO_FOLDER, 0, 0, 0 };
    psonDataDefinition fields;
+   pson2TreeNode2 node;
 
    pFolder = initFolderTest( &context );
    pTx = context.pTransaction;
    
    psonTxStatusInit( &status, SET_OFFSET( pTx ) );
+   pson2TreeNode2Init( &node, SET_OFFSET( pFolder ), PSO_FOLDER,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, &node, &context );
    assert_true( ok );
    
    /* Test 1 */
@@ -66,15 +69,15 @@ void test_pass( void ** state )
                                 0,
                                 &context );
    assert_true( ok );
-   assert_true( pFolder->nodeObject.txCounter == 2 );
+   assert_true( node.txCounter == 2 );
    assert_true( pFolder->hashObj.numberOfItems == 2 );
    
    psonTxRollback( pTx, &context );
-   assert_true( pFolder->nodeObject.txCounter == 0 );
+   assert_true( node.txCounter == 0 );
    assert_true( pFolder->hashObj.numberOfItems == 0 );
    
    psonTxCommit( pTx, &context );
-   assert_true( pFolder->nodeObject.txCounter == 0 );
+   assert_true( node.txCounter == 0 );
    assert_true( pFolder->hashObj.numberOfItems == 0 );
    
    /* Test 2 */
@@ -99,11 +102,11 @@ void test_pass( void ** state )
                                 0,
                                 &context );
    assert_true( ok );
-   assert_true( pFolder->nodeObject.txCounter == 2 );
+   assert_true( node.txCounter == 2 );
    assert_true( pFolder->hashObj.numberOfItems == 2 );
    
    psonTxCommit( pTx, &context );
-   assert_true( pFolder->nodeObject.txCounter == 0 );
+   assert_true( node.txCounter == 0 );
    assert_true( pFolder->hashObj.numberOfItems == 2 );
    
    ok = psonFolderDeleteObject( pFolder,
@@ -117,11 +120,11 @@ void test_pass( void ** state )
                                 5,
                                 &context );
    assert_true( ok );
-   assert_true( pFolder->nodeObject.txCounter == 2 );
+   assert_true( node.txCounter == 2 );
    assert_true( pFolder->hashObj.numberOfItems == 2 );
    
    psonTxRollback( pTx, &context );
-   assert_true( pFolder->nodeObject.txCounter == 0 );
+   assert_true( node.txCounter == 0 );
    assert_true( pFolder->hashObj.numberOfItems == 2 );
    
    ok = psonFolderDeleteObject( pFolder,
@@ -135,11 +138,11 @@ void test_pass( void ** state )
                                 5,
                                 &context );
    assert_true( ok );
-   assert_true( pFolder->nodeObject.txCounter == 2 );
+   assert_true( node.txCounter == 2 );
    assert_true( pFolder->hashObj.numberOfItems == 2 );
    
    psonTxCommit( pTx, &context );
-   assert_true( pFolder->nodeObject.txCounter == 0 );
+   assert_true( node.txCounter == 0 );
    assert_true( pFolder->hashObj.numberOfItems == 0 );
    
    /* Test 3 */
@@ -168,18 +171,20 @@ void test_pass( void ** state )
    ok = psonFolderGetObject( pFolder,
                              "test3",
                              5,
-                             PSO_HASH_MAP,
+                             PSO_FOLDER,
+//                             PSO_HASH_MAP,
                              &item,
                              &context );
+   fprintf( stderr, "qq: %d\n", psocGetLastError( &context.errorHandler ) );
    assert_true( ok );
    
    psonTxRollback( pTx, &context );
-   assert_true( pFolder->nodeObject.txCounter == 1 );
+   assert_true( node.txCounter == 1 );
    assert_true( pFolder->hashObj.numberOfItems == 1 );
    
    ok = psonFolderRelease( pFolder, &item, &context );
    assert_true( ok );
-   assert_true( pFolder->nodeObject.txCounter == 0 );
+   assert_true( node.txCounter == 0 );
    assert_true( pFolder->hashObj.numberOfItems == 0 );
    
    /* Test 4 */
@@ -214,12 +219,12 @@ void test_pass( void ** state )
    assert_true( ok );
    
    psonTxCommit( pTx, &context );
-   assert_true( pFolder->nodeObject.txCounter == 0 );
+   assert_true( node.txCounter == 0 );
    assert_true( pFolder->hashObj.numberOfItems == 2 );
    
    ok = psonFolderRelease( pFolder, &item, &context );
    assert_true( ok );
-   assert_true( pFolder->nodeObject.txCounter == 0 );
+   assert_true( node.txCounter == 0 );
    assert_true( pFolder->hashObj.numberOfItems == 2 );
    
    ok = psonFolderGetObject( pFolder,
@@ -241,11 +246,11 @@ void test_pass( void ** state )
                                 5,
                                 &context );
    assert_true( ok );
-   assert_true( pFolder->nodeObject.txCounter == 2 );
+   assert_true( node.txCounter == 2 );
    assert_true( pFolder->hashObj.numberOfItems == 2 );
    
    psonTxRollback( pTx, &context );
-   assert_true( pFolder->nodeObject.txCounter == 0 );
+   assert_true( node.txCounter == 0 );
    assert_true( pFolder->hashObj.numberOfItems == 2 );
    
    ok = psonFolderDeleteObject( pFolder,
@@ -259,16 +264,16 @@ void test_pass( void ** state )
                                 5,
                                 &context );
    assert_true( ok );
-   assert_true( pFolder->nodeObject.txCounter == 2 );
+   assert_true( node.txCounter == 2 );
    assert_true( pFolder->hashObj.numberOfItems == 2 );
    
    psonTxCommit( pTx, &context );
-   assert_true( pFolder->nodeObject.txCounter == 1 );
+   assert_true( node.txCounter == 1 );
    assert_true( pFolder->hashObj.numberOfItems == 1 );
    
    ok = psonFolderRelease( pFolder, &item, &context );
    assert_true( ok );
-   assert_true( pFolder->nodeObject.txCounter == 0 );
+   assert_true( node.txCounter == 0 );
    assert_true( pFolder->hashObj.numberOfItems == 0 );
    
 #endif

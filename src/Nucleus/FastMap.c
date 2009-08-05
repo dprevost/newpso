@@ -36,15 +36,15 @@ void psonFastMapReleaseNoLock( psonFastMap        * pHashMap,
 
 bool psonFastMapCopy( psonFastMap        * pOldMap, 
                       psonFastMap        * pNewMap,
-                      psonHashTxItem     * pHashItem,
+                      psonHashTxItem     * pNewHashItem,
                       psonSessionContext * pContext )
 {
    int errcode;
    
-   PSO_PRE_CONDITION( pOldMap   != NULL );
-   PSO_PRE_CONDITION( pNewMap   != NULL );
-   PSO_PRE_CONDITION( pHashItem != NULL );
-   PSO_PRE_CONDITION( pContext  != NULL );
+   PSO_PRE_CONDITION( pOldMap      != NULL );
+   PSO_PRE_CONDITION( pNewMap      != NULL );
+   PSO_PRE_CONDITION( pNewHashItem != NULL );
+   PSO_PRE_CONDITION( pContext     != NULL );
    
    errcode = psonMemObjectInit( &pNewMap->memObject, 
                                 PSON_IDENT_MAP,
@@ -57,10 +57,11 @@ bool psonFastMapCopy( psonFastMap        * pOldMap,
       return false;
    }
 
-   psonTreeNodeInit( &pNewMap->nodeObject,
-                     SET_OFFSET(&pHashItem->txStatus),
-                     pOldMap->nodeObject.myParentOffset,
-                     SET_OFFSET(pHashItem) );
+   pNewMap->nodeOffset = pNewHashItem->dataOffset;
+//   psonTreeNodeInit( &pNewMap->nodeObject,
+//                     SET_OFFSET(&pHashItem->txStatus),
+//                     pOldMap->nodeObject.myParentOffset,
+//                     SET_OFFSET(pHashItem) );
    
    errcode = psonHashInit( &pNewMap->hashObj,
                            SET_OFFSET(&pNewMap->memObject),
@@ -83,8 +84,8 @@ bool psonFastMapCopy( psonFastMap        * pOldMap,
       return false;
    }
    pNewMap->latestVersion = pOldMap->latestVersion;
-   pOldMap->editVersion = SET_OFFSET( pHashItem );
-   pNewMap->editVersion = SET_OFFSET( pHashItem );
+   pOldMap->editVersion = SET_OFFSET( pNewHashItem );
+   pNewMap->editVersion = SET_OFFSET( pNewHashItem );
    
    return true;
 }
@@ -158,7 +159,7 @@ void psonFastMapFini( psonFastMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
 
    psonHashFini( &pHashMap->hashObj );
-   psonTreeNodeFini( &pHashMap->nodeObject );
+//   psonTreeNodeFini( &pHashMap->nodeObject );
    
    /* 
     * Must be the last call since it will release the blocks of
@@ -181,6 +182,7 @@ bool psonFastMapGet( psonFastMap        * pHashMap,
    psonTxStatus * txHashMapStatus;
    size_t bucket;
    bool found;
+   pson2TreeNode2 * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pKey       != NULL );
@@ -189,7 +191,8 @@ bool psonFastMapGet( psonFastMap        * pHashMap,
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
 
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, pson2TreeNode2 );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
    
    if ( txHashMapStatus->status & PSON_TXS_DESTROYED || 
       txHashMapStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
@@ -251,13 +254,15 @@ bool psonFastMapGetFirst( psonFastMap        * pHashMap,
    psonHashItem * pHashItem = NULL;
    psonTxStatus * txHashMapStatus;
    bool found;
+   pson2TreeNode2 * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pItem    != NULL )
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
 
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, pson2TreeNode2 );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( txHashMapStatus->status & PSON_TXS_DESTROYED || 
       txHashMapStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
@@ -306,6 +311,7 @@ bool psonFastMapGetNext( psonFastMap        * pHashMap,
    psonHashItem * previousHashItem = NULL;
    psonTxStatus * txHashMapStatus;
    bool found;
+   pson2TreeNode2 * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pItem    != NULL );
@@ -313,7 +319,8 @@ bool psonFastMapGetNext( psonFastMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
    PSO_PRE_CONDITION( pItem->pHashItem  != NULL );
    
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, pson2TreeNode2 );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( txHashMapStatus->status & PSON_TXS_DESTROYED || 
       txHashMapStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
@@ -368,7 +375,8 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
                       ptrdiff_t             parentOffset,
                       size_t                numberOfBlocks,
                       size_t                expectedNumOfItems,
-                      psonTxStatus        * pTxStatus,
+                      pson2TreeNode2        * pNode,
+//                      psonTxStatus        * pTxStatus,
                       ptrdiff_t             hashItemOffset,
                       psoObjectDefinition * pDefinition,
                       psonKeyDefinition   * pKeyDefinition,
@@ -379,7 +387,7 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
    
    PSO_PRE_CONDITION( pHashMap        != NULL );
    PSO_PRE_CONDITION( pContext        != NULL );
-   PSO_PRE_CONDITION( pTxStatus       != NULL );
+   PSO_PRE_CONDITION( pNode           != NULL );
    PSO_PRE_CONDITION( pDefinition     != NULL );
    PSO_PRE_CONDITION( pKeyDefinition  != NULL );
    PSO_PRE_CONDITION( pDataDefinition != NULL );
@@ -398,11 +406,8 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
       return false;
    }
 
-   psonTreeNodeInit( &pHashMap->nodeObject,
-                     SET_OFFSET(pTxStatus),
-                     parentOffset,
-                     hashItemOffset );
-
+   pHashMap->nodeOffset = SET_OFFSET( pNode );
+   
    errcode = psonHashInit( &pHashMap->hashObj, 
                            SET_OFFSET(&pHashMap->memObject),
                            expectedNumOfItems, 
@@ -487,13 +492,15 @@ void psonFastMapReleaseNoLock( psonFastMap        * pHashMap,
                                psonSessionContext * pContext )
 {
    psonTxStatus * txHashMapStatus;
+   pson2TreeNode2 * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap  != NULL );
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
 
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, pson2TreeNode2 );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    txHashMapStatus->usageCounter--;
 
@@ -557,16 +564,18 @@ void psonFastMapStatus( psonFastMap  * pHashMap,
                         psoObjStatus * pStatus )
 {
    psonHashItem * pHashItem = NULL;
-   psonTxStatus  * txStatus;
+   psonTxStatus  * txHashMapStatus;
    bool found;
+   pson2TreeNode2 * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pStatus  != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
    
-   GET_PTR( txStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, pson2TreeNode2 );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
-   pStatus->status = txStatus->status;
+   pStatus->status = txHashMapStatus->status;
    pStatus->numDataItem = pHashMap->hashObj.numberOfItems;
    pStatus->maxDataLength = 0;
    pStatus->maxKeyLength  = 0;

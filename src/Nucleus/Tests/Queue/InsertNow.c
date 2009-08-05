@@ -24,6 +24,7 @@ psonQueue * pQueue;
 psonSessionContext context;
 psonTxStatus status;
 char * data = "My Data";
+pson2TreeNode2 queueNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -36,10 +37,11 @@ void setup_test()
    pQueue = initQueueTest( &context );
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   pson2TreeNode2Init( &queueNode, SET_OFFSET( pQueue ), PSO_QUEUE,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
 
    ok = psonQueueInit( pQueue, 
-                       0, 1, &status,
-                       SET_OFFSET(pQueue), 
+                       0, 1, &queueNode,
                        &def, &fields, &context );
    assert( ok );
 }
@@ -135,7 +137,7 @@ void test_pass( void ** state )
                             PSON_QUEUE_FIRST,
                             &context );
    assert_true( ok );
-   assert_true( pQueue->nodeObject.txCounter == 0 );
+   assert_true( queueNode.txCounter == 0 );
    
    ok = psonQueueInsertNow( pQueue,
                             data,
@@ -143,7 +145,7 @@ void test_pass( void ** state )
                             PSON_QUEUE_LAST,
                             &context );
    assert_true( ok );
-   assert_true( pQueue->nodeObject.txCounter == 0 );
+   assert_true( queueNode.txCounter == 0 );
    assert_true( pQueue->listOfElements.currentSize == 2 );
    
 #endif

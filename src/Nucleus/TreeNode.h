@@ -29,37 +29,36 @@ BEGIN_C_DECLS
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 	
-struct psonObjectDescriptor
+/**
+ * This structure contains the information needed for all the leaves and
+ * the branches of the tree of objects/containers visible from the API.
+ */
+struct pson2TreeNode2
 {
    /** Offset of the object */
    ptrdiff_t offset;
    
-   /** Offset to the psonTreeNode struct. */
-   ptrdiff_t nodeOffset;
-   
-   /** Offset to the memory object struct. */
-   ptrdiff_t memOffset;
-   
    /** The object type as seen from the API. */
    enum psoObjectType apiType;
    
-   /** 
-    * The length in bytes of the name as originally entered.
+   /** Count the number of uncommitted/unrollbacked transaction ops are
+    * still to be processed on this object (or more exactly on its data).
+    * This is used to make sure that an object is not destroyed while
+    * transactions (on its data) are not processed yet.
     */
-//   int nameLengthInBytes;
+   size_t txCounter;
+  
+   /** Offset to the string used for the key. */
+//   ptrdiff_t myHashItem;
    
-   /** 
-    * The original name (not including the parent folder name).
-    * This name does include the trailing zero ('\0'),
-    * and can be used as a valid C string!
-    */
-//   char originalName[1];
+   /** Offset to the transaction info (psonTxStatus). */
+   ptrdiff_t txStatusOffset;
+
+   /** Offset to the parent of this object. */
+   /* PSON_NULL_OFFSET for top folder ("/") */
+   ptrdiff_t myParentOffset;
    
 };
-
-typedef struct psonObjectDescriptor psonObjectDescriptor;
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /**
  * This structure contains the information needed for all the leaves and
@@ -74,13 +73,7 @@ struct psonTreeNode
     */
    size_t txCounter;
   
-   /** In units of char, not bytes. */
- //  size_t myNameLength;
-   
-   /** Offset to the original string naming this object. */
-//   ptrdiff_t myNameOffset;
-
-   /** Offset to the string used for the key (lowercase of the original). */
+   /** Offset to the string used for the key. */
    ptrdiff_t myHashItem;
    
    /** Offset to the transaction info (psonTxStatus). */
@@ -93,6 +86,40 @@ struct psonTreeNode
 };
 
 typedef struct psonTreeNode psonTreeNode;
+typedef struct pson2TreeNode2 pson2TreeNode2;
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+static inline 
+void pson2TreeNode2Init( pson2TreeNode2 * pNode,
+                       ptrdiff_t      myOffset,
+                       psoObjectType  apiType,
+                       ptrdiff_t      txStatusOffset,
+                       ptrdiff_t      parentOffset )
+{
+   PSO_PRE_CONDITION( pNode != NULL );
+   
+   pNode->offset         = myOffset;
+   pNode->apiType        = apiType;
+   pNode->txCounter      = 0;
+   pNode->txStatusOffset = txStatusOffset;
+   pNode->myParentOffset = parentOffset;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+static inline 
+void pson2TreeNode2Fini( pson2TreeNode2 * pNode )
+{
+   PSO_PRE_CONDITION( pNode != NULL );
+   
+   pNode->offset         = PSON_NULL_OFFSET;
+   pNode->apiType        = 0;
+   pNode->txCounter      = 0;
+   pNode->txStatusOffset = PSON_NULL_OFFSET;
+   pNode->myParentOffset = PSON_NULL_OFFSET;
+//   pNode->myHashItem     = PSON_NULL_OFFSET;
+}
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

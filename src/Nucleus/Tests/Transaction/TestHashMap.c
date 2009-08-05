@@ -32,7 +32,7 @@ void test_pass( void ** state )
    bool ok;
    psonFolderItem item;
    psonTxStatus status;
-   psonObjectDescriptor * pDescriptor;
+   pson2TreeNode2 * pDescriptor;
    psonHashMap * pHashMap;
    char * key1  = "My key1";
    char * key2  = "My key2";
@@ -44,13 +44,16 @@ void test_pass( void ** state )
    psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, 0 };
    psonKeyDefinition key;
    psonDataDefinition fields;
+   pson2TreeNode2 node;
 
    pFolder = initFolderTest( &context );
    pTx = context.pTransaction;
    
    psonTxStatusInit( &status, SET_OFFSET( pTx ) );
+   pson2TreeNode2Init( &node, SET_OFFSET( pFolder ), PSO_FOLDER,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, &node, &context );
    assert_true( ok );
    
    ok = psonFolderInsertObject( pFolder,
@@ -72,7 +75,7 @@ void test_pass( void ** state )
                              &item,
                              &context );
    assert_true( ok );
-   GET_PTR( pDescriptor, item.pHashItem->dataOffset, psonObjectDescriptor );
+   GET_PTR( pDescriptor, item.pHashItem->dataOffset, pson2TreeNode2 );
    GET_PTR( pHashMap, pDescriptor->offset, psonHashMap );
 
    /* Test 1 */

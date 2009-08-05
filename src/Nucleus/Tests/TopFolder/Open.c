@@ -23,14 +23,14 @@
 psonFolder * pTopFolder;
 psonSessionContext context;
 psonFolderItem folderItem;
+psoObjectDefinition def = { PSO_QUEUE, 0, 0, 0 };
+psonDataDefinition dataDef;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
    bool ok;
-   psoObjectDefinition def = { PSO_QUEUE, 0, 0, 0 };
-   psonDataDefinition dataDef;
    
    pTopFolder = initTopFolderTest( &context );
    
@@ -189,6 +189,7 @@ void test_pass( void ** state )
                                  PSO_QUEUE,
                                  &folderItem,
                                  &context );
+   fprintf( stderr, "qw: %d\n", psocGetLastError( &context.errorHandler ) );
    assert_true( ok );
    
    ok = psonTopFolderOpenObject( pTopFolder,

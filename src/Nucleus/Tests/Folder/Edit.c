@@ -24,6 +24,7 @@ psonFolder * pFolder;
 psonSessionContext context;
 psonTxStatus status;
 psonFolderItem folderItem;
+pson2TreeNode2 node;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -38,8 +39,10 @@ void setup_test()
    pFolder = initFolderTest( &context );
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   pson2TreeNode2Init( &node, SET_OFFSET( pFolder ), PSO_FOLDER,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, &node, &context );
    assert( ok );
    
    ok = psonFolderInsertObject( pFolder,
@@ -160,7 +163,7 @@ void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    bool ok;
-   psonObjectDescriptor * pDescriptor;
+   pson2TreeNode2 * pDescriptor;
    psonTxStatus * txItemStatus;
    psonTreeNode * pNode;
    psoObjectDefinition mapDef = { PSO_FAST_MAP, 0, 0, 0 };
@@ -175,9 +178,8 @@ void test_pass( void ** state )
                               &folderItem,
                               &context );
    assert_true( ok );
-   GET_PTR( pDescriptor, folderItem.pHashItem->dataOffset, psonObjectDescriptor );
-   GET_PTR( pNode, pDescriptor->nodeOffset, psonTreeNode);
-   GET_PTR( txItemStatus, pNode->txStatusOffset, psonTxStatus );
+   GET_PTR( pDescriptor, folderItem.pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( txItemStatus, pDescriptor->txStatusOffset, psonTxStatus );
    assert_true( txItemStatus->parentCounter == 1 );
    assert_true( status.usageCounter == 1 );
    
@@ -208,12 +210,11 @@ void test_pass( void ** state )
                               &folderItem,
                               &context );
    assert_true( ok );
-   GET_PTR( pDescriptor, folderItem.pHashItem->dataOffset, psonObjectDescriptor );
-   GET_PTR( pNode, pDescriptor->nodeOffset, psonTreeNode);
-   GET_PTR( txItemStatus, pNode->txStatusOffset, psonTxStatus );
+   GET_PTR( pDescriptor, folderItem.pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( txItemStatus, pDescriptor->txStatusOffset, psonTxStatus );
    assert_true( txItemStatus->parentCounter == 1 );
    assert_true( status.usageCounter == 2 );
-   assert_true( pFolder->nodeObject.txCounter == 4 );
+   assert_true( node.txCounter == 4 );
    
    psonFolderFini( pFolder, &context );
    

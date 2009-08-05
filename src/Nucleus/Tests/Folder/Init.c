@@ -23,6 +23,7 @@
 psonFolder* pFolder;
 psonSessionContext context;
 psonTxStatus status;
+pson2TreeNode2 node;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -31,6 +32,8 @@ void setup_test()
    pFolder = initFolderTest( &context );
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   pson2TreeNode2Init( &node, SET_OFFSET( pFolder ), PSO_FOLDER,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -52,7 +55,7 @@ void test_null_context( void ** state )
                                           1,
                                           0,
                                           &status,
-                                          1234,
+                                          &node,
                                           NULL ) );
 #endif
    return;
@@ -68,7 +71,7 @@ void test_null_folder( void ** state )
                                           1,
                                           0,
                                           &status,
-                                          1234,
+                                          &node,
                                           &context ) );
 #endif
    return;
@@ -76,7 +79,7 @@ void test_null_folder( void ** state )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void test_null_item_off( void ** state )
+void test_null_node( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonFolderInit( pFolder, 
@@ -84,7 +87,7 @@ void test_null_item_off( void ** state )
                                           1,
                                           0,
                                           &status,
-                                          PSON_NULL_OFFSET,
+                                          NULL,
                                           &context ) );
 #endif
    return;
@@ -100,7 +103,7 @@ void test_null_parent_off( void ** state )
                                           1,
                                           0,
                                           &status,
-                                          1234,
+                                          &node,
                                           &context ) );
 #endif
    return;
@@ -116,7 +119,7 @@ void test_null_status( void ** state )
                                           1,
                                           0,
                                           NULL,
-                                          1234,
+                                          &node,
                                           &context ) );
 #endif
    return;
@@ -132,7 +135,7 @@ void test_zero_blocks( void ** state )
                                           0,
                                           0,
                                           &status,
-                                          1234,
+                                          &node,
                                           &context ) );
 #endif
    return;
@@ -145,7 +148,7 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    bool ok;
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, 1234, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &status, &node, &context );
    assert_true( ok );
    
 #endif
@@ -161,7 +164,7 @@ int main()
    const UnitTest tests[] = {
       unit_test_setup_teardown( test_null_context,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_folder,     setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_item_off,   setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_node,       setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_parent_off, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_status,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_zero_blocks,     setup_test, teardown_test ),

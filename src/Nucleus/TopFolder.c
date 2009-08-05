@@ -39,24 +39,23 @@ bool psonTopFolderCloseObject( psonFolderItem     * pFolderItem,
                                psonSessionContext * pContext )
 {
    psonFolder   * parentFolder;
-   psonTreeNode * pNode;
    psonTxStatus * txItemStatus, * txFolderStatus;
-   psonObjectDescriptor * pDesc;
+   pson2TreeNode2 * pChildNode, * parentNode;
    
    PSO_PRE_CONDITION( pFolderItem != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
 
-   GET_PTR( pDesc, pFolderItem->pHashItem->dataOffset, psonObjectDescriptor );
-   GET_PTR( pNode, pDesc->nodeOffset, psonTreeNode);
+   GET_PTR( pChildNode, pFolderItem->pHashItem->dataOffset, pson2TreeNode2 );
    
    /* Special case, the top folder */
-   if ( pNode->myParentOffset == PSON_NULL_OFFSET ) return true;
+   if ( pChildNode->myParentOffset == PSON_NULL_OFFSET ) return true;
 
-   GET_PTR( parentFolder, pNode->myParentOffset, psonFolder );
-   GET_PTR( txFolderStatus, parentFolder->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( parentFolder, pChildNode->myParentOffset, psonFolder );
+   GET_PTR( parentNode, parentFolder->nodeOffset, pson2TreeNode2 );
+   GET_PTR( txFolderStatus, parentNode->txStatusOffset, psonTxStatus );
    
    if ( psonLock( &parentFolder->memObject, pContext ) ) {
-      GET_PTR( txItemStatus, pNode->txStatusOffset, psonTxStatus );
+      GET_PTR( txItemStatus, pChildNode->txStatusOffset, psonTxStatus );
       txItemStatus->parentCounter--;
       txFolderStatus->usageCounter--;
       
