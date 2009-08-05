@@ -23,6 +23,7 @@
 psonHashMap * pHashMap;
 psonSessionContext context;
 psonTxStatus status;
+psonTreeNode mapNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -36,8 +37,10 @@ void setup_test()
    pHashMap = initHashMapTest( &context );
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
-   ok = psonHashMapInit( pHashMap, 0, 1, 0, &status,
-                         SET_OFFSET(pHashMap), 
+   psonTreeNodeInit( &mapNode, SET_OFFSET( pHashMap ), PSO_HASH_MAP,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
+
+   ok = psonHashMapInit( pHashMap, 0, 1, 0, &mapNode,
                          &def, &keyDef,
                          &fields, &context );
    assert( ok );

@@ -32,7 +32,7 @@ void test_pass( void ** state )
    bool ok;
    psonFolderItem item;
    psonTxStatus status;
-   pson2TreeNode2 * pDescriptor;
+   psonTreeNode * pMapNode;
    psonHashMap * pHashMap;
    char * key1  = "My key1";
    char * key2  = "My key2";
@@ -44,16 +44,16 @@ void test_pass( void ** state )
    psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, 0 };
    psonKeyDefinition key;
    psonDataDefinition fields;
-   pson2TreeNode2 node;
+   psonTreeNode node;
 
    pFolder = initFolderTest( &context );
    pTx = context.pTransaction;
    
    psonTxStatusInit( &status, SET_OFFSET( pTx ) );
-   pson2TreeNode2Init( &node, SET_OFFSET( pFolder ), PSO_FOLDER,
+   psonTreeNodeInit( &node, SET_OFFSET( pFolder ), PSO_FOLDER,
                      SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, &node, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &node, &context );
    assert_true( ok );
    
    ok = psonFolderInsertObject( pFolder,
@@ -75,8 +75,8 @@ void test_pass( void ** state )
                              &item,
                              &context );
    assert_true( ok );
-   GET_PTR( pDescriptor, item.pHashItem->dataOffset, pson2TreeNode2 );
-   GET_PTR( pHashMap, pDescriptor->offset, psonHashMap );
+   GET_PTR( pMapNode, item.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR( pHashMap, pMapNode->offset, psonHashMap );
 
    /* Test 1 */
    ok = psonHashMapInsert( pHashMap,
@@ -101,11 +101,11 @@ void test_pass( void ** state )
                            &context );
    assert_true( ok );
    
-   assert_true( pHashMap->nodeObject.txCounter == 3 );
+   assert_true( pMapNode->txCounter == 3 );
    assert_true( pHashMap->hashObj.numberOfItems == 3 );
    
    psonTxRollback( pTx, &context );
-   assert_true( pHashMap->nodeObject.txCounter == 0 );
+   assert_true( pMapNode->txCounter == 0 );
    assert_true( pHashMap->hashObj.numberOfItems == 0 );
    
    /* Test 2 */
@@ -131,11 +131,11 @@ void test_pass( void ** state )
                            &context );
    assert_true( ok );
    
-   assert_true( pHashMap->nodeObject.txCounter == 3 );
+   assert_true( pMapNode->txCounter == 3 );
    assert_true( pHashMap->hashObj.numberOfItems == 3 );
    
    psonTxCommit( pTx, &context );
-   assert_true( pHashMap->nodeObject.txCounter == 0 );
+   assert_true( pMapNode->txCounter == 0 );
    assert_true( pHashMap->hashObj.numberOfItems == 3 );
    
    ok = psonHashMapDelete( pHashMap,
@@ -154,11 +154,11 @@ void test_pass( void ** state )
                            &context );
    assert_true( ok );
    
-   assert_true( pHashMap->nodeObject.txCounter == 3 );
+   assert_true( pMapNode->txCounter == 3 );
    assert_true( pHashMap->hashObj.numberOfItems == 3 );
    
    psonTxRollback( pTx, &context );
-   assert_true( pHashMap->nodeObject.txCounter == 0 );
+   assert_true( pMapNode->txCounter == 0 );
    assert_true( pHashMap->hashObj.numberOfItems == 3 );
    
    ok = psonHashMapDelete( pHashMap,
@@ -177,11 +177,11 @@ void test_pass( void ** state )
                            &context );
    assert_true( ok );
    
-   assert_true( pHashMap->nodeObject.txCounter == 3 );
+   assert_true( pMapNode->txCounter == 3 );
    assert_true( pHashMap->hashObj.numberOfItems == 3 );
    
    psonTxCommit( pTx, &context );
-   assert_true( pHashMap->nodeObject.txCounter == 0 );
+   assert_true( pMapNode->txCounter == 0 );
    assert_true( pHashMap->hashObj.numberOfItems == 0 );
    
    /* Test 3 */
@@ -215,18 +215,18 @@ void test_pass( void ** state )
                         &context );
    assert_true( ok );
    
-   assert_true( pHashMap->nodeObject.txCounter == 3 );
+   assert_true( pMapNode->txCounter == 3 );
    assert_true( pHashMap->hashObj.numberOfItems == 3 );
    
    psonTxRollback( pTx, &context );
-   assert_true( pHashMap->nodeObject.txCounter == 1 );
+   assert_true( pMapNode->txCounter == 1 );
    assert_true( pHashMap->hashObj.numberOfItems == 1 );
    
    ok = psonHashMapRelease( pHashMap,
                             pHashItem,
                             &context );
    assert_true( ok );
-   assert_true( pHashMap->nodeObject.txCounter == 0 );
+   assert_true( pMapNode->txCounter == 0 );
    assert_true( pHashMap->hashObj.numberOfItems == 0 );
    
    /* Test 4 */
@@ -261,14 +261,14 @@ void test_pass( void ** state )
    assert_true( ok );
    
    psonTxCommit( pTx, &context );
-   assert_true( pHashMap->nodeObject.txCounter == 0 );
+   assert_true( pMapNode->txCounter == 0 );
    assert_true( pHashMap->hashObj.numberOfItems == 3 );
    
    ok = psonHashMapRelease( pHashMap,
                             pHashItem,
                             &context );
    assert_true( ok );
-   assert_true( pHashMap->nodeObject.txCounter == 0 );
+   assert_true( pMapNode->txCounter == 0 );
    assert_true( pHashMap->hashObj.numberOfItems == 3 );
    
    ok = psonHashMapGet( pHashMap,
@@ -295,14 +295,14 @@ void test_pass( void ** state )
    assert_true( ok );
    
    psonTxRollback( pTx, &context );
-   assert_true( pHashMap->nodeObject.txCounter == 0 );
+   assert_true( pMapNode->txCounter == 0 );
    assert_true( pHashMap->hashObj.numberOfItems == 3 );
    
    ok = psonHashMapRelease( pHashMap,
                             pHashItem,
                             &context );
    assert_true( ok );
-   assert_true( pHashMap->nodeObject.txCounter == 0 );
+   assert_true( pMapNode->txCounter == 0 );
    assert_true( pHashMap->hashObj.numberOfItems == 3 );
    
    ok = psonHashMapGet( pHashMap,
@@ -330,14 +330,14 @@ void test_pass( void ** state )
    assert_true( ok );
    
    psonTxCommit( pTx, &context );
-   assert_true( pHashMap->nodeObject.txCounter == 1 );
+   assert_true( pMapNode->txCounter == 1 );
    assert_true( pHashMap->hashObj.numberOfItems == 1 );
    
    ok = psonHashMapRelease( pHashMap,
                             pHashItem,
                             &context );
    assert_true( ok );
-   assert_true( pHashMap->nodeObject.txCounter == 0 );
+   assert_true( pMapNode->txCounter == 0 );
    assert_true( pHashMap->hashObj.numberOfItems == 0 );
    
 #endif

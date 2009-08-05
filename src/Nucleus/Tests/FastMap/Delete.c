@@ -25,6 +25,8 @@ psonSessionContext context;
 char * key  = "my key";
 char * data = "my data";
 psonHashItem * pItem;
+psonTreeNode mapNode;
+psonTxStatus status;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -34,14 +36,15 @@ void setup_test()
    psoObjectDefinition def = { PSO_FAST_MAP, 0, 0, 0 };
    psonKeyDefinition keyDef;
    psonDataDefinition fields;
-   psonTxStatus status;
    
    pHashMap = initHashMapTest( &context );
    assert( pHashMap != NULL );
    
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   psonTreeNodeInit( &mapNode, SET_OFFSET( pHashMap ), PSO_FAST_MAP,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonFastMapInit( pHashMap, 0, 1, 0, &status,
+   ok = psonFastMapInit( pHashMap, 0, 1, 0, &mapNode,
                          SET_OFFSET(pHashMap), &def, &keyDef, 
                          &fields, &context );
    assert( ok );

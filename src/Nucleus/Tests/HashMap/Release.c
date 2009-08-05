@@ -24,6 +24,7 @@ psonHashMap * pHashMap;
 psonSessionContext context;
 psonTxStatus status;
 psonHashTxItem * pItem;
+psonTreeNode mapNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -39,9 +40,10 @@ void setup_test()
    pHashMap = initHashMapTest( &context );
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   psonTreeNodeInit( &mapNode, SET_OFFSET( pHashMap ), PSO_HASH_MAP,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonHashMapInit( pHashMap, 0, 1, 0, &status,
-                         SET_OFFSET(pHashMap), 
+   ok = psonHashMapInit( pHashMap, 0, 1, 0, &mapNode,
                          &def, &keyDef,
                          &fields, &context );
    assert( ok );
@@ -127,7 +129,7 @@ void test_pass( void ** state )
    assert_true( ok );
    assert_true( txItemStatus->usageCounter == 0 );
    assert_true( status.usageCounter == 0 );
-   assert_true( pHashMap->nodeObject.txCounter == 1 );
+   assert_true( mapNode.txCounter == 1 );
    
 #endif
    return;

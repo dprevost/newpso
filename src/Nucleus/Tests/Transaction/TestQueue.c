@@ -32,7 +32,7 @@ void test_pass( void ** state )
    bool ok;
    psonFolderItem item;
    psonTxStatus status;
-   pson2TreeNode2 * pDescriptor;
+   psonTreeNode * pQueueNode;
    psonQueue * pQueue;
    char * data1 = "My data1";
    char * data2 = "My data2";
@@ -40,16 +40,16 @@ void test_pass( void ** state )
    psonQueueItem * pQueueItem;
    psoObjectDefinition def = { PSO_QUEUE, 0, 0, 0 };
    psonDataDefinition fields;
-   pson2TreeNode2 queueNode;
+   psonTreeNode folderNode;
 
    pFolder = initFolderTest( &context );
    pTx = context.pTransaction;
    
    psonTxStatusInit( &status, SET_OFFSET( pTx ) );
-   pson2TreeNode2Init( &queueNode, SET_OFFSET( pFolder ), PSO_QUEUE,
+   psonTreeNodeInit( &folderNode, SET_OFFSET( pFolder ), PSO_QUEUE,
                      SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, &queueNode, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &folderNode, &context );
    assert_true( ok );
    
    ok = psonFolderInsertObject( pFolder,
@@ -72,8 +72,8 @@ void test_pass( void ** state )
                              &item,
                              &context );
    assert_true( ok );
-   GET_PTR( pDescriptor, item.pHashItem->dataOffset, pson2TreeNode2 );
-   GET_PTR( pQueue, pDescriptor->offset, psonQueue );
+   GET_PTR( pQueueNode, item.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR( pQueue, pQueueNode->offset, psonQueue );
 
    /* Test 1 */
    ok = psonQueueInsert( pQueue,
@@ -95,11 +95,11 @@ void test_pass( void ** state )
                          &context );
    assert_true( ok );
    
-   assert_true( queueNode.txCounter == 3 );
+   assert_true( pQueueNode->txCounter == 3 );
    assert_true( pQueue->listOfElements.currentSize == 3 );
    
    psonTxRollback( pTx, &context );
-   assert_true( queueNode.txCounter == 0 );
+   assert_true( pQueueNode->txCounter == 0 );
    assert_true( pQueue->listOfElements.currentSize == 0 );
    
    /* Test 2 */
@@ -122,12 +122,12 @@ void test_pass( void ** state )
                          &context );
    assert_true( ok );
    
-   assert_true( queueNode.txCounter == 3 );
+   assert_true( pQueueNode->txCounter == 3 );
    assert_true( pQueue->listOfElements.currentSize == 3 );
    
    ok = psonTxCommit( pTx, &context );
    assert_true( ok );
-   assert_true( queueNode.txCounter == 0 );
+   assert_true( pQueueNode->txCounter == 0 );
    assert_true( pQueue->listOfElements.currentSize == 3 );
    
    ok = psonQueueRemove( pQueue,
@@ -161,11 +161,11 @@ void test_pass( void ** state )
                           &context );
    assert_true( ok );
    
-   assert_true( queueNode.txCounter == 3 );
+   assert_true( pQueueNode->txCounter == 3 );
    assert_true( pQueue->listOfElements.currentSize == 3 );
    
    psonTxRollback( pTx, &context );
-   assert_true( queueNode.txCounter == 0 );
+   assert_true( pQueueNode->txCounter == 0 );
    assert_true( pQueue->listOfElements.currentSize == 3 );
    
    ok = psonQueueRemove( pQueue,
@@ -199,11 +199,11 @@ void test_pass( void ** state )
                           &context );
    assert_true( ok );
    
-   assert_true( queueNode.txCounter == 3 );
+   assert_true( pQueueNode->txCounter == 3 );
    assert_true( pQueue->listOfElements.currentSize == 3 );
    
    psonTxCommit( pTx, &context );
-   assert_true( queueNode.txCounter == 0 );
+   assert_true( pQueueNode->txCounter == 0 );
    assert_true( pQueue->listOfElements.currentSize == 0 );
    
    /* Test 3 */
@@ -232,18 +232,18 @@ void test_pass( void ** state )
                            &context );
    assert_true( ok );
    
-   assert_true( queueNode.txCounter == 3 );
+   assert_true( pQueueNode->txCounter == 3 );
    assert_true( pQueue->listOfElements.currentSize == 3 );
    
    psonTxRollback( pTx, &context );
-   assert_true( queueNode.txCounter == 1 );
+   assert_true( pQueueNode->txCounter == 1 );
    assert_true( pQueue->listOfElements.currentSize == 1 );
    
    ok = psonQueueRelease( pQueue,
                           pQueueItem,
                           &context );
    assert_true( ok );
-   assert_true( queueNode.txCounter == 0 );
+   assert_true( pQueueNode->txCounter == 0 );
    assert_true( pQueue->listOfElements.currentSize == 0 );
    
    /* Test 4 */
@@ -273,14 +273,14 @@ void test_pass( void ** state )
    assert_true( ok );
    
    psonTxCommit( pTx, &context );
-   assert_true( queueNode.txCounter == 0 );
+   assert_true( pQueueNode->txCounter == 0 );
    assert_true( pQueue->listOfElements.currentSize == 3 );
 
    ok = psonQueueRelease( pQueue,
                           pQueueItem,
                           &context );
    assert_true( ok );
-   assert_true( queueNode.txCounter == 0 );
+   assert_true( pQueueNode->txCounter == 0 );
    assert_true( pQueue->listOfElements.currentSize == 3 );
 
    ok = psonQueueRemove( pQueue,
@@ -311,14 +311,14 @@ void test_pass( void ** state )
    assert_true( ok );
    
    psonTxRollback( pTx, &context );
-   assert_true( queueNode.txCounter == 0 );
+   assert_true( pQueueNode->txCounter == 0 );
    assert_true( pQueue->listOfElements.currentSize == 3 );
    
    ok = psonQueueRelease( pQueue,
                           pQueueItem,
                           &context );
    assert_true( ok );
-   assert_true( queueNode.txCounter == 0 );
+   assert_true( pQueueNode->txCounter == 0 );
    assert_true( pQueue->listOfElements.currentSize == 3 );
    
    ok = psonQueueRemove( pQueue,
@@ -349,14 +349,14 @@ void test_pass( void ** state )
    assert_true( ok );
    
    psonTxCommit( pTx, &context );
-   assert_true( queueNode.txCounter == 1 );
+   assert_true( pQueueNode->txCounter == 1 );
    assert_true( pQueue->listOfElements.currentSize == 1 );
    
    ok = psonQueueRelease( pQueue,
                           pQueueItem,
                           &context );
    assert_true( ok );
-   assert_true( queueNode.txCounter == 0 );
+   assert_true( pQueueNode->txCounter == 0 );
    assert_true( pQueue->listOfElements.currentSize == 0 );
    
 #endif

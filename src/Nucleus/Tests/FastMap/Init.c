@@ -26,6 +26,7 @@ psonTxStatus status;
 psoObjectDefinition def = { PSO_FAST_MAP, 0, 0, 0 };
 psonKeyDefinition keyDef;
 psonDataDefinition fields;
+psonTreeNode mapNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -35,6 +36,8 @@ void setup_test()
    assert( pHashMap );
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   psonTreeNodeInit( &mapNode, SET_OFFSET( pHashMap ), PSO_FAST_MAP,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -55,7 +58,7 @@ void test_null_context( void ** state )
                                            0, 
                                            1, 
                                            0, 
-                                           &status, 
+                                           &mapNode, 
                                            SET_OFFSET(pHashMap),
                                            &def,
                                            &keyDef,
@@ -74,7 +77,7 @@ void test_null_datadef( void ** state )
                                            0, 
                                            1, 
                                            0, 
-                                           &status, 
+                                           &mapNode, 
                                            SET_OFFSET(pHashMap),
                                            &def,
                                            &keyDef,
@@ -93,7 +96,7 @@ void test_null_definition( void ** state )
                                            0, 
                                            1, 
                                            0, 
-                                           &status, 
+                                           &mapNode, 
                                            SET_OFFSET(pHashMap),
                                            NULL,
                                            &keyDef,
@@ -112,7 +115,7 @@ void test_null_hashitem( void ** state )
                                            0, 
                                            1, 
                                            0, 
-                                           &status, 
+                                           &mapNode, 
                                            PSON_NULL_OFFSET,
                                            &def,
                                            &keyDef,
@@ -131,7 +134,7 @@ void test_null_keydef( void ** state )
                                            0, 
                                            1, 
                                            0, 
-                                           &status, 
+                                           &mapNode, 
                                            SET_OFFSET(pHashMap),
                                            &def,
                                            NULL,
@@ -150,7 +153,7 @@ void test_null_map( void ** state )
                                            0, 
                                            1, 
                                            0, 
-                                           &status, 
+                                           &mapNode, 
                                            SET_OFFSET(pHashMap),
                                            &def,
                                            &keyDef,
@@ -169,7 +172,7 @@ void test_null_parent( void ** state )
                                            PSON_NULL_OFFSET, 
                                            1, 
                                            0, 
-                                           &status, 
+                                           &mapNode, 
                                            SET_OFFSET(pHashMap),
                                            &def,
                                            &keyDef,
@@ -181,7 +184,7 @@ void test_null_parent( void ** state )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void test_null_status( void ** state )
+void test_null_node( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonFastMapInit( pHashMap, 
@@ -207,7 +210,7 @@ void test_zero_blocks( void ** state )
                                            0, 
                                            0, 
                                            0, 
-                                           &status, 
+                                           &mapNode, 
                                            SET_OFFSET(pHashMap),
                                            &def,
                                            &keyDef,
@@ -228,7 +231,7 @@ void test_pass( void ** state )
                          0, 
                          1, 
                          0, 
-                         &status, 
+                         &mapNode, 
                          SET_OFFSET(pHashMap),
                          &def,
                          &keyDef,
@@ -247,16 +250,16 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_datadef, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_context,    setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_datadef,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_definition, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_hashitem,    setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_keydef,    setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_map,    setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_parent,    setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_status,    setup_test, teardown_test ),
-      unit_test_setup_teardown( test_zero_blocks,    setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
+      unit_test_setup_teardown( test_null_hashitem,   setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_keydef,     setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_map,        setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_parent,     setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_node,       setup_test, teardown_test ),
+      unit_test_setup_teardown( test_zero_blocks,     setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,            setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

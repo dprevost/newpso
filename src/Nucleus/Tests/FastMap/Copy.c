@@ -26,6 +26,7 @@ char * key1  = "my key1";
 char * key2  = "my key2";
 char * data1 = "my data1";
 char * data2 = "my data2";
+psonTreeNode mapNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -39,8 +40,11 @@ void setup_test()
    initHashMapCopyTest( &pOldMap, &pNewMap, &context );
 
    psonTxStatusInit( &hashItem.txStatus, SET_OFFSET( context.pTransaction ) );
+   psonTreeNodeInit( &mapNode, SET_OFFSET( pOldMap ), PSO_FAST_MAP,
+                     SET_OFFSET( &hashItem.txStatus ), PSON_NULL_OFFSET );
+   hashItem.dataOffset = SET_OFFSET( &mapNode );
    
-   ok = psonFastMapInit( pOldMap, 0, 1, 0, &hashItem.txStatus,
+   ok = psonFastMapInit( pOldMap, 0, 1, 0, &mapNode,
                          SET_OFFSET(pOldMap), &def, &keyDef, 
                          &fields, &context );
    assert( ok );

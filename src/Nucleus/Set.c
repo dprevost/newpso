@@ -40,7 +40,6 @@ void psonSetFini( psonSet            * pSet,
    PSO_PRE_CONDITION( pSet->memObject.objType == PSON_IDENT_QUEUE );
 
    psonLinkedListFini( &pSet->listOfElements );
-   psonTreeNodeFini(   &pSet->nodeObject );
    psonMemObjectFini(  &pSet->memObject, PSON_ALLOC_API_OBJ, pContext );
 }
 
@@ -57,13 +56,15 @@ bool psonSetGetFirst( psonSet            * pSet,
    psonTxStatus * txItemStatus, * txSetStatus;
    bool isOK, okList;
    bool queueIsEmpty = true;
+   psonTreeNode * pSetNode = NULL;
    
    PSO_PRE_CONDITION( pSet     != NULL );
    PSO_PRE_CONDITION( ppIterator != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pSet->memObject.objType == PSON_IDENT_QUEUE );
    
-   GET_PTR( txSetStatus, pSet->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pSetNode, pSet->nodeOffset, psonTreeNode );
+   GET_PTR( txSetStatus, pSetNode->txStatusOffset, psonTxStatus );
    
    if ( psonLock( &pSet->memObject, pContext ) ) {
       /* This call can only fail if the queue is empty. */
@@ -176,13 +177,15 @@ bool psonSetGetNext( psonSet            * pSet,
    psonTxStatus * txItemStatus, * txSetStatus;
    bool isOK, okList;
    bool queueIsEmpty = true;
+   psonTreeNode * pSetNode = NULL;
    
    PSO_PRE_CONDITION( pSet     != NULL );
    PSO_PRE_CONDITION( ppIterator != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pSet->memObject.objType == PSON_IDENT_QUEUE );
    
-   GET_PTR( txSetStatus, pSet->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pSetNode, pSet->nodeOffset, psonTreeNode );
+   GET_PTR( txSetStatus, pSetNode->txStatusOffset, psonTxStatus );
    
    if ( psonLock( &pSet->memObject, pContext ) ) {
          
@@ -289,22 +292,22 @@ bool psonSetGetNext( psonSet            * pSet,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonSetInit( psonSet           * pSet,
-                    ptrdiff_t             parentOffset,
-                    size_t                numberOfBlocks,
-                    psonTxStatus        * pTxStatus,
-                    uint32_t              origNameLength,
-                    char                * origName,
-                    ptrdiff_t             hashItemOffset,
-                    psoObjectDefinition * pDefinition,
-                    psonDataDefinition  * pDataDefinition,
-                    psonSessionContext  * pContext )
+bool psonSetInit( psonSet             * pSet,
+                  ptrdiff_t             parentOffset,
+                  size_t                numberOfBlocks,
+                  psonTreeNode        * pSetNode,
+                  uint32_t              origNameLength,
+                  char                * origName,
+                  ptrdiff_t             hashItemOffset,
+                  psoObjectDefinition * pDefinition,
+                  psonDataDefinition  * pDataDefinition,
+                  psonSessionContext  * pContext )
 {
    psoErrors errcode;
    
-   PSO_PRE_CONDITION( pSet          != NULL );
+   PSO_PRE_CONDITION( pSet            != NULL );
    PSO_PRE_CONDITION( pContext        != NULL );
-   PSO_PRE_CONDITION( pTxStatus       != NULL );
+   PSO_PRE_CONDITION( pSetNode        != NULL );
    PSO_PRE_CONDITION( origName        != NULL );
    PSO_PRE_CONDITION( pDefinition     != NULL );
    PSO_PRE_CONDITION( pDataDefinition != NULL );
@@ -324,10 +327,7 @@ bool psonSetInit( psonSet           * pSet,
       return false;
    }
 
-   psonTreeNodeInit( &pSet->nodeObject,
-                     SET_OFFSET(pTxStatus),
-                     parentOffset,
-                     hashItemOffset );
+   pSet->nodeOffset = SET_OFFSET( pSetNode );
 
    psonLinkedListInit( &pSet->listOfElements );
 
@@ -350,6 +350,7 @@ bool psonSetInsert( psonSet          * pSet,
    psonTxStatus* txSetStatus;
    size_t allocLength;
    bool ok;
+   psonTreeNode * pSetNode = NULL;
    
    PSO_PRE_CONDITION( pSet != NULL );
    PSO_PRE_CONDITION( pItem    != NULL )
@@ -357,7 +358,8 @@ bool psonSetInsert( psonSet          * pSet,
    PSO_PRE_CONDITION( length  > 0 );
    PSO_PRE_CONDITION( pSet->memObject.objType == PSON_IDENT_QUEUE );
 
-   GET_PTR( txSetStatus, pSet->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pSetNode, pSet->nodeOffset, psonTreeNode );
+   GET_PTR( txSetStatus, pSetNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pSet->memObject, pContext ) ) {
       if ( ! psonTxStatusIsValid( txSetStatus, SET_OFFSET(pContext->pTransaction) ) 
@@ -405,7 +407,7 @@ bool psonSetInsert( psonSet          * pSet,
                              &pSetItem->node );
       
       psonTxStatusInit( &pSetItem->txStatus, SET_OFFSET(pContext->pTransaction) );
-      pSet->nodeObject.txCounter++;
+      pSetNode->txCounter++;
       pSetItem->txStatus.status = PSON_TXS_ADDED;
 
       psonUnlock( &pSet->memObject, pContext );
@@ -471,14 +473,16 @@ void psonSetReleaseNoLock( psonSet          * pSet,
 {
    psonTxStatus * txItemStatus, * txSetStatus;
    size_t len;
+   psonTreeNode * pSetNode = NULL;
    
    PSO_PRE_CONDITION( pSet != NULL );
    PSO_PRE_CONDITION( pSetItem != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pSet->memObject.objType == PSON_IDENT_QUEUE );
 
+   GET_PTR( pSetNode, pSet->nodeOffset, psonTreeNode );
    txItemStatus = &pSetItem->txStatus;
-   GET_PTR( txSetStatus, pSet->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( txSetStatus, pSetNode->txStatusOffset, psonTxStatus );
    
    txItemStatus->usageCounter--;
    txSetStatus->usageCounter--;
@@ -495,7 +499,7 @@ void psonSetReleaseNoLock( psonSet          * pSet,
                 len, 
                 pContext );
 
-      pSet->nodeObject.txCounter--;
+      pSetNode->txCounter--;
    }
 }
 
@@ -508,11 +512,13 @@ void psonSetStatus( psonSet    * pSet,
    psonLinkNode * pNode = NULL;
    psonTxStatus  * txStatus;
    bool okList;
+   psonTreeNode * pSetNode = NULL;
    
    PSO_PRE_CONDITION( pSet  != NULL );
    PSO_PRE_CONDITION( pStatus != NULL );
    
-   GET_PTR( txStatus, pSet->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pSetNode, pSet->nodeOffset, psonTreeNode );
+   GET_PTR( txStatus, pSetNode->txStatusOffset, psonTxStatus );
 
    pStatus->status = txStatus->status;
    pStatus->numDataItem = pSet->listOfElements.currentSize;

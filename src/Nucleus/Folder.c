@@ -365,14 +365,14 @@ bool psonAPIFolderGetFirst( psonFolder         * pFolder,
    psonTxStatus * txFolderStatus;
    ptrdiff_t  firstItemOffset;
    bool found;
-   pson2TreeNode2 * pFolderNode;
+   psonTreeNode * pFolderNode;
 
    PSO_PRE_CONDITION( pFolder  != NULL );
    PSO_PRE_CONDITION( pItem    != NULL )
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
 
-   GET_PTR( pFolderNode, pFolder->nodeOffset, pson2TreeNode2 );
+   GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
    GET_PTR( txFolderStatus, pFolderNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pFolder->memObject, pContext ) ) {
@@ -428,7 +428,7 @@ bool psonAPIFolderGetNext( psonFolder         * pFolder,
    psonTxStatus * txFolderStatus;
    ptrdiff_t  itemOffset;
    bool found;
-   pson2TreeNode2 * pFolderNode;
+   psonTreeNode * pFolderNode;
 
    PSO_PRE_CONDITION( pFolder  != NULL );
    PSO_PRE_CONDITION( pItem    != NULL );
@@ -437,7 +437,7 @@ bool psonAPIFolderGetNext( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pItem->pHashItem  != NULL );
    PSO_PRE_CONDITION( pItem->itemOffset != PSON_NULL_OFFSET );
    
-   GET_PTR( pFolderNode, pFolder->nodeOffset, pson2TreeNode2 );
+   GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
    GET_PTR( txFolderStatus, pFolderNode->txStatusOffset, psonTxStatus );
 
    itemOffset       = pItem->itemOffset;
@@ -504,13 +504,13 @@ void psonAPIFolderStatus( psonFolder   * pFolder,
                           psoObjStatus * pStatus )
 {
    psonTxStatus  * txStatus;
-   pson2TreeNode2 * pFolderNode;
+   psonTreeNode * pFolderNode;
 
    PSO_PRE_CONDITION( pFolder != NULL );
    PSO_PRE_CONDITION( pStatus != NULL );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
 
-   GET_PTR( pFolderNode, pFolder->nodeOffset, pson2TreeNode2 );
+   GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
    GET_PTR( txStatus, pFolderNode->txStatusOffset, psonTxStatus );
 
    pStatus->status = txStatus->status;
@@ -529,7 +529,7 @@ void psonFolderCommitEdit( psonFolder         * pFolder,
                            psonMemObject     ** ppOldMemObj,
                            psonSessionContext * pContext )
 {
-   pson2TreeNode2 * pNodeEdit, * pNodeLatest;
+   psonTreeNode * pNodeEdit, * pNodeLatest;
    psonFastMap * pMapLatest, * pMapEdit;
    psonHashTxItem * pHashItemLatest;
    psonTxStatus * txEdit;
@@ -541,7 +541,7 @@ void psonFolderCommitEdit( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pContext    != NULL );
    PSO_PRE_CONDITION( objectType == PSON_IDENT_MAP );
 
-   GET_PTR( pNodeEdit, pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( pNodeEdit, pHashItem->dataOffset, psonTreeNode );
 
    /* The edit version which is about to become the latest */
    pMapEdit = GET_PTR_FAST( pNodeEdit->offset, psonFastMap );
@@ -554,7 +554,7 @@ void psonFolderCommitEdit( psonFolder         * pFolder,
    
    pHashItemLatest = GET_PTR_FAST( pMapEdit->latestVersion, psonHashTxItem );
    pNodeLatest = GET_PTR_FAST( pHashItemLatest->dataOffset, 
-                               pson2TreeNode2 );
+                               psonTreeNode );
    /* The current latest which is about to become old. */
    pMapLatest = GET_PTR_FAST( pNodeLatest->offset, psonFastMap );
 
@@ -625,7 +625,7 @@ bool psonFolderDeleteObject( psonFolder         * pFolder,
    bool lastIteration = true;
    uint32_t partialLength = 0;
    psoErrors errcode = PSO_OK;
-   pson2TreeNode2* pObjectNode = NULL, * pFolderNode = NULL;
+   psonTreeNode* pObjectNode = NULL, * pFolderNode = NULL;
    psonHashTxItem* pHashItem = NULL;
    psonTxStatus* txStatus;
    psonFolder * pNextFolder, *pDeletedFolder;
@@ -687,8 +687,8 @@ bool psonFolderDeleteObject( psonFolder         * pFolder,
          goto the_exit;
       }
 
-      GET_PTR( pObjectNode, pHashItem->dataOffset, pson2TreeNode2 );
-      GET_PTR( pFolderNode, pFolder->nodeOffset, pson2TreeNode2 );
+      GET_PTR( pObjectNode, pHashItem->dataOffset, psonTreeNode );
+      GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
       
       /*
        * A special case - folders cannot be deleted if they are not empty
@@ -729,7 +729,7 @@ bool psonFolderDeleteObject( psonFolder         * pFolder,
    /* If we come here, this was not the last iteration, so we continue */
 
    /* This is not the last node. This node must be a folder, otherwise... */
-   GET_PTR( pFolderNode, pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( pFolderNode, pHashItem->dataOffset, psonTreeNode );
    if ( pFolderNode->apiType != PSO_FOLDER ) {
       errcode = PSO_NO_SUCH_FOLDER;
       goto the_exit;
@@ -790,7 +790,7 @@ bool psonFolderEditObject( psonFolder         * pFolder,
    bool lastIteration = true;
    uint32_t partialLength = 0;
    size_t bucket = 0, descLength;
-   pson2TreeNode2 * pNodeOld = NULL, * pNodeNew = NULL;
+   psonTreeNode * pNodeOld = NULL, * pNodeNew = NULL;
    psonHashTxItem * pHashItemOld = NULL, * pHashItemNew = NULL;
    psoErrors errcode;
    psonTxStatus * txStatus, * newTxStatus;
@@ -801,8 +801,7 @@ bool psonFolderEditObject( psonFolder         * pFolder,
    psonMemObjIdent memObjType = PSON_IDENT_LAST;
    psonFastMap * pMap;
    bool found, ok;
-//   pson2TreeNode2 * pNode;
-   pson2TreeNode2 * pFolderNode;
+   psonTreeNode * pFolderNode;
    
    PSO_PRE_CONDITION( pFolder     != NULL );
    PSO_PRE_CONDITION( objectName  != NULL )
@@ -839,14 +838,14 @@ bool psonFolderEditObject( psonFolder         * pFolder,
 
    txStatus = &pHashItemOld->txStatus;
 
-   GET_PTR( pNodeOld, pHashItemOld->dataOffset, pson2TreeNode2 );
+   GET_PTR( pNodeOld, pHashItemOld->dataOffset, psonTreeNode );
    
    if ( lastIteration ) {
       if ( pFolder->isSystemObject ) {
          errcode = PSO_SYSTEM_OBJECT;
          goto the_exit;
       }
-      GET_PTR( pFolderNode, pFolder->nodeOffset, pson2TreeNode2 );
+      GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
       GET_PTR( txFolderStatus, pFolderNode->txStatusOffset, psonTxStatus );
       /* 
        * If the transaction id of the object (to open) is equal to the 
@@ -912,8 +911,8 @@ bool psonFolderEditObject( psonFolder         * pFolder,
          goto the_exit;
       }
       
-      descLength = sizeof(pson2TreeNode2);
-      pNodeNew = (pson2TreeNode2 *) malloc( descLength );
+      descLength = sizeof(psonTreeNode);
+      pNodeNew = (psonTreeNode *) malloc( descLength );
       if ( pNodeNew == NULL ) {
          psonFreeBlocks( pContext->pAllocator, PSON_ALLOC_API_OBJ,
                          ptr, pMemObject->totalBlocks, pContext );
@@ -940,7 +939,7 @@ bool psonFolderEditObject( psonFolder         * pFolder,
          goto the_exit;
       }
 
-      pNodeNew = GET_PTR_FAST(pHashItemNew->dataOffset, pson2TreeNode2);
+      pNodeNew = GET_PTR_FAST(pHashItemNew->dataOffset, psonTreeNode);
 
       ok = psonTxAddOps( (psonTx*)pContext->pTransaction,
                          PSON_TX_ADD_EDIT_OBJECT,
@@ -974,8 +973,6 @@ bool psonFolderEditObject( psonFolder         * pFolder,
                                pHashItemNew,
                                pContext );
          PSO_POST_CONDITION( ok == true || ok == false );
-    //     pNodeNew->nodeOffset = SET_OFFSET(ptr) + offsetof(psonFastMap,nodeObject);
-    //     pNodeNew->memOffset  = SET_OFFSET(ptr) + offsetof(psonFastMap,memObject);
          break;
 
       default:
@@ -1061,7 +1058,6 @@ void psonFolderFini( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
 
    psonHashTxFini( &pFolder->hashObj );
-//   psonTreeNodeFini( &pFolder->nodeObject );
    
    /* This call must be last - put a barrier here ? */ 
    psonMemObjectFini(  &pFolder->memObject, PSON_ALLOC_API_OBJ, pContext );
@@ -1078,7 +1074,7 @@ bool psonFolderFindObject( psonFolder         * pFolder,
    bool lastIteration = true;
    uint32_t partialLength = 0;
    psoErrors errcode = PSO_OK;
-   pson2TreeNode2* pNode = NULL;
+   psonTreeNode* pNode = NULL;
    psonHashTxItem* pHashItem = NULL;
    psonTxStatus* txStatus;
    psonFolder * pNextFolder;
@@ -1131,7 +1127,7 @@ bool psonFolderFindObject( psonFolder         * pFolder,
    /* If we come here, this was not the last iteration, so we continue */
 
    /* This is not the last node. This node must be a folder, otherwise... */
-   GET_PTR( pNode, pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( pNode, pHashItem->dataOffset, psonTreeNode );
    if ( pNode->apiType != PSO_FOLDER ) {
       errcode = PSO_NO_SUCH_FOLDER;
       goto the_exit;
@@ -1195,7 +1191,7 @@ bool psonFolderGetDefinition( psonFolder          * pFolder,
 {
    bool lastIteration = true;
    uint32_t partialLength = 0;
-   pson2TreeNode2 * pNode = NULL;
+   psonTreeNode * pNode = NULL;
    psonHashTxItem * pHashItem = NULL;
    psoErrors errcode;
    psonTxStatus * txStatus;
@@ -1243,7 +1239,7 @@ bool psonFolderGetDefinition( psonFolder          * pFolder,
 
    txStatus = &pHashItem->txStatus;
 
-   GET_PTR( pNode, pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( pNode, pHashItem->dataOffset, psonTreeNode );
    
    if ( lastIteration ) {
 
@@ -1357,7 +1353,7 @@ bool psonFolderGetDefLength( psonFolder          * pFolder,
 {
    bool lastIteration = true;
    uint32_t partialLength = 0;
-   pson2TreeNode2 * pNode = NULL;
+   psonTreeNode * pNode = NULL;
    psonHashTxItem * pHashItem = NULL;
    psoErrors errcode;
    psonTxStatus * txStatus;
@@ -1404,7 +1400,7 @@ bool psonFolderGetDefLength( psonFolder          * pFolder,
 
    txStatus = &pHashItem->txStatus;
 
-   GET_PTR( pNode, pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( pNode, pHashItem->dataOffset, psonTreeNode );
    
    if ( lastIteration ) {
 
@@ -1515,10 +1511,10 @@ bool psonFolderGetObject( psonFolder         * pFolder,
 {
    bool lastIteration = true;
    uint32_t partialLength = 0;
-   pson2TreeNode2* pNode = NULL;
+   psonTreeNode * pFolderNode = NULL, * pObjectNode = NULL;
    psonHashTxItem* pHashItem = NULL;
    psoErrors errcode;
-   psonTxStatus * txStatus;
+   psonTxStatus * txObjectStatus;
    psonTxStatus * txFolderStatus;
    psonFolder* pNextFolder;
    size_t bucket;
@@ -1557,25 +1553,25 @@ bool psonFolderGetObject( psonFolder         * pFolder,
       GET_PTR( pHashItem, pHashItem->nextSameKey, psonHashTxItem );
    }
 
-   txStatus = &pHashItem->txStatus;
+   txObjectStatus = &pHashItem->txStatus;
 
-   GET_PTR( pNode, pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( pObjectNode, pHashItem->dataOffset, psonTreeNode );
    
    if ( lastIteration ) {
-      GET_PTR( pNode, pFolder->nodeOffset, pson2TreeNode2 );
-   GET_PTR( txFolderStatus, pNode->txStatusOffset, psonTxStatus );
+      GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
+      GET_PTR( txFolderStatus, pFolderNode->txStatusOffset, psonTxStatus );
 
-      errcode = psonTxTestObjectStatus( txStatus, 
+      errcode = psonTxTestObjectStatus( txObjectStatus, 
                                         SET_OFFSET(pContext->pTransaction) );
       if ( errcode != PSO_OK ) goto the_exit;
 
-      if ( objectType != pNode->apiType ) {
+      if ( objectType != pObjectNode->apiType ) {
          errcode = PSO_WRONG_OBJECT_TYPE;
          goto the_exit;
       }
 
       txFolderStatus->usageCounter++;
-      txStatus->parentCounter++;
+      txObjectStatus->parentCounter++;
       pFolderItem->pHashItem = pHashItem;
 
       psonUnlock( &pFolder->memObject, pContext );
@@ -1584,19 +1580,19 @@ bool psonFolderGetObject( psonFolder         * pFolder,
    }
    
    /* This is not the last node. This node must be a folder, otherwise... */
-   if ( pNode->apiType != PSO_FOLDER ) {
+   if ( pObjectNode->apiType != PSO_FOLDER ) {
       errcode = PSO_NO_SUCH_OBJECT;
       goto the_exit;
    }
    
-   errcode = psonTxTestObjectStatus( txStatus, 
+   errcode = psonTxTestObjectStatus( txObjectStatus, 
                                      SET_OFFSET(pContext->pTransaction) );
    if ( errcode != PSO_OK ) {
       if ( errcode == PSO_NO_SUCH_OBJECT) errcode = PSO_NO_SUCH_FOLDER;
       goto the_exit;
    }
 
-   GET_PTR( pNextFolder, pNode->offset, psonFolder );
+   GET_PTR( pNextFolder, pObjectNode->offset, psonFolder );
    if ( ! psonLock( &pNextFolder->memObject, pContext ) ) {
       errcode = PSO_OBJECT_CANNOT_GET_LOCK;
       goto the_exit;
@@ -1638,7 +1634,7 @@ bool psonFolderGetStatus( psonFolder         * pFolder,
 {
    bool lastIteration = true;
    uint32_t partialLength = 0;
-   pson2TreeNode2 * pNode = NULL;
+   psonTreeNode * pNode = NULL;
    psonHashTxItem * pHashItem = NULL;
    psoErrors errcode;
    psonTxStatus * txStatus;
@@ -1684,7 +1680,7 @@ bool psonFolderGetStatus( psonFolder         * pFolder,
 
    txStatus = &pHashItem->txStatus;
 
-   GET_PTR( pNode, pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( pNode, pHashItem->dataOffset, psonTreeNode );
    
    if ( lastIteration ) {
 
@@ -1781,19 +1777,14 @@ bool psonFolderInit( psonFolder         * pFolder,
                      ptrdiff_t            parentOffset,
                      size_t               numberOfBlocks,
                      size_t               expectedNumOfChilds,
-                     psonTxStatus       * pTxStatus,
-//                     ptrdiff_t            hashItemOffset,
-                     pson2TreeNode2       * pNode,
-//                     ptrdiff_t            nodeOffset,
+                     psonTreeNode       * pNode,
                      psonSessionContext * pContext )
 {
    psoErrors errcode;
    
    PSO_PRE_CONDITION( pFolder   != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
-   PSO_PRE_CONDITION( pTxStatus != NULL );
    PSO_PRE_CONDITION( pNode     != NULL );
-//   PSO_PRE_CONDITION( hashItemOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( parentOffset   != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks  > 0 );
    
@@ -1809,10 +1800,6 @@ bool psonFolderInit( psonFolder         * pFolder,
    }
 
    pFolder->nodeOffset = SET_OFFSET( pNode );
-//   psonTreeNodeInit( &pFolder->nodeObject,
-//                     SET_OFFSET(pTxStatus),
-//                     parentOffset,
-//                     0 );
 
    errcode = psonHashTxInit( &pFolder->hashObj,
                            SET_OFFSET(&pFolder->memObject),
@@ -1846,8 +1833,8 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
    uint32_t partialLength = 0;
    psonHashTxItem * pHashItem, * previousHashItem = NULL;
    psoErrors errcode = PSO_OK;
-   pson2TreeNode2* pObjectNode = NULL, * pFolderNode = NULL;
-   pson2TreeNode2 dummyNode;
+   psonTreeNode* pObjectNode = NULL, * pFolderNode = NULL;
+   psonTreeNode dummyNode;
    unsigned char* ptr = NULL;
    psonFolder * pNextFolder = NULL;
    psonTxStatus* objTxStatus;  /* txStatus of the created object */
@@ -1921,14 +1908,14 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
          goto the_exit;
       }
       
-      memset( &dummyNode, 0, sizeof(pson2TreeNode2) );
+      memset( &dummyNode, 0, sizeof(psonTreeNode) );
 
       errcode = psonHashTxInsert( &pFolder->hashObj, 
                                   bucket,
                                   (unsigned char *)objectName, 
                                   partialLength * sizeof(char), 
                                   (void*)&dummyNode, 
-                                  sizeof(pson2TreeNode2),
+                                  sizeof(psonTreeNode),
                                   &pHashItem,
                                   pContext );
       if ( errcode != PSO_OK ) {
@@ -1976,13 +1963,12 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
       psonTxStatusInit( objTxStatus, SET_OFFSET(pContext->pTransaction) );
       objTxStatus->status = PSON_TXS_ADDED;
       
-      GET_PTR( pObjectNode, pHashItem->dataOffset, pson2TreeNode2 );
-      pson2TreeNode2Init( pObjectNode, 
+      GET_PTR( pObjectNode, pHashItem->dataOffset, psonTreeNode );
+      psonTreeNodeInit( pObjectNode, 
                           SET_OFFSET( ptr ),
                           pDefinition->type,
                           SET_OFFSET(objTxStatus),
                           SET_OFFSET(pFolder) );
-      fprintf( stderr, "%d\n", pDefinition->type );
       switch ( memObjType ) {
 
       case PSON_IDENT_QUEUE:
@@ -1993,8 +1979,6 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
                              pDefinition,
                              pDataDefinition,
                              pContext );
-//         pNode->nodeOffset = SET_OFFSET(ptr) + offsetof(psonQueue,nodeObject);
-  //       pNode->memOffset  = SET_OFFSET(ptr) + offsetof(psonQueue,memObject);
          break;
 
       case PSON_IDENT_FOLDER:
@@ -2002,12 +1986,8 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
                               SET_OFFSET(pFolder),
                               numBlocks,
                               expectedNumOfChilds,
-                              objTxStatus,
-//                              SET_OFFSET(pHashItem),
                               pObjectNode,
                               pContext );
-//         pNode->nodeOffset = SET_OFFSET(ptr) + offsetof(psonFolder,nodeObject);
-//         pNode->memOffset  = SET_OFFSET(ptr) + offsetof(psonFolder,memObject);
          break;
       
       case PSON_IDENT_HASH_MAP:
@@ -2015,14 +1995,11 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
                                SET_OFFSET(pFolder),
                                numBlocks,
                                expectedNumOfChilds,
-                               objTxStatus,
-                               SET_OFFSET(pHashItem),
+                               pObjectNode,
                                pDefinition,
                                pKeyDefinition,
                                pDataDefinition,
                                pContext );
-//         pNode->nodeOffset = SET_OFFSET(ptr) + offsetof(psonHashMap,nodeObject);
-//         pNode->memOffset  = SET_OFFSET(ptr) + offsetof(psonHashMap,memObject);
          break;
 
       case PSON_IDENT_MAP:
@@ -2030,7 +2007,6 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
                                SET_OFFSET(pFolder),
                                numBlocks,
                                expectedNumOfChilds,
-  //                             objTxStatus,
                                pObjectNode,
                                SET_OFFSET(pHashItem),
                                pDefinition,
@@ -2038,8 +2014,6 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
                                pDataDefinition,
                                pContext );
          PSO_POST_CONDITION( ok == true || ok == false );
-//         pNode->nodeOffset = SET_OFFSET(ptr) + offsetof(psonFastMap,nodeObject);
- //        pNode->memOffset  = SET_OFFSET(ptr) + offsetof(psonFastMap,memObject);
          break;
 
       default:
@@ -2057,7 +2031,7 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
                          ptr, numBlocks, pContext );
          goto the_exit;
       }
-      GET_PTR( pFolderNode, pFolder->nodeOffset, pson2TreeNode2 );
+      GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
       pFolderNode->txCounter++;
       if ( previousHashItem != NULL ) {
          previousHashItem->nextSameKey = SET_OFFSET(pHashItem);
@@ -2083,7 +2057,7 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
    }
    
    /* This is not the last node. This node must be a folder, otherwise... */
-   GET_PTR( pFolderNode, pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( pFolderNode, pHashItem->dataOffset, psonTreeNode );
    if ( pFolderNode->apiType != PSO_FOLDER ) {
       errcode = PSO_NO_SUCH_FOLDER;
       goto the_exit;
@@ -2139,7 +2113,7 @@ bool psonFolderRelease( psonFolder         * pFolder,
                         psonSessionContext * pContext )
 {
    psonTxStatus * txItemStatus, * txFolderStatus;
-   pson2TreeNode2 * pNode;
+   psonTreeNode * pNode;
    
    PSO_PRE_CONDITION( pFolder     != NULL );
    PSO_PRE_CONDITION( pFolderItem != NULL );
@@ -2147,7 +2121,7 @@ bool psonFolderRelease( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
 
    txItemStatus = &pFolderItem->pHashItem->txStatus;
-   GET_PTR( pNode, pFolder->nodeOffset, pson2TreeNode2 );
+   GET_PTR( pNode, pFolder->nodeOffset, psonTreeNode );
    GET_PTR( txFolderStatus, pNode->txStatusOffset, psonTxStatus );
    
    if ( psonLock( &pFolder->memObject, pContext ) ) {
@@ -2175,7 +2149,7 @@ void psonFolderReleaseNoLock( psonFolder         * pFolder,
                               psonSessionContext * pContext )
 {
    psonTxStatus * txItemStatus, * txFolderStatus;
-   pson2TreeNode2 * pNode;
+   psonTreeNode * pNode;
    
    PSO_PRE_CONDITION( pFolder   != NULL );
    PSO_PRE_CONDITION( pHashItem != NULL );
@@ -2183,7 +2157,7 @@ void psonFolderReleaseNoLock( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
 
    txItemStatus = &pHashItem->txStatus;
-   GET_PTR( pNode, pFolder->nodeOffset, pson2TreeNode2 );
+   GET_PTR( pNode, pFolder->nodeOffset, psonTreeNode );
    GET_PTR( txFolderStatus, pNode->txStatusOffset, psonTxStatus );
    
    txItemStatus->parentCounter--;
@@ -2218,7 +2192,7 @@ void psonFolderRemoveObject( psonFolder         * pFolder,
                              psonSessionContext * pContext )
 {
    psonHashTxItem * previousItem = NULL;
-   pson2TreeNode2 * pNode, * pFolderNode = NULL;
+   psonTreeNode * pNode, * pFolderNode = NULL;
    void * ptrObject;
    size_t bucket;
    bool found;
@@ -2228,9 +2202,9 @@ void psonFolderRemoveObject( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
 
-   GET_PTR( pNode, pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( pNode, pHashItem->dataOffset, psonTreeNode );
    GET_PTR( ptrObject, pNode->offset, void );
-   GET_PTR( pFolderNode, pFolder->nodeOffset, pson2TreeNode2 );
+   GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
 
    /* We search for the bucket */
    found = psonHashTxGet( &pFolder->hashObj, 
@@ -2285,7 +2259,7 @@ void psonFolderResize( psonFolder         * pFolder,
                        psonSessionContext * pContext  )
 {
    psonTxStatus * txFolderStatus;
-   pson2TreeNode2 * pFolderNode;
+   psonTreeNode * pFolderNode;
 
    PSO_PRE_CONDITION( pFolder  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
@@ -2298,7 +2272,7 @@ void psonFolderResize( psonFolder         * pFolder,
     *   - nodeObject.txCounter: offset to some of our data is part of a
     *                           transaction.
     */
-   GET_PTR( pFolderNode, pFolder->nodeOffset, pson2TreeNode2 );
+   GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
    GET_PTR( txFolderStatus, pFolderNode->txStatusOffset, psonTxStatus );
    if ( (txFolderStatus->usageCounter == 0) &&
       (pFolderNode->txCounter == 0 ) ) {
@@ -2315,7 +2289,7 @@ void psonFolderRollbackEdit( psonFolder         * pFolder,
                              bool               * isRemoved,
                              psonSessionContext * pContext )
 {
-   pson2TreeNode2 * pNode, * pNodeLatest;
+   psonTreeNode * pNode, * pNodeLatest;
    psonFastMap * pMapLatest, * pMapEdit;
    psonHashTxItem * pHashItemLatest;
    psonTxStatus * tx;
@@ -2325,7 +2299,7 @@ void psonFolderRollbackEdit( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( objectType == PSON_IDENT_MAP );
 
-   GET_PTR( pNode, pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( pNode, pHashItem->dataOffset, psonTreeNode );
 
    pMapEdit = GET_PTR_FAST( pNode->offset, psonFastMap );
    
@@ -2333,7 +2307,7 @@ void psonFolderRollbackEdit( psonFolder         * pFolder,
    
    pHashItemLatest = GET_PTR_FAST( pMapEdit->latestVersion, psonHashTxItem );
    pNodeLatest = GET_PTR_FAST( pHashItemLatest->dataOffset, 
-                               pson2TreeNode2 );
+                               psonTreeNode );
    pMapLatest = GET_PTR_FAST( pNodeLatest->offset, psonFastMap );
    
    pMapLatest->editVersion = PSON_NULL_OFFSET;

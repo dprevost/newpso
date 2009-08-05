@@ -33,7 +33,7 @@ BEGIN_C_DECLS
  * This structure contains the information needed for all the leaves and
  * the branches of the tree of objects/containers visible from the API.
  */
-struct pson2TreeNode2
+struct psonTreeNode
 {
    /** Offset of the object */
    ptrdiff_t offset;
@@ -48,34 +48,6 @@ struct pson2TreeNode2
     */
    size_t txCounter;
   
-   /** Offset to the string used for the key. */
-//   ptrdiff_t myHashItem;
-   
-   /** Offset to the transaction info (psonTxStatus). */
-   ptrdiff_t txStatusOffset;
-
-   /** Offset to the parent of this object. */
-   /* PSON_NULL_OFFSET for top folder ("/") */
-   ptrdiff_t myParentOffset;
-   
-};
-
-/**
- * This structure contains the information needed for all the leaves and
- * the branches of the tree of objects/containers visible from the API.
- */
-struct psonTreeNode
-{
-   /** Count the number of uncommitted/unrollbacked transaction ops are
-    * still to be processed on this object (or more exactly on its data).
-    * This is used to make sure that an object is not destroyed while
-    * transactions (on its data) are not processed yet.
-    */
-   size_t txCounter;
-  
-   /** Offset to the string used for the key. */
-   ptrdiff_t myHashItem;
-   
    /** Offset to the transaction info (psonTxStatus). */
    ptrdiff_t txStatusOffset;
 
@@ -86,12 +58,11 @@ struct psonTreeNode
 };
 
 typedef struct psonTreeNode psonTreeNode;
-typedef struct pson2TreeNode2 pson2TreeNode2;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline 
-void pson2TreeNode2Init( pson2TreeNode2 * pNode,
+void psonTreeNodeInit( psonTreeNode * pNode,
                        ptrdiff_t      myOffset,
                        psoObjectType  apiType,
                        ptrdiff_t      txStatusOffset,
@@ -109,7 +80,7 @@ void pson2TreeNode2Init( pson2TreeNode2 * pNode,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline 
-void pson2TreeNode2Fini( pson2TreeNode2 * pNode )
+void psonTreeNodeFini( psonTreeNode * pNode )
 {
    PSO_PRE_CONDITION( pNode != NULL );
    
@@ -118,36 +89,6 @@ void pson2TreeNode2Fini( pson2TreeNode2 * pNode )
    pNode->txCounter      = 0;
    pNode->txStatusOffset = PSON_NULL_OFFSET;
    pNode->myParentOffset = PSON_NULL_OFFSET;
-//   pNode->myHashItem     = PSON_NULL_OFFSET;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-static inline 
-void psonTreeNodeInit( psonTreeNode * pNode,
-                       ptrdiff_t      txStatusOffset,
-                       ptrdiff_t      parentOffset,
-                       ptrdiff_t      hashItemOffset )
-{
-   PSO_PRE_CONDITION( pNode != NULL );
-   
-   pNode->txCounter      = 0;
-   pNode->txStatusOffset = txStatusOffset;
-   pNode->myParentOffset = parentOffset;
-   pNode->myHashItem     = hashItemOffset;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-static inline 
-void psonTreeNodeFini( psonTreeNode * pNode )
-{
-   PSO_PRE_CONDITION( pNode != NULL );
-   
-   pNode->txCounter      = 0;
-   pNode->txStatusOffset = PSON_NULL_OFFSET;
-   pNode->myParentOffset = PSON_NULL_OFFSET;
-   pNode->myHashItem     = PSON_NULL_OFFSET;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

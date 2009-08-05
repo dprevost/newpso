@@ -23,6 +23,7 @@
 psonHashMap * pHashMap;
 psonSessionContext context;
 psonTxStatus status;
+psonTreeNode mapNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -36,9 +37,10 @@ void setup_test()
    pHashMap = initHashMapTest( &context );
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   psonTreeNodeInit( &mapNode, SET_OFFSET( pHashMap ), PSO_HASH_MAP,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonHashMapInit( pHashMap, 0, 1, 0, &status,
-                         SET_OFFSET(pHashMap), 
+   ok = psonHashMapInit( pHashMap, 0, 1, 0, &mapNode,
                          &def, &keyDef,
                          &fields, &context );
    assert( ok );
@@ -156,7 +158,7 @@ void test_pass( void ** state )
                            strlen("my data 1"),
                            &context );
    assert_true( ok );
-   assert_true( pHashMap->nodeObject.txCounter == 1 );
+   assert_true( mapNode.txCounter == 1 );
    
    ok = psonHashMapInsert( pHashMap,
                            "my key 2",
@@ -165,7 +167,7 @@ void test_pass( void ** state )
                            strlen("my data 2"),
                            &context );
    assert_true( ok );
-   assert_true( pHashMap->nodeObject.txCounter == 2 );
+   assert_true( mapNode.txCounter == 2 );
    assert_true( pHashMap->hashObj.numberOfItems == 2 );
    
 #endif

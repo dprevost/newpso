@@ -28,6 +28,7 @@ char * key2  = "my key2";
 char * data1 = "my data1";
 char * data2 = "my data2";
 psonHashMapItem item;
+psonTreeNode mapNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -41,9 +42,10 @@ void setup_test()
    pHashMap = initHashMapTest( &context );
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   psonTreeNodeInit( &mapNode, SET_OFFSET( pHashMap ), PSO_HASH_MAP,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonHashMapInit( pHashMap, 0, 1, 0, &status,
-                         SET_OFFSET(pHashMap), 
+   ok = psonHashMapInit( pHashMap, 0, 1, 0, &mapNode,
                          &def, &keyDef,
                          &fields, &context );
    assert( ok );

@@ -40,18 +40,18 @@ bool psonTopFolderCloseObject( psonFolderItem     * pFolderItem,
 {
    psonFolder   * parentFolder;
    psonTxStatus * txItemStatus, * txFolderStatus;
-   pson2TreeNode2 * pChildNode, * parentNode;
+   psonTreeNode * pChildNode, * parentNode;
    
    PSO_PRE_CONDITION( pFolderItem != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
 
-   GET_PTR( pChildNode, pFolderItem->pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( pChildNode, pFolderItem->pHashItem->dataOffset, psonTreeNode );
    
    /* Special case, the top folder */
    if ( pChildNode->myParentOffset == PSON_NULL_OFFSET ) return true;
 
    GET_PTR( parentFolder, pChildNode->myParentOffset, psonFolder );
-   GET_PTR( parentNode, parentFolder->nodeOffset, pson2TreeNode2 );
+   GET_PTR( parentNode, parentFolder->nodeOffset, psonTreeNode );
    GET_PTR( txFolderStatus, parentNode->txStatusOffset, psonTxStatus );
    
    if ( psonLock( &parentFolder->memObject, pContext ) ) {

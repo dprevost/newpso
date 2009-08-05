@@ -74,7 +74,7 @@ struct psonSet
    struct psonMemObject memObject;
 
    /** Basic info for all leaves and branches of our tree. */
-   struct psonTreeNode  nodeObject;
+   ptrdiff_t nodeOffset;
 
    /** The type of queue (as decided when psoCreateObject() was called). */
    enum psoObjectType queueType;
@@ -127,7 +127,7 @@ PHOTON_ENGINE_EXPORT
 bool psonSetInit( psonSet             * pSet,
                   ptrdiff_t             parentOffset,
                   size_t                numberOfBlocks,
-                  psonTxStatus        * pTxStatus,
+                  psonTreeNode        * pSetNode,
                   uint32_t              origNameLength,
                   char                * origName,
                   ptrdiff_t             hashItemOffset,

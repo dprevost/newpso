@@ -53,7 +53,7 @@ struct psonSequentialSet
    struct psonMemObject memObject;
 
    /** Basic info for all leaves and branches of our tree. */
-   struct psonTreeNode  nodeObject;
+//   struct psonTreeNode  nodeObject;
 
    /** Offset to the data definition */
    ptrdiff_t  dataDefOffset;

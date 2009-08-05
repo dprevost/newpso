@@ -22,7 +22,8 @@
 
 psonFastMap * pHashMap;
 psonSessionContext context;
- 
+psonTreeNode mapNode;
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
@@ -37,8 +38,10 @@ void setup_test()
    assert( pHashMap != NULL );
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   psonTreeNodeInit( &mapNode, SET_OFFSET( pHashMap ), PSO_FAST_MAP,
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonFastMapInit( pHashMap, 0, 1, 0, &status,
+   ok = psonFastMapInit( pHashMap, 0, 1, 0, &mapNode,
                          SET_OFFSET(pHashMap), &def, &keyDef, 
                          &fields, &context );
    assert( ok );

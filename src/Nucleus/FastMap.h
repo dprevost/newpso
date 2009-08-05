@@ -51,7 +51,6 @@ struct psonFastMap
    struct psonMemObject memObject;
 
    /** Basic info for all leaves and branches of our tree. */
-//   struct psonTreeNode  nodeObject;
    ptrdiff_t nodeOffset;
    
    struct psonHash hashObj;
@@ -125,8 +124,7 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
                       ptrdiff_t             parentOffset,
                       size_t                numberOfBlocks,
                       size_t                expectedNumOfChilds,
-                      pson2TreeNode2        * pNode,
-//                      psonTxStatus        * pTxStatus,
+                      psonTreeNode        * pNode,
                       ptrdiff_t             hashItemOffset,
                       psoObjectDefinition * pDefinition,
                       psonKeyDefinition   * pKeyDefinition,

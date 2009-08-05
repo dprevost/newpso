@@ -127,8 +127,6 @@ void test_zero_length( void ** state )
 void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-//   unsigned char* ptr;
-//   size_t allocatedLength = PSON_BLOCK_SIZE*10;
    unsigned char* newBuff[5];
    
    newBuff[0] = psonMallocBlocks( pAlloc, PSON_ALLOC_ANY, 2, &context );

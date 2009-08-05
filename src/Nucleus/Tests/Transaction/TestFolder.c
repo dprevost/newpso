@@ -35,16 +35,16 @@ void test_pass( void ** state )
    psonKeyDefinition key;
    psoObjectDefinition folderDef = { PSO_FOLDER, 0, 0, 0 };
    psonDataDefinition fields;
-   pson2TreeNode2 node;
+   psonTreeNode node;
 
    pFolder = initFolderTest( &context );
    pTx = context.pTransaction;
    
    psonTxStatusInit( &status, SET_OFFSET( pTx ) );
-   pson2TreeNode2Init( &node, SET_OFFSET( pFolder ), PSO_FOLDER,
+   psonTreeNodeInit( &node, SET_OFFSET( pFolder ), PSO_FOLDER,
                      SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonFolderInit( pFolder, 0, 1, 0, &status, &node, &context );
+   ok = psonFolderInit( pFolder, 0, 1, 0, &node, &context );
    assert_true( ok );
    
    /* Test 1 */
@@ -171,11 +171,9 @@ void test_pass( void ** state )
    ok = psonFolderGetObject( pFolder,
                              "test3",
                              5,
-                             PSO_FOLDER,
-//                             PSO_HASH_MAP,
+                             PSO_HASH_MAP,
                              &item,
                              &context );
-   fprintf( stderr, "qq: %d\n", psocGetLastError( &context.errorHandler ) );
    assert_true( ok );
    
    psonTxRollback( pTx, &context );

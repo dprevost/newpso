@@ -50,12 +50,12 @@ bool psonSeqSetCopy( psonSeqSet         * pOldSet,
       return false;
    }
 
-   psonTreeNodeInit( &pNewSet->nodeObject,
-                     SET_OFFSET(&pHashItem->txStatus),
-                     pOldSet->nodeObject.myNameLength,
-                     SET_OFFSET(origName),
-                     pOldSet->nodeObject.myParentOffset,
-                     SET_OFFSET(pHashItem) );
+//   psonTreeNodeInit( &pNewSet->nodeObject,
+//                     SET_OFFSET(&pHashItem->txStatus),
+//                     pOldSet->nodeObject.myNameLength,
+//                     SET_OFFSET(origName),
+//                     pOldSet->nodeObject.myParentOffset,
+//                     SET_OFFSET(pHashItem) );
    
    errcode = psonHashInit( &pNewSet->hashObj,
                            SET_OFFSET(&pNewSet->memObject),
@@ -153,7 +153,7 @@ void psonSeqSetFini( psonSeqSet         * pSeqSet,
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
 
    psonHashFini( &pSeqSet->hashObj );
-   psonTreeNodeFini( &pSeqSet->nodeObject );
+//   psonTreeNodeFini( &pSeqSet->nodeObject );
    
    /* 
     * Must be the last call since it will release the blocks of
@@ -397,12 +397,12 @@ bool psonSeqSetInit( psonSeqSet          * pSeqSet,
       return false;
    }
 
-   psonTreeNodeInit( &pSeqSet->nodeObject,
-                     SET_OFFSET(pTxStatus),
-                     origNameLength,
-                     SET_OFFSET(origName),
-                     parentOffset,
-                     hashItemOffset );
+//   psonTreeNodeInit( &pSeqSet->nodeObject,
+//                     SET_OFFSET(pTxStatus),
+//                     origNameLength,
+//                     SET_OFFSET(origName),
+//                     parentOffset,
+//                     hashItemOffset );
 
    errcode = psonHashInit( &pSeqSet->hashObj, 
                            SET_OFFSET(&pSeqSet->memObject),

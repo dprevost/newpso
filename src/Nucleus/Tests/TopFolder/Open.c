@@ -189,7 +189,6 @@ void test_pass( void ** state )
                                  PSO_QUEUE,
                                  &folderItem,
                                  &context );
-   fprintf( stderr, "qw: %d\n", psocGetLastError( &context.errorHandler ) );
    assert_true( ok );
    
    ok = psonTopFolderOpenObject( pTopFolder,

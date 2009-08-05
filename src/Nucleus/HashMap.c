@@ -40,16 +40,18 @@ void psonHashMapCommitAdd( psonHashMap        * pHashMap,
 {
    psonHashTxItem * pHashItem;
    psonTxStatus * txHashMapStatus;
+   psonTreeNode * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
 
    GET_PTR( pHashItem, itemOffset, psonHashTxItem );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
 
    pHashItem->txStatus.txOffset = PSON_NULL_OFFSET;
    pHashItem->txStatus.status = PSON_TXS_OK;
-   pHashMap->nodeObject.txCounter--;
+   pMapNode->txCounter--;
 
    /*
     * Do we need to resize? We need both conditions here:
@@ -63,9 +65,9 @@ void psonHashMapCommitAdd( psonHashMap        * pHashMap,
     *       current function returns void. Let's someone else find that 
     *       we are getting low on memory...
     */
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
    if ( (txHashMapStatus->usageCounter == 0) &&
-                   (pHashMap->nodeObject.txCounter == 0 ) ) {
+                   (pMapNode->txCounter == 0 ) ) {
       if ( pHashMap->hashObj.enumResize != PSON_HASH_NO_RESIZE ) { 
          psonHashTxResize( &pHashMap->hashObj, pContext );
       }
@@ -81,11 +83,13 @@ void psonHashMapCommitRemove( psonHashMap        * pHashMap,
    psonHashTxItem * pHashItem;
    psonTxStatus * txItemStatus;
    psonTxStatus * txHashMapStatus;
+   psonTreeNode * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
 
+   GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( pHashItem, itemOffset, psonHashTxItem );
    txItemStatus = &pHashItem->txStatus;
    /* 
@@ -97,7 +101,7 @@ void psonHashMapCommitRemove( psonHashMap        * pHashMap,
       psonHashTxDelete( &pHashMap->hashObj, 
                         pHashItem,
                         pContext );
-      pHashMap->nodeObject.txCounter--;
+      pMapNode->txCounter--;
 
       /*
        * Do we need to resize? We need both conditions here:
@@ -112,9 +116,9 @@ void psonHashMapCommitRemove( psonHashMap        * pHashMap,
        *       we are getting low on memory...
        */
       if ( pHashMap->hashObj.enumResize != PSON_HASH_NO_RESIZE ) {
-         GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+         GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
          if ( (txHashMapStatus->usageCounter == 0) &&
-            (pHashMap->nodeObject.txCounter == 0 ) ) {
+            (pMapNode->txCounter == 0 ) ) {
             psonHashTxResize( &pHashMap->hashObj, pContext );
          }
       }
@@ -136,6 +140,7 @@ bool psonHashMapDelete( psonHashMap        * pHashMap,
    psonTxStatus * txItemStatus, * txHashMapStatus;
    size_t bucket;
    bool found, ok;
+   psonTreeNode * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pKey     != NULL );
@@ -143,7 +148,8 @@ bool psonHashMapDelete( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
    
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
       if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pTransaction) ) 
@@ -198,7 +204,7 @@ bool psonHashMapDelete( psonHashMap        * pHashMap,
       
       txItemStatus->txOffset = SET_OFFSET(pContext->pTransaction);
       txItemStatus->status = PSON_TXS_DESTROYED;
-      pHashMap->nodeObject.txCounter++;
+      pMapNode->txCounter++;
 
       psonUnlock( &pHashMap->memObject, pContext );
    }
@@ -230,7 +236,6 @@ void psonHashMapFini( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
 
    psonHashTxFini( &pHashMap->hashObj );
-   psonTreeNodeFini( &pHashMap->nodeObject );
    
    /* 
     * Must be the last call since it will release the blocks of
@@ -253,6 +258,7 @@ bool psonHashMapGet( psonHashMap        * pHashMap,
    psonTxStatus * txItemStatus, * txHashMapStatus;
    size_t bucket;
    bool found;
+   psonTreeNode * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pKey       != NULL );
@@ -261,7 +267,8 @@ bool psonHashMapGet( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
 
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
       if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pTransaction) ) 
@@ -376,13 +383,15 @@ bool psonHashMapGetFirst( psonHashMap        * pHashMap,
    psonTxStatus * txHashMapStatus;
    ptrdiff_t  firstItemOffset;
    bool isOK, found;
+   psonTreeNode * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pItem    != NULL )
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
 
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
       found = psonHashTxGetFirst( &pHashMap->hashObj, 
@@ -476,6 +485,7 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
    psonTxStatus * txHashMapStatus;
    ptrdiff_t  itemOffset;
    bool isOK, found;
+   psonTreeNode * pMapNode = NULL;
 
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pItem    != NULL );
@@ -484,7 +494,8 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pItem->pHashItem  != NULL );
    PSO_PRE_CONDITION( pItem->itemOffset != PSON_NULL_OFFSET );
    
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    itemOffset       = pItem->itemOffset;
    previousHashItem = pItem->pHashItem;
@@ -585,8 +596,7 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
                       ptrdiff_t             parentOffset,
                       size_t                numberOfBlocks,
                       size_t                expectedNumOfItems,
-                      psonTxStatus        * pTxStatus,
-                      ptrdiff_t             hashItemOffset,
+                      psonTreeNode        * pNode,
                       psoObjectDefinition * pDefinition,
                       psonKeyDefinition   * pKeyDefinition,
                       psonDataDefinition  * pDataDefinition,
@@ -596,11 +606,10 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
    
    PSO_PRE_CONDITION( pHashMap        != NULL );
    PSO_PRE_CONDITION( pContext        != NULL );
-   PSO_PRE_CONDITION( pTxStatus       != NULL );
+   PSO_PRE_CONDITION( pNode           != NULL );
    PSO_PRE_CONDITION( pDefinition     != NULL );
    PSO_PRE_CONDITION( pKeyDefinition  != NULL );
    PSO_PRE_CONDITION( pDataDefinition != NULL );
-   PSO_PRE_CONDITION( hashItemOffset  != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( parentOffset    != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
    
@@ -615,10 +624,7 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
       return false;
    }
 
-   psonTreeNodeInit( &pHashMap->nodeObject,
-                     SET_OFFSET(pTxStatus),
-                     parentOffset,
-                     hashItemOffset );
+   pHashMap->nodeOffset = SET_OFFSET( pNode );
 
    errcode = psonHashTxInit( &pHashMap->hashObj, 
                            SET_OFFSET(&pHashMap->memObject),
@@ -654,6 +660,7 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
    psonTxStatus * txItemStatus, * txHashMapStatus;
    size_t bucket;
    bool found, ok;
+   psonTreeNode * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pKey     != NULL )
@@ -663,7 +670,8 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( itemLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
 
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
       if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pTransaction) ) 
@@ -722,7 +730,7 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
       
       txItemStatus = &pHashItem->txStatus;
       psonTxStatusInit( txItemStatus, SET_OFFSET(pContext->pTransaction) );
-      pHashMap->nodeObject.txCounter++;
+      pMapNode->txCounter++;
       txItemStatus->status = PSON_TXS_ADDED;
       if ( previousHashItem != NULL ) {
          previousHashItem->nextSameKey = SET_OFFSET(pHashItem);
@@ -791,13 +799,15 @@ void psonHashMapReleaseNoLock( psonHashMap        * pHashMap,
                                psonSessionContext * pContext )
 {
    psonTxStatus * txItemStatus, * txHashMapStatus;
+   psonTreeNode * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap  != NULL );
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
 
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    txItemStatus = &pHashItem->txStatus;
    
@@ -810,7 +820,7 @@ void psonHashMapReleaseNoLock( psonHashMap        * pHashMap,
       psonHashTxDelete( &pHashMap->hashObj, 
                         pHashItem,
                         pContext );
-      pHashMap->nodeObject.txCounter--;
+      pMapNode->txCounter--;
    }
    
    /*
@@ -826,7 +836,7 @@ void psonHashMapReleaseNoLock( psonHashMap        * pHashMap,
     *       we are getting low on memory...
     */
    if ( (txHashMapStatus->usageCounter == 0) &&
-      (pHashMap->nodeObject.txCounter == 0 ) ) {
+      (pMapNode->txCounter == 0 ) ) {
       if ( pHashMap->hashObj.enumResize != PSON_HASH_NO_RESIZE ) {
          psonHashTxResize( &pHashMap->hashObj, pContext );
       }
@@ -847,6 +857,7 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
    psonTxStatus * txItemStatus, * txHashMapStatus;
    size_t bucket;
    bool found, ok;
+   psonTreeNode * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pKey     != NULL )
@@ -856,7 +867,8 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( itemLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
 
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
       if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pTransaction) ) 
@@ -934,7 +946,7 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
       txItemStatus->status = PSON_TXS_REPLACED;
 
       pHashItem->nextSameKey = SET_OFFSET(pNewHashItem);
-      pHashMap->nodeObject.txCounter += 2;
+      pMapNode->txCounter += 2;
 
       psonUnlock( &pHashMap->memObject, pContext );
    }
@@ -967,11 +979,13 @@ void psonHashMapRollbackAdd( psonHashMap        * pHashMap,
 {
    psonHashTxItem * pHashItem;
    psonTxStatus * txItemStatus, * txHashMapStatus;
+   psonTreeNode * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
 
+   GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( pHashItem, itemOffset, psonHashTxItem );
    txItemStatus = &pHashItem->txStatus;
    /* 
@@ -985,7 +999,7 @@ void psonHashMapRollbackAdd( psonHashMap        * pHashMap,
       psonHashTxDelete( &pHashMap->hashObj, 
                         pHashItem,
                         pContext );
-      pHashMap->nodeObject.txCounter--;
+      pMapNode->txCounter--;
    
       /*
        * Do we need to resize? We need both conditions here:
@@ -999,9 +1013,9 @@ void psonHashMapRollbackAdd( psonHashMap        * pHashMap,
        *       current function returns void. Let's someone else find that 
        *       we are getting low on memory...
        */
-      GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+      GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
       if ( (txHashMapStatus->usageCounter == 0) &&
-                     (pHashMap->nodeObject.txCounter == 0 ) ) {
+                     (pMapNode->txCounter == 0 ) ) {
          if ( pHashMap->hashObj.enumResize != PSON_HASH_NO_RESIZE ) {
             psonHashTxResize( &pHashMap->hashObj, pContext );
          }
@@ -1020,11 +1034,13 @@ void psonHashMapRollbackRemove( psonHashMap        * pHashMap,
 {
    psonHashTxItem * pHashItem;
    psonTxStatus * txItemStatus, * txHashMapStatus;
+   psonTreeNode * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
 
+   GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( pHashItem, itemOffset, psonHashTxItem );
    txItemStatus = &pHashItem->txStatus;
 
@@ -1033,7 +1049,7 @@ void psonHashMapRollbackRemove( psonHashMap        * pHashMap,
     * bit that flag this data as being in the process of being removed.
     */
    psonTxStatusUnmarkAsDestroyed( txItemStatus );
-   pHashMap->nodeObject.txCounter--;
+   pMapNode->txCounter--;
    
    /*
     * Do we need to resize? We need both conditions here:
@@ -1047,9 +1063,9 @@ void psonHashMapRollbackRemove( psonHashMap        * pHashMap,
     *       current function returns void. Let's someone else find that 
     *       we are getting low on memory...
     */
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
    if ( (txHashMapStatus->usageCounter == 0) &&
-      (pHashMap->nodeObject.txCounter == 0 ) ) {
+      (pMapNode->txCounter == 0 ) ) {
       if ( pHashMap->hashObj.enumResize != PSON_HASH_NO_RESIZE ) {
          psonHashTxResize( &pHashMap->hashObj, pContext );
       }
@@ -1065,12 +1081,14 @@ void psonHashMapStatus( psonHashMap  * pHashMap,
    ptrdiff_t  firstItemOffset;
    psonTxStatus  * txStatus;
    bool found;
+   psonTreeNode * pMapNode = NULL;
    
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pStatus  != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
    
-   GET_PTR( txStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR( txStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    pStatus->status = txStatus->status;
    pStatus->numDataItem = pHashMap->hashObj.numberOfItems;

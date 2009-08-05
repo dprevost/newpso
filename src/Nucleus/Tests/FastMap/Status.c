@@ -25,6 +25,7 @@ psoObjStatus status;
 char * key1  = "my key1";
 char * data  = "my data";
 psonSessionContext context;
+psonTreeNode mapNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -39,8 +40,10 @@ void setup_test()
    pHashMap = initHashMapTest( &context );
 
    psonTxStatusInit( &txStatus, SET_OFFSET( context.pTransaction ) );
+   psonTreeNodeInit( &mapNode, SET_OFFSET( pHashMap ), PSO_FAST_MAP,
+                     SET_OFFSET( &txStatus ), PSON_NULL_OFFSET );
    
-   ok = psonFastMapInit( pHashMap, 0, 1, 0, &txStatus,
+   ok = psonFastMapInit( pHashMap, 0, 1, 0, &mapNode,
                          SET_OFFSET(pHashMap), &def, &keyDef, 
                          &fields, &context );
    assert( ok );

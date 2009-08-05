@@ -143,7 +143,6 @@ void test_wrong_item( void ** state )
    /* Should crash since the number of items in list2 is zero */
    expect_assert_failure( psonLinkedListRemoveItem( &list2, &node2 ) );
 
-//   expect_assert_failure( psonLinkedListRemoveItem( &list, &node ) );
 #endif
    return;
 }

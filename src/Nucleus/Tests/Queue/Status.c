@@ -24,7 +24,7 @@ psonQueue * pQueue;
 psonSessionContext context;
 psonTxStatus txStatus;
 psoObjStatus status;
-pson2TreeNode2 queueNode;
+psonTreeNode queueNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -38,7 +38,7 @@ void setup_test()
    pQueue = initQueueTest( &context );
 
    psonTxStatusInit( &txStatus, SET_OFFSET( context.pTransaction ) );
-   pson2TreeNode2Init( &queueNode, SET_OFFSET( pQueue ), PSO_QUEUE,
+   psonTreeNodeInit( &queueNode, SET_OFFSET( pQueue ), PSO_QUEUE,
                      SET_OFFSET( &txStatus ), PSON_NULL_OFFSET );
 
    ok = psonQueueInit( pQueue, 

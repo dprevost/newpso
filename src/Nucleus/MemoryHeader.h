@@ -73,7 +73,7 @@ struct psonMemoryHeader
    char     creationTime[30];
    
    psonHashTxItem topHashItem;
-   pson2TreeNode2 topTreeNode;
+   psonTreeNode topTreeNode;
    
 };
 

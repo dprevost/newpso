@@ -38,7 +38,6 @@ struct psonTxMyHashItem
    ptrdiff_t     nextItem;
    
    size_t        bucket;
-//   unsigned char key[1];
    psonMemObject * key;
 };
 
@@ -302,7 +301,7 @@ bool txHashDelete( psonTx        * pTx,
 
       curr = rowNumber;
 
-	  for (;;) { // while ( true ) {
+	  for (;;) {
          pArray[curr] = NULL;
          hole = curr;
 

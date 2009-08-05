@@ -54,7 +54,7 @@ struct psonHashMap
    struct psonMemObject memObject;
 
    /** Basic info for all leaves and branches of our tree. */
-   struct psonTreeNode  nodeObject;
+   ptrdiff_t nodeOffset;
 
    struct psonHashTx      hashObj;
 
@@ -134,8 +134,7 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
                       ptrdiff_t             parentOffset,
                       size_t                numberOfBlocks,
                       size_t                expectedNumOfChilds,
-                      psonTxStatus        * pTxStatus,
-                      ptrdiff_t             hashItemOffset,
+                      psonTreeNode        * pNode,
                       psoObjectDefinition * pDefinition,
                       psonKeyDefinition   * pKeyDefinition,
                       psonDataDefinition  * pDataDefinition,

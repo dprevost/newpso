@@ -30,19 +30,19 @@ void test_pass( void ** state )
    psonSessionContext context;
    bool ok;
    psonTxStatus status;
-   pson2TreeNode2* pDescriptor = NULL;
+   psonTreeNode* pDescriptor = NULL;
    psonFolderItem folderItem;
    psoObjectDefinition def = { PSO_FOLDER, 0, 0, 0 };
-   pson2TreeNode2 node;
+   psonTreeNode node;
 
    /* Create "/" */
    pFolder1 = initFolderTest( &context );
 
    psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
-   pson2TreeNode2Init( &node, SET_OFFSET( pFolder1 ), PSO_FOLDER,
+   psonTreeNodeInit( &node, SET_OFFSET( pFolder1 ), PSO_FOLDER,
                      SET_OFFSET( &status ), PSON_NULL_OFFSET );
    
-   ok = psonFolderInit( pFolder1, 0, 1, 0, &status, &node, &context );
+   ok = psonFolderInit( pFolder1, 0, 1, 0, &node, &context );
    assert_true( ok );
    
    /* Create "/Test2" */   
@@ -90,7 +90,7 @@ void test_pass( void ** state )
                              &folderItem,
                              &context );
    assert_true( ok );
-   GET_PTR( pDescriptor, folderItem.pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( pDescriptor, folderItem.pHashItem->dataOffset, psonTreeNode );
    GET_PTR( pFolder2, pDescriptor->offset, psonFolder );
 
    /* Create "/Test2/Test4" from "/Test2" */   
@@ -144,7 +144,7 @@ void test_pass( void ** state )
                              &context );
    assert_true( ok );
    
-   GET_PTR( pDescriptor, folderItem.pHashItem->dataOffset, pson2TreeNode2 );
+   GET_PTR( pDescriptor, folderItem.pHashItem->dataOffset, psonTreeNode );
    
    /* Create "/Test2/Test4/Test5 from "/" */
    

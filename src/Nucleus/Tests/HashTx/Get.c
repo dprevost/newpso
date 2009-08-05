@@ -35,7 +35,6 @@ char* data2 = "My Data 2";
 
 void setup_test()
 {
- //  assert( ok );
    enum psoErrors errcode;
    unsigned char* pData = NULL;
    bool found;
