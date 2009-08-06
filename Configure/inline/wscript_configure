@@ -1,0 +1,58 @@
+#! /usr/bin/env python
+# encoding: utf-8
+# :mode=python:  - For jedit
+
+# Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
+#  
+# This file is free software; as a special exception the author gives
+# unlimited permission to copy and/or distribute it, with or without 
+# modifications, as long as this notice is preserved.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+ctx.check_cc(
+      fragment='''
+         #include <stdio.h>
+         #include <stdlib.h>
+         
+         int static inline my_inline() { return 0; }
+         
+         int main() {
+            return my_inline();
+         }''',
+      define_name='HAVE_INLINE',
+      execute=0,
+      define_ret=0,
+      msg='Checking for inline')
+
+ctx.check_cc(
+      fragment='''
+         #include <stdio.h>
+         #include <stdlib.h>
+         
+         int static __inline my_inline() { return 0; }
+         
+         int main() {
+            return my_inline();
+         }''',
+      define_name='HAVE___INLINE',
+      execute=0,
+      define_ret=0,
+      msg='Checking for __inline')
+
+ctx.check_cc(
+      fragment='''
+         #include <stdio.h>
+         #include <stdlib.h>
+         
+         int static __inline__ my_inline() { return 0; }
+         
+         int main() {
+            return my_inline();
+         }''',
+      define_name='HAVE___INLINE__',
+      execute=0,
+      define_ret=0,
+      msg='Checking for __inline__')

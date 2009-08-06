@@ -180,6 +180,15 @@
 #  define PSO_DIR_SEPARATOR "/"
 #endif
 
+#if defined(HAVE_INLINE)
+#elif defined(HAVE___INLINE)
+#  define inline __inline
+#elif defined(HAVE___INLINE__)
+#  define inline __inline__
+#else
+#  define inline 
+#endif
+
 #if HAVE_FCNTL_H
 #  include <fcntl.h>
 #endif
@@ -188,14 +197,13 @@
 //#  define stat(a, b) _stat(a, b)
 //#endif
 
-#ifdef HAVE_ACCESS
-#  ifdef HAVE__ACCESS
-#    define access(a,b) _access(a,b)
-#    ifndef F_OK
-#      define F_OK 00
-#      define R_OK 04
-#      define W_OK 06
-#    endif
+#if defined(HAVE_ACCESS)
+#elif defined(HAVE__ACCESS)
+#  define access(a,b) _access(a,b)
+#  ifndef F_OK
+#    define F_OK 00
+#    define R_OK 04
+#    define W_OK 06
 #  endif
 #else
 #  error Need to write a wrapper for access()!!!
@@ -496,3 +504,4 @@ struct psocTestAlignmentBool
 END_C_DECLS
 
 #endif /* PSOC_COMMON_H */
+
