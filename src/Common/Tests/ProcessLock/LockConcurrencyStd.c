@@ -69,7 +69,6 @@ int main( int argc, char* argv[] )
    bool ok;
    psocMemoryFile memFile;
    psocErrorHandler errorHandler;
-   int numChilds, i, childStatus;
    char dum3[100];
    int dumId;
 
@@ -77,8 +76,6 @@ int main( int argc, char* argv[] )
    psocInitErrorHandler( &errorHandler );
    psocInitTimer( &timer );
 
-   numChilds = DEFAULT_NUM_CHILDREN;
-   
    maxTime = DEFAULT_TIME; /* in seconds */
    
    strcpy( filename, "Memfile.mem" );

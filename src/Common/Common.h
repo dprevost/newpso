@@ -29,6 +29,12 @@
 
 #include "config.h"
 #if defined WIN32
+
+#  define _CRT_SECURE_NO_DEPRECATE
+#  if !defined(_WIN32_WINNT)
+#    define _WIN32_WINNT 0x0500  /* Win 2000 and later releases */
+#  endif
+
 #  ifndef FD_SETSIZE
 #    define FD_SETSIZE 100
 #  endif
@@ -43,6 +49,16 @@
 #  include <winbase.h>
 #  include <io.h>
 #  include <process.h> 
+
+typedef signed char int8_t;
+typedef signed short int16_t;
+typedef signed long int32_t;
+typedef signed __int64 int64_t;
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned __int32 uint32_t;
+typedef unsigned __int64 uint64_t;
+
 #endif
 
 #if defined WIN32
@@ -102,9 +118,6 @@
 
 #if HAVE_UNISTD_H
 #  include <unistd.h>
-#endif
-#if HAVE_STDBOOL_H
-#  include <stdbool.h>
 #endif
 
 #if HAVE_SYS_WAIT_H
@@ -216,7 +229,9 @@
 
 //#if HAVE_GETPID
 //#elif HAVE__GETPID  /* Windows 32 */
-//#  define getpid() _getpid()
+#if defined(WIN32)
+#  define getpid() _getpid()
+#endif
 //#else
 //#error "Don't know how to get the pid on this system."
 //#endif
@@ -244,6 +259,10 @@
 
 #if !HAVE_PTRDIFF_T
 typedef size_t ptrdiff_t;
+#endif
+
+#if !defined(HAVE_PID_T)
+typedef int pid_t;
 #endif
 
 BEGIN_C_DECLS
@@ -371,8 +390,9 @@ extern char *new_ctime_r( const time_t *timep, char *buf, int buflen );
  */
 
 #ifndef __cplusplus
-#define HAVE__BOOL 1
-#  if !defined (HAVE__BOOL)
+#  if defined (HAVE_BOOL)
+#    include <stdbool.h>
+#  else
 #    define false 0
 #    define true  1
 typedef int bool;

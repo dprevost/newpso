@@ -57,7 +57,6 @@ int worker( void* arg )
    unsigned long loop = 0;
    char dum3[100];
    int dumId;
-   bool ok;
    
    identifier = *((int*)arg);
 

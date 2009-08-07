@@ -92,7 +92,6 @@ int main( int argc, char* argv[] )
    bool ok;
    psocMemoryFile memFile;
    psocErrorHandler errorHandler;
-   int i;
    
    char dum3[100];
    int dumId;

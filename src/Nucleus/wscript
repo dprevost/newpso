@@ -36,14 +36,16 @@ nucleus_list = [
         'Transaction.c']
 
 def build(bld):
-   print ' building in Common'
    nucleus_lib = bld.new_task_gen(
-      features = 'cc cstaticlib',
-      source = nucleus_list,
-      includes='.. ../include',
-      uselib_local   = 'Common',
-      ccflags      = ['-O2', '-Wall', '-g'],
-      target='Nucleus')
+      features     = 'cc cstaticlib',
+      source       = nucleus_list,
+      includes     = '.. ../include',
+      defines      = ['BUILD_PHOTON_ENGINE'],
+      uselib_local = 'Common',
+      target       = 'Nucleus')
+   nucleus_lib.install_path = None
+
+#ccflags      = ['-O2', '-Wall', '-g'],
 
    bld.add_subdirs(['Tests'])
 

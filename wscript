@@ -71,7 +71,9 @@ def configure(conf):
    conf.find_program('db2x_docbook2man', var='DOCBOOK2X_MAN')
    conf.find_program('db2pdf', var='DB2PDF')
    conf.find_program('errorParser', var='ERROR_PARSER')
-   conf.check_cfg(package='libxml-2.0', args='--cflags --libs', mandatory=True)
+
+   if sys.platform != 'win32':
+      conf.check_cfg(package='libxml-2.0', args='--cflags --libs', mandatory=True)
 
    block_size = Options.options.block_size
    if (block_size == '2k'):

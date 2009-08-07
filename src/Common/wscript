@@ -26,9 +26,11 @@ def build(bld):
    print ' building in Common'
    common_lib = bld.new_task_gen(
       features = 'cc cstaticlib',
-      source = common_list,
-      includes='. ..',
-      target='Common')
+      source   = common_list,
+      includes = '. ..',
+      defines  = ['BUILD_PHOTON_COMMON'],
+      target   = 'Common')
+   common_lib.install_path = None
 
    bld.add_subdirs(['Tests'])
 

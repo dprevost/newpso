@@ -101,7 +101,6 @@ def configure(conf):
    conf.check_cc(header_name='semaphore.h')
    conf.check_cc(header_name='signal.h')
    conf.check_cc(header_name='stdarg.h')
-   conf.check_cc(header_name='stdbool.h')
    conf.check_cc(header_name='stddef.h')
    conf.check_cc(header_name='stdint.h')
    conf.check_cc(header_name='stdlib.h')
@@ -111,7 +110,9 @@ def configure(conf):
    conf.check_cc(header_name='sys/param.h')
    conf.check_cc(header_name='sys/sem.h')
    conf.check_cc(header_name='sys/semaphore.h')
+   conf.check_cc(header_name='sys/stat.h')
    conf.check_cc(header_name='sys/time.h')
+   conf.check_cc(header_name='sys/types.h')
    conf.check_cc(header_name='sys/wait.h')
    conf.check_cc(header_name='time.h')
    conf.check_cc(header_name='timers.h')  # for Tru64
@@ -219,6 +220,22 @@ def configure(conf):
       execute=0,
       define_ret=0,
       msg='Checking for mprotect')
+
+	# Testing for bool
+   conf.check_cc(
+      fragment='''
+         #include <stdio.h>
+         #include <stdlib.h>
+         #include <stdbool.h>
+         int main() {
+            bool ok = true;
+            
+            return ok;
+         }''',
+      define_name='HAVE_BOOL',
+      execute=0,
+      define_ret=0,
+      msg='Checking for bool')
 
    # Test multiple things (mainly sizes of types) with some C code
    mp = conf.check(fragment=type_size_str, execute=1)

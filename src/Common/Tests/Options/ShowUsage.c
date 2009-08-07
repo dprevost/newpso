@@ -35,7 +35,6 @@ struct psocOptStruct opts[5] = {
 void setup_test()
 {
    bool ok;
-   int errcode;
    
    ok = psocSetSupportedOptions( 5, opts, &handle );
    assert( ok );
