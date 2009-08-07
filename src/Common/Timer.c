@@ -24,7 +24,7 @@
 
 void psocInitTimer( psocTimer * pTimer )
 {
-#if defined (WIN32)
+#if defined (_WIN32)
    pTimer->highResolution = TRUE;
    pTimer->frequency.QuadPart  = 0;
    pTimer->beginCount.QuadPart = 0;
@@ -33,7 +33,7 @@ void psocInitTimer( psocTimer * pTimer )
    memset( &pTimer->timeBegin, 0, sizeof(struct timeval) );
    memset( &pTimer->timeEnd,   0, sizeof(struct timeval) );
 
-#if defined (WIN32)
+#if defined (_WIN32)
    pTimer->highResolution = QueryPerformanceFrequency(&pTimer->frequency);
 #endif   
 }
@@ -47,7 +47,7 @@ psocCalculateTimer( psocTimer     * pTimer,
 {
    unsigned long tmp;
    
-#if defined (WIN32)
+#if defined (_WIN32)
    double d;
    
    if ( pTimer->highResolution == TRUE ) {
@@ -65,7 +65,7 @@ psocCalculateTimer( psocTimer     * pTimer,
       
       *pSecs = tmp/ 1000000;
       *pnanoSecs = (tmp - *pSecs * 1000000)* 1000;
-#if defined (WIN32)
+#if defined (_WIN32)
    }
 #endif
 }

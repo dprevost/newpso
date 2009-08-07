@@ -37,7 +37,7 @@
 #include "Common/Timer.h"
 #include "Common/ProcessLock.h"
 #include "Common/Options.h"
-#if defined(WIN32)
+#if defined(_WIN32)
 #  include <Process.h>
 #else
 #  include <sys/wait.h>

@@ -53,7 +53,7 @@ typedef int (*PSOT_THREAD_FUNCTION)(void*);
 
 typedef struct psotThreadWrap
 {
-#if defined (WIN32)
+#if defined (_WIN32)
    /** The WIN32 thread identifier */
    HANDLE hThread;
 #else

@@ -25,8 +25,8 @@
  *
  * [These warnings are caused by the direct inclusion of the .c file]
  */
-#if defined(WIN32)
-#  pragma warning(disable:4273)
+#if defined(_WIN32)
+//#  pragma warning(disable:4273)
 #endif
 #include "Nucleus/Queue.c"
 

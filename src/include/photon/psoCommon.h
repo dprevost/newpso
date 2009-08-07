@@ -50,7 +50,7 @@ typedef uint32_t psoUint32;
  * Uses to tell the VC++ compiler to export/import a function or variable on
  * Windows (the macro is empty on other platforms).
  */
-#if defined(WIN32)
+#if defined(_WIN32)
 #  ifdef BUILD_PHOTON
 #    define PHOTON_EXPORT __declspec ( dllexport )
 #  else

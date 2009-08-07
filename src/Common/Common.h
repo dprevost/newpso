@@ -28,7 +28,7 @@
 #define PSOC_COMMON_H
 
 #include "config.h"
-#if defined WIN32
+#if defined(_WIN32)
 
 #  define _CRT_SECURE_NO_DEPRECATE
 #  if !defined(_WIN32_WINNT)
@@ -43,9 +43,9 @@
     * The pragma is to hide a warning in Microsoft include files
     * with VC++ 6. Don't know about other versions yet.
     */
-#  pragma warning(disable:4115)
+//#  pragma warning(disable:4115)
 #  include <windows.h>
-#  pragma warning(default:4115)
+//#  pragma warning(default:4115)
 #  include <winbase.h>
 #  include <io.h>
 #  include <process.h> 
@@ -61,7 +61,7 @@ typedef unsigned __int64 uint64_t;
 
 #endif
 
-#if defined WIN32
+#if defined(_WIN32)
 #  ifdef BUILD_PHOTON_COMMON
 #    define PHOTON_COMMON_EXPORT __declspec ( dllexport )
 #  else
@@ -136,7 +136,7 @@ typedef unsigned __int64 uint64_t;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if ! defined(WIN32)
+#if ! defined(_WIN32)
 #  include <pthread.h>
 #endif
 
@@ -187,7 +187,7 @@ typedef unsigned __int64 uint64_t;
 #  include <errno.h>
 #endif
 
-#if defined WIN32
+#if defined(_WIN32)
 #  define PSO_DIR_SEPARATOR "\\"
 #else
 #  define PSO_DIR_SEPARATOR "/"
@@ -229,7 +229,7 @@ typedef unsigned __int64 uint64_t;
 
 //#if HAVE_GETPID
 //#elif HAVE__GETPID  /* Windows 32 */
-#if defined(WIN32)
+#if defined(_WIN32)
 #  define getpid() _getpid()
 #endif
 //#else
@@ -243,7 +243,7 @@ typedef unsigned __int64 uint64_t;
 //#  if HAVE_FSYNC
 /* Not sure if there are platforms with fsync and without fdatasync */
 //#    define  fdatasync(fd) fsync(fd)
-//#  elif defined (WIN32)
+//#  elif defined (_WIN32)
 /* should we use FlushFileBuffers() instead? */
 //#    define fdatasync(fd) _commit(fd)
 //#  else
@@ -252,7 +252,7 @@ typedef unsigned __int64 uint64_t;
 //#endif
 
 //#if !HAVE_MMAP
-//#  if !defined (WIN32)
+//#  if !defined (_WIN32)
 //#    error "Don't know how to mmap files to memory."
 //#  endif
 //#endif
@@ -351,7 +351,7 @@ extern char *new_ctime_r( const time_t *timep, char *buf, int buflen );
     * of abort(). So, I'll replace abort() with _exit(). 
     * We use the exit code of abort.
     */
-#    if defined(WIN32)
+#    if defined(_WIN32)
 #      define ABORT() exit(3)
 #    else
 #      define ABORT() abort()
@@ -399,14 +399,14 @@ typedef int bool;
 #  endif
 #endif
 
-#if defined (WIN32)
+#if defined (_WIN32)
 #  define PSO_INVALID_HANDLE (NULL)
 #else
 #  define PSO_INVALID_HANDLE (-1)
 #endif
 
 #if ! defined (MAP_FAILED)
-#  if defined (WIN32)
+#  if defined (_WIN32)
 #    define PSO_MAP_FAILED NULL
 #  else
 #    define PSO_MAP_FAILED ((void *) -1)

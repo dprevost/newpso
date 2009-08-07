@@ -50,7 +50,7 @@ struct psocTimer
    struct timeval timeBegin;
    struct timeval timeEnd;
 
-#if defined (WIN32)
+#if defined (_WIN32)
    LARGE_INTEGER frequency;
    LARGE_INTEGER beginCount;
    LARGE_INTEGER endCount;
@@ -69,7 +69,7 @@ typedef struct psocTimer psocTimer;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(WIN32)
+#if defined(_WIN32)
 static inline int gettimeofday( struct timeval * tv, void * tz )
 {
    union timeUnion
@@ -94,7 +94,7 @@ static inline int gettimeofday( struct timeval * tv, void * tz )
 static inline void 
 psocBeginTimer( psocTimer * pTimer )
 {
-#if defined (WIN32)
+#if defined (_WIN32)
    if ( pTimer->highResolution == TRUE ) {
       QueryPerformanceCounter( &pTimer->beginCount );
       return;
@@ -102,7 +102,7 @@ psocBeginTimer( psocTimer * pTimer )
    else {
 #endif
       gettimeofday( &pTimer->timeBegin, NULL );
-#if defined (WIN32)
+#if defined (_WIN32)
    }
 #endif
 }
@@ -113,7 +113,7 @@ psocBeginTimer( psocTimer * pTimer )
 static inline
 void psocEndTimer( psocTimer * pTimer )
 {
-#if defined (WIN32)
+#if defined (_WIN32)
    if ( pTimer->highResolution == TRUE ) {
       QueryPerformanceCounter( &pTimer->endCount );
       return;
@@ -121,7 +121,7 @@ void psocEndTimer( psocTimer * pTimer )
    else {
 #endif
       gettimeofday( &pTimer->timeEnd, NULL );
-#if defined (WIN32)
+#if defined (_WIN32)
    }
 #endif
 }

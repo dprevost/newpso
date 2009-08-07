@@ -222,7 +222,7 @@ bool psonHashTxGet( psonHashTx          * pHash,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(WIN32)
+#if defined(_WIN32)
 /* unreachable code */
 #  pragma warning(disable:4702) 
 #endif
@@ -262,7 +262,7 @@ bool psonHashTxGetFirst( psonHashTx * pHash,
    return false; /* Should never occur */
 }
 
-#if defined (WIN32)
+#if defined (_WIN32)
 #  pragma warning(default:4702) /* unreachable code */
 #endif
 

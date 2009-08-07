@@ -93,7 +93,7 @@ static int psocGetErrnoMsg( int errnum, char * msg, unsigned int msgLength )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined (WIN32)
+#if defined(_WIN32)
 
 /**
  * Handles the generation of the error message for WSAGetLastError() on Win32.
@@ -365,7 +365,7 @@ bool psocInitErrorDefs()
 {
    int length;
    bool ok = true;
-#if defined (WIN32 )
+#if defined(_WIN32)
    psocErrorDefinition * pDefinition = NULL;
    psocErrorDefinition * previous = NULL;
 #endif
@@ -389,7 +389,7 @@ bool psocInitErrorDefs()
                g_definition->handler     = &psocGetErrnoMsg;
                g_definition->next        = NULL;
                strcpy( g_definition->name, "errno" );
-#if defined (WIN32 )
+#if defined(_WIN32)
                length = offsetof(psocErrorDefinition,name) +
                   strlen("Windows error") + 1;
 

@@ -53,7 +53,7 @@ void psocInitMemoryFile( psocMemoryFile * pMem,
 
    pMem->initialized = PSOC_MEMFILE_SIGNATURE;
    
-#if defined (WIN32)
+#if defined(_WIN32)
    pMem->mapHandle = PSO_INVALID_HANDLE;
 #endif
 }
@@ -78,7 +78,7 @@ void psocFiniMemoryFile( psocMemoryFile * pMem )
 
    pMem->initialized = 0;
    
-#if defined (WIN32)
+#if defined(_WIN32)
    pMem->mapHandle = PSO_INVALID_HANDLE;
 #endif
 }
@@ -418,7 +418,7 @@ bool psocOpenMemFile( psocMemoryFile   * pMem,
     * (using GetNamedSecurityInfo(), possibly). The initial sa of the
     * file must be initialized by the server.
     */
-#if defined(WIN32)
+#if defined(_WIN32)
    InitializeSecurityDescriptor(&pMem->sd, SECURITY_DESCRIPTOR_REVISION);
    SetSecurityDescriptorDacl(&pMem->sd, TRUE, NULL, FALSE);
    pMem->sa.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -463,7 +463,7 @@ bool psocOpenMemFile( psocMemoryFile   * pMem,
 
    *ppAddr = pMem->baseAddr;
    
-#else /* WIN32 */
+#else /* _WIN32 */
 
    pMem->fileHandle = open( pMem->name, O_RDWR );
    if ( pMem->fileHandle == PSO_INVALID_HANDLE ) {
@@ -485,13 +485,13 @@ bool psocOpenMemFile( psocMemoryFile   * pMem,
 
    *ppAddr = pMem->baseAddr;
    
-#endif /* WIN32 */
+#endif /* _WIN32 */
    
    /* Just in case */
    PSO_POST_CONDITION( *ppAddr != PSO_MAP_FAILED );
    PSO_POST_CONDITION( pMem->baseAddr   != PSO_MAP_FAILED );
    PSO_POST_CONDITION( pMem->fileHandle != PSO_INVALID_HANDLE );
-#if defined (WIN32)
+#if defined(_WIN32)
    PSO_POST_CONDITION( pMem->mapHandle  != PSO_INVALID_HANDLE );
 #endif   
 
@@ -521,7 +521,7 @@ void psocCloseMemFile( psocMemoryFile   * pMem,
       psocSyncMemFile( pMem, pError );
    }
    
-#if defined (WIN32)
+#if defined(_WIN32)
    if (pMem->baseAddr != PSO_MAP_FAILED) {
       UnmapViewOfFile( pMem->baseAddr );
    }
@@ -573,7 +573,7 @@ bool psocSyncMemFile( psocMemoryFile   * pMem,
    PSO_INV_CONDITION( pMem->baseAddr != PSO_MAP_FAILED );
    PSO_PRE_CONDITION( pError != NULL );
 
-#if defined (WIN32)
+#if defined(_WIN32)
 
    errcode = FlushViewOfFile( pMem->baseAddr, 0 );
    if ( errcode == 0 ) {

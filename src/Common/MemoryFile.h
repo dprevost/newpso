@@ -96,7 +96,7 @@ struct psocMemoryFile
    /** Name of the backstore file. */
    char name[PATH_MAX];
    
-#if defined (WIN32)
+#if defined(_WIN32)
    /** Win32 specific - the underlying file handle (a void*). */
    HANDLE fileHandle;
 #else
@@ -104,7 +104,7 @@ struct psocMemoryFile
    int fileHandle;
 #endif
 
-#if defined (WIN32)
+#if defined(_WIN32)
    /** Win32 specific - the underlying map handle (a void*). */
    HANDLE mapHandle;
    

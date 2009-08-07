@@ -61,14 +61,14 @@ BEGIN_C_DECLS
  * \cond NO_DIR_DEFINES_PLEASE
  * This should stop doxygen from including the define below.
  */
-#if ! defined (WIN32)
+#if ! defined(_WIN32)
 
 #  if HAVE_DIRENT_H
 #    include <dirent.h>
 #    define NAMLEN(dirent) strlen((dirent)->d_name)
 #  endif
 
-#endif /* WIN32 */
+#endif /* _WIN32 */
 /**
  * \endcond
  */
@@ -85,7 +85,7 @@ struct psocDirIterator
    /** Set to PSOC_DIR_ACCESS_SIGNATURE at initialization. */
    unsigned int initialized;
 
-#if defined ( WIN32 )
+#if defined(_WIN32)
    /** Win32 specific - the underlying file handle (a void*). */
    HANDLE          handle;
    /** Win32 specific - the underlying data structure for the iterator. */

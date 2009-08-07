@@ -26,9 +26,9 @@
 // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
 #include <stdlib.h>
-#if defined(WIN32)
-#  pragma warning(disable: 4786)
-#  pragma warning(disable: 4251)
+#if defined(_WIN32)
+//#  pragma warning(disable: 4786)
+//#  pragma warning(disable: 4251)
 #endif
 #include <string>
 

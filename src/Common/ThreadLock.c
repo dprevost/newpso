@@ -24,7 +24,7 @@
 
 bool psocInitThreadLock( psocThreadLock * pLock )
 {
-#if defined (WIN32)
+#if defined (_WIN32)
    BOOL status;
 #else
    int rc;
@@ -33,7 +33,7 @@ bool psocInitThreadLock( psocThreadLock * pLock )
    
    PSO_PRE_CONDITION( pLock != NULL );
 
-#if defined (WIN32)
+#if defined (_WIN32)
    /*
     * InitializeCriticalSection does not return an error but might throw
     * an exception instead. For simplicity, using the other method was
@@ -64,14 +64,14 @@ bool psocInitThreadLock( psocThreadLock * pLock )
 
 void psocFiniThreadLock( psocThreadLock * pLock )
 {
-#if ! defined(WIN32)
+#if ! defined(_WIN32)
    int err = 0;
 #endif
 
    PSO_PRE_CONDITION( pLock != NULL );
    PSO_INV_CONDITION( pLock->initialized == PSOC_THREADLOCK_SIGNATURE );
 
-#if defined (WIN32)
+#if defined (_WIN32)
    DeleteCriticalSection( &pLock->mutex );
 #else
    err = pthread_mutex_destroy( &pLock->mutex );

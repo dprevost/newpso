@@ -34,7 +34,7 @@ extern "C" {
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #  if defined(BULDING_ERROR_MESSAGE)
 #    define ERROR_MESSAGE_EXPORT __declspec ( dllexport )
 #  else

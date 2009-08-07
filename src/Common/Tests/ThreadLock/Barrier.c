@@ -38,7 +38,7 @@ int psotInitBarrier( psotBarrier     * pBarrier,
                      int               numThreads,
                      psocErrorHandler * pError )
 {
-#if defined (WIN32)
+#if defined (_WIN32)
    BOOL status;
 #else
    int status;      
@@ -48,7 +48,7 @@ int psotInitBarrier( psotBarrier     * pBarrier,
    PSO_PRE_CONDITION( numThreads > 0 );
    PSO_PRE_CONDITION( pError != NULL );
    
-#if defined ( WIN32 )
+#if defined ( _WIN32 )
    /*
     * InitializeCriticalSection does not return an error but might throw
     * an exception instead. For simplicity, using the other method was
@@ -97,7 +97,7 @@ int psotInitBarrier( psotBarrier     * pBarrier,
    
 end_on_error:
 
-#if defined (WIN32)
+#if defined (_WIN32)
    psocSetError( pError, PSOC_WINERR_HANDLE, GetLastError() );
 #else
    /* Some old versions of pthread used to returned -1 instead of
@@ -127,7 +127,7 @@ end_on_error:
  
 void psotFiniBarrier( psotBarrier * pBarrier )
 {
-#if defined (WIN32)
+#if defined (_WIN32)
    BOOL status;
 #else
    int status;      
@@ -135,7 +135,7 @@ void psotFiniBarrier( psotBarrier * pBarrier )
 
    PSO_PRE_CONDITION( pBarrier != NULL );
 
-#if defined (WIN32)
+#if defined (_WIN32)
    status = CloseHandle( pBarrier->subBarrier[0].waitEvent );
    PSO_POST_CONDITION( status != 0 );
    status = CloseHandle( pBarrier->subBarrier[1].waitEvent );
@@ -169,7 +169,7 @@ void psotFiniBarrier( psotBarrier * pBarrier )
 
 void psotBarrierWait( psotBarrier * pBarrier )
 {
-#if ! defined (WIN32)
+#if ! defined (_WIN32)
    int status;      
 #endif
    struct psotSubBarrier* pCurrentSub;
@@ -177,7 +177,7 @@ void psotBarrierWait( psotBarrier * pBarrier )
    PSO_PRE_CONDITION( pBarrier != NULL );
 
    pCurrentSub = &pBarrier->subBarrier[pBarrier->currentSubBarrier];
-#if defined (WIN32)
+#if defined (_WIN32)
    EnterCriticalSection( &pCurrentSub->waitLock );
 #else
    status = pthread_mutex_lock( &pCurrentSub->waitLock );
@@ -185,7 +185,7 @@ void psotBarrierWait( psotBarrier * pBarrier )
 #endif
 
    pCurrentSub->numRunners--;
-#if defined (WIN32)
+#if defined (_WIN32)
    LeaveCriticalSection( &pCurrentSub->waitLock );
 #endif
 
@@ -198,7 +198,7 @@ void psotBarrierWait( psotBarrier * pBarrier )
       pBarrier->currentSubBarrier = 1 - pBarrier->currentSubBarrier;
       
       /* And go! */
-#if defined (WIN32)
+#if defined (_WIN32)
       /*
        * First make sure that the second subbarrier is in blocking
        * mode (by making sure that the event is not signaled). 
@@ -214,7 +214,7 @@ void psotBarrierWait( psotBarrier * pBarrier )
 #endif
    }
    else {
-#if defined (WIN32)
+#if defined (_WIN32)
       WaitForSingleObject(pBarrier->subBarrier[pBarrier->currentSubBarrier].waitEvent, INFINITE);
 #else
       while ( pCurrentSub->numRunners != pBarrier->numThreads )
@@ -222,7 +222,7 @@ void psotBarrierWait( psotBarrier * pBarrier )
 #endif
    }
 
-#if ! defined (WIN32)
+#if ! defined (_WIN32)
    pthread_mutex_unlock( &pCurrentSub->waitLock );
 #endif
 

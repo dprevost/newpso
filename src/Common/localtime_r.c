@@ -106,7 +106,7 @@ static int		lcl_is_set;
 static int		gmt_is_set;
 
 /* Already defined by the VC++ crt library */
-#if ! defined(WIN32)
+#if ! defined(_WIN32)
 char * tzname[2] = {
    wildabbr,
    wildabbr

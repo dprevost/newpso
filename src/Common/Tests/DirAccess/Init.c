@@ -43,7 +43,7 @@ void test_pass( void ** state )
 
    assert_true( iterator.initialized == PSOC_DIR_ACCESS_SIGNATURE );
    
-#  if defined(WIN32)
+#  if defined(_WIN32)
    assert_true( iterator.handle == PSO_INVALID_HANDLE );
    assert_true( iterator.dirName[0] == '\0' );
 #  else

@@ -21,6 +21,23 @@
 #ifndef PSOC_ARCH_PROCESS_LOCK_H
 #define PSOC_ARCH_PROCESS_LOCK_H
 
+/*
+ * A note on porting to 64 bits.
+ *
+ * The function InterlockedExchange() act on a 32 bits data type (LONG
+ * is defined as 32 bits LONGLONG is the 64 bits version).
+ *
+ * So as long as pLock->lock is 32 bits, we should be ok.
+ *
+ * Microsoft also defines this for 64 bits type (just in case):
+ *
+ * LONGLONG __cdecl InterlockedExchange64(
+ *     __inout  LONGLONG volatile *Target,
+ *     __in     LONGLONG Value
+ * );
+ * 
+ */
+ 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline void

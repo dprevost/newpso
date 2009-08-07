@@ -23,14 +23,14 @@
 inline void
 psocAcquireThreadLock( psocThreadLock * pLock )
 {
-#if ! defined (WIN32)
+#if ! defined (_WIN32)
    int status;
 #endif
 
    PSO_PRE_CONDITION( pLock != NULL );
    PSO_INV_CONDITION( pLock->initialized == PSOC_THREADLOCK_SIGNATURE );
 
-#if defined (WIN32)
+#if defined (_WIN32)
    /*
     * The msdn docs say that this call might throw an exception but that the
     * exception should not be handle (from what I understand, the exception
@@ -67,7 +67,7 @@ psocTryAcquireThreadLock( psocThreadLock * pLock,
    PSO_PRE_CONDITION( pLock != NULL );
    PSO_INV_CONDITION( pLock->initialized == PSOC_THREADLOCK_SIGNATURE );
 
-#if defined (WIN32)
+#if defined (_WIN32)
    status = TryEnterCriticalSection( &pLock->mutex );
 
    if ( status == TRUE ) {
@@ -121,7 +121,7 @@ psocReleaseThreadLock( psocThreadLock * pLock )
    PSO_PRE_CONDITION( pLock != NULL );
    PSO_INV_CONDITION( pLock->initialized == PSOC_THREADLOCK_SIGNATURE );
 
-#if defined (WIN32)
+#if defined (_WIN32)
    status = 0; /* To avoid a warning */
    LeaveCriticalSection( &pLock->mutex );
 #else

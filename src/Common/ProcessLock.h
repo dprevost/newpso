@@ -89,7 +89,7 @@ union semun {
  * Choose how we will implement our locking.
  */
 
-//#if !defined(CONFIG_KERNEL_HEADERS) && ! defined (WIN32)
+//#if !defined(CONFIG_KERNEL_HEADERS) && ! defined (_WIN32)
 //#  define PSO_USE_POSIX_SEMAPHORE
 //#endif
 
@@ -211,7 +211,7 @@ bool psocIsItLocked( psocProcessLock * pLock );
 
 #if defined (PSO_USE_POSIX_SEMAPHORE)
 #  include "Common/arch/Lock-semaphore.h"
-#elif defined (WIN32)
+#elif defined(_WIN32)
 #  include "Common/arch/Lock-win32.h"
 #elif defined (PSO_USE_I386_GCC)
 #  include "Common/arch/Lock-i386-gcc.h"

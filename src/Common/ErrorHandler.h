@@ -81,7 +81,7 @@ typedef int psocErrMsgHandle;
 
 #define PSOC_NO_ERRHANDLER    ((psocErrMsgHandle)-1)
 #define PSOC_ERRNO_HANDLE     ((psocErrMsgHandle) 0)
-#if defined (WIN32 )
+#if defined(_WIN32)
 #  define PSOC_WINERR_HANDLE  ((psocErrMsgHandle) 1)
 #  define PSOC_SOCKERR_HANDLE ((psocErrMsgHandle) 2)
 #endif

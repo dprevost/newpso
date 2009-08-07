@@ -31,7 +31,7 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #  ifdef BUILD_PHOTON_ENGINE
 #    define PHOTON_ENGINE_EXPORT __declspec ( dllexport )
 #  else

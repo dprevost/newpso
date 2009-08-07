@@ -105,7 +105,7 @@ void test_no_init( void ** state )
 
 void test_no_such_dir( void ** state )
 {
-#if defined(PSO_UNIT_TESTS) && ! defined(WIN32)
+#if defined(PSO_UNIT_TESTS) && ! defined(_WIN32)
    /* For non-win32 platforms (linux, Unix), the test for a missing
     * directory is done when the directory is open. On Windows, the
     * handle to the OS iterator is returned when retrieving the name

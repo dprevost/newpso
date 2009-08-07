@@ -49,7 +49,7 @@ bool psocSetReadOnly( psocMemoryFile   * pMem,
 {
    int errcode;
    bool ok = true;
-#if defined (WIN32)
+#if defined(_WIN32)
    unsigned long oldProt;
 #endif
 
@@ -58,7 +58,7 @@ bool psocSetReadOnly( psocMemoryFile   * pMem,
    PSO_INV_CONDITION( pMem->baseAddr != PSO_MAP_FAILED );
    PSO_PRE_CONDITION( pError != NULL );
 
-#if defined (WIN32)
+#if defined(_WIN32)
    errcode = VirtualProtect( pMem->baseAddr, 
                              pMem->length, 
                              PAGE_READONLY, 
@@ -112,7 +112,7 @@ bool psocSetReadWrite( psocMemoryFile   * pMem,
 {
    int errcode;
    bool ok = true;
-#if defined (WIN32)
+#if defined(_WIN32)
    unsigned long oldProt;
 #endif
 
@@ -121,7 +121,7 @@ bool psocSetReadWrite( psocMemoryFile   * pMem,
    PSO_INV_CONDITION( pMem->baseAddr != PSO_MAP_FAILED );
    PSO_PRE_CONDITION( pError != NULL );
 
-#if defined (WIN32)
+#if defined(_WIN32)
    errcode = VirtualProtect( pMem->baseAddr, 
                              pMem->length, 
                              PAGE_READWRITE, 

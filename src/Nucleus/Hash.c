@@ -505,9 +505,9 @@ bool psonHashGet( psonHash            * pHash,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(WIN32)
+#if defined(_WIN32)
 /* unreachable code */
-#  pragma warning(disable:4702) 
+//#  pragma warning(disable:4702) 
 #endif
 
 bool psonHashGetFirst( psonHash      * pHash,
@@ -545,8 +545,8 @@ bool psonHashGetFirst( psonHash      * pHash,
    return false; /* Should never occur */
 }
 
-#if defined (WIN32)
-#  pragma warning(default:4702) /* unreachable code */
+#if defined (_WIN32)
+//#  pragma warning(default:4702) /* unreachable code */
 #endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

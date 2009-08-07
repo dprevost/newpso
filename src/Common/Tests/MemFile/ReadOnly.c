@@ -175,7 +175,7 @@ void test_try_write( void ** state )
 #if defined(PSO_UNIT_TESTS)
    void * pAddr = NULL;
    bool ok;
-#if ! defined(WIN32)
+#if ! defined(_WIN32)
    struct sigaction newAction, oldAction;
 #endif
    
@@ -191,7 +191,7 @@ void test_try_write( void ** state )
    /* This should crash the whole thing. We intercept it with a signal.
     * This way, if there is no memory violation, we will know.
     */
-#if defined(WIN32)
+#if defined(_WIN32)
    signal(SIGSEGV, signalHandler );
 #else
    newAction.sa_handler = signalHandler;

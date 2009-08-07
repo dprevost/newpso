@@ -137,7 +137,7 @@ void test_pass( void ** state )
    assert_true( mem.fileHandle == PSO_INVALID_HANDLE );
    assert_true( mem.baseAddr   == PSO_MAP_FAILED );
 
-#if defined (WIN32)
+#if defined(_WIN32)
    assert_true( mem.mapHandle == PSO_INVALID_HANDLE ) {
 #endif
 

@@ -19,12 +19,12 @@
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #include "folderTest.h"
-#if defined WIN32
-#  pragma warning(disable:4273)
+#if defined _WIN32
+//#  pragma warning(disable:4273)
 #endif
 #include "Nucleus/Folder.c"
-#if defined WIN32
-#  pragma warning(default:4273)
+#if defined _WIN32
+//#  pragma warning(default:4273)
 #endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

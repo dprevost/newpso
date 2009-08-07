@@ -43,7 +43,7 @@ void test1( void ** state )
     * does not hurt so...
     */
    ok = psocTryAcquireThreadLock( &lock, 1000 );
-#if defined (WIN32)
+#if defined (_WIN32)
    assert_true( ok );
    psocReleaseThreadLock( &lock );
 #else

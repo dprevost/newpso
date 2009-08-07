@@ -21,7 +21,7 @@
 #ifndef PSOC_BARRIER_H
 #define PSOC_BARRIER_H
 
-#if defined (WIN32)
+#if defined (_WIN32)
 #  include "Common/arch/Barrier-win32.h"
 #elif defined (PSO_USE_I386_GCC)
 #  include "Common/arch/Barrier-i386-gcc.h"

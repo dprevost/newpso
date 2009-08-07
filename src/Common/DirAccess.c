@@ -46,7 +46,7 @@
 const char * psocDirGetNextFileName( psocDirIterator  * pIterator,
                                      psocErrorHandler * pError )
 {
-#if ! defined (WIN32)
+#if ! defined (_WIN32)
    struct dirent * pEntry;
 #endif
 
@@ -54,13 +54,13 @@ const char * psocDirGetNextFileName( psocDirIterator  * pIterator,
    PSO_INV_CONDITION( pIterator->initialized == PSOC_DIR_ACCESS_SIGNATURE );
    PSO_PRE_CONDITION( pError    != NULL );
 
-#if defined (WIN32)
+#if defined (_WIN32)
    PSO_PRE_CONDITION( pIterator->dirName[0] != '\0' );
 #else
    PSO_PRE_CONDITION( pIterator->pDir != NULL );
 #endif
 
-#if defined (WIN32)
+#if defined (_WIN32)
    if ( pIterator->handle == PSO_INVALID_HANDLE ) {
       pIterator->handle = 
          FindFirstFile( pIterator->dirName, &pIterator->data );
@@ -138,7 +138,7 @@ void psocFiniDir( psocDirIterator * pIterator )
    PSO_PRE_CONDITION( pIterator != NULL );
    PSO_INV_CONDITION( pIterator->initialized == PSOC_DIR_ACCESS_SIGNATURE );
 
-#if defined ( WIN32 )
+#if defined(_WIN32)
    pIterator->handle = PSO_INVALID_HANDLE;
    memset( pIterator->dirName, 0, PATH_MAX);
 #else
@@ -161,7 +161,7 @@ void psocInitDir( psocDirIterator * pIterator )
 {
    PSO_PRE_CONDITION( pIterator != NULL );
 
-#if defined ( WIN32 )
+#if defined(_WIN32)
    pIterator->handle = PSO_INVALID_HANDLE;
    memset( pIterator->dirName, 0, PATH_MAX);
 #else
@@ -187,7 +187,7 @@ void psocCloseDir( psocDirIterator * pIterator )
    PSO_PRE_CONDITION( pIterator != NULL );
    PSO_INV_CONDITION( pIterator->initialized == PSOC_DIR_ACCESS_SIGNATURE );
 
-#if defined (WIN32)
+#if defined(_WIN32)
    if ( pIterator->handle != PSO_INVALID_HANDLE ) {
       FindClose( pIterator->handle );
    }
@@ -231,7 +231,7 @@ bool psocOpenDir( psocDirIterator  * pIterator,
                   const char       * dirName,
                   psocErrorHandler * pError )
 {
-#if defined (WIN32)
+#if defined(_WIN32)
    int i = 0;
 #endif
 
@@ -240,13 +240,13 @@ bool psocOpenDir( psocDirIterator  * pIterator,
    PSO_PRE_CONDITION( dirName   != NULL );
    PSO_PRE_CONDITION( pError    != NULL );
 
-#if defined (WIN32)
+#if defined(_WIN32)
    PSO_PRE_CONDITION( pIterator->dirName[0] == '\0' );
 #else
    PSO_PRE_CONDITION( pIterator->pDir == NULL );
 #endif
 
-#if defined (WIN32)
+#if defined(_WIN32)
    pError = pError; /* Avoid a warning */
    i = strlen( dirName );
    if ( i > PATH_MAX - 3 ) return -1;
@@ -266,7 +266,7 @@ bool psocOpenDir( psocDirIterator  * pIterator,
    }
 #endif
 
-#if ! defined (WIN32)
+#if ! defined(_WIN32)
    PSO_POST_CONDITION( pIterator->pDir != NULL );
 #endif
 

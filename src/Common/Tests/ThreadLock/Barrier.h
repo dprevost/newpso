@@ -45,7 +45,7 @@ BEGIN_C_DECLS
  
 struct psotSubBarrier
 {
-#if defined (WIN32)
+#if defined (_WIN32)
    HANDLE           waitEvent;
    CRITICAL_SECTION waitLock;
 #else

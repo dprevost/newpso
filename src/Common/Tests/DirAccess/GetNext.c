@@ -82,7 +82,7 @@ void test_no_such_dir( void ** state )
     *
     * In other words this test is only for Windows.
     */
-#if defined(PSO_UNIT_TESTS) && defined(WIN32)
+#if defined(PSO_UNIT_TESTS) && defined(_WIN32)
    bool ok;
    const char* str;
 
@@ -139,7 +139,7 @@ void test_null_error( void ** state )
 void test_null_pdir( void ** state )
 {
    /* pDir () is used in Unix/linux, not on Windows. */
-#if defined(PSO_UNIT_TESTS) && ! defined(WIN32)
+#if defined(PSO_UNIT_TESTS) && ! defined(_WIN32)
    bool ok;
    DIR * pDir;
 

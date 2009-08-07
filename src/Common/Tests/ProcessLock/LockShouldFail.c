@@ -24,7 +24,7 @@
 #include "Common/ProcessLock.h"
 #include "Common/ErrorHandler.h"
 #include "Common/Options.h"
-#if defined(WIN32)
+#if defined(_WIN32)
 #  include <Process.h>
 #else
 #  include <sys/wait.h>
@@ -118,7 +118,7 @@ void test_std( void ** state )
       
    /* Launch the childs */
    for ( i = 0; i < numChilds; ++i ) {
-#if defined (WIN32)
+#if defined (_WIN32)
       pid = _spawnl( _P_NOWAIT, processName, processName, NULL ); 
       assert_true( pid > 0 );
       childPid[i] = pid;
@@ -142,7 +142,7 @@ void test_std( void ** state )
       
    /* Now wait for the child processes to end */
    for ( i = 0; i < numChilds; ++i ) {
-#if defined(WIN32)
+#if defined(_WIN32)
       _cwait( &childStatus, childPid[i], _WAIT_CHILD );
       if ( childStatus == 0 ) foundError = true;
 #else
@@ -180,7 +180,7 @@ void test_try( void ** state )
       
    /* Launch the childs */
    for ( i = 0; i < numChilds; ++i ) {
-#if defined (WIN32)
+#if defined (_WIN32)
       pid = _spawnl( _P_NOWAIT, processName, processName, NULL ); 
       assert_true( pid > 0 );
       childPid[i] = pid;
@@ -204,7 +204,7 @@ void test_try( void ** state )
       
    /* Now wait for the child processes to end */
    for ( i = 0; i < numChilds; ++i ) {
-#if defined(WIN32)
+#if defined(_WIN32)
       _cwait( &childStatus, childPid[i], _WAIT_CHILD );
       if ( childStatus == 0 ) foundError = true;
 #else

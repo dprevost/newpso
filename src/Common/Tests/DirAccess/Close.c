@@ -36,7 +36,7 @@ void setup_test()
 
 void teardown_test()
 {
-#if defined (WIN32)
+#if defined(_WIN32)
    if ( iterator.handle != PSO_INVALID_HANDLE ) {
       psocCloseDir( &iterator );
    }
@@ -96,7 +96,7 @@ void test_pass( void ** state )
    
    psocCloseDir( &iterator );
 
-#  if defined (WIN32)
+#  if defined(_WIN32)
    assert_true( iterator.handle == PSO_INVALID_HANDLE );
 #  else
    assert_true( iterator.pDir == NULL );

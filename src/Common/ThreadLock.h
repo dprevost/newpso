@@ -41,7 +41,7 @@ typedef struct psocThreadLock
 {
    unsigned int initialized;
 
-#if defined (WIN32)
+#if defined (_WIN32)
    CRITICAL_SECTION mutex;
 #else
    pthread_mutex_t mutex;

@@ -22,7 +22,7 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined (WIN32)
+#if defined (_WIN32)
 unsigned __stdcall psotStartRoutine( void* arg )
 #else
 void * psotStartRoutine( void* arg )
@@ -32,7 +32,7 @@ void * psotStartRoutine( void* arg )
 
    pThread->returnCode = pThread->startRoutine( pThread->arg );
    
-#if defined(WIN32)
+#if defined(_WIN32)
    return 0;
 #else
    return NULL;
@@ -46,7 +46,7 @@ int psotCreateThread( psotThreadWrap* pThread,
                       void* arg,
                       psocErrorHandler* pError )
 {
-#if defined (WIN32)
+#if defined (_WIN32)
    HANDLE handle;
    unsigned threadId;
 #else
@@ -60,7 +60,7 @@ int psotCreateThread( psotThreadWrap* pThread,
    pThread->returnCode = 0;
    pThread->startRoutine = startRoutine;
    
-#if defined (WIN32)
+#if defined (_WIN32)
    handle = (HANDLE) _beginthreadex( NULL, /* Default sec. attributes */
                                      0,    /* Default stack size */
                                      &psotStartRoutine,
@@ -98,7 +98,7 @@ int psotJoinThread( psotThreadWrap* pThread,
 //                    void* retValue,
                     psocErrorHandler* pError )
 {
-#if defined (WIN32)
+#if defined (_WIN32)
    DWORD err;
 
    err = WaitForSingleObject( pThread->hThread, INFINITE );
