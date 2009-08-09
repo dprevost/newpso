@@ -19,14 +19,16 @@ test_list = [
    'Release',
    'TryAcq']
 
-thread_test_code     = ['LockConcurrency.c',    'Barrier.c', 'ThreadWrap.c']
-thread_test_code_try = ['LockConcurrencyTry.c', 'Barrier.c', 'ThreadWrap.c']
+#thread_test_code     = ['LockConcurrency.c',    'Barrier.c', 'ThreadWrap.c']
+#thread_test_code_try = ['LockConcurrencyTry.c', 'Barrier.c', 'ThreadWrap.c']
+thread_list = ['Barrier.c', 'ThreadWrap.c']
 
 def build(bld):
 
+   obj_thread_lock = {}
    for prog in test_list:
       prog_c = prog + '.c'
-      obj = bld.new_task_gen(
+      obj_thread_lock[prog_c] = bld.new_task_gen(
          features     = 'cc cprogram',
          source       = prog_c,
          target       = prog,
@@ -35,9 +37,9 @@ def build(bld):
          lib          = bld.env['CMOCKERY'],
          uselib_local = 'Common') 
       if bld.env['CMOCKERY']:
-         obj.unit_test = 1
+         obj_thread_lock[prog_c].unit_test = 1
 
-   obj = bld.new_task_gen(
+   obj_thread_lock['LockTests'] = bld.new_task_gen(
       features     = 'cc cprogram',
       source       = 'LockTests.c',
       target       = 'LockTests',
@@ -46,27 +48,35 @@ def build(bld):
       lib          = bld.env['CMOCKERY'],
       uselib_local = 'Common') 
    if bld.env['CMOCKERY'] and bld.env['MORE_TESTS']:
-      obj.unit_test = 1
+      obj_thread_lock['LockTests'].unit_test = 1
 
-   obj = bld.new_task_gen(
+   thread_lib = bld.new_task_gen(
+      features = 'cc cstaticlib',
+      source   = thread_list,
+      includes = '../../..',
+      defines  = ['BUILD_PHOTON_COMMON'],
+      target   = 'local_thread_wrap')
+   thread_lib.install_path = None
+
+   obj_thread_lock['LockConcurrency'] = bld.new_task_gen(
       features     = 'cc cprogram',
-      source       = thread_test_code,
+      source       = 'LockConcurrency.c',
       target       = 'LockConcurrency',
       includes     = '../../..',
       install_path = None,
       lib          = bld.env['CMOCKERY'],
-      uselib_local = 'Common') 
+      uselib_local = ['Common', 'local_thread_wrap'] ) 
    if bld.env['CMOCKERY'] and bld.env['MORE_TESTS']:
-      obj.unit_test = 1
+      obj_thread_lock['LockConcurrency'].unit_test = 1
 
-   obj = bld.new_task_gen(
+   obj_thread_lock['LockConcurrencyTry'] = bld.new_task_gen(
       features     = 'cc cprogram',
-      source       = thread_test_code_try,
+      source       = 'LockConcurrencyTry.c',
       target       = 'LockConcurrencyTry',
       includes     = '../../..',
       install_path = None,
       lib          = bld.env['CMOCKERY'],
-      uselib_local = 'Common') 
+      uselib_local = ['Common', 'local_thread_wrap'] ) 
    if bld.env['CMOCKERY'] and bld.env['MORE_TESTS']:
-      obj.unit_test = 1
+      obj_thread_lock['LockConcurrencyTry'].unit_test = 1
 

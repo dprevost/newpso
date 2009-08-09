@@ -88,7 +88,19 @@ def configure(conf):
    else:
       conf.fatal('Invalid value! Values allowed: 2k, 4k or 8k')
 
-   conf.write_config_header('src/config.h')
+   # create the second environment, set the variant and set its name
+   env2 = conf.env.copy()
+   env2.set_variant('release')
+   conf.set_env_name('release', env2)
+
+   conf.setenv('release')
+   conf.env.CCFLAGS = ['-O2']
+    
+   conf.setenv('default')
+   conf.env.CCFLAGS = ['-O0', '-g3', '-DDEBUG']
+
+   conf.write_config_header('src/config.h', conf.setenv('default') )
+   conf.write_config_header('src/config.h', conf.setenv('release') )
    
 def build(bld):
    #bld.add_subdirs(['src', 'doc'])

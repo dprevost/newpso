@@ -166,7 +166,7 @@ typedef unsigned __int64 uint64_t;
 #  include <sys/param.h>
 #endif
 
-#if HAVE_GOOGLE_CMOCKERY_H
+#if defined(HAVE_GOOGLE_CMOCKERY_H) && defined(DEBUG)
 #  include <setjmp.h>
 #  include <google/cmockery.h>
 #endif
@@ -337,7 +337,7 @@ extern char *new_ctime_r( const time_t *timep, char *buf, int buflen );
 #    error "assert.h is needed to implement Design By Contract"
 #  endif
 
-#  if HAVE_GOOGLE_CMOCKERY_H
+#  if defined(HAVE_GOOGLE_CMOCKERY_H) && defined(DEBUG)
 #    define PSO_PRE_CONDITION(x) \
        mock_assert((int)(x), #x, __FILE__, __LINE__); 
 #    define PSO_POST_CONDITION(x) \

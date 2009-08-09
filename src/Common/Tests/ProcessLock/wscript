@@ -38,7 +38,7 @@ def build(bld):
       if bld.env['CMOCKERY']:
          obj.unit_test = 1
 
-   obj = bld.new_task_gen(
+   obj1 = bld.new_task_gen(
       features     = 'cc cprogram',
       source       = 'LockTests.c',
       target       = 'LockTests',
@@ -47,9 +47,9 @@ def build(bld):
       lib          = bld.env['CMOCKERY'],
       uselib_local = 'Common') 
    if bld.env['CMOCKERY'] and bld.env['MORE_TESTS']:
-      obj.unit_test = 1
+      obj1.unit_test = 1
 
-   obj = bld.new_task_gen(
+   obj2 = bld.new_task_gen(
       features     = 'cc cprogram',
       source       = 'LockConcurrency.c',
       target       = 'LockConcurrency',
@@ -58,9 +58,9 @@ def build(bld):
       lib          = bld.env['CMOCKERY'],
       uselib_local = 'Common') 
    if bld.env['CMOCKERY'] and bld.env['MORE_TESTS']:
-      obj.unit_test = 1
+      obj2.unit_test = 1
 
-   obj = bld.new_task_gen(
+   obj3 = bld.new_task_gen(
       features     = 'cc cprogram',
       source       = 'LockConcurrencyStd.c',
       target       = 'LockConcurrencyStd',
@@ -69,7 +69,7 @@ def build(bld):
       lib          = bld.env['CMOCKERY'],
       uselib_local = 'Common') 
 
-   obj = bld.new_task_gen(
+   obj4 = bld.new_task_gen(
       features     = 'cc cprogram',
       source       = 'LockConcurrencyTry.c',
       target       = 'LockConcurrencyTry',
@@ -78,7 +78,7 @@ def build(bld):
       lib          = bld.env['CMOCKERY'],
       uselib_local = 'Common') 
 
-   obj = bld.new_task_gen(
+   obj5 = bld.new_task_gen(
       features     = 'cc cprogram',
       source       = 'LockShouldFailStd.c',
       target       = 'LockShouldFailStd',
@@ -87,7 +87,7 @@ def build(bld):
       lib          = bld.env['CMOCKERY'],
       uselib_local = 'Common') 
 
-   obj = bld.new_task_gen(
+   obj6 = bld.new_task_gen(
       features     = 'cc cprogram',
       source       = 'LockShouldFailTry.c',
       target       = 'LockShouldFailTry',
@@ -96,7 +96,7 @@ def build(bld):
       lib          = bld.env['CMOCKERY'],
       uselib_local = 'Common') 
 
-   obj = bld.new_task_gen(
+   obj7 = bld.new_task_gen(
       features     = 'cc cprogram',
       source       = 'LockShouldFail.c',
       target       = 'LockShouldFail',
@@ -105,5 +105,5 @@ def build(bld):
       lib          = bld.env['CMOCKERY'],
       uselib_local = 'Common') 
    if bld.env['CMOCKERY'] and bld.env['MORE_TESTS']:
-      obj.unit_test = 1
+      obj7.unit_test = 1
 

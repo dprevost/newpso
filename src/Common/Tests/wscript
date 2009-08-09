@@ -15,7 +15,7 @@
 def build(bld):
    print ' building in Tests'
    
-   obj = bld.new_task_gen(
+   obj_timer_test = bld.new_task_gen(
       features     = 'cc cprogram',
       source       = 'TimerTest.c',
       target       = 'TimerTest',
@@ -24,7 +24,7 @@ def build(bld):
       lib          = bld.env['CMOCKERY'],
       uselib_local = 'Common') 
    if bld.env['CMOCKERY'] and bld.env['MORE_TESTS']:
-      obj.unit_test = 1
+      obj_timer_test.unit_test = 1
 
    bld.add_subdirs([
         'DirAccess',

@@ -14,7 +14,7 @@
 
 subdirs_list = [
         'Common',
-        'Nucleus']
+        'Nucleus' ]
         #,
         #'Nucleus',
         #'Quasar',

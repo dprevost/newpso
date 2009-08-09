@@ -22,10 +22,10 @@ test_list = [
 
 
 def build(bld):
-   print ' building in Tests/DirAccess'
+   obj_dir_access = {}
    for prog in test_list:
       prog_c = prog + '.c'
-      obj = bld.new_task_gen(
+      obj_dir_access[prog_c] = bld.new_task_gen(
          features     = 'cc cprogram',
          source       = prog_c,
          target       = prog,
@@ -34,9 +34,5 @@ def build(bld):
          lib          = bld.env['CMOCKERY'],
          uselib_local = 'Common') 
       if bld.env['CMOCKERY']:
-         obj.unit_test = 1
-
-#      lib  = 'pthread',
-#      uselib = 'BASIC',
-#      libpath      = ['/usr/lib'],
+         obj_dir_access[prog_c].unit_test = 1
 

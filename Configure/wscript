@@ -80,8 +80,6 @@ def check_features(self):
 
 
 def configure(conf):
-   print '  executing the configuration in m4'
-   print '#define HAVE__BOOL 1 - fix me'
 
    if conf.check_cc(lib='pthread'):
       conf.env.append_value('LIB', 'pthread')

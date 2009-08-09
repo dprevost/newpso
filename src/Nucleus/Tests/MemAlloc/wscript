@@ -32,3 +32,4 @@ def build(bld):
          uselib_local = 'Nucleus Common') 
       if bld.env['CMOCKERY']:
          obj.unit_test = 1
+
