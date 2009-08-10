@@ -63,9 +63,11 @@ typedef unsigned __int64 uint64_t;
 
 #if defined(_WIN32)
 #  ifdef BUILD_PHOTON_COMMON
-#    define PHOTON_COMMON_EXPORT __declspec ( dllexport )
+#    define PHOTON_COMMON_EXPORT 
+//__declspec ( dllexport )
 #  else
-#    define PHOTON_COMMON_EXPORT __declspec ( dllimport )
+#    define PHOTON_COMMON_EXPORT
+//__declspec ( dllimport )
 #  endif
 #else
 #  define PHOTON_COMMON_EXPORT

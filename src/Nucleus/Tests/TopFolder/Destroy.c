@@ -28,11 +28,10 @@ psonSessionContext context;
 void setup_test()
 {
    bool ok;
-   
-   pTopFolder = initTopFolderTest( &context );
-
    psoObjectDefinition def = { PSO_QUEUE, 0, 0, 0 };
    psonDataDefinition dataDef;
+   
+   pTopFolder = initTopFolderTest( &context );
    
    ok = psonTopFolderCreateFolder( pTopFolder,
                                    "Test1",

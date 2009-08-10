@@ -43,6 +43,7 @@ def configure(conf):
 
    if sys.platform == 'win32':
       conf.check_tool('msvc')
+      conf.env.append_value('LIB', ['kernel32', 'advapi32', 'wsock32'])
    else:
       conf.check_tool('gcc')
       conf.check_tool('g++')
@@ -94,10 +95,17 @@ def configure(conf):
    conf.set_env_name('release', env2)
 
    conf.setenv('release')
-   conf.env.CCFLAGS = ['-O2']
+   if sys.platform == 'win32':
+      conf.env.CCFLAGS = conf.env['CCFLAGS_RELEASE']
+   else:
+      conf.env.CCFLAGS = ['-O2']
     
    conf.setenv('default')
-   conf.env.CCFLAGS = ['-O0', '-g3', '-DDEBUG']
+   if sys.platform == 'win32':
+      conf.env.CCFLAGS = conf.env['CCFLAGS_DEBUG']
+      #['/Od', '/MDd', '-DDEBUG']
+   else:
+      conf.env.CCFLAGS = ['-O0', '-g3', '-DDEBUG']
 
    conf.write_config_header('src/config.h', conf.setenv('default') )
    conf.write_config_header('src/config.h', conf.setenv('release') )

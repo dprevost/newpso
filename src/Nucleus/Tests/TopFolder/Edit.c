@@ -30,11 +30,11 @@ void setup_test()
 {
    bool ok;
    
-   pTopFolder = initTopFolderTest( &context );
-
    psoObjectDefinition mapDef = { PSO_FAST_MAP, 0, 0, 0 };
    psonKeyDefinition key;
    psonDataDefinition fields;
+
+   pTopFolder = initTopFolderTest( &context );
 
    ok = psonTopFolderCreateFolder( pTopFolder,
                                    "Test1",
