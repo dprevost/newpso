@@ -53,6 +53,9 @@ def configure(conf):
 
    conf.check_tool('UnitTest')
 
+   conf.check_tool('doxygen', tooldir='Configure')
+   conf.check_tool('errorparser', tooldir='Configure')
+
    conf.define('PACKAGE_VERSION', "0.5.0")
 
 	# this one requires cppunit

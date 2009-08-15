@@ -12,14 +12,8 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-subdirs_list = [
-        'Errors', 'Common']
-        #'Nucleus' ]
-        #,
-        #'Nucleus',
-        #'Quasar',
-        #'API']
-
 def build(bld):
-   bld.add_subdirs( subdirs_list )
 
+   bld.new_task_gen( features    = 'errorparser',
+                     option_file = 'options.xml',
+                     xml_file    = 'photon.xml')
