@@ -13,7 +13,6 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 nucleus_list = [
-        'psoErrorHandler.c',
         'BlockGroup.c',
         'Cursor.c',
         'FastMap.c',
@@ -27,6 +26,7 @@ nucleus_list = [
         'MemBitmap.c',
         'MemoryAllocator.c',
         'MemoryObject.c',
+        'psoErrorHandler.c',
         'Process.c',
         'ProcessManager.c',
         'Queue.c',
@@ -42,7 +42,8 @@ def build(bld):
       includes     = '.. ../include',
       defines      = ['BUILD_PHOTON_ENGINE'],
       uselib_local = 'Common',
-      target       = 'Nucleus')
+      target       = 'Nucleus',
+      after        = 'parser')
    nucleus_lib.install_path = None
 
    nucleus_lib_release = nucleus_lib.clone('release')

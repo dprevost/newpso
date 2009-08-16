@@ -16,4 +16,5 @@ def build(bld):
 
    bld.new_task_gen( features    = 'errorparser',
                      option_file = 'options.xml',
-                     xml_file    = 'photon.xml')
+                     xml_file    = 'photon.xml',
+                     name        = 'parser')
