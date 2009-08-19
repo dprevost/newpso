@@ -80,11 +80,11 @@ class parser_task(Task.Task):
 
    def run(self):
       cmd = 'cd %s && %s --options %s %s' % (self.inputs[0].parent.abspath(), self.env['ERROR_PARSER'], self.inputs[0].file(), self.inputs[1].file())
-      proc = pproc.Popen(cmd, shell=True)
-      #print cmd
-      #print self.inputs[0].file()
-      #color = 'RED'
-      #Utils.pprint(color, 'Re-run waf')
+      proc = pproc.Popen(cmd, shell=True,stdout=pproc.PIPE, stderr=pproc.PIPE)
+      out, err = proc.communicate()
+      if proc.returncode != 0:
+         color = 'RED'
+         Utils.pprint(color, err)
       
       return proc.returncode
 
