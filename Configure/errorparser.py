@@ -116,9 +116,11 @@ def process_parser(self):
       out = self.path.find_resource(Utils.split_path(f))
       if not out: raise ValueError, f + ' file not found'
       outputs.append(out)
-      
+      print out
+   
    if len(outputs) > 0:
       tsk.set_outputs( outputs )
+      print 'qqq ', outputs
 
 def detect(conf):
    conf.find_program('errorParser', var='ERROR_PARSER', mandatory=True)
