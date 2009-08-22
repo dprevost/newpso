@@ -33,9 +33,9 @@ qsrCheckFolderContent( qsrVerifyStruct   * pVerify,
 {
    ptrdiff_t offset, previousOffset;
    psonHashTxItem * pItem;
-   psonObjectDescriptor* pDesc = NULL;
+   psonTreeNode * pNode = NULL;
    void * pObject;
-   int pDesc_invalid_api_type = 0;
+   int pNode_invalid_api_type = 0;
    char message[PSO_MAX_NAME_LENGTH*4 + 30];
    enum qsrRecoverError rc = QSR_REC_OK, valid;
    bool found;
@@ -46,14 +46,14 @@ qsrCheckFolderContent( qsrVerifyStruct   * pVerify,
    found = psonHashTxGetFirst( &pFolder->hashObj, &offset );
    while ( found ) {
       GET_PTR( pItem, offset, psonHashTxItem );
-      GET_PTR( pDesc, pItem->dataOffset, psonObjectDescriptor );
-      GET_PTR( pObject, pDesc->offset, void );
+      GET_PTR( pNode, pItem->dataOffset, psonTreeNode );
+      GET_PTR( pObject, pNode->offset, void );
       
       memset( message, 0, PSO_MAX_NAME_LENGTH*4+30 );
       strcpy( message, "Object name: " );
-      strncat( message, pDesc->originalName, pDesc->nameLengthInBytes );
+      strncat( message, pItem->key, pItem->keyLength );
       qsrEcho( pVerify, message );
-      switch( pDesc->apiType ) {
+      switch( pNode->apiType ) {
          case PSO_FOLDER:
             valid = qsrVerifyFolder( pVerify,
                                       (psonFolder *)pObject, 
@@ -76,7 +76,7 @@ qsrCheckFolderContent( qsrVerifyStruct   * pVerify,
                                        pContext );
             break;
          default:
-            PSO_INV_CONDITION( pDesc_invalid_api_type );
+            PSO_INV_CONDITION( pNode_invalid_api_type );
       }
       
       previousOffset = offset;
@@ -104,7 +104,7 @@ qsrCheckFolderContent( qsrVerifyStruct   * pVerify,
          pVerify->spaces += 2;
          qsrEcho( pVerify, "Removing the object from shared memory" );
          pVerify->spaces -= 2;
-         switch( pDesc->apiType ) {
+         switch( pNode->apiType ) {
             case PSO_FOLDER:
                psonFolderFini( (psonFolder *)pObject, pContext );
                break;
@@ -116,7 +116,7 @@ qsrCheckFolderContent( qsrVerifyStruct   * pVerify,
                psonQueueFini( (struct psonQueue *)pObject, pContext );
                break;
             default:
-               PSO_INV_CONDITION( pDesc_invalid_api_type );
+               PSO_INV_CONDITION( pNode_invalid_api_type );
          }
          psonHashTxDelete( &pFolder->hashObj,
                            pItem,
@@ -130,13 +130,14 @@ qsrCheckFolderContent( qsrVerifyStruct   * pVerify,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 enum qsrRecoverError
-qsrVerifyFolder( qsrVerifyStruct   * pVerify,
-                  struct psonFolder  * pFolder,
-                  psonSessionContext * pContext )
+qsrVerifyFolder( qsrVerifyStruct    * pVerify,
+                 struct psonFolder  * pFolder,
+                 psonSessionContext * pContext )
 {
    psonTxStatus * txFolderStatus;
    enum qsrRecoverError rc = QSR_REC_OK, rc2;
    bool bTestObject = false;
+   psonTreeNode * pNode = NULL;
    
    pVerify->spaces += 2;
    
@@ -158,7 +159,8 @@ qsrVerifyFolder( qsrVerifyStruct   * pVerify,
 
    qsrPopulateBitmap( pVerify, &pFolder->memObject, pContext );
 
-   GET_PTR( txFolderStatus, pFolder->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pNode, pFolder->nodeOffset, psonTreeNode );
+   GET_PTR( txFolderStatus, pNode->txStatusOffset, psonTxStatus );
 
    if ( txFolderStatus->txOffset != PSON_NULL_OFFSET ) {
       /*
@@ -206,11 +208,11 @@ qsrVerifyFolder( qsrVerifyStruct   * pVerify,
          qsrEcho( pVerify, "Parent counter set to zero" );
       }
    }
-   if ( pFolder->nodeObject.txCounter != 0 ) {
+   if ( pNode->txCounter != 0 ) {
       rc = QSR_REC_CHANGES;
       qsrEcho( pVerify, "Transaction counter is not zero" );
       if (pVerify->doRepair) {
-         pFolder->nodeObject.txCounter = 0;
+         pNode->txCounter = 0;
          qsrEcho( pVerify, "Transaction counter set to zero" );
       }
    }

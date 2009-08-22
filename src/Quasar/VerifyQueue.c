@@ -107,6 +107,7 @@ qsrVerifyQueue( qsrVerifyStruct   * pVerify,
    psonTxStatus * txQueueStatus;
    enum qsrRecoverError rc = QSR_REC_OK, rc2;
    bool bTestObject = false;
+   psonTreeNode * pNode;
    
    pVerify->spaces += 2;
    
@@ -132,7 +133,8 @@ qsrVerifyQueue( qsrVerifyStruct   * pVerify,
     */
    qsrPopulateBitmap( pVerify, &pQueue->memObject, pContext );
 
-   GET_PTR( txQueueStatus, pQueue->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pNode, pQueue->nodeOffset, psonTreeNode );
+   GET_PTR( txQueueStatus, pNode->txStatusOffset, psonTxStatus );
 
    if ( txQueueStatus->txOffset != PSON_NULL_OFFSET ) {
       /*
@@ -180,11 +182,11 @@ qsrVerifyQueue( qsrVerifyStruct   * pVerify,
          qsrEcho( pVerify, "Parent counter set to zero" );
       }
    }
-   if ( pQueue->nodeObject.txCounter != 0 ) {
+   if ( pNode->txCounter != 0 ) {
       rc = QSR_REC_CHANGES;
       qsrEcho( pVerify, "Transaction counter is not zero" );
       if (pVerify->doRepair) {
-         pQueue->nodeObject.txCounter = 0;
+         pNode->txCounter = 0;
          qsrEcho( pVerify, "Transaction counter set to zero" );
       }
    }

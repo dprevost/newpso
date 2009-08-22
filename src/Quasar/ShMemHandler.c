@@ -23,7 +23,7 @@
 #include "Quasar/MemoryManager.h"
 #include "Quasar/Quasar.h"
 #include "Quasar/VerifyShMem.h"
-#include "API/QuasarCommon.h"
+#include "Quasar/QuasarCommon.h"
 #include "Nucleus/SessionContext.h"
 #include "Nucleus/InitEngine.h"
 #include "Nucleus/Folder.h"
@@ -47,7 +47,7 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    psonKeyDefinition  dummyKeyDefinition;
    
    psonFolderItem folderItem;
-   psonObjectDescriptor * pDesc;
+   psonTreeNode * pNode;
    psonDataDefinition * pMemDataDefinition = NULL;
    psonKeyDefinition  * pMemKeyDefinition = NULL;
    uint32_t recLength;
@@ -103,8 +103,8 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) return false;
 
-   GET_PTR( pDesc, folderItem.pHashItem->dataOffset, psonObjectDescriptor );
-   GET_PTR( pFolder, pDesc->offset, psonFolder );
+   GET_PTR( pNode, folderItem.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR( pFolder, pNode->offset, psonFolder );
    pFolder->isSystemObject = true;
    
    ok = psonTopFolderCloseObject( &folderItem, &pHandler->context );
@@ -120,8 +120,8 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) return false;
 
-   GET_PTR( pDesc, folderItem.pHashItem->dataOffset, psonObjectDescriptor );
-   GET_PTR( pFolder, pDesc->offset, psonFolder );
+   GET_PTR( pNode, folderItem.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR( pFolder, pNode->offset, psonFolder );
    pFolder->isSystemObject = true;
    
    ok = psonTopFolderCloseObject( &folderItem, &pHandler->context );
@@ -137,10 +137,10 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) return false;
 
-   GET_PTR( pDesc, folderItem.pHashItem->dataOffset, psonObjectDescriptor );
-   GET_PTR( pHashMap, pDesc->offset, psonHashMap );
+   GET_PTR( pNode, folderItem.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR( pHashMap, pNode->offset, psonHashMap );
    pHashMap->isSystemObject = true;
-   pHandler->pMemHeader->dataDefMapOffset = pDesc->offset;
+   pHandler->pMemHeader->dataDefMapOffset = pNode->offset;
 
    /*
     * Insert a default data definition.
@@ -161,7 +161,6 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
                            strlen("Default"),
                            pMemDataDefinition,
                            recLength,
-                           NULL,
                            &pHandler->context );
    PSO_POST_CONDITION( ok == true || ok == false );
    free( pMemDataDefinition );
@@ -180,10 +179,10 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) return false;
 
-   GET_PTR( pDesc, folderItem.pHashItem->dataOffset, psonObjectDescriptor );
-   GET_PTR( pHashMap, pDesc->offset, psonHashMap );
+   GET_PTR( pNode, folderItem.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR( pHashMap, pNode->offset, psonHashMap );
    pHashMap->isSystemObject = true;
-   pHandler->pMemHeader->keyDefMapOffset = pDesc->offset;
+   pHandler->pMemHeader->keyDefMapOffset = pNode->offset;
    
    /*
     * Insert a default data definition.
@@ -204,7 +203,6 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
                            strlen("Default"),
                            pMemKeyDefinition,
                            recLength,
-                           NULL,
                            &pHandler->context );
    PSO_POST_CONDITION( ok == true || ok == false );
    free( pMemKeyDefinition );

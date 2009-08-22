@@ -156,12 +156,7 @@ bool qsrCreateMem( qsrMemoryManager   * pManager,
    }
    psonTxStatusInit( &pManager->pHeader->topHashItem.txStatus, PSON_NULL_OFFSET );
 
-   pFolder->nodeObject.txCounter      = 0;
-   pFolder->nodeObject.myNameLength   = 0;
-   pFolder->nodeObject.myNameOffset   = PSON_NULL_OFFSET;
-   pFolder->nodeObject.txStatusOffset = 
-      SET_OFFSET( &pManager->pHeader->topHashItem.txStatus );
-   pFolder->nodeObject.myParentOffset = PSON_NULL_OFFSET;
+   pFolder->nodeOffset = SET_OFFSET(&(*ppHeader)->topHashItem);
 
    errcode = psonHashTxInit( &pFolder->hashObj, 
                              SET_OFFSET(&pFolder->memObject),
@@ -172,11 +167,14 @@ bool qsrCreateMem( qsrMemoryManager   * pManager,
       return false;
    }
    (*ppHeader)->treeMgrOffset = SET_OFFSET( ptr );
-   (*ppHeader)->topHashItem.dataOffset = SET_OFFSET(&(*ppHeader)->topDescriptor);
-   (*ppHeader)->topDescriptor.offset = SET_OFFSET( ptr );
-   (*ppHeader)->topDescriptor.nodeOffset = SET_OFFSET( &pFolder->nodeObject );
-   (*ppHeader)->topDescriptor.memOffset = SET_OFFSET( &pFolder->memObject );
-   (*ppHeader)->topDescriptor.apiType = PSO_FOLDER;
+   (*ppHeader)->topHashItem.dataOffset = SET_OFFSET(&(*ppHeader)->topTreeNode);
+   (*ppHeader)->topTreeNode.offset = SET_OFFSET( ptr );
+   (*ppHeader)->topTreeNode.apiType = PSO_FOLDER;
+   (*ppHeader)->topTreeNode.txCounter = 0;
+   (*ppHeader)->topTreeNode.txStatusOffset = 
+      SET_OFFSET( &pManager->pHeader->topHashItem.txStatus );
+   (*ppHeader)->topTreeNode.myParentOffset = PSON_NULL_OFFSET;
+   
 
    /* The Garbage Collection manager */
    ptr = psonMallocBlocks( pAlloc, PSON_ALLOC_ANY, 1, pContext );

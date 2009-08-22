@@ -47,7 +47,8 @@ qsrVerifyFastMap( qsrVerifyStruct   * pVerify,
    psonTxStatus * txHashMapStatus;
    enum qsrRecoverError rc = QSR_REC_OK, rc2;
    bool bTestObject = false;
-      
+   psonTreeNode * pNode;
+   
    pVerify->spaces += 2;
 
    /* Is the object lock ? */
@@ -73,7 +74,8 @@ qsrVerifyFastMap( qsrVerifyStruct   * pVerify,
     */
    qsrPopulateBitmap( pVerify, &pHashMap->memObject, pContext );
 
-   GET_PTR( txHashMapStatus, pHashMap->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR( pNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR( txHashMapStatus, pNode->txStatusOffset, psonTxStatus );
 
    if ( txHashMapStatus->txOffset != PSON_NULL_OFFSET ) {
       /*
@@ -120,11 +122,11 @@ qsrVerifyFastMap( qsrVerifyStruct   * pVerify,
          qsrEcho( pVerify, "Parent counter set to zero" );
       }
    }
-   if ( pHashMap->nodeObject.txCounter != 0 ) {
+   if ( pNode->txCounter != 0 ) {
       rc = QSR_REC_CHANGES;
       qsrEcho( pVerify, "Transaction counter is not zero" );
       if (pVerify->doRepair) {
-         pHashMap->nodeObject.txCounter = 0;
+         pNode->txCounter = 0;
          qsrEcho( pVerify, "Transaction counter set to zero" );
       }
    }
