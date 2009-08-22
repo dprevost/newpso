@@ -128,4 +128,9 @@ def check(context):
    ut.run()
    ut.print_results()
 
-        
+'''
+def shutdown():
+   if sys.platform != 'win32':
+      find . -name '*~' -exec rm {} \;
+'''
+

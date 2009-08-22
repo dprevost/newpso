@@ -43,11 +43,44 @@ def build(bld):
       defines      = ['BUILD_PHOTON_ENGINE'],
       uselib_local = 'Common',
       target       = 'Nucleus',
-      after        = 'parser')
-   nucleus_lib.install_path = None
-
+      option_file  = 'options.xml',
+      xml_file     = 'photon.xml',
+      install_path = None
+   )
    nucleus_lib_release = nucleus_lib.clone('release')
 
    bld.add_subdirs(['Tests'])
 
+from TaskGen import feature, after
+import Utils
+
+@feature('cc')
+@after('apply_core')
+def process_parser(self):
+   if not getattr(self, 'option_file', None):
+      return
+
+   if not getattr(self, 'xml_file', None):
+      raise ValueError, 'xml_file parameter is missing'
+
+   opt_node = self.path.find_resource(self.option_file)
+   if not opt_node: raise ValueError, 'option file not found'
+
+   xml_node = self.path.find_resource(self.xml_file)
+   if not xml_node: raise ValueError, 'xml file not found'
+   
+   # the task instance
+   tsk = self.create_task('parser')
+   tsk.set_inputs( [opt_node, xml_node] )
+
+   outfiles = tsk.getOptions(opt_node.nice_path())
+   
+   outputs = []
+   for f in outfiles:
+      out = self.path.find_resource(Utils.split_path(f))
+      if not out: raise ValueError, f + ' file not found'
+      outputs.append(out)
+   
+   if len(outputs) > 0:
+      tsk.set_outputs( outputs )
 
