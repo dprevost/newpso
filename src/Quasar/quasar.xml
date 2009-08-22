@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<refentry id='quasar1'>
+<!--  
+  Copyright (C) 2008-2009 Daniel Prevost <dprevost@photonsoftware.org>
+
+  This file is part of Photon (photonsoftware.org).
+
+  This file may be distributed and/or modified under the terms of the
+  GNU General Public License version 2 or version 3 as published by the 
+  Free Software Foundation and appearing in the file COPYING.GPL2 and 
+  COPYING.GPL3 included in the packaging of this software.
+
+  Licensees holding a valid Photon Commercial license can use this file 
+  in accordance with the terms of their license.
+
+  This software is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+-->
+<refmeta>
+  <refentrytitle>quasar</refentrytitle>
+  <manvolnum>1</manvolnum>
+  <refmiscinfo class='source'>Photon software</refmiscinfo>
+  <refmiscinfo class='manual'>User Commands</refmiscinfo>
+  <refmiscinfo class='version'>0.4.0</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+  <refname>quasar</refname>
+  <refpurpose>starts the Photon server</refpurpose>
+</refnamediv>
+<refsynopsisdiv id='synopsis'>
+
+<refsect2 id='testing_the_configuration_file'><title>Testing the configuration file (and exit):</title>
+<para><userinput>quasar -c|--config</userinput> <emphasis remap='I'>config_filename </emphasis><option>-t|--test</option></para>
+</refsect2>
+
+<refsect2 id='verifying_the_mem'><title>Verifying the shared memory (and exit):</title>
+<para><userinput>quasar -c|--config</userinput> <emphasis remap='I'>config_filename </emphasis><option>-v|--verify</option></para>
+</refsect2>
+
+<refsect2 id='getting_help'><title>Getting (minimal) help:</title>
+<para><userinput>quasar -h|--help|-?</userinput></para> 
+</refsect2>
+
+<refsect2 id='running_normally'><title>Running normally:</title>
+<para><userinput>quasar -c|--config</userinput> <emphasis remap='I'>config_filename </emphasis>[<option>-d|--daemon</option>]</para>
+</refsect2>
+</refsynopsisdiv>
+
+<!-- body begins here -->
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>quasar is the shared-memory creator and keeper and the crash-recovery server
+of the Photon Framework. Currently, crash recovery is only done when this program is 
+started.</para>
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+  <varlistentry>
+  <term><option>-c</option>, <option>--config</option> <replaceable>config_filename</replaceable></term>
+  <listitem>
+<para>The name of the configuration file (see 
+<link linkend="configuration">CONFIGURATION</link>
+below).</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-d</option>, <option>--daemon</option></term>
+  <listitem>
+<para>Become a Unix daemon. Error reporting is done using the system logger (syslog).
+This option is not available on Windows.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-h</option>, <option>--help</option>, <option>-?</option></term>
+  <listitem>
+<para>Display minimal usage information.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-t</option>, <option>--test</option></term>
+  <listitem>
+<para>Test the configuration file and exit.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><option>-v</option>, <option>--verify</option></term>
+  <listitem>
+<para>Verify the content of the shared-memory file without modifying it 
+and exit.</para>
+  </listitem>
+  </varlistentry>
+</variablelist>
+</refsect1>
+
+<refsect1 id='configuration'><title>CONFIGURATION</title>
+<para>The configuration file is a simple XML file with tags, values and 
+attributes as explained below.</para>
+<variablelist remap='TP'>
+  <varlistentry>
+  <term><emphasis remap='B'>mem_location</emphasis></term>
+  <listitem>
+<para>The path of the directory where the server will find the shared-memory file
+and auxiliary files (these files will be created if they do not exist).</para>
+<para> Example: &lt;mem_location&gt;/tmp/photon&lt;/mem_location&gt;</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>mem_size</emphasis></term>
+  <listitem>
+<para>The total size of the shared memory. This size can be expressed in multiple
+ units, kbytes ("kb"), megabytes ("mb") or gigabytes ("gb").  
+ For example a shared memory of 10 Megabytes can either be written as </para>
+ <para>
+       &lt;mem_size size="10240" units="kb" /&gt;
+ </para>
+<para>     or </para>
+<para>
+       &lt;mem_size size="10" units="mb" /&gt;.
+</para>
+<para>
+     On many modern systems, only the actual pages in use will
+     be loaded - therefore this parameter can be quite large 
+     (you'll need the space on disk however - in fact twice as
+     large to accomodate a backup of the memory file). 
+</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>quasar_address</emphasis></term>
+  <listitem>
+<para>The local TCP/IP port the server will use to listen for new connection 
+requests.</para>
+<para>Example: &lt;quasar_address&gt;10701&lt;/quasar_address&gt;</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><emphasis remap='B'>file_access access</emphasis></term>
+  <listitem>
+
+<para>  
+  This parameter defines which "class" of users should have full access to 
+  the shared-memory backstore and all other related files. In other words, 
+  the class of users that can access and use Photon (Unix only).
+</para>
+<para> Three possible answers: </para>
+<para>
+       "user" - only the user that launched/will launch the server (and 
+                created/will create the files).
+</para>
+<para>
+       "group" - only users that belong to the same group of the user that 
+                 launched/will launched the server...
+</para>
+<para>
+       "world" - no restriction - all users are allowed. Not recommended in
+                 most cases.
+</para>
+<para>
+     If the user launching the server belongs to more than one group,
+     you can specify which group should be used by using something like this:
+</para>
+<para>
+       &lt;file_access access="group" group="photon"/&gt;
+</para>
+<para>
+     Note: this is mainly for future development, for example if you
+     want the web server (or a database or...) to access shared memory,
+     you can create a group, photon, and add the user apache (or
+     equivalent) to this group.
+</para>  
+  
+  </listitem>
+  </varlistentry>
+</variablelist>
+</refsect1>
+
+<refsect1 id='reporting_bugs'><title>REPORTING BUGS</title>
+<para>Report bugs to &lt;dprevost@photonsoftware.org&gt;.</para>
+</refsect1>
+
+<refsect1 id='copyright'><title>COPYRIGHT</title>
+<para>Copyright © 2008 Daniel Prévost.</para>
+  <!--   <para>Copyright &copy; 2008 Daniel PrÃ©vost.</para>   -->
+</refsect1>
+</refentry>
+

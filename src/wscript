@@ -13,7 +13,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 subdirs_list = [
-        'Common', 'Nucleus']
+        'Common', 'Nucleus', 'Quasar']
         #'Nucleus' ]
         #,
         #'Nucleus',
