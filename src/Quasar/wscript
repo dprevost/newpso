@@ -48,6 +48,27 @@ def build(bld):
 
    #bld.add_subdirs(['Tests'])
 
+   if bld.env['DOCBOOK2X_MAN']:
+      the_src_path = bld.srcnode.abspath() + '/src/Quasar'
+      the_trg_path = bld.srcnode.abspath(bld.env) + '/src/Quasar'
+      print 'ok1', bld.srcnode.abspath(bld.env) + '/src/Quasar'
+      man_quasar = bld.new_task_gen(
+         source = 'quasar.xml',
+         target = 'quasar.1',
+         rule   = 'cd ' + the_src_path + ' && ${DOCBOOK2X_MAN}   --encoding=iso-8859-1 quasar.xml && cp quasar.1 ' + the_trg_path,
+      )
+      #man_quasar_release = man_quasar.clone('release')
+      the_trg_path = bld.srcnode.abspath(bld.env_of_name('release')) + '/src/Quasar'
+      man_quasar_rel = bld.new_task_gen(
+         source = 'quasar.xml',
+         target = 'quasar.1',
+         rule   = 'cd ' + the_src_path + ' && ${DOCBOOK2X_MAN}   --encoding=iso-8859-1 quasar.xml && cp quasar.1 ' + the_trg_path,
+         env    = bld.env_of_name('release')
+      )
+      
+   else:
+      print 'ok2'
+
 from TaskGen import feature, after
 import Utils
 

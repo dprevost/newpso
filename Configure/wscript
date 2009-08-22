@@ -409,9 +409,9 @@ return 0; }
    
    conf.define('BUILD_CPU', platform.machine() )
    
-   print conf.env["CC"]
+   #print conf.env["CC"]
    
-   print 'zz' + conf.env["COMPILER_NAME"]
+   #print 'zz' + conf.env["COMPILER_NAME"]
    
    conf.sub_config('inline')
    conf.sub_config('access')
