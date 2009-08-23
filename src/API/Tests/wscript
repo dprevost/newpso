@@ -13,11 +13,14 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 subdirs_list = [
-        'Api',
-        'CommonObject',
+        'Api']
+        
+'''
+'CommonObject',
         'Connector',
         'DataDefinition',
         'FastMap']
+'''
 
 def build(bld):
    bld.add_subdirs( subdirs_list )
