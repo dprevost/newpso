@@ -366,20 +366,6 @@ bool qsrHandlerInit( qsrHandler          * pHandler,
       PSO_POST_CONDITION( ok == true || ok == false );
       if ( ! ok ) return false;
       
-      (*ppMemoryAddress)->logON = false;
-      if ( pConfig->logOn ) {
-         
-         sprintf( path, "%s%s%s", pConfig->memLocation, PSO_DIR_SEPARATOR,
-                  PSO_LOGDIR_NAME );
-         errcode = mkdir( path, pConfig->dirPerms );
-         if ( errcode != 0 ) {
-            psocSetError( &pHandler->context.errorHandler,
-                          g_qsrErrorHandle,
-                          QSR_MKDIR_FAILURE );
-            return false;
-         }
-         (*ppMemoryAddress)->logON = true;
-      }
    }
    else {
       if ( ! fileStatus.fileReadable || ! fileStatus.fileWritable || 
@@ -483,41 +469,6 @@ bool qsrHandlerInit( qsrHandler          * pHandler,
          return false;
       }
 
-#if 0
-      /*
-       * We validate the shared memory first since the config file can set/unset the  
-       * logging of transactions on an existing shared memory.
-       */
-      if ( pConfig->logOn ) {
-         /*
-          * It is possible that logging was not on the last time the
-          * program was run but is on now. Or that the directory was
-          * removed for what ever reason. We recreate it if needed.
-          */
-         sprintf( path, "%s%s%s", pConfig->memLocation, PSO_DIR_SEPARATOR,
-                  PSO_LOGDIR_NAME );
-#if HAVE_ACCESS
-         errcode = access( path, F_OK );
-#else
-         FILE* fp = fopen( path, "r" );
-         if ( fp == NULL ) {
-            errcode = -1;
-         }
-         else {
-            fclose( fp );
-         }
-#endif
-         if ( errcode == -1 ) {
-            errcode = mkdir( path, pConfig->dirPerms );
-            if ( errcode != 0 )
-               return false;
-         }
-         (*ppMemoryAddress)->logON = true;
-      }
-      else
-#endif
-         (*ppMemoryAddress)->logON = false;
-      
    }
 
    pHandler->pMemHeader = *ppMemoryAddress;

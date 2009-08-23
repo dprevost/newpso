@@ -1,0 +1,40 @@
+#! /usr/bin/env python
+# encoding: utf-8
+# :mode=python:  - For jedit
+
+# Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
+#  
+# This file is free software; as a special exception the author gives
+# unlimited permission to copy and/or distribute it, with or without 
+# modifications, as long as this notice is preserved.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+api_list = [
+        'api.c',
+        'CommonObject.c',
+        'Connector.c',
+        'DataDefinition.c',
+        'FastMap.c',
+        'Folder.c',
+        'HashMap.c',
+        'KeyDefinition.c',
+        'Lifo.c',
+        'Process.c',
+        'Queue.c',
+        'Session.c',
+        'Standalone.c']
+
+def build(bld):
+   api_lib = bld.new_task_gen(
+      features = 'cc cshlib',
+      source = api_list,
+      includes='.. ../include',
+      uselib_local   = 'Common Nucleus',
+      ccflags      = ['-O2', '-Wall', '-g'],
+      target='photon')
+
+   bld.add_subdirs(['Tests'])
+
