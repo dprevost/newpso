@@ -12,6 +12,8 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
+import os
+
 subdirs_list = [
         'Api']
         
@@ -23,4 +25,14 @@ subdirs_list = [
 '''
 
 def build(bld):
+   
+   # build root, including the variant directory
+   quasar_dir = os.path.join(os.path.join(bld.srcnode.abspath(bld.env), 'src'), 'Quasar')
+
+   obj = bld.new_task_gen('subst')
+   obj.source = 'quasar-run.h.in'
+   obj.target = 'quasar-run.h'
+   obj.dict   = {'QUASAR_DIR': '"' + quasar_dir + '"'}
+  
    bld.add_subdirs( subdirs_list )
+

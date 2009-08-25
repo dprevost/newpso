@@ -52,7 +52,7 @@ def configure(conf):
    conf.check_python_version((2,6,0))
 
    conf.check_tool('UnitTest')
-
+   conf.check_tool('misc')
    conf.check_tool('doxygen', tooldir='Configure')
    conf.check_tool('errorparser', tooldir='Configure')
 
@@ -91,7 +91,7 @@ def configure(conf):
       conf.define('PSON_BLOCK_SHIFT',   13)
    else:
       conf.fatal('Invalid value! Values allowed: 2k, 4k or 8k')
-
+   
    # create the second environment, set the variant and set its name
    env2 = conf.env.copy()
    env2.set_variant('release')
@@ -102,6 +102,8 @@ def configure(conf):
       conf.env.CCFLAGS = conf.env['CCFLAGS_RELEASE']
    else:
       conf.env.CCFLAGS = ['-O2']
+   #top_bld = os.path.join(conf.blddir, conf.env.variant())
+   #conf.define('BUILD_DIR', top_bld)
     
    conf.setenv('default')
    if sys.platform == 'win32':
@@ -109,6 +111,8 @@ def configure(conf):
       #['/Od', '/MDd', '-DDEBUG']
    else:
       conf.env.CCFLAGS = ['-O0', '-g3', '-DDEBUG']
+   #top_bld = os.path.join(conf.blddir, conf.env.variant())
+   #conf.define('BUILD_DIR', top_bld)
 
    conf.write_config_header('src/config.h', conf.setenv('default') )
    conf.write_config_header('src/config.h', conf.setenv('release') )

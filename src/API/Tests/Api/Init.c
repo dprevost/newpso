@@ -20,11 +20,34 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+
+//#define BASE_DIR newpso.git
+
 void setup_test()
 {
+#if 0
+   char w[PATH_MAX];
+   FILE * fp;
+   int i, j, k;
+   
+   fp = fopen( "/home/project/Photon/newpso.git/out.txt", "w" );
+   if ( fp == NULL ) {
+      fprintf( stderr, "ok\n" );
+      return;
+   }
+   getcwd(w, PATH_MAX);
+   for ( i = 0; i < strlen(w) ) {
+      if ( w[i] == '/' ) {
+ //        if ( strcmp( w[i+1], 
+   }
+   fprintf( fp, "path: %s\n", w );
+  ///home/project/Photon/newpso.git/build/default/src/Quasar/quasar  
+#endif
+   startQuasar();
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
