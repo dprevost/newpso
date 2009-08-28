@@ -45,7 +45,7 @@ void teardown_test()
 void test_invalid_sig( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   bool ok;
+   bool ok, isFolder;
    int value;
 
    ok = psocOpenDir( &iterator, "..", &errorHandler );
@@ -53,7 +53,9 @@ void test_invalid_sig( void ** state )
    
    value = iterator.initialized;
    iterator.initialized = 0;
-   expect_assert_failure( psocDirGetNextFileName(&iterator, &errorHandler) );
+   expect_assert_failure( psocDirGetNextFileName( &iterator, 
+                                                  &errorHandler,
+                                                  &isFolder ) );
    iterator.initialized = value;
 
    psocCloseDir( &iterator );
@@ -66,7 +68,11 @@ void test_invalid_sig( void ** state )
 void test_no_open( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psocDirGetNextFileName(&iterator, &errorHandler) );
+   bool isFolder;
+   
+   expect_assert_failure( psocDirGetNextFileName( &iterator,
+                                                  &errorHandler,
+                                                  &isFolder ) );
 #endif
    return;
 }
@@ -85,12 +91,13 @@ void test_no_such_dir( void ** state )
 #if defined(PSO_UNIT_TESTS) && defined(_WIN32)
    bool ok;
    const char* str;
+   bool isFolder;
 
    ok = psocOpenDir( &iterator, "abc123", &errorHandler );
    assert_true( ok );
 
 
-   str = psocDirGetNextFileName( &iterator, &errorHandler );
+   str = psocDirGetNextFileName( &iterator, &errorHandler, &isFolder );
 
    assert_true( str == NULL );
    assert_true( psocAnyErrors( &errorHandler ) );
@@ -106,11 +113,14 @@ void test_null_dir( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    bool ok;
+   bool isFolder;
 
    ok = psocOpenDir( &iterator, "..", &errorHandler );
    assert_true( ok );
    
-   expect_assert_failure( psocDirGetNextFileName(NULL, &errorHandler) );
+   expect_assert_failure( psocDirGetNextFileName( NULL,
+                                                  &errorHandler,
+                                                  &isFolder ) );
 
    psocCloseDir( &iterator );
 #endif
@@ -123,11 +133,14 @@ void test_null_error( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    bool ok;
+   bool isFolder;
 
    ok = psocOpenDir( &iterator, "..", &errorHandler );
    assert_true( ok );
    
-   expect_assert_failure( psocDirGetNextFileName(&iterator, NULL) );
+   expect_assert_failure( psocDirGetNextFileName( &iterator,
+                                                  NULL,
+                                                  &isFolder ) );
 
    psocCloseDir( &iterator );
 #endif
@@ -142,13 +155,16 @@ void test_null_pdir( void ** state )
 #if defined(PSO_UNIT_TESTS) && ! defined(_WIN32)
    bool ok;
    DIR * pDir;
+   bool isFolder;
 
    ok = psocOpenDir( &iterator, "..", &errorHandler );
    assert_true( ok );
    
    pDir = iterator.pDir;
    iterator.pDir = NULL;
-   expect_assert_failure( psocDirGetNextFileName(&iterator, &errorHandler) );
+   expect_assert_failure( psocDirGetNextFileName( &iterator,
+                                                  &errorHandler,
+                                                  &isFolder ) );
    iterator.pDir = pDir;
 
    psocCloseDir( &iterator );
@@ -163,11 +179,12 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    bool ok;
    const char* str;
+   bool isFolder;
    
    ok = psocOpenDir( &iterator, "..", &errorHandler );
    assert_true( ok );
    
-   str = psocDirGetNextFileName( &iterator, &errorHandler );
+   str = psocDirGetNextFileName( &iterator, &errorHandler, &isFolder );
 
    assert_true( str != NULL );
    assert_false( psocAnyErrors( &errorHandler ) );

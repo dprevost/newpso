@@ -120,12 +120,17 @@ bool psocOpenDir( psocDirIterator  * pIterator,
 /*! \brief Get the next file name. */
 PHOTON_COMMON_EXPORT
 const char * psocDirGetNextFileName( psocDirIterator  * pIterator,
-                                     psocErrorHandler * pError );
+                                     psocErrorHandler * pError,
+                                     bool             * isFolder );
 
 /*! \brief Close the directory. */
 PHOTON_COMMON_EXPORT
 void psocCloseDir( psocDirIterator * pIterator );
 
+/*! \brief Remove a directory and all of its content. */
+PHOTON_COMMON_EXPORT
+bool psocRemoveDir( const char       * dirName,
+                    psocErrorHandler * pError );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

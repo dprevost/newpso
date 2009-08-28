@@ -31,6 +31,11 @@
 //#include "API/DataDefinition.h"
 
 #define QUASAR_DIR  @QUASAR_DIR@
+#if defined WIN32
+const char * quasarName = @QUASAR_DIR@ "\\quasar.exe";
+#else
+const char * quasarName = @QUASAR_DIR@ "/quasar";
+#endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -38,9 +43,57 @@ BEGIN_C_DECLS
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int startQuasar()
+bool startQuasar()
 {
-   return 1;
+   pid_t pid, childPid;
+   int  i, childStatus;
+   bool foundError = false;
+
+   /* Launch the child */
+#if defined(_WIN32)
+   pid = _spawnl( _P_NOWAIT, quasarName, quasarName, NULL ); 
+   assert_true( pid > 0 );
+   childPid = pid;
+#else
+   pid = fork();
+   if ( pid == 0 ) {
+      execl( quasarName, quasarName, NULL );
+      /* If we come here, something is wrong ! */
+      return false;
+   }
+   else if ( pid > 0 ) {
+      childPid = pid;
+      fprintf( stderr, "Launched child, pid = %d\n", pid );
+   }
+   else {
+      fprintf( stderr, "Fork failure, errno = %d\n", errno );
+      return false;
+   }
+#endif
+
+   return true;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int stopQuasar()
+{
+#if 0
+      /* Now wait for the child processes to end */
+   for ( i = 0; i < numChilds; ++i ) {
+#if defined(_WIN32)
+      _cwait( &childStatus, childPid[i], _WAIT_CHILD );
+      if ( childStatus != 0 ) foundError = true;
+#else
+      waitpid( childPid[i], &childStatus, 0 );
+      if ( WEXITSTATUS(childStatus) != 0 ) foundError = true;
+#endif
+   }
+   assert_false( foundError );
+
+   free( processName );
+   free( childPid );
+#endif
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

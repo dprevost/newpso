@@ -44,7 +44,8 @@
  *
  */
 const char * psocDirGetNextFileName( psocDirIterator  * pIterator,
-                                     psocErrorHandler * pError )
+                                     psocErrorHandler * pError,
+                                     bool             * isFolder )
 {
 #if ! defined (_WIN32)
    struct dirent * pEntry;
@@ -60,6 +61,8 @@ const char * psocDirGetNextFileName( psocDirIterator  * pIterator,
    PSO_PRE_CONDITION( pIterator->pDir != NULL );
 #endif
 
+   *isFolder = false;
+   
 #if defined (_WIN32)
    if ( pIterator->handle == PSO_INVALID_HANDLE ) {
       pIterator->handle = 
@@ -89,6 +92,9 @@ const char * psocDirGetNextFileName( psocDirIterator  * pIterator,
            pIterator->data.cFileName[1] == '.' ) {
          continue;
       }
+      if ( pIterator->data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
+         *isFolder = true;
+      }
       PSO_POST_CONDITION( pIterator->data.cFileName  != NULL );
 
       return pIterator->data.cFileName;
@@ -112,6 +118,7 @@ const char * psocDirGetNextFileName( psocDirIterator  * pIterator,
            pEntry->d_name[0] == '.' && pEntry->d_name[1] == '.' ) {
          continue;
       }
+      if ( pEntry->d_type == DT_DIR ) *isFolder = true;
       
       PSO_POST_CONDITION( pEntry->d_name != NULL );
 
@@ -275,4 +282,54 @@ bool psocOpenDir( psocDirIterator  * pIterator,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+bool psocRemoveDir( const char       * dirName,
+                    psocErrorHandler * pError )
+{
+   psocDirIterator iterator;
+   bool ok;
+   const char * filename;
+   bool isFolder = false;
+   int length;
+   char * fullname;
+   
+   psocInitDir( &iterator );
+   
+   ok = psocOpenDir( &iterator, dirName, pError );
+   if ( ! ok ) return ok;
+   
+   filename = psocDirGetNextFileName( &iterator, pError, &isFolder );
+   while ( filename != NULL ) {
+      length = strlen( dirName ) + strlen( filename ) + 2;
+      fullname = malloc( length );
+      if ( fullname == NULL ) return false;
+      strcpy( fullname, dirName );
+      strcat( fullname, PSO_DIR_SEPARATOR );
+      strcat( fullname, filename );
+
+      if ( isFolder ) {
+         ok = psocRemoveDir( fullname, pError );
+         if ( !ok ) {
+            free( fullname );
+            break;
+         }
+         // rmdir( fullname );
+      }
+      else {
+         // unlink( fullname );
+      }
+      fprintf( stderr, "%d %s\n", isFolder, fullname );
+      free( fullname );
+
+      filename = psocDirGetNextFileName( &iterator, pError, &isFolder );
+   }
+   
+   psocCloseDir( &iterator );
+   psocFiniDir( &iterator );
+
+   rmdir( dirName );
+   
+   return ok;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

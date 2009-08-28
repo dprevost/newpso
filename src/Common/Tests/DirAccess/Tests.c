@@ -30,6 +30,7 @@ void test1( void ** state )
    psocDirIterator iterator;
    const char* str;
    psocErrorHandler errorHandler;
+   bool isFolder;
 
    psocInitErrorDefs();
    psocInitDir( &iterator );
@@ -38,7 +39,7 @@ void test1( void ** state )
    ok = psocOpenDir( &iterator, ".", &errorHandler );
    assert_true( ok );
    
-   str = psocDirGetNextFileName( &iterator, &errorHandler );
+   str = psocDirGetNextFileName( &iterator, &errorHandler, &isFolder );
    assert_false( str == NULL );
    
    /* Close and reopen */
@@ -47,7 +48,7 @@ void test1( void ** state )
    ok = psocOpenDir( &iterator, ".", &errorHandler );
    assert_true( ok );
 
-   str = psocDirGetNextFileName( &iterator, &errorHandler );
+   str = psocDirGetNextFileName( &iterator, &errorHandler, &isFolder );
    assert_false( str == NULL );
    
    /* Close twice and reopen - should work */
@@ -57,7 +58,7 @@ void test1( void ** state )
    ok = psocOpenDir( &iterator, ".", &errorHandler );
    assert_true( ok );
    
-   str = psocDirGetNextFileName( &iterator, &errorHandler );
+   str = psocDirGetNextFileName( &iterator, &errorHandler, &isFolder );
    assert_false( str == NULL );
    
    psocCloseDir( &iterator );
