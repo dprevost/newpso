@@ -25,6 +25,7 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#include "Common/DirAccess.h"
 //#include "API/CommonObject.h"
 //#include "Nucleus/FastMap.h"
 //#include "API/HashMap.h"
@@ -41,28 +42,40 @@ const char * quasarName = @QUASAR_DIR@ "/quasar";
 
 BEGIN_C_DECLS
 
+psocErrorHandler g_errorHandle;
+pid_t g_spawnPid = 0;
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 bool startQuasar()
 {
    pid_t pid, childPid;
    int  i, childStatus;
-   bool foundError = false;
+   bool foundError = false, ok;
 
+   psocInitErrorDefs();
+   psocInitErrorHandler( &g_errorHandle );
+
+   ok = psocRemoveDir( "/tmp/photon", &g_errorHandle );
+
+   mkdir( "/tmp/photon", 0700 );
+   system( "cp @SRC_DIR@/src/Quasar/quasar_config.example.xml /tmp/photon" );
+   system( "cp @SRC_DIR@/src/Quasar/quasar_config.xsd         /tmp/photon" );
+   
    /* Launch the child */
 #if defined(_WIN32)
-   pid = _spawnl( _P_NOWAIT, quasarName, quasarName, NULL ); 
+   pid = _spawnl( _P_NOWAIT, quasarName, quasarName, "-c", "/tmp/photon/quasar_config.example.xml", NULL ); 
    assert_true( pid > 0 );
-   childPid = pid;
+   g_spawnPid = pid;
 #else
    pid = fork();
    if ( pid == 0 ) {
-      execl( quasarName, quasarName, NULL );
+      execl( quasarName, quasarName, "-c", "/tmp/photon/quasar_config.example.xml", NULL );
       /* If we come here, something is wrong ! */
       return false;
    }
    else if ( pid > 0 ) {
-      childPid = pid;
+      g_spawnPid = pid;
       fprintf( stderr, "Launched child, pid = %d\n", pid );
    }
    else {
@@ -76,8 +89,17 @@ bool startQuasar()
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int stopQuasar()
+bool stopQuasar()
 {
+   bool ok;
+   int rc;
+   
+   fprintf( stderr, "pid = %d\n", g_spawnPid );
+   if ( g_spawnPid == 0 ) return false;
+   
+   rc = kill( g_spawnPid, SIGINT );
+   fprintf( stderr, "rc = %d\n", rc );
+   
 #if 0
       /* Now wait for the child processes to end */
    for ( i = 0; i < numChilds; ++i ) {
@@ -94,6 +116,12 @@ int stopQuasar()
    free( processName );
    free( childPid );
 #endif
+   ok = psocRemoveDir( "/tmp/photon", &g_errorHandle );
+   
+   psocFiniErrorHandler( &g_errorHandle );
+   psocFiniErrorDefs();
+   
+   return ok;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

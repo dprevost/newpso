@@ -62,10 +62,38 @@ void test_null_name( void ** state )
 void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   mkdir( "junk1", 0755 );
-   qqqqqqqqqqqqqq
-   psocRemoveDir( "junk1", &errorHandler );
-
+   int rc, fd;
+   bool ok;
+   
+   rc = mkdir( "junk1", 0755 );
+   assert_true( rc == 0 );
+   rc = mkdir( "junk1/junk2", 0755 );
+   assert_true( rc == 0 );
+   rc = mkdir( "junk1/junk3", 0755 );
+   assert_true( rc == 0 );
+   rc = mkdir( "junk1/junk2/junk4", 0755 );
+   assert_true( rc == 0 );
+   rc = mkdir( "junk1/junk2/junk4/junk5", 0755 );
+   assert_true( rc == 0 );
+   fd = creat( "junk1/test1.txt", 0644 );
+   assert_false( fd == -1 );
+   close( fd );
+   fd = creat( "junk1/junk2/junk4/test2.txt", 0644 );
+   assert_false( fd == -1 );
+   close( fd );
+   fd = creat( "junk1/junk2/junk4/test3.txt", 0644 );
+   assert_false( fd == -1 );
+   close( fd );
+   fd = creat( "junk1/junk2/junk4/junk5/test4.txt", 0644 );
+   assert_false( fd == -1 );
+   close( fd );
+   
+   ok = psocRemoveDir( "junk1", &errorHandler );
+   assert_true( ok );
+   
+   rc = access( "junk1", F_OK );
+   assert_true( rc == -1 );
+   
 #endif
    return;
 }

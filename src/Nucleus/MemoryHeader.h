@@ -71,9 +71,11 @@ struct psonMemoryHeader
    char     quasarVersion[10];
    char     creationTime[30];
    
+   // The txstatus of the top folder is the txstatus of this "pseudo" 
+   // txitem object (not used in an hash object since the top is alone)
    psonHashTxItem topHashItem;
-   psonTreeNode topTreeNode;
    
+   psonTreeNode topTreeNode;
 };
 
 typedef struct psonMemoryHeader psonMemoryHeader;

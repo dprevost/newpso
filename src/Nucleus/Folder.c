@@ -1965,10 +1965,11 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
       
       GET_PTR( pObjectNode, pHashItem->dataOffset, psonTreeNode );
       psonTreeNodeInit( pObjectNode, 
-                          SET_OFFSET( ptr ),
-                          pDefinition->type,
-                          SET_OFFSET(objTxStatus),
-                          SET_OFFSET(pFolder) );
+                        SET_OFFSET( ptr ),
+                        pDefinition->type,
+                        SET_OFFSET(objTxStatus),
+                        SET_OFFSET(pFolder) );
+
       switch ( memObjType ) {
 
       case PSON_IDENT_QUEUE:

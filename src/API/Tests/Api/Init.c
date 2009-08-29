@@ -54,6 +54,7 @@ void setup_test()
 
 void teardown_test()
 {
+   stopQuasar();
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -69,6 +70,7 @@ void test_pass( void ** state )
    errcode = psoInit( "12345", "" );
    assert_true( errcode == PSO_CONNECT_ERROR );
 
+   sleep( 30 );
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    

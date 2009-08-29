@@ -2,7 +2,7 @@
 
 <quasar_config xmlns="http://photonsoftware.org/quasarConfig"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://photonsoftware.org/quasarConfig ./quasar_config.xsd">
+xsi:schemaLocation="http://photonsoftware.org/quasarConfig /tmp/photon/quasar_config.xsd">
 
 <!-- Directory for the shared-memory file and support 
      files. The files will be created if needed.
@@ -20,7 +20,7 @@ xsi:schemaLocation="http://photonsoftware.org/quasarConfig ./quasar_config.xsd">
      be loaded - therefore this parameter can be quite large 
      (you'll need the space on disk however - in fact twice as
      large to accomodate a backup of the memory file). -->
-<mem_size size="10240" units="kb" />
+<mem_size size="1024" units="kb" />
 
 <!-- The tcp/ip port used by the API clients and the server to
      communicate. The port is bind to a local address (127.0.0.1)

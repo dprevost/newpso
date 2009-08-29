@@ -312,12 +312,11 @@ bool psocRemoveDir( const char       * dirName,
             free( fullname );
             break;
          }
-         // rmdir( fullname );
+         rmdir( fullname );
       }
       else {
-         // unlink( fullname );
+         unlink( fullname );
       }
-      fprintf( stderr, "%d %s\n", isFolder, fullname );
       free( fullname );
 
       filename = psocDirGetNextFileName( &iterator, pError, &isFolder );

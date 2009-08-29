@@ -28,11 +28,12 @@ def build(bld):
    
    # build root, including the variant directory
    quasar_dir = os.path.join(os.path.join(bld.srcnode.abspath(bld.env), 'src'), 'Quasar')
+   src_dir = bld.srcnode.abspath()
 
    obj = bld.new_task_gen('subst')
    obj.source = 'quasar-run.h.in'
    obj.target = 'quasar-run.h'
-   obj.dict   = {'QUASAR_DIR': '"' + quasar_dir + '"'}
+   obj.dict   = {'QUASAR_DIR': '"' + quasar_dir + '"', 'SRC_DIR': src_dir }
   
    bld.add_subdirs( subdirs_list )
 

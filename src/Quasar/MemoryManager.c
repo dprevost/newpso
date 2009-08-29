@@ -156,7 +156,7 @@ bool qsrCreateMem( qsrMemoryManager   * pManager,
    }
    psonTxStatusInit( &pManager->pHeader->topHashItem.txStatus, PSON_NULL_OFFSET );
 
-   pFolder->nodeOffset = SET_OFFSET(&(*ppHeader)->topHashItem);
+   pFolder->nodeOffset = SET_OFFSET(&(*ppHeader)->topTreeNode);
 
    errcode = psonHashTxInit( &pFolder->hashObj, 
                              SET_OFFSET(&pFolder->memObject),
