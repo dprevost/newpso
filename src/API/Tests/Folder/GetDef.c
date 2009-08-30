@@ -43,24 +43,15 @@ int main( int argc, char * argv[] )
    else {
       errcode = psoInit( "10701", argv[0] );
    }
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
                               "/api_folder_getdef",
                               strlen("/api_folder_getdef") );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoDataDefCreate( sessionHandle,
                                "api_folder_getdef",
@@ -69,10 +60,7 @@ int main( int argc, char * argv[] )
                                (unsigned char *)&dataDef,
                                sizeof(psoFieldDefinition),
                                &dataDefHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoKeyDefCreate( sessionHandle,
                               "api_folder_getdef",
@@ -81,10 +69,7 @@ int main( int argc, char * argv[] )
                               (unsigned char *)&keyDef,
                               sizeof(psoKeyFieldDefinition),
                               &keyDefHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoCreateMap( sessionHandle,
                            "/api_folder_getdef/map1",
@@ -92,91 +77,61 @@ int main( int argc, char * argv[] )
                            &def,
                            dataDefHandle,
                            keyDefHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoFolderOpen( sessionHandle,
                             "/api_folder_getdef",
                             strlen("/api_folder_getdef"),
                             &objHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    /* Invalid arguments to tested function. */
    errcode = psoFolderGetDefinition( NULL,
                                      "map1",
                                      strlen("map1"),
                                      &returnedDef );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoFolderGetDefinition( sessionHandle,
                                      "map1",
                                      strlen("map1"),
                                      &returnedDef );
-   if ( errcode != PSO_WRONG_TYPE_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    errcode = psoFolderGetDefinition( objHandle,
                                      NULL,
                                      strlen("map1"),
                                      &returnedDef );
-   if ( errcode != PSO_INVALID_OBJECT_NAME ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_INVALID_OBJECT_NAME );
    errcode = psoFolderGetDefinition( objHandle,
                                      "map1",
                                      0,
                                      &returnedDef );
-   if ( errcode != PSO_INVALID_LENGTH ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == INVALID_LENGTH );
 
    errcode = psoFolderGetDefinition( objHandle,
                                      "map1",
                                      strlen("map1"),
                                      NULL );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    /* End of invalid args. This call should succeed. */
    errcode = psoFolderGetDefinition( objHandle,
                                      "map1",
                                      strlen("map1"),
                                      &returnedDef );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    /* Close the session and try to act on the object */
 
    errcode = psoExitSession( sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoFolderGetDefinition( objHandle,
                                      "map1",
                                      strlen("map1"),
                                      &returnedDef );
-   if ( errcode != PSO_SESSION_IS_TERMINATED ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();
 

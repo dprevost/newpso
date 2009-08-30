@@ -42,29 +42,17 @@ int main( int argc, char * argv[] )
    else {
       errcode = psoInit( "10701", argv[0] );
    }
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    errcode = psoInitSession( &sessionHandle2 );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
                               "/api_folder_open",
                               strlen("/api_folder_open") );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
 
@@ -72,80 +60,53 @@ int main( int argc, char * argv[] )
                             "/api_folder_open",
                             strlen("/api_folder_open"),
                             &objHandle );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    objHandle = (PSO_HANDLE) junk;
    errcode = psoFolderOpen( objHandle,
                             "/api_folder_open",
                             strlen("/api_folder_open"),
                             &objHandle );
-   if ( errcode != PSO_WRONG_TYPE_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    errcode = psoFolderOpen( sessionHandle,
                             NULL,
                             strlen("/api_folder_open"),
                             &objHandle );
-   if ( errcode != PSO_INVALID_OBJECT_NAME ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    errcode = psoFolderOpen( sessionHandle,
                             "/api_folder_open",
                             0,
                             &objHandle );
-   if ( errcode != PSO_INVALID_LENGTH ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == INVALID_LENGTH );
 
    errcode = psoFolderOpen( sessionHandle,
                             "/api_folder_open",
                             strlen("/api_folder_open"),
                             NULL );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    /* End of invalid args. This call should succeed. */
    errcode = psoFolderOpen( sessionHandle,
                             "/api_folder_open",
                             strlen("/api_folder_open"),
                             &objHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoFolderOpen( sessionHandle2,
                             "/api_folder_open",
                             strlen("/api_folder_open"),
                             &objHandle2 );
-   if ( errcode != PSO_OBJECT_IS_IN_USE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OBJECT_IS_IN_USE );
    
    /* Close the session and try to act on the object */
 
    errcode = psoFolderClose( objHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoExitSession( sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    /*
     * Warning: sessionHandle is a pointer to deallocated memory. It is
@@ -155,10 +116,7 @@ int main( int argc, char * argv[] )
                             "/api_folder_open",
                             strlen("/api_folder_open"),
                             &objHandle );
-   if ( errcode != PSO_WRONG_TYPE_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    psoExit();
 

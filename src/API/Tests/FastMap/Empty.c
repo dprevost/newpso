@@ -20,11 +20,22 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/FastMap.h"
 #include "API/Tests/quasar-run.h"
 
-const bool expectedToPass = true;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -97,15 +108,13 @@ void test_pass( void ** state )
                                key1,
                                strlen(key1),
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
    errcode = psoFastMapInsert( objHandle1,
                                key2,
                                strlen(key2),
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapClose( objHandle1 );
@@ -135,22 +144,13 @@ void test_pass( void ** state )
    /* Invalid arguments to tested function. */
 
    errcode = psoFastMapEmpty( objHandle1 ); /* read-only handle */
-   if ( errcode != PSO_OBJECT_IS_READ_ONLY ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OBJECT_IS_READ_ONLY );
 
    errcode = psoFastMapEmpty( NULL );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoFastMapEmpty( sessionHandle1 );
-   if ( errcode != PSO_WRONG_TYPE_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    /* End of invalid args. */
    
@@ -166,10 +166,7 @@ void test_pass( void ** state )
                             key1, 
                             strlen(key1),
                             buffer, 20, &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
    errcode = psoFastMapGet( objHandle1, 
                             key1, 
                             strlen(key1),
@@ -195,10 +192,7 @@ void test_pass( void ** state )
                             key1, 
                             strlen(key1),
                             buffer, 20, &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
    errcode = psoFastMapGet( objHandle1, 
                             key1, 
                             strlen(key1),
@@ -216,10 +210,7 @@ void test_pass( void ** state )
                             key1, 
                             strlen(key1),
                             buffer, 20, &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
    /*
     * Commit session1 - the old reader should not see it now.
     */
@@ -229,10 +220,7 @@ void test_pass( void ** state )
                             key1, 
                             strlen(key1),
                             buffer, 20, &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
    
    /*
     * We repeat the process with but this time, we'll 
@@ -250,15 +238,13 @@ void test_pass( void ** state )
                                key1,
                                strlen(key1),
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
    errcode = psoFastMapInsert( objHandle2,
                                key2,
                                strlen(key2),
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
    errcode = psoFastMapClose( objHandle2 );
    assert_true( errcode == PSO_OK );
@@ -280,10 +266,7 @@ void test_pass( void ** state )
                             key1, 
                             strlen(key1),
                             buffer, 20, &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
    errcode = psoFastMapGet( objHandle1, 
                             key1, 
                             strlen(key1),
@@ -299,10 +282,7 @@ void test_pass( void ** state )
                             key1, 
                             strlen(key1),
                             buffer, 20, &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
    
    psoExit();
 
@@ -317,7 +297,7 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test( test_pass )
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
    };
 
    rc = run_tests(tests);

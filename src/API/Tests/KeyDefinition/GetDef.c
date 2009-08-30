@@ -44,16 +44,10 @@ int main( int argc, char * argv[] )
    else {
       errcode = psoInit( "10701", argv[0] );
    }
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoKeyDefCreate( sessionHandle,
                               "api_key_definition_get_def",
@@ -62,10 +56,7 @@ int main( int argc, char * argv[] )
                               (const unsigned char *) &keyField,
                               sizeof(psoKeyFieldDefinition),
                               &defHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
    errcode = psoaKeyDefGetDef( NULL,
@@ -74,10 +65,7 @@ int main( int argc, char * argv[] )
                                &type,
                                &keyDef,
                                &keyDefLength );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoaKeyDefGetDef( sessionHandle,
                                &name,
@@ -85,10 +73,7 @@ int main( int argc, char * argv[] )
                                &type,
                                &keyDef,
                                &keyDefLength );
-   if ( errcode != PSO_WRONG_TYPE_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    errcode = psoaKeyDefGetDef( defHandle,
                                NULL,
@@ -96,10 +81,7 @@ int main( int argc, char * argv[] )
                                &type,
                                &keyDef,
                                &keyDefLength );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    errcode = psoaKeyDefGetDef( defHandle,
                                &name,
@@ -107,10 +89,7 @@ int main( int argc, char * argv[] )
                                &type,
                                &keyDef,
                                &keyDefLength );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    errcode = psoaKeyDefGetDef( defHandle,
                                &name,
@@ -118,10 +97,7 @@ int main( int argc, char * argv[] )
                                NULL,
                                &keyDef,
                                &keyDefLength );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    errcode = psoaKeyDefGetDef( defHandle,
                                &name,
@@ -129,10 +105,7 @@ int main( int argc, char * argv[] )
                                &type,
                                NULL,
                                &keyDefLength );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    errcode = psoaKeyDefGetDef( defHandle,
                                &name,
@@ -140,10 +113,7 @@ int main( int argc, char * argv[] )
                                &type,
                                &keyDef,
                                NULL );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    /* End of invalid args. This call should succeed. */
    errcode = psoaKeyDefGetDef( defHandle,
@@ -152,10 +122,7 @@ int main( int argc, char * argv[] )
                                &type,
                                &keyDef,
                                &keyDefLength );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    psoExit();
 

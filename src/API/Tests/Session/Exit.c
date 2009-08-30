@@ -37,47 +37,29 @@ int main( int argc, char * argv[] )
    else {
       errcode = psoInit( "10701", argv[0] );
    }
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    /* Invalid arguments to tested function. */
 
    errcode = psoExitSession( NULL );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
    
    /* End of invalid args. This call should succeed. */
    errcode = psoExitSession( sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    /* Close the process and try to act on the session */
 
    errcode = psoInitSession( &sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    psoExit();
    
    errcode = psoExitSession( sessionHandle );
-   if ( errcode != PSO_SESSION_IS_TERMINATED ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    return 0;
 }

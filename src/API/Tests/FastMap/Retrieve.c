@@ -20,11 +20,22 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/FastMap.h"
 #include "API/Tests/quasar-run.h"
 
-const bool expectedToPass = true;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -45,24 +56,15 @@ void test_pass( void ** state )
    unsigned int length;
 
    errcode = psoInit( "10701", "Retrieve" );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
                               "/api_fast_map_retrieve_pass",
                               strlen("/api_fast_map_retrieve_pass") );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoKeyDefCreate( sessionHandle,
                               "api_fastmap_retrieve_pass",
@@ -71,10 +73,7 @@ void test_pass( void ** state )
                               (unsigned char *)&keyDef,
                               sizeof(psoKeyFieldDefinition),
                               &keyDefHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    errcode = psoDataDefCreate( sessionHandle,
                                "api_fastmap_retrieve_pass",
                                strlen("api_fastmap_retrieve_pass"),
@@ -82,10 +81,7 @@ void test_pass( void ** state )
                                (unsigned char *)fields,
                                sizeof(psoFieldDefinition),
                                &dataDefHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoCreateMap( sessionHandle,
                            "/api_fast_map_retrieve_pass/test",
@@ -93,86 +89,54 @@ void test_pass( void ** state )
                            &mapDef,
                            dataDefHandle,
                            keyDefHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapEdit( sessionHandle,
                              "/api_fast_map_retrieve_pass/test",
                              strlen("/api_fast_map_retrieve_pass/test"),
                              &objHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapOpen( sessionHandle,
                              "/api_fast_map_retrieve_pass/test",
                              strlen("/api_fast_map_retrieve_pass/test"),
                              &objHandle2 );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapInsert( objHandle,
                                key,
                                6,
                                data,
-                               7,
-                               NULL );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+                               7 );
+   assert_true( errcode == PSO_OK );
 
    errcode = psoaFastMapRetrieve( objHandle2,
                                   key,
                                   6,
                                   &buffer,
                                   &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
 
    errcode = psoaFastMapRetrieve( objHandle,
                                   key,
                                   6,
                                   &buffer,
                                   &length );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( memcmp( buffer, data, 7 ) != 0 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
+   assert_memory_equal( buffer, data, 7 );
    
    errcode = psoFastMapClose( objHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    errcode = psoCommit( sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    errcode = psoaFastMapRetrieve( objHandle2,
                                   key,
                                   6,
                                   &buffer,
                                   &length );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( memcmp( buffer, data, 7 ) != 0 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
+   assert_memory_equal( buffer, data, 7 );
    
    psoExit();
 
@@ -187,7 +151,7 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test( test_pass )
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
    };
 
    rc = run_tests(tests);

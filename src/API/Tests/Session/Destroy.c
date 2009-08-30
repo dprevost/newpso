@@ -38,21 +38,12 @@ int main( int argc, char * argv[] )
    else {
       errcode = psoInit( "10701", argv[0] );
    }
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    errcode = psoInitSession( &sessionHandle2 );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    /* Destroy non-existing object. */
    errcode = psoDestroyObject( sessionHandle,
@@ -66,43 +57,28 @@ int main( int argc, char * argv[] )
    errcode = psoCreateFolder( sessionHandle,
                               "/api_session_destroy_pass",
                               strlen("/api_session_destroy_pass") );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    /* Destroy without a commit - should fail */
    errcode = psoDestroyObject( sessionHandle,
                                "/api_session_destroy_pass",
                                strlen("/api_session_destroy_pass") );
-   if ( errcode != PSO_OBJECT_IS_IN_USE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OBJECT_IS_IN_USE );
 
    errcode = psoCommit( sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    /* Invalid arguments to tested function. */
 
    errcode = psoDestroyObject( NULL,
                                "/api_session_destroy_pass",
                                strlen("/api_session_destroy_pass") );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoDestroyObject( sessionHandle,
                                NULL,
                                strlen("/api_session_destroy_pass") );
-   if ( errcode != PSO_INVALID_OBJECT_NAME ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    errcode = psoDestroyObject( sessionHandle,
                                "/api_session_destroy_pass",
@@ -116,10 +92,7 @@ int main( int argc, char * argv[] )
    errcode = psoDestroyObject( sessionHandle,
                                "/api_session_destroy_pass",
                                strlen("/api_session_destroy_pass") );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    /* Open on the same session - should fail */
    errcode = psoFolderOpen( sessionHandle,
@@ -136,20 +109,14 @@ int main( int argc, char * argv[] )
                             "/api_session_destroy_pass",
                             strlen("/api_session_destroy_pass"),
                             &objHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    /* 
     * Commit with session 2 having the object open. The object should 
     * still be in shared memory but we should be able to create a new one.
     */
    errcode = psoCommit( sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoDestroyObject( sessionHandle,
                                "/api_session_destroy_pass",
@@ -162,19 +129,13 @@ int main( int argc, char * argv[] )
    errcode = psoCreateFolder( sessionHandle,
                               "/api_session_destroy_pass",
                               strlen("/api_session_destroy_pass") );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoFolderOpen( sessionHandle,
                             "/api_session_destroy_pass",
                             strlen("/api_session_destroy_pass"),
                             &objHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    /* Close the process and try to act on the session */
 
@@ -183,10 +144,7 @@ int main( int argc, char * argv[] )
    errcode = psoDestroyObject( sessionHandle,
                                "/api_session_destroy_pass",
                                strlen("/api_session_destroy_pass") );
-   if ( errcode != PSO_SESSION_IS_TERMINATED ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    return 0;
 }

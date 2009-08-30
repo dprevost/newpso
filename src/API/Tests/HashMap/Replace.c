@@ -50,29 +50,17 @@ int main( int argc, char * argv[] )
    else {
       errcode = psoInit( "10701", argv[0] );
    }
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    errcode = psoInitSession( &sessionHandle2 );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
                               "/api_hashmap_replace",
                               strlen("/api_hashmap_replace") );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoKeyDefCreate( sessionHandle,
                               "API_Hashmap_Replace",
@@ -81,10 +69,7 @@ int main( int argc, char * argv[] )
                               (unsigned char *)&keyDef,
                               sizeof(psoKeyFieldDefinition),
                               &keyDefHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    errcode = psoDataDefCreate( sessionHandle,
                                "API_Hashmap_Replace",
@@ -93,10 +78,7 @@ int main( int argc, char * argv[] )
                                (unsigned char *)fields,
                                sizeof(psoFieldDefinition),
                                &dataDefHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoCreateMap( sessionHandle,
                            "/api_hashmap_replace/test",
@@ -104,33 +86,21 @@ int main( int argc, char * argv[] )
                            &mapDef,
                            dataDefHandle,
                            keyDefHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoCommit( sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoHashMapOpen( sessionHandle,
                              "/api_hashmap_replace/test",
                              strlen("/api_hashmap_replace/test"),
                              &objHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    errcode = psoHashMapOpen( sessionHandle2,
                              "/api_hashmap_replace/test",
                              strlen("/api_hashmap_replace/test"),
                              &objHandle2 );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoHashMapInsert( objHandle,
                                key,
@@ -138,10 +108,7 @@ int main( int argc, char * argv[] )
                                data1,
                                strlen(data1),
                                NULL );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    /* Must commit the insert before replacing */
    errcode = psoHashMapReplace( objHandle,
@@ -156,10 +123,7 @@ int main( int argc, char * argv[] )
    }
 
    errcode = psoCommit( sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
 
@@ -169,10 +133,7 @@ int main( int argc, char * argv[] )
                                 data2,
                                 strlen(data2),
                                 NULL );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoHashMapReplace( objHandle,
                                 NULL,
@@ -180,10 +141,7 @@ int main( int argc, char * argv[] )
                                 data2,
                                 strlen(data2),
                                 NULL );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    errcode = psoHashMapReplace( objHandle,
                                 key,
@@ -191,10 +149,7 @@ int main( int argc, char * argv[] )
                                 data2,
                                 strlen(data2),
                                 NULL );
-   if ( errcode != PSO_INVALID_LENGTH ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == INVALID_LENGTH );
 
    errcode = psoHashMapReplace( objHandle,
                                 key,
@@ -202,10 +157,7 @@ int main( int argc, char * argv[] )
                                 NULL,
                                 strlen(data2),
                                 NULL );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    errcode = psoHashMapReplace( objHandle,
                                 key,
@@ -213,10 +165,7 @@ int main( int argc, char * argv[] )
                                 data2,
                                 0,
                                 NULL );
-   if ( errcode != PSO_INVALID_LENGTH ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == INVALID_LENGTH );
 
    /* End of invalid args. This call should succeed. */
    errcode = psoHashMapReplace( objHandle,
@@ -225,10 +174,7 @@ int main( int argc, char * argv[] )
                                 data2,
                                 strlen(data2),
                                 NULL );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    /*
     * Additional stuff to check while the Replace() is uncommitted:
@@ -242,10 +188,7 @@ int main( int argc, char * argv[] )
                             buffer,
                             20,
                             &length );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    if ( length != strlen(data2) ) {
       ERROR_EXIT( expectedToPass, NULL, ; );
    }
@@ -259,10 +202,7 @@ int main( int argc, char * argv[] )
                             buffer,
                             20,
                             &length );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    if ( length != strlen(data1) ) {
       ERROR_EXIT( expectedToPass, NULL, ; );
    }
@@ -273,10 +213,7 @@ int main( int argc, char * argv[] )
    /* Close the session and try to act on the object */
 
    errcode = psoExitSession( sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoHashMapReplace( objHandle,
                                 key,
@@ -284,10 +221,7 @@ int main( int argc, char * argv[] )
                                 data2,
                                 strlen(data2),
                                 NULL );
-   if ( errcode != PSO_SESSION_IS_TERMINATED ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();
 

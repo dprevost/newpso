@@ -39,16 +39,10 @@ int main( int argc, char * argv[] )
    else {
       errcode = psoInit( "10701", argv[0] );
    }
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
 
@@ -59,10 +53,7 @@ int main( int argc, char * argv[] )
                               (const unsigned char *)&key,
                               sizeof(psoKeyFieldDefinition),
                               &defHandle );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoKeyDefCreate( sessionHandle,
                               NULL,
@@ -71,10 +62,7 @@ int main( int argc, char * argv[] )
                               (const unsigned char *)&key,
                               sizeof(psoKeyFieldDefinition),
                               &defHandle );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    errcode = psoKeyDefCreate( sessionHandle,
                               "api_key_definition_create",
@@ -83,10 +71,7 @@ int main( int argc, char * argv[] )
                               (const unsigned char *)&key,
                               sizeof(psoKeyFieldDefinition),
                               &defHandle );
-   if ( errcode != PSO_INVALID_LENGTH ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == INVALID_LENGTH );
 
    errcode = psoKeyDefCreate( sessionHandle,
                               "api_key_definition_create",
@@ -107,10 +92,7 @@ int main( int argc, char * argv[] )
                               NULL,
                               sizeof(psoKeyFieldDefinition),
                               &defHandle );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    errcode = psoKeyDefCreate( sessionHandle,
                               "api_key_definition_create",
@@ -119,10 +101,7 @@ int main( int argc, char * argv[] )
                               (const unsigned char *)&key,
                               0,
                               &defHandle );
-   if ( errcode != PSO_INVALID_LENGTH ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == INVALID_LENGTH );
 
    errcode = psoKeyDefCreate( sessionHandle,
                               "api_key_definition_create",
@@ -131,10 +110,7 @@ int main( int argc, char * argv[] )
                               (const unsigned char *)&key,
                               sizeof(psoKeyFieldDefinition),
                               NULL );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    /* End of invalid args. This call should succeed. */
    errcode = psoKeyDefCreate( sessionHandle,
@@ -144,18 +120,12 @@ int main( int argc, char * argv[] )
                               (const unsigned char *)&key,
                               sizeof(psoKeyFieldDefinition),
                               &defHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    /* Close the session and try to act on the object */
 
    errcode = psoExitSession( sessionHandle );
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OK );
 
    errcode = psoKeyDefCreate( sessionHandle,
                               "api_key_definition_create",
@@ -164,10 +134,7 @@ int main( int argc, char * argv[] )
                               (const unsigned char *)&key,
                               sizeof(psoKeyFieldDefinition),
                               &defHandle );
-   if ( errcode != PSO_WRONG_TYPE_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    psoExit();
 

@@ -20,11 +20,22 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/FastMap.h"
 #include "API/Tests/quasar-run.h"
 
-const bool expectedToPass = true;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -92,47 +103,32 @@ void test_pass( void ** state )
                              "/api_map_edit/test",
                              strlen("/api_map_edit/test"),
                              &objHandle );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    objHandle = (PSO_HANDLE) junk;
    errcode = psoFastMapEdit( objHandle,
                              "/api_map_edit/test",
                              strlen("/api_map_edit/test"),
                              &objHandle );
-   if ( errcode != PSO_WRONG_TYPE_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    errcode = psoFastMapEdit( sessionHandle,
                              NULL,
                              strlen("/api_map_edit/test"),
                              &objHandle );
-   if ( errcode != PSO_INVALID_OBJECT_NAME ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    errcode = psoFastMapEdit( sessionHandle,
                              "/api_map_edit/test",
                              0,
                              &objHandle );
-   if ( errcode != PSO_INVALID_LENGTH ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoFastMapEdit( sessionHandle,
                              "/api_map_edit/test",
                              strlen("/api_map_edit/test"),
                              NULL );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    /* End of invalid args. This call should succeed. */
    errcode = psoFastMapEdit( sessionHandle,
@@ -146,29 +142,12 @@ void test_pass( void ** state )
                              "/api_map_edit/test",
                              strlen("/api_map_edit/test"),
                              &objHandle2 );
-   if ( errcode != PSO_A_SINGLE_UPDATER_IS_ALLOWED ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_A_SINGLE_UPDATER_IS_ALLOWED );
    errcode = psoFastMapEdit( sessionHandle2,
                              "/api_map_edit/test",
                              strlen("/api_map_edit/test"),
                              &objHandle2 );
-   if ( errcode != PSO_A_SINGLE_UPDATER_IS_ALLOWED ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-
-   errcode = psoFastMapInsert( objHandle, 
-                               data1, 
-                               strlen(data1), 
-                               data1,
-                               strlen(data1),
-                               dataDefHandle );
-   if ( errcode != PSO_DATA_DEF_UNSUPPORTED ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_A_SINGLE_UPDATER_IS_ALLOWED );
 
    errcode = psoFastMapOpen( sessionHandle,
                              "/api_map_edit/test",
@@ -212,8 +191,7 @@ void test_pass( void ** state )
                                data1, 
                                strlen(data1), 
                                data1,
-                               strlen(data1),
-                               dataDefHandle );
+                               strlen(data1) );
    assert_true( errcode == PSO_OK );
 
    psoExit();
@@ -229,7 +207,7 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test( test_pass )
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
    };
 
    rc = run_tests(tests);

@@ -20,11 +20,22 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/FastMap.h"
 #include "API/Tests/quasar-run.h"
 
-const bool expectedToPass = true;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -88,47 +99,32 @@ void test_pass( void ** state )
                              "/api_fast_map_open/test",
                              strlen("/api_fast_map_open/test"),
                              &objHandle );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    objHandle = (PSO_HANDLE) junk;
    errcode = psoFastMapOpen( objHandle,
                              "/api_fast_map_open/test",
                              strlen("/api_fast_map_open/test"),
                              &objHandle );
-   if ( errcode != PSO_WRONG_TYPE_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    errcode = psoFastMapOpen( sessionHandle,
                              NULL,
                              strlen("/api_fast_map_open/test"),
                              &objHandle );
-   if ( errcode != PSO_INVALID_OBJECT_NAME ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    errcode = psoFastMapOpen( sessionHandle,
                              "/api_fast_map_open/test",
                              0,
                              &objHandle );
-   if ( errcode != PSO_INVALID_LENGTH ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoFastMapOpen( sessionHandle,
                              "/api_fast_map_open/test",
                              strlen("/api_fast_map_open/test"),
                              NULL );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    /* End of invalid args. This call should succeed. */
    errcode = psoFastMapOpen( sessionHandle,
@@ -141,10 +137,7 @@ void test_pass( void ** state )
                              "/api_fast_map_open/test",
                              strlen("/api_fast_map_open/test"),
                              &objHandle2 );
-   if ( errcode != PSO_OBJECT_IS_IN_USE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OBJECT_IS_IN_USE );
 
    psoExit();
 
@@ -159,7 +152,7 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test( test_pass )
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
    };
 
    rc = run_tests(tests);

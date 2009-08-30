@@ -18,12 +18,8 @@ subdirs_list = [
         'Api',
         'CommonObject',
         'Connector',
-        'DataDefinition' ]
-        
-'''
-        ,
-        'FastMap']
-'''
+        'DataDefinition',
+        'FastMap' ]
 
 def build(bld):
    

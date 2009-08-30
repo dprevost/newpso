@@ -20,11 +20,22 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/FastMap.h"
 #include "API/Tests/quasar-run.h"
 
-const bool expectedToPass = true;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -91,54 +102,37 @@ void test_pass( void ** state )
                                key1,
                                7,
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
    errcode = psoFastMapInsert( objHandle,
                                key2,
                                7,
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
    errcode = psoFastMapInsert( objHandle,
                                key3,
                                7,
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
 
    errcode = psoFastMapStatus( NULL, &status );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoFastMapStatus( objHandle, NULL );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    /* End of invalid args. This call should succeed. */
    errcode = psoFastMapStatus( objHandle, &status );
    assert_true( errcode == PSO_OK );
 
-   if ( status.numDataItem != 3 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( status.numBlocks != 1 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( status.numBlockGroup != 1 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( status.freeBytes == 0 || status.freeBytes >=PSON_BLOCK_SIZE ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( status.numDataItem == 3 );
+   assert_true( status.numBlocks == 1 );
+   assert_true( status.numBlockGroup == 1 );
+   assert_false( status.freeBytes == 0 || status.freeBytes >=PSON_BLOCK_SIZE );
    
    psoExit();
 
@@ -153,7 +147,7 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test( test_pass )
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
    };
 
    rc = run_tests(tests);

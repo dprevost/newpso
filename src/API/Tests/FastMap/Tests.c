@@ -28,6 +28,21 @@
  * released when sessions have a map open for read and open for updates.
  *
  */
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
@@ -117,8 +132,7 @@ void test_pass( void ** state )
                                key1,
                                strlen(key1),
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapClose( objHandleEdit );
@@ -152,8 +166,7 @@ void test_pass( void ** state )
                                key2,
                                strlen(key2),
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapClose( objHandleEdit );
@@ -198,8 +211,7 @@ void test_pass( void ** state )
                                key2,
                                strlen(key2),
                                data,
-                               strlen(data),
-                               NULL );
+                               strlen(data) );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapClose( objHandleEdit );
@@ -262,8 +274,7 @@ void test_pass( void ** state )
                                key3,
                                strlen(key3),
                                data,
-                               strlen(data),
-                               NULL );
+                               strlen(data) );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapClose( objHandleEdit );
@@ -310,8 +321,7 @@ void test_pass( void ** state )
                                key3,
                                strlen(key3),
                                data,
-                               strlen(data),
-                               NULL );
+                               strlen(data) );
    assert_true( errcode == PSO_OK );
 
    errcode = psoDestroyObject( sessionHandleRead,
@@ -378,7 +388,7 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test( test_pass )
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
    };
 
    rc = run_tests(tests);

@@ -20,16 +20,14 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/FastMap.h"
 #include "API/Tests/quasar-run.h"
-
-const bool expectedToPass = true;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
+   assert( startQuasar() );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -64,6 +62,8 @@ void teardown_test()
    
    psoCommit( sessionHandle );
    psoExit();
+
+   assert( stopQuasar() );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -137,15 +137,13 @@ void test_pass( void ** state )
                                key1,
                                strlen(key1),
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
    errcode = psoFastMapInsert( objHandle1,
                                key2,
                                strlen(key2),
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapClose( objHandle1 );
@@ -177,42 +175,27 @@ void test_pass( void ** state )
    errcode = psoFastMapDelete( objHandle1, /* read-only handle */
                                key1,
                                strlen(key1) );
-   if ( errcode != PSO_OBJECT_IS_READ_ONLY ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OBJECT_IS_READ_ONLY );
 
    errcode = psoFastMapDelete( NULL,
                                key1,
                                strlen(key1) );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoFastMapDelete( sessionHandle1,
                                key1,
                                strlen(key1) );
-   if ( errcode != PSO_WRONG_TYPE_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    errcode = psoFastMapDelete( objHandle2,
                                NULL,
                                strlen(key1) );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    errcode = psoFastMapDelete( objHandle2,
                                key1,
                                0 );
-   if ( errcode != PSO_INVALID_LENGTH ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_INVALID_LENGTH );
 
    /* End of invalid args. */
    
@@ -230,10 +213,7 @@ void test_pass( void ** state )
                             key1, 
                             strlen(key1),
                             buffer, 20, &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
    errcode = psoFastMapGet( objHandle1, 
                             key1, 
                             strlen(key1),
@@ -246,13 +226,13 @@ void test_pass( void ** state )
     *   - the old reader (   "     ) - nothing has changed. 
     * Furthermore, a new reader on session 1 should also not see it.
     */
-   errcode = psoFastMapClose( objHandle1 );
-   assert_true( errcode == PSO_OK );
+//   errcode = psoFastMapClose( objHandle1 );
+//   assert_true( errcode == PSO_OK );
    errcode = psoFastMapClose( objHandle2 );
    assert_true( errcode == PSO_OK );
    errcode = psoCommit( sessionHandle2 );
    assert_true( errcode == PSO_OK );
-#if 0
+
    errcode = psoFastMapOpen( sessionHandle2,
                              "/api_fastmap_delete/test",
                              strlen("/api_fastmap_delete/test"),
@@ -262,10 +242,8 @@ void test_pass( void ** state )
                             key1, 
                             strlen(key1),
                             buffer, 20, &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
+ 
    errcode = psoFastMapGet( objHandle1, 
                             key1, 
                             strlen(key1),
@@ -283,10 +261,7 @@ void test_pass( void ** state )
                             key1, 
                             strlen(key1),
                             buffer, 20, &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
    /*
     * Commit session1 - the old reader should not see it now.
     */
@@ -296,10 +271,7 @@ void test_pass( void ** state )
                             key1, 
                             strlen(key1),
                             buffer, 20, &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
    
    /*
     * We repeat the process with the second key but this time, we'll 
@@ -322,10 +294,7 @@ void test_pass( void ** state )
                             key2, 
                             strlen(key2),
                             buffer, 20, &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
    errcode = psoFastMapGet( objHandle1, 
                             key2, 
                             strlen(key2),
@@ -341,10 +310,7 @@ void test_pass( void ** state )
                             key2, 
                             strlen(key2),
                             buffer, 20, &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
    
    /* Close the session and try to act on the object */
    errcode = psoFastMapEdit( sessionHandle2,
@@ -352,20 +318,16 @@ void test_pass( void ** state )
                              strlen("/api_fastmap_delete/test"),
                              &objHandle2 );
    assert_true( errcode == PSO_OK );
-#endif
 
    errcode = psoExitSession( sessionHandle2 );
    assert_true( errcode == PSO_OK );
 
-#if 0
+//#if 0 - or it crashes ??????????
    errcode = psoFastMapDelete( objHandle2,
                                key1,
                                strlen(key1) );
-   if ( errcode != PSO_SESSION_IS_TERMINATED ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-#endif
+   assert_true( errcode == PSO_SESSION_IS_TERMINATED );
+//#endif
 
    errcode = psoExitSession( sessionHandle1 );
    assert_true( errcode == PSO_OK );

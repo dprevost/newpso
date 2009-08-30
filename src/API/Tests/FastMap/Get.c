@@ -20,11 +20,22 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/FastMap.h"
 #include "API/Tests/quasar-run.h"
 
-const bool expectedToPass = true;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -96,8 +107,7 @@ void test_pass( void ** state )
                                key,
                                6,
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
@@ -108,10 +118,7 @@ void test_pass( void ** state )
                             buffer,
                             200,
                             &length );
-   if ( errcode != PSO_NULL_HANDLE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoFastMapGet( objHandle,
                             NULL,
@@ -119,10 +126,7 @@ void test_pass( void ** state )
                             buffer,
                             200,
                             &length );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    errcode = psoFastMapGet( objHandle,
                             key,
@@ -130,10 +134,7 @@ void test_pass( void ** state )
                             buffer,
                             200,
                             &length );
-   if ( errcode != PSO_INVALID_LENGTH ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoFastMapGet( objHandle,
                             key,
@@ -141,10 +142,7 @@ void test_pass( void ** state )
                             NULL,
                             200,
                             &length );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    errcode = psoFastMapGet( objHandle,
                             key,
@@ -152,10 +150,7 @@ void test_pass( void ** state )
                             buffer,
                             2,
                             &length );
-   if ( errcode != PSO_INVALID_LENGTH ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoFastMapGet( objHandle,
                             key,
@@ -163,10 +158,7 @@ void test_pass( void ** state )
                             buffer,
                             200,
                             NULL );
-   if ( errcode != PSO_NULL_POINTER ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NULL_POINTER );
 
    errcode = psoFastMapGet( objHandle2,
                             key,
@@ -174,10 +166,7 @@ void test_pass( void ** state )
                             buffer,
                             200,
                             &length );
-   if ( errcode != PSO_NO_SUCH_ITEM ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_ITEM );
 
    /* End of invalid args. This call should succeed. */
    errcode = psoFastMapGet( objHandle,
@@ -187,9 +176,7 @@ void test_pass( void ** state )
                             200,
                             &length );
    assert_true( errcode == PSO_OK );
-   if ( memcmp( buffer, data, 7 ) != 0 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_memory_equal( buffer, data, 7 );
    
    errcode = psoFastMapClose( objHandle );
    assert_true( errcode == PSO_OK );
@@ -215,10 +202,7 @@ void test_pass( void ** state )
                             buffer,
                             200,
                             &length );
-   if ( errcode != PSO_SESSION_IS_TERMINATED ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_SESSION_IS_TERMINATED );
    
    psoExit();
 
@@ -233,7 +217,7 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test( test_pass )
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
    };
 
    rc = run_tests(tests);
