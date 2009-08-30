@@ -35,3 +35,7 @@ def build(bld):
       if bld.env['CMOCKERY']:
          obj.unit_test = 1
 
+      bld.add_manual_dependency(
+         bld.path.find_resource(prog_c),
+         bld.path.find_resource('../quasar-run.h.in'))
+

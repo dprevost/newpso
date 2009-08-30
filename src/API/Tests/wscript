@@ -15,12 +15,13 @@
 import os
 
 subdirs_list = [
-        'Api']
+        'Api',
+        'CommonObject',
+        'Connector',
+        'DataDefinition' ]
         
 '''
-'CommonObject',
-        'Connector',
-        'DataDefinition',
+        ,
         'FastMap']
 '''
 

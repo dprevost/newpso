@@ -22,6 +22,7 @@
 #include <photon/photon.h>
 #include "Tests/PrintError.h"
 #include "API/FastMap.h"
+#include "API/Tests/quasar-run.h"
 
 const bool expectedToPass = true;
 

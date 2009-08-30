@@ -22,6 +22,7 @@
 #include <photon/photon.h>
 #include "API/Connector.h"
 #include "Nucleus/InitEngine.h"
+#include "API/Tests/quasar-run.h"
 
 psoaConnector connector;
 const char * address = "10701";
@@ -34,6 +35,8 @@ void setup_test()
 {
    bool ok;
    
+   assert( startQuasar() );
+
    ok = psonInitEngine();
    assert( ok );
    
@@ -44,6 +47,7 @@ void setup_test()
 
 void teardown_test()
 {
+   assert( stopQuasar() );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -21,6 +21,7 @@
 #include "Common/Common.h"
 #include <photon/photon.h>
 #include "Tests/PrintError.h"
+#include "API/Tests/quasar-run.h"
 
 const bool expectedToPass = true;
 

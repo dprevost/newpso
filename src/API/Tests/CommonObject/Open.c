@@ -21,7 +21,7 @@
 #include "Common/Common.h"
 #include <photon/photon.h>
 #include "API/CommonObject.h"
-
+#include "API/Tests/quasar-run.h"
 
 PSO_HANDLE sessionHandle;
 psoaCommonObject object;
@@ -32,6 +32,8 @@ void setup_test()
 {
    int errcode;
    
+   assert( startQuasar() );
+
    errcode = psoInit( "10701", "Close" );
    assert( errcode == PSO_OK );
    
@@ -53,6 +55,8 @@ void teardown_test()
 {
    psoRollback( sessionHandle );
    psoExit();
+
+   assert( stopQuasar() );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

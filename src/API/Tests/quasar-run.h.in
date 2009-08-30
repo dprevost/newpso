@@ -26,10 +26,21 @@
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #include "Common/DirAccess.h"
-//#include "API/CommonObject.h"
-//#include "Nucleus/FastMap.h"
-//#include "API/HashMap.h"
-//#include "API/DataDefinition.h"
+#if defined(WIN32)
+#  define MSG_NOSIGNAL 0
+#else
+#  include <sys/socket.h>
+#  include <netinet/in.h>
+#  include <arpa/inet.h>
+#endif
+
+#if defined (WIN32) 
+#  define PSO_SOCKET SOCKET
+#  define PSO_INVALID_SOCKET INVALID_SOCKET
+#else
+#  define PSO_SOCKET  int
+#  define PSO_INVALID_SOCKET -1
+#endif
 
 #define QUASAR_DIR  @QUASAR_DIR@
 #if defined WIN32
@@ -37,6 +48,8 @@ const char * quasarName = @QUASAR_DIR@ "\\quasar.exe";
 #else
 const char * quasarName = @QUASAR_DIR@ "/quasar";
 #endif
+
+#define QUASAR_PORT 10701
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -47,15 +60,73 @@ pid_t g_spawnPid = 0;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+bool testQuasar()
+{
+   int errcode = 0;
+   unsigned short port;
+   struct sockaddr_in addr;
+#if defined (WIN32) 
+   WORD versionRequested;
+   WSADATA wsaData;
+#endif
+   PSO_SOCKET socketFD;
+   bool rc = false;
+   
+   socketFD = PSO_INVALID_SOCKET;
+
+   port = (unsigned short) QUASAR_PORT;
+
+#if defined (WIN32) 
+   versionRequested = MAKEWORD( 2, 2 );
+ 
+   errcode = WSAStartup( versionRequested, &wsaData );
+   assert( errcode == 0 );
+#endif
+
+   socketFD = socket( PF_INET, SOCK_STREAM, 0 );
+   assert( socketFD != PSO_INVALID_SOCKET );
+   
+   memset( &addr, 0, sizeof(struct sockaddr_in) );
+   addr.sin_family = PF_INET;
+   addr.sin_port = htons( port );
+   addr.sin_addr.s_addr = inet_addr( "127.0.0.1" );
+
+   errcode = connect( socketFD, 
+                      (const struct sockaddr *)&addr,
+                      sizeof addr );
+   if ( errcode == 0 ) {
+      rc = true;
+
+#if defined (WIN32)
+      shutdown( socketFD, SD_BOTH );
+      closesocket( socketFD );
+#else
+      shutdown( socketFD, 2 );
+      close( socketFD );
+#endif
+   }
+   
+#if defined (WIN32) 
+   WSACleanup ();
+#endif
+
+   return rc;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 bool startQuasar()
 {
    pid_t pid, childPid;
    int  i, childStatus;
    bool foundError = false, ok;
+   struct timeval timeOut = { 0, 5000 };
 
    psocInitErrorDefs();
    psocInitErrorHandler( &g_errorHandle );
 
+   if ( testQuasar() ) return true;
+   
    ok = psocRemoveDir( "/tmp/photon", &g_errorHandle );
 
    mkdir( "/tmp/photon", 0700 );
@@ -84,6 +155,10 @@ bool startQuasar()
    }
 #endif
 
+   do {
+      psocLockSleep( &timeOut );
+   } while ( ! testQuasar() );
+
    return true;
 }
 
@@ -93,9 +168,10 @@ bool stopQuasar()
 {
    bool ok;
    int rc;
+   struct timeval timeOut = { 0, 5000 };
    
    fprintf( stderr, "pid = %d\n", g_spawnPid );
-   if ( g_spawnPid == 0 ) return false;
+   if ( g_spawnPid == 0 ) return true;
    
    rc = kill( g_spawnPid, SIGINT );
    fprintf( stderr, "rc = %d\n", rc );
@@ -116,6 +192,10 @@ bool stopQuasar()
    free( processName );
    free( childPid );
 #endif
+   do {
+      psocLockSleep( &timeOut );
+   } while ( testQuasar() );
+
    ok = psocRemoveDir( "/tmp/photon", &g_errorHandle );
    
    psocFiniErrorHandler( &g_errorHandle );

@@ -24,37 +24,16 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-
-//#define BASE_DIR newpso.git
-
 void setup_test()
 {
-#if 0
-   char w[PATH_MAX];
-   FILE * fp;
-   int i, j, k;
-   
-   fp = fopen( "/home/project/Photon/newpso.git/out.txt", "w" );
-   if ( fp == NULL ) {
-      fprintf( stderr, "ok\n" );
-      return;
-   }
-   getcwd(w, PATH_MAX);
-   for ( i = 0; i < strlen(w) ) {
-      if ( w[i] == '/' ) {
- //        if ( strcmp( w[i+1], 
-   }
-   fprintf( fp, "path: %s\n", w );
-  ///home/project/Photon/newpso.git/build/default/src/Quasar/quasar  
-#endif
-   startQuasar();
+   assert( startQuasar() );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void teardown_test()
 {
-   stopQuasar();
+   assert( stopQuasar() );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -70,7 +49,6 @@ void test_pass( void ** state )
    errcode = psoInit( "12345", "" );
    assert_true( errcode == PSO_CONNECT_ERROR );
 
-   sleep( 30 );
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    

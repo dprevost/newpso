@@ -21,6 +21,7 @@
 #include "Common/Common.h"
 #include <photon/photon.h>
 #include "API/FastMap.h"
+#include "API/Tests/quasar-run.h"
 
 /*
  * The tests in this file verify that the resources (memory) are properly

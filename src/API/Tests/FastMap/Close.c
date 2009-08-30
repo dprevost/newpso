@@ -21,6 +21,7 @@
 #include "Common/Common.h"
 #include <photon/photon.h>
 #include "API/FastMap.h"
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
