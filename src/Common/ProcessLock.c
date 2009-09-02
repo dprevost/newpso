@@ -24,7 +24,6 @@
 
 BEGIN_C_DECLS
 
-PHOTON_COMMON_EXPORT
 int g_timeOutinMilliSecs = 5;
 
 struct timeval g_timeOut = { 0, 5000 };

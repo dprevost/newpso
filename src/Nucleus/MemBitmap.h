@@ -49,13 +49,11 @@ typedef struct psonMemBitmap psonMemBitmap;
 /** 
  * Initialize the psonMemBitmap struct. 
  */
-PHOTON_ENGINE_EXPORT
 void psonMemBitmapInit( psonMemBitmap * pBitmap,
                         ptrdiff_t       offset,
                         size_t          totalLength,
                         size_t          allocationUnit );
 
-PHOTON_ENGINE_EXPORT
 void psonMemBitmapFini( psonMemBitmap * pBitmap );
 
 static inline

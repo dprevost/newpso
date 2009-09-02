@@ -29,7 +29,6 @@
 #include "Nucleus/InitEngine.h"
 #include "Nucleus/Cursor.h"
 
-PHOTON_ENGINE_EXPORT
 psocErrMsgHandle g_psoErrorHandle;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

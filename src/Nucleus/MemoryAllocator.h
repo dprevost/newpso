@@ -85,7 +85,6 @@ typedef struct psonMemAlloc psonMemAlloc;
  * eventually). Reason: when a program access shared memory, the allocator is 
  * already there, initialized and all.
  */
-PHOTON_ENGINE_EXPORT
 enum psoErrors 
 psonMemAllocInit( psonMemAlloc       * pAlloc,
                   unsigned char      * pBaseAddress, 
@@ -95,14 +94,13 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
 /**
  * 
  */
-PHOTON_ENGINE_EXPORT unsigned char* 
+unsigned char* 
 psonMallocBlocks( psonMemAlloc       * pAlloc,
                   psonAllocTypeEnum    allocType,
                   size_t               numBlocks,
                   psonSessionContext * pContext );
 
 /** Free ptr, the memory is returned to the pool. */
-PHOTON_ENGINE_EXPORT
 void psonFreeBlocks( psonMemAlloc       * pAlloc,
                      psonAllocTypeEnum    allocType,
                      unsigned char      * ptr, 
@@ -117,7 +115,6 @@ bool psonMemAllocLastBlock( psonMemAlloc * pAlloc,
    return ( pAlloc->totalLength <= (size_t)offset + (numBlocks << PSON_BLOCK_SHIFT));
 }
 
-PHOTON_ENGINE_EXPORT
 void psonMemAllocClose( psonMemAlloc       * pAlloc,
                         psonSessionContext * pContext );
 
@@ -125,7 +122,6 @@ void psonMemAllocClose( psonMemAlloc       * pAlloc,
  *  that the number of mallocs/frees are not based on a 64 bits 
  *  integer on 32 bits machine - these numbers might loop around.
  */
-PHOTON_ENGINE_EXPORT
 bool psonMemAllocStats( psonMemAlloc       * pAlloc,
                         psoInfo            * pInfo,
                         psonSessionContext * pContext  );

@@ -28,7 +28,6 @@
 #include "Nucleus/HashTx.h"
 #include "Nucleus/InitEngine.h"
 
-PHOTON_ENGINE_EXPORT
 psocErrMsgHandle g_psoErrorHandle;
 
 ptrdiff_t g_memObjOffset = PSON_NULL_OFFSET;

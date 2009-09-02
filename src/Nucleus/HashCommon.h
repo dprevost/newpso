@@ -59,11 +59,9 @@ typedef enum psonHashResizeEnum psonHashResizeEnum;
  
 #if SIZEOF_VOID_P == 4
 #  define PSON_PRIME_NUMBER_ARRAY_LENGTH 28
-PHOTON_ENGINE_EXPORT
 extern size_t g_psonArrayLengths[PSON_PRIME_NUMBER_ARRAY_LENGTH];
 #else
 #  define PSON_PRIME_NUMBER_ARRAY_LENGTH 60
-PHOTON_ENGINE_EXPORT
 extern size_t g_psonArrayLengths[PSON_PRIME_NUMBER_ARRAY_LENGTH];
 #endif
 

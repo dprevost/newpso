@@ -27,7 +27,6 @@
 #include "Nucleus/MemoryAllocator.h"
 #include "Nucleus/InitEngine.h"
 
-PHOTON_ENGINE_EXPORT
 psocErrMsgHandle g_psoErrorHandle;
 
 struct psotObjDummy

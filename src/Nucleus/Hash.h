@@ -106,7 +106,6 @@ typedef struct psonHash psonHash;
 /*
  * Used to create a copy of a read-only hash map for editing (updates)
  */
-PHOTON_ENGINE_EXPORT
 enum psoErrors psonHashCopy( psonHash           * pOldHash,
                              psonHash           * pNewHash,
                              psonSessionContext * pContext );
@@ -115,26 +114,21 @@ enum psoErrors psonHashCopy( psonHash           * pOldHash,
  * Used to delete an hash item when you know its exact position
  * (through the psonHashItem) 
  */
-PHOTON_ENGINE_EXPORT 
 void psonHashDelWithItem( psonHash            * pHash,
                           psonHashItem        * pItem,
                           psonSessionContext  * pContext );
 
 /* Direct delete using the key and nothing else. */
-PHOTON_ENGINE_EXPORT 
 bool psonHashDelWithKey( psonHash            * pHash,
                          const unsigned char * pKey, 
                          uint32_t              keyLength,
                          psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT 
 void psonHashEmpty( psonHash           * pHash,
                     psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonHashFini( psonHash * pHash );
 
-PHOTON_ENGINE_EXPORT 
 bool psonHashGet( psonHash            * pHash,
                   const unsigned char * pkey,
                   uint32_t              keyLength,
@@ -142,16 +136,13 @@ bool psonHashGet( psonHash            * pHash,
                   size_t              * pBucket,
                   psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT 
 bool psonHashGetFirst( psonHash      * pHash,
                        psonHashItem ** ppItem );
 
-PHOTON_ENGINE_EXPORT
 bool psonHashGetNext( psonHash      * pHash,
                       psonHashItem  * previousItem,
                       psonHashItem ** nextItem );
 
-PHOTON_ENGINE_EXPORT 
 enum psoErrors psonHashInit( psonHash           * pHash,
                              ptrdiff_t            memObjOffset,
                              size_t               reservedSize, 
@@ -161,7 +152,6 @@ enum psoErrors psonHashInit( psonHash           * pHash,
  * ppNewItem is used to access the original name of 
  * objects and the psonTxStatus by the objects themselves 
  */
-PHOTON_ENGINE_EXPORT 
 enum psoErrors psonHashInsert( psonHash            * pHash,
                                const unsigned char * pKey,
                                uint32_t              keyLength,
@@ -170,11 +160,9 @@ enum psoErrors psonHashInsert( psonHash            * pHash,
                                psonHashItem       ** ppHashItem,
                                psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT
 enum psoErrors psonHashResize( psonHash           * pHash,
                                psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 enum psoErrors psonHashUpdate( psonHash            * pHash,
                                const unsigned char * pKey,
                                uint32_t              keyLength,
@@ -200,11 +188,9 @@ enum psoErrors psonHashUpdate( psonHash            * pHash,
  
 #if SIZEOF_VOID_P == 4
 #  define PSON_PRIME_NUMBER_ARRAY_LENGTH 28
-PHOTON_ENGINE_EXPORT
 extern size_t g_psonArrayLengths[PSON_PRIME_NUMBER_ARRAY_LENGTH];
 #else
 #  define PSON_PRIME_NUMBER_ARRAY_LENGTH 60
-PHOTON_ENGINE_EXPORT
 extern size_t g_psonArrayLengths[PSON_PRIME_NUMBER_ARRAY_LENGTH];
 #endif
 

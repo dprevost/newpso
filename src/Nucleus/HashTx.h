@@ -112,15 +112,12 @@ typedef struct psonHashTx psonHashTx;
  * Used to delete an hash item when you know its exact position
  * (through the psonHashTxItem) 
  */
-PHOTON_ENGINE_EXPORT 
 void psonHashTxDelete( psonHashTx         * pHash,
                        psonHashTxItem     * pItem,
                        psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonHashTxFini( psonHashTx * pHash );
 
-PHOTON_ENGINE_EXPORT 
 bool psonHashTxGet( psonHashTx          * pHash,
                     const unsigned char * pkey,
                     uint32_t              keyLength,
@@ -128,16 +125,13 @@ bool psonHashTxGet( psonHashTx          * pHash,
                     size_t              * pBucket,
                     psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT 
 bool psonHashTxGetFirst( psonHashTx * pHash,
                          ptrdiff_t  * pFirstItemOffset );
 
-PHOTON_ENGINE_EXPORT
 bool psonHashTxGetNext( psonHashTx * pHash,
                         ptrdiff_t    previousOffset,
                         ptrdiff_t  * pNextItemOffset );
 
-PHOTON_ENGINE_EXPORT 
 enum psoErrors psonHashTxInit( psonHashTx         * pHash,
                                ptrdiff_t            memObjOffset,
                                size_t               reservedSize, 
@@ -151,7 +145,6 @@ enum psoErrors psonHashTxInit( psonHashTx         * pHash,
  * to see if the new record can be inserted or not (the call to Get() gives
  * us the bucket needed by Insert()).
  */
-PHOTON_ENGINE_EXPORT 
 enum psoErrors psonHashTxInsert( psonHashTx          * pHash,
                                  size_t                bucket,
                                  const unsigned char * pKey,
@@ -161,7 +154,6 @@ enum psoErrors psonHashTxInsert( psonHashTx          * pHash,
                                  psonHashTxItem     ** ppNewItem,
                                  psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT
 enum psoErrors psonHashTxResize( psonHashTx         * pHash,
                                  psonSessionContext * pContext );
 

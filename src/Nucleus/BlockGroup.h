@@ -92,13 +92,11 @@ typedef struct psonEndBlockGroup psonEndBlockGroup;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-PHOTON_ENGINE_EXPORT
 void psonBlockGroupFini( psonBlockGroup* pGroup );
 
 /** 
  * Initialize the psonBlockGroup struct. 
  */
-PHOTON_ENGINE_EXPORT
 void psonBlockGroupInit( psonBlockGroup  * pGroup,
                          ptrdiff_t         firstBlockOffset,
                          size_t            numBlocks,

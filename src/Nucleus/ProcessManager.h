@@ -60,11 +60,9 @@ typedef struct psonProcessManager psonProcMgr;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-PHOTON_ENGINE_EXPORT
 bool psonProcMgrInit( psonProcMgr        * pManager,
                       psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonProcMgrAddProcess( psonProcMgr        * pManager,
                             pid_t                pid, 
                             psonProcess       ** ppCleanupProcess,
@@ -74,13 +72,11 @@ bool psonProcMgrAddProcess( psonProcMgr        * pManager,
  * This function is for the server - to recover from crashes in
  * real time.
  */
-PHOTON_ENGINE_EXPORT
 bool psonProcMgrFindProcess( psonProcMgr        * pManager,
                              pid_t                pid, 
                              psonProcess       ** ppCleanupProcess,
                              psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonProcMgrRemoveProcess( psonProcMgr        * pManager,
                                psonProcess        * pCleanupProcess,
                                psonSessionContext * pContext );

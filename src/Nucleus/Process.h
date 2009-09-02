@@ -65,16 +65,13 @@ typedef struct psonProcess psonProcess;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-PHOTON_ENGINE_EXPORT
 bool psonProcessInit( psonProcess        * pProcess,
                       pid_t                pid,
                       psonSessionContext * pContext );
    
-PHOTON_ENGINE_EXPORT
 void psonProcessFini( psonProcess        * pProcess,
                       psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonProcessAddSession( psonProcess        * pProcess,
                             void               * pApiSession,
                             psonSession       ** pSession,
@@ -83,17 +80,14 @@ bool psonProcessAddSession( psonProcess        * pProcess,
 /*
  * Takes a lock on the current object. Not on the psonSession itself. 
  */
-PHOTON_ENGINE_EXPORT
 bool psonProcessRemoveSession( psonProcess        * pProcess,
                                psonSession        * pSession,
                                psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonProcessGetFirstSession( psonProcess        * pProcess,
                                  psonSession       ** ppSession,
                                  psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonProcessGetNextSession( psonProcess        * pProcess,
                                 psonSession        * pCurrent,
                                 psonSession       ** ppNext,

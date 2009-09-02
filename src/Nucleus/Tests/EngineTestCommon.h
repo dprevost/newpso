@@ -25,7 +25,6 @@
 #include "Nucleus/InitEngine.h"
 #include "Nucleus/SessionContext.h"
 
-PHOTON_ENGINE_EXPORT
 psocErrMsgHandle g_psoErrorHandle;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

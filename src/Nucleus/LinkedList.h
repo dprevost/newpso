@@ -66,8 +66,7 @@ typedef struct psonLinkedList psonLinkedList;
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /** Cleanup the list once we're done with it. */
-PHOTON_ENGINE_EXPORT void 
-psonLinkedListFini( psonLinkedList * pList );
+void psonLinkedListFini( psonLinkedList * pList );
 
 /** Removes and returns the first item on the list. */
 static inline 
@@ -80,7 +79,6 @@ bool psonLinkedListGetLast( psonLinkedList  * pList,
                             psonLinkNode   ** ppItem );
 
 /** Initialize the linked list. */
-PHOTON_ENGINE_EXPORT 
 void psonLinkedListInit( psonLinkedList * pList );
 
 /** Adds pNewItem to the beginning of the list. */
@@ -135,7 +133,6 @@ void psonLinkedListReplaceItem( psonLinkedList * pList,
 /** Search in the list to see if pUnknown is in it or not - used by the
  *  crash recovery algorithm, psonFree, etc. 
  */
-PHOTON_ENGINE_EXPORT 
 bool psonLinkedListIsValid( psonLinkedList * pList,
                             psonLinkNode   * pUnknown );
 
@@ -147,7 +144,6 @@ bool psonLinkedListIsValid( psonLinkedList * pList,
 /** Reset the list to be empty - used by the
  *  crash recovery algorithm
  */
-PHOTON_ENGINE_EXPORT 
 void psonLinkedListReset( psonLinkedList * pList );
 
 

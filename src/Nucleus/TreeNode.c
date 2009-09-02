@@ -32,24 +32,32 @@ char * apiTypes[] = {
    "Fast Map"
 };
 
-void psonTreeNodeDump( psonTreeNode * pNode )
+void psonTreeNodeDump( psonTreeNode * pNode, int indent )
 {
+   DO_INDENT( indent );
    fprintf(stderr, "psonTreeNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pNode, SET_OFFSET(pNode) );
    if ( pNode == NULL ) return;
-   fprintf( stderr, "  offset of the object: "PSO_PTRDIFF_T_FORMAT"\n",
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "offset of the object: "PSO_PTRDIFF_T_FORMAT"\n",
       pNode->offset );
    if ( pNode->apiType < PSO_FOLDER || pNode->apiType >= PSO_LAST_OBJECT_TYPE ) {
-      fprintf( stderr, "  object api type: unknown (value: %d)\n", pNode->apiType );
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "object api type: unknown (value: %d)\n", pNode->apiType );
    }
    else {
-      fprintf( stderr, "  object api type: %s\n", apiTypes[pNode->apiType-1] );
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "object api type: %s\n", apiTypes[pNode->apiType-1] );
    }
-   fprintf( stderr, "  tx counter: %d\n", pNode->txCounter );
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "tx counter: %d\n", pNode->txCounter );
 
-   fprintf( stderr, "  offset of the tx status object: "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "offset of the tx status object: "PSO_PTRDIFF_T_FORMAT"\n",
       pNode->txStatusOffset );
-   fprintf( stderr, "  offset of the parent object: "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "offset of the parent object: "PSO_PTRDIFF_T_FORMAT"\n",
       pNode->myParentOffset );
 }
 

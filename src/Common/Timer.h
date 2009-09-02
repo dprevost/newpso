@@ -129,12 +129,10 @@ void psocEndTimer( psocTimer * pTimer )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /** Calculates - returns the time to the caller in seconds and nanosecs. */
-PHOTON_COMMON_EXPORT
 void psocCalculateTimer( psocTimer     * pTimer,
                          unsigned long * pSecs,
                          unsigned long * pnanoSecs );
 
-PHOTON_COMMON_EXPORT
 void psocInitTimer( psocTimer * pTimer );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

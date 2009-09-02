@@ -104,31 +104,25 @@ typedef struct psocDirIterator psocDirIterator;
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /*! \brief Initialize the struct psocDirIterator. */
-PHOTON_COMMON_EXPORT
 void psocInitDir( psocDirIterator * pIterator );
 
 /*! \brief Terminate access to the struct psocDirIterator. */
-PHOTON_COMMON_EXPORT
 void psocFiniDir( psocDirIterator * pIterator );
 
 /*! \brief Open the directory. */
-PHOTON_COMMON_EXPORT
 bool psocOpenDir( psocDirIterator  * pIterator,
                   const char       * dirName,
                   psocErrorHandler * pError );
 
 /*! \brief Get the next file name. */
-PHOTON_COMMON_EXPORT
 const char * psocDirGetNextFileName( psocDirIterator  * pIterator,
                                      psocErrorHandler * pError,
                                      bool             * isFolder );
 
 /*! \brief Close the directory. */
-PHOTON_COMMON_EXPORT
 void psocCloseDir( psocDirIterator * pIterator );
 
 /*! \brief Remove a directory and all of its content. */
-PHOTON_COMMON_EXPORT
 bool psocRemoveDir( const char       * dirName,
                     psocErrorHandler * pError );
 

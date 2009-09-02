@@ -125,6 +125,19 @@ bool psonFastMapDelete( psonFastMap        * pHashMap,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonFastMapDump( psonFastMap * pMap, int indent )
+{
+   DO_INDENT( indent );
+   fprintf(stderr, "psonFastMap (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+      pMap, SET_OFFSET(pMap) );
+   if ( pMap == NULL ) return;
+
+}
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void psonFastMapEmpty( psonFastMap        * pHashMap,
                        psonSessionContext * pContext )
 {

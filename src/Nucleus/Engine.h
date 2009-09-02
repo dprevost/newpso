@@ -31,18 +31,6 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(_WIN32)
-#  ifdef BUILD_PHOTON_ENGINE
-#    define PHOTON_ENGINE_EXPORT __declspec ( dllexport )
-#  else
-#    define PHOTON_ENGINE_EXPORT __declspec ( dllimport )
-#  endif
-#else
-#  define PHOTON_ENGINE_EXPORT
-#endif
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
 BEGIN_C_DECLS
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -71,10 +59,8 @@ BEGIN_C_DECLS
  *  process having their own copy of this global). This pointer is used
  *  everywhere to recover the real pointer addresses from our offsets
  */
-PHOTON_ENGINE_EXPORT
 extern unsigned char* g_pBaseAddr;
 
-PHOTON_ENGINE_EXPORT
 extern psocErrMsgHandle g_psoErrorHandle;
 
 #define SET_OFFSET(ptr) ( (ptrdiff_t) ( (unsigned char*)(ptr) - \
@@ -203,6 +189,17 @@ typedef enum psonAllocTypeEnum psonAllocTypeEnum;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+#  define DO_INDENT(LOOP) {\
+   int ijk_loop_kji;\
+   for( ijk_loop_kji = 0; ijk_loop_kji < (LOOP); ijk_loop_kji++ ) {\
+      fprintf( stderr, " " );\
+   }\
+}
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+   
 END_C_DECLS
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

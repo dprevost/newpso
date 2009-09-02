@@ -109,24 +109,19 @@ typedef struct psocErrorHandler
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /*! \brief Use for initializing our internal data. */
-PHOTON_COMMON_EXPORT
 bool psocInitErrorDefs();
 
 /*! \brief Clear our internal data. */
-PHOTON_COMMON_EXPORT
 void psocFiniErrorDefs();
 
 /*! \brief Add a function to handle error messages. */
-PHOTON_COMMON_EXPORT
 psocErrMsgHandle psocAddErrorMsgHandler( const char          * name,
                                          psocErrMsgHandler_T   handler );
 
 /*! \brief Use for initializing the struct or to reset it, as needed. */
-PHOTON_COMMON_EXPORT
 void psocInitErrorHandler( psocErrorHandler * pErrorHandler );
 
 /*! \brief Terminate access to the struct psocErrorHandler */
-PHOTON_COMMON_EXPORT
 void psocFiniErrorHandler( psocErrorHandler * pErrorHandler );
 
 /*! Test to see if errors were found.
@@ -149,7 +144,6 @@ bool psocAnyErrors( psocErrorHandler * pErrorHandler )
 /*! \brief Retrieves the error message or a concatenation of all error
  *         messages (if more than one)
  */
-PHOTON_COMMON_EXPORT
 size_t psocGetErrorMsg( psocErrorHandler * pErrorHandler,
                         char             * msg,
                         size_t             maxLength );
@@ -158,14 +152,12 @@ size_t psocGetErrorMsg( psocErrorHandler * pErrorHandler,
  *         concatenation of all error messages (if more than one) - the
  *         space for a NULL terminator is not included.
  */
-PHOTON_COMMON_EXPORT
 size_t psocGetErrorMsgLength( psocErrorHandler * pErrorHandler );
 
 /*! \brief
  * Sets both the error code and the handler for the
  * error message. It will first reset the chain of error codes to zero.
  */
-PHOTON_COMMON_EXPORT
 void psocSetError( psocErrorHandler * pErrorHandler,
                    psocErrMsgHandle   handle,
                    int                errorCode );
@@ -174,7 +166,6 @@ void psocSetError( psocErrorHandler * pErrorHandler,
  * Adds the error code and the handler for the error message to an
  * existing chain.
  */
-PHOTON_COMMON_EXPORT
 void psocChainError( psocErrorHandler * pErrorHandler,
                      psocErrMsgHandle   handle,
                      int                errorCode );

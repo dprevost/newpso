@@ -31,10 +31,8 @@ BEGIN_C_DECLS
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-PHOTON_COMMON_EXPORT
 extern int g_timeOutinMilliSecs;
 
-PHOTON_COMMON_EXPORT
 extern struct timeval g_timeOut;
 
 typedef struct psocThreadLock
@@ -58,13 +56,11 @@ typedef struct psocThreadLock
  * for the process owning it (if the underlying platform specific 
  * mechanism allows this distinction).
  */
-PHOTON_COMMON_EXPORT
 bool psocInitThreadLock( psocThreadLock * pLock );
 
 /**
  *  Uninitialize the lock (it will remove the lock for POSIX semaphores).
  */
-PHOTON_COMMON_EXPORT
 void psocFiniThreadLock( psocThreadLock * pLock );
 
 /** Acquire lock ownership (loop forever) - this is dangerous for

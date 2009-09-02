@@ -121,22 +121,18 @@ typedef struct psocMemoryFile psocMemoryFile;
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /*! \brief Initialize a psocMemoryFile struct. */
-PHOTON_COMMON_EXPORT
 void psocInitMemoryFile( psocMemoryFile * pMem,
                          size_t           kblength, 
                          const char     * filename );
 
 /*! \brief Terminate access to a psocMemoryFile struct. */
-PHOTON_COMMON_EXPORT
 void psocFiniMemoryFile( psocMemoryFile * pMem );
 
 /*! \brief Return the status of the backstore file. */
-PHOTON_COMMON_EXPORT
 void psocBackStoreStatus( psocMemoryFile       * pMem,
                           psocMemoryFileStatus * pStatus );
    
 /*! \brief Create the backstore file */
-PHOTON_COMMON_EXPORT
 bool psocCreateBackstore( psocMemoryFile   * pMem,
                           int                filePerms,
                           psocErrorHandler * pError );
@@ -145,13 +141,11 @@ bool psocCreateBackstore( psocMemoryFile   * pMem,
  *  \brief "Open" an access to the memory file (this might load the 
  *  backstore in memory).
  */
-PHOTON_COMMON_EXPORT
 bool psocOpenMemFile( psocMemoryFile   * pMem,
                       void            ** ppAddr,
                       psocErrorHandler * pError );
    
 /*! \brief Create a copy of the backstore file */
-PHOTON_COMMON_EXPORT
 bool psocCopyBackstore( psocMemoryFile   * pMem,
                         int                filePerms,
                         psocErrorHandler * pError );
@@ -160,12 +154,10 @@ bool psocCopyBackstore( psocMemoryFile   * pMem,
  *  \brief Close our access the memory file (possibly removing the memory
  *  file itself from memory).
  */
-PHOTON_COMMON_EXPORT
 void psocCloseMemFile( psocMemoryFile   * pMem,
                        psocErrorHandler * pError );
 
 /*! \brief Synchronize the memory file to the backstore (disk) */
-PHOTON_COMMON_EXPORT
 bool psocSyncMemFile( psocMemoryFile   * pMem,
                       psocErrorHandler * pError );
 

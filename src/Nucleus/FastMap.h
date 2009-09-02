@@ -77,27 +77,22 @@ typedef struct psonFastMap psonFastMap;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-PHOTON_ENGINE_EXPORT
 bool psonFastMapCopy( psonFastMap        * pHashMap, 
                       psonFastMap        * pNewHashMap,
                       psonHashTxItem     * pHashItem,
                       psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFastMapDelete( psonFastMap        * pHashMap,
                         const void         * key,
                         uint32_t             keyLength, 
                         psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonFastMapEmpty( psonFastMap        * pHashMap,
                        psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonFastMapFini( psonFastMap        * pHashMap,
                       psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFastMapGet( psonFastMap        * pHashMap,
                      const void         * pKey,
                      uint32_t             keyLength, 
@@ -105,21 +100,18 @@ bool psonFastMapGet( psonFastMap        * pHashMap,
                      uint32_t             bufferLength,
                      psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFastMapGetFirst( psonFastMap        * pHashMap,
                           psonFastMapItem    * pItem,
                           uint32_t             keyLength,
                           uint32_t             bufferLength,
                           psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFastMapGetNext( psonFastMap        * pHashMap,
                          psonFastMapItem    * pItem,
                          uint32_t             keyLength,
                          uint32_t             bufferLength,
                          psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFastMapInit( psonFastMap         * pHashMap,
                       ptrdiff_t             parentOffset,
                       size_t                numberOfBlocks,
@@ -131,7 +123,6 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
                       psonDataDefinition  * pDataDefinition,
                       psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFastMapInsert( psonFastMap        * pHashMap,
                         const void         * pKey,
                         uint32_t             keyLength,
@@ -139,12 +130,10 @@ bool psonFastMapInsert( psonFastMap        * pHashMap,
                         uint32_t             itemLength,
                         psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFastMapRelease( psonFastMap        * pHashMap,
                          psonHashItem       * pHashItem,
                          psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFastMapReplace( psonFastMap        * pHashMap,
                          const void         * pKey,
                          uint32_t             keyLength,
@@ -152,9 +141,12 @@ bool psonFastMapReplace( psonFastMap        * pHashMap,
                          uint32_t             itemLength,
                          psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonFastMapStatus( psonFastMap  * pHashMap,
                         psoObjStatus * pStatus );
+
+#if defined(PSO_TRACE)
+void psonFastMapDump( psonFastMap * pMap, int indent );
+#endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

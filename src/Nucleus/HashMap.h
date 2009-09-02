@@ -87,27 +87,22 @@ typedef struct psonHashMap psonHashMap;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-PHOTON_ENGINE_EXPORT
 void psonHashMapCommitAdd( psonHashMap        * pHashMap, 
                            ptrdiff_t            itemOffset,
                            psonSessionContext * pContext  );
 
-PHOTON_ENGINE_EXPORT
 void psonHashMapCommitRemove( psonHashMap        * pHashMap, 
                               ptrdiff_t            itemOffset,
                               psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonHashMapDelete( psonHashMap        * pHashMap,
                         const void         * key,
                         uint32_t             keyLength, 
                         psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonHashMapFini( psonHashMap        * pHashMap,
                       psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonHashMapGet( psonHashMap        * pHashMap,
                      const void         * pKey,
                      uint32_t             keyLength, 
@@ -115,21 +110,18 @@ bool psonHashMapGet( psonHashMap        * pHashMap,
                      uint32_t             bufferLength,
                      psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonHashMapGetFirst( psonHashMap        * pHashMap,
                           psonHashMapItem    * pItem,
                           uint32_t             keyLength,
                           uint32_t             bufferLength,
                           psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonHashMapGetNext( psonHashMap        * pHashMap,
                          psonHashMapItem    * pItem,
                          uint32_t             keyLength,
                          uint32_t             bufferLength,
                          psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonHashMapInit( psonHashMap         * pHashMap,
                       ptrdiff_t             parentOffset,
                       size_t                numberOfBlocks,
@@ -140,7 +132,6 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
                       psonDataDefinition  * pDataDefinition,
                       psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonHashMapInsert( psonHashMap        * pHashMap,
                         const void         * pKey,
                         uint32_t             keyLength,
@@ -148,12 +139,10 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
                         uint32_t             itemLength,
                         psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonHashMapRelease( psonHashMap        * pHashMap,
                          psonHashTxItem       * pHashItem,
                          psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonHashMapReplace( psonHashMap        * pHashMap,
                          const void         * pKey,
                          uint32_t             keyLength,
@@ -161,17 +150,14 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
                          uint32_t             itemLength,
                          psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonHashMapRollbackAdd( psonHashMap        * pHashMap, 
                              ptrdiff_t            itemOffset,
                              psonSessionContext * pContext  );
 
-PHOTON_ENGINE_EXPORT
 void psonHashMapRollbackRemove( psonHashMap        * pHashMap, 
                                 ptrdiff_t            itemOffset,
                                 psonSessionContext * pContext  );
 
-PHOTON_ENGINE_EXPORT
 void psonHashMapStatus( psonHashMap  * pHashMap,
                         psoObjStatus * pStatus );
 

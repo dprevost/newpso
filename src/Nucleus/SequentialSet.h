@@ -84,28 +84,23 @@ typedef struct psonSequentialSet psonSeqSet;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-PHOTON_ENGINE_EXPORT
 bool psonSeqSetCopy( psonSeqSet         * pSeqSet, 
                      psonSeqSet         * pNewSeqSet,
                      psonHashTxItem     * pHashItem,
                      const char         * origName,
                      psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSeqSetDelete( psonSeqSet         * pSeqSet,
                        const void         * key,
                        uint32_t             keyLength, 
                        psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonSeqSetEmpty( psonSeqSet         * pSeqSet,
                       psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonSeqSetFini( psonSeqSet         * pSeqSet,
                      psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSeqSetGet( psonSeqSet         * pSeqSet,
                     const void         * pKey,
                     uint32_t             keyLength, 
@@ -113,21 +108,18 @@ bool psonSeqSetGet( psonSeqSet         * pSeqSet,
                     uint32_t             bufferLength,
                     psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSeqSetGetFirst( psonSeqSet         * pSeqSet,
                          psonSeqSetItem     * pItem,
                          uint32_t             keyLength,
                          uint32_t             bufferLength,
                          psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSeqSetGetNext( psonSeqSet         * pSeqSet,
                         psonSeqSetItem     * pItem,
                         uint32_t             keyLength,
                         uint32_t             bufferLength,
                         psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSeqSetInit( psonSeqSet          * pSeqSet,
                      ptrdiff_t             parentOffset,
                      size_t                numberOfBlocks,
@@ -141,7 +133,6 @@ bool psonSeqSetInit( psonSeqSet          * pSeqSet,
                      psonDataDefinition  * pDataDefinition,
                      psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSeqSetInsert( psonSeqSet         * pSeqSet,
                        const void         * pKey,
                        uint32_t             keyLength,
@@ -150,12 +141,10 @@ bool psonSeqSetInsert( psonSeqSet         * pSeqSet,
                        psonDataDefinition * pDefinition,
                        psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSeqSetRelease( psonSeqSet         * pSeqSet,
                         psonSeqSetItem     * pSeqSetItem,
                         psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSeqSetReplace( psonSeqSet         * pSeqSet,
                         const void         * pKey,
                         uint32_t             keyLength,
@@ -164,7 +153,6 @@ bool psonSeqSetReplace( psonSeqSet         * pSeqSet,
                         psonDataDefinition * pDefinition,
                         psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonSeqSetStatus( psonSeqSet   * pSeqSet,
                        psoObjStatus * pStatus );
 

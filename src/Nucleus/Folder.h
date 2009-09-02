@@ -101,7 +101,6 @@ typedef struct psonFolder psonFolder;
 /**
  * Creates an immediate folder child of the folder.
  */
-PHOTON_ENGINE_EXPORT
 bool psonAPIFolderCreateFolder( psonFolder         * pFolder,
                                 const char         * objectName,
                                 uint32_t             nameLengthInBytes,
@@ -110,7 +109,6 @@ bool psonAPIFolderCreateFolder( psonFolder         * pFolder,
 /**
  * Creates an immediate child of the folder.
  */
-PHOTON_ENGINE_EXPORT
 bool psonAPIFolderCreateObject( psonFolder          * pFolder,
                                 const char          * objectName,
                                 uint32_t              nameLengthInBytes,
@@ -122,13 +120,11 @@ bool psonAPIFolderCreateObject( psonFolder          * pFolder,
 /**
  * Destroy an immediate child of the folder.
  */
-PHOTON_ENGINE_EXPORT
 bool psonAPIFolderDestroyObject( psonFolder         * pFolder,
                                  const char         * objectName,
                                  uint32_t             nameLengthInBytes,
                                  psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonAPIFolderGetDefinition( psonFolder          * pFolder,
                                  const char          * objectName,
                                  uint32_t              strLength,
@@ -137,18 +133,15 @@ bool psonAPIFolderGetDefinition( psonFolder          * pFolder,
                                  psonKeyDefinition  ** ppKeyDefinition,
                                  psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonAPIFolderGetFirst( psonFolder         * pFolder,
                             psonFolderItem     * pItem,
                             psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonAPIFolderGetNext( psonFolder         * pFolder,
                            psonFolderItem     * pItem,
                            psonSessionContext * pContext );
 
 /* Retrieve the status of the current folder */
-PHOTON_ENGINE_EXPORT
 void psonAPIFolderStatus( psonFolder   * pFolder,
                           psoObjStatus * pStatus );
 
@@ -158,7 +151,6 @@ void psonAPIFolderStatus( psonFolder   * pFolder,
  * if  the object is actually removed, the ptr ppOldMemObj
  * is set so that the transaction does not try to lock the object.
  */
-PHOTON_ENGINE_EXPORT
 void psonFolderCommitEdit( psonFolder         * pFolder,
                            psonHashTxItem     * pHashItem, 
                            enum psoObjectType   objectType,
@@ -168,13 +160,11 @@ void psonFolderCommitEdit( psonFolder         * pFolder,
 /**
  * Delete an object, recursively.
  */ 
-PHOTON_ENGINE_EXPORT
 bool psonFolderDeleteObject( psonFolder         * pFolder,
                              const char         * objectName,
                              uint32_t             strLength, 
                              psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFolderEditObject( psonFolder         * pFolder,
                            const char         * objectName,
                            uint32_t             strLength, 
@@ -182,18 +172,15 @@ bool psonFolderEditObject( psonFolder         * pFolder,
                            psonFolderItem     * pFolderItem,
                            psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonFolderFini( psonFolder         * pFolder,
                      psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFolderFindObject( psonFolder         * pFolder,
                            const char         * objectName,
                            uint32_t             strLength, 
                            psonHashTxItem    ** ppFoundFolder,
                            psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFolderGetDefinition( psonFolder          * pFolder,
                               const char          * objectName,
                               uint32_t              strLength,
@@ -202,7 +189,6 @@ bool psonFolderGetDefinition( psonFolder          * pFolder,
                               psonKeyDefinition  ** ppKeyDefinition,
                               psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFolderGetDefLength( psonFolder          * pFolder,
                              const char          * objectName,
                              uint32_t              strLength,
@@ -210,7 +196,6 @@ bool psonFolderGetDefLength( psonFolder          * pFolder,
                              uint32_t            * pKeyDefLength,
                              psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFolderGetObject( psonFolder         * pFolder,
                           const char         * objectName,
                           uint32_t             strLength, 
@@ -218,14 +203,12 @@ bool psonFolderGetObject( psonFolder         * pFolder,
                           psonFolderItem     * pFolderItem,
                           psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFolderGetStatus( psonFolder         * pFolder,
                           const char         * objectName,
                           uint32_t             strLength, 
                           psoObjStatus       * pStatus,
                           psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFolderInit( psonFolder         * pFolder,
                      ptrdiff_t            parentOffset,
                      size_t               numberOfBlocks,
@@ -233,7 +216,6 @@ bool psonFolderInit( psonFolder         * pFolder,
                      psonTreeNode       * pNode,
                      psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonFolderInsertObject( psonFolder          * pFolder,
                              const char          * objectName,
                              uint32_t              strLength,
@@ -244,8 +226,6 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
                              size_t                expectedNumOfChilds,
                              psonSessionContext  * pContext );
 
-
-PHOTON_ENGINE_EXPORT
 bool psonFolderRelease( psonFolder         * pFolder,
                         psonFolderItem     * pItem,
                         psonSessionContext * pContext );
@@ -255,17 +235,13 @@ bool psonFolderRelease( psonFolder         * pFolder,
  * folder object (once there are no pending transactions, no sessions
  * have this object open, etc...).
  */
-PHOTON_ENGINE_EXPORT
 void psonFolderRemoveObject( psonFolder         * pFolder,
                              psonHashTxItem     * pHashItem,
                              psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonFolderResize( psonFolder         * pFolder, 
                        psonSessionContext * pContext  );
 
-
-PHOTON_ENGINE_EXPORT
 void psonFolderRollbackEdit( psonFolder         * pFolder,
                              psonHashTxItem     * pHashItem, 
                              enum psoObjectType   objectType,
@@ -282,17 +258,14 @@ void psonFolderRollbackEdit( psonFolder         * pFolder,
  * is getting quite large and has too many unit tests...).
  */
 
-PHOTON_ENGINE_EXPORT
 bool psonTopFolderCloseObject( psonFolderItem     * pDescriptor,
                                psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonTopFolderCreateFolder( psonFolder         * pFolder,
                                 const char         * objectName,
                                 uint32_t             nameLengthInBytes,
                                 psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonTopFolderCreateObject( psonFolder          * pFolder,
                                 const char          * objectName,
                                 uint32_t              nameLengthInBytes,
@@ -301,13 +274,11 @@ bool psonTopFolderCreateObject( psonFolder          * pFolder,
                                 psonKeyDefinition   * pKeyDefinition,
                                 psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonTopFolderDestroyObject( psonFolder         * pFolder,
                                  const char         * objectName,
                                  uint32_t             nameLengthInBytes,
                                  psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonTopFolderEditObject( psonFolder         * pFolder,
                               const char         * objectName,
                               uint32_t             nameLengthInBytes,
@@ -315,7 +286,6 @@ bool psonTopFolderEditObject( psonFolder         * pFolder,
                               psonFolderItem     * pFolderItem,
                               psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonTopFolderGetDef( psonFolder          * pFolder,
                           const char          * objectName,
                           uint32_t              nameLengthInBytes,
@@ -324,7 +294,6 @@ bool psonTopFolderGetDef( psonFolder          * pFolder,
                           psonKeyDefinition  ** ppKeyDefinition,
                           psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonTopFolderGetDefLength( psonFolder         * pFolder,
                                 const char         * objectName,
                                 uint32_t             nameLengthInBytes,
@@ -332,14 +301,12 @@ bool psonTopFolderGetDefLength( psonFolder         * pFolder,
                                 uint32_t           * pKeyDefLength,
                                 psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonTopFolderGetStatus( psonFolder         * pFolder,
                              const char         * objectName,
                              uint32_t             nameLengthInBytes,
                              psoObjStatus       * pFolderItem,
                              psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonTopFolderOpenObject( psonFolder         * pFolder,
                               const char         * objectName,
                               uint32_t             nameLengthInBytes,

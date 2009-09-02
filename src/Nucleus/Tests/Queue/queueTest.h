@@ -31,7 +31,6 @@
 #include "Nucleus/Queue.h"
 #include <photon/psoPhotonODBC.h>
 
-PHOTON_ENGINE_EXPORT
 psocErrMsgHandle g_psoErrorHandle;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

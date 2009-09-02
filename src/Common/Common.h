@@ -61,18 +61,6 @@ typedef unsigned __int64 uint64_t;
 
 #endif
 
-#if defined(_WIN32)
-#  ifdef BUILD_PHOTON_COMMON
-#    define PHOTON_COMMON_EXPORT 
-//__declspec ( dllexport )
-#  else
-#    define PHOTON_COMMON_EXPORT
-//__declspec ( dllimport )
-#  endif
-#else
-#  define PHOTON_COMMON_EXPORT
-#endif
-
 #if  ! defined ( BEGIN_C_DECLS )
 #  ifdef __cplusplus
 #    define BEGIN_C_DECLS extern "C" {
@@ -315,7 +303,6 @@ void psocLockSleep(const struct timeval * timeOut)
 
 
 #ifndef HAVE_LOCALTIME_R
-PHOTON_COMMON_EXPORT
 extern struct tm *localtime_r( const time_t * timep,
                                struct tm *		tm );
 #endif

@@ -128,7 +128,6 @@ typedef struct psonSession
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-PHOTON_ENGINE_EXPORT
 bool psonSessionAddObj( psonSession        * pSession,
                         ptrdiff_t            objOffset, 
                         enum psoObjectType   objType, 
@@ -136,37 +135,30 @@ bool psonSessionAddObj( psonSession        * pSession,
                         psonObjectContext ** ppObject,
                         psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSessionCloseCursor( psonSession        * pSession,
                              psonCursorContext  * pObject,
                              psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonSessionFini( psonSession        * pSession,
                       psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSessionInit( psonSession        * pSession,
                       void               * pApiSession,
                       psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSessionOpenCursor( psonSession        * pSession,
                             psonCursorContext ** ppCursor,
                             psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSessionRemoveObj( psonSession        * pSession,
                           psonObjectContext  * pObject,
                           psonSessionContext * pContext );
 
 /* Lock and Unlock must be used before calling this function */
-PHOTON_ENGINE_EXPORT
 bool psonSessionRemoveFirst( psonSession        * pSession,
                              psonSessionContext * pContext );
 
 /* Lock and Unlock must be used before calling this function */
-PHOTON_ENGINE_EXPORT
 bool psonSessionGetFirst( psonSession        * pSession,
                           psonObjectContext ** ppObject,
                           psonSessionContext * pContext );

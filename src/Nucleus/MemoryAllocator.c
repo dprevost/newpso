@@ -131,7 +131,7 @@ typedef struct psonFreeBlock psonFreeBlock;
  *  process having their own copy of this global). This pointer is used
  *  everywhere to recover the real pointer addresses from our offsets
  */
-PHOTON_ENGINE_EXPORT unsigned char * g_pBaseAddr = NULL;
+unsigned char * g_pBaseAddr = NULL;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

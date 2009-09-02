@@ -30,7 +30,6 @@
 #include "Nucleus/Folder.h"
 #include <photon/psoPhotonODBC.h>
 
-PHOTON_ENGINE_EXPORT
 psocErrMsgHandle g_psoErrorHandle;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -43,7 +42,7 @@ psocErrMsgHandle g_psoErrorHandle;
  * they ask it from their internalmemObject which can then ask the 
  * global allocator. This requires proper initialization.
  *
- * The returned object isnot initialized however - so that we can test
+ * The returned object is not initialized however - so that we can test
  * the Init() call.
  */
  

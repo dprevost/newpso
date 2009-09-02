@@ -32,12 +32,11 @@ BEGIN_C_DECLS
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(_WIN32)
-PHOTON_ENGINE_EXPORT extern const char * MYCPU;
-PHOTON_ENGINE_EXPORT extern const char * MYCC;
-PHOTON_ENGINE_EXPORT extern const char * MYCXX;
+extern const char * MYCPU;
+extern const char * MYCC;
+extern const char * MYCXX;
 #endif
 
-PHOTON_ENGINE_EXPORT 
 bool psonInitEngine();
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

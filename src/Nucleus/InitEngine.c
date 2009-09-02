@@ -25,12 +25,12 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-PHOTON_ENGINE_EXPORT psocErrMsgHandle g_psoErrorHandle = PSOC_NO_ERRHANDLER;
+psocErrMsgHandle g_psoErrorHandle = PSOC_NO_ERRHANDLER;
 
 #if defined(_WIN32)
-PHOTON_ENGINE_EXPORT const char * MYCPU = "i386";
-PHOTON_ENGINE_EXPORT const char * MYCC  = "cl.exe.";
-PHOTON_ENGINE_EXPORT const char * MYCXX = "cl.exe";
+const char * MYCPU = "i386";
+const char * MYCC  = "cl.exe.";
+const char * MYCXX = "cl.exe";
 #endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -90,7 +90,6 @@ typedef void * psocOptionHandle;
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /*! \brief Populate the internal arrays of all supported options. */
-PHOTON_COMMON_EXPORT
 bool psocSetSupportedOptions( int                    numOpts, 
                               struct psocOptStruct * opts,
                               psocOptionHandle     * pHandle );
@@ -99,41 +98,34 @@ bool psocSetSupportedOptions( int                    numOpts,
  * \brief Unset the internal arrays of all supported options (and free
  * the allocated memory, if needed).
  */
-PHOTON_COMMON_EXPORT
 void psocUnsetSupportedOptions( psocOptionHandle handle );
 
 /*! \brief Verify the validity of the options passed in by the end-user. */
-PHOTON_COMMON_EXPORT
 int psocValidateUserOptions( psocOptionHandle   handle,
                              int                argc, 
                              char             * argv[], 
                              int                printError );
 
 /*! \brief Print usage information. */
-PHOTON_COMMON_EXPORT
 void psocShowUsage( psocOptionHandle   handle,
                     const char       * progName,
                     const char       * addArguments );
 
 /*! \brief Retrieves the argument associated with a given option. */
-PHOTON_COMMON_EXPORT
 bool psocGetShortOptArgument( psocOptionHandle    handle,
                               const char          opt, 
                               char             ** argument );
 
 /*! \brief Retrieves the argument associated with a given option. */
-PHOTON_COMMON_EXPORT
 bool psocGetLongOptArgument( psocOptionHandle    handle,
                              const char        * opt, 
                              char             ** argument );
 
 /*! \brief Verify if the option is present. */
-PHOTON_COMMON_EXPORT
 bool psocIsLongOptPresent( psocOptionHandle   handle,
                            const char       * opt );
 
 /*! \brief Verify if the option is present. */
-PHOTON_COMMON_EXPORT
 bool psocIsShortOptPresent( psocOptionHandle handle,
                             const char       opt );
 

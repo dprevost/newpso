@@ -72,55 +72,45 @@ typedef struct psonCursor psonCursor;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-PHOTON_ENGINE_EXPORT
 void psonCursorEmpty( psonCursor         * pCursor,
                       psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonCursorFini( psonCursor         * pCursor,
                      psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonCursorGetFirst( psonCursor         * pCursor,
                          psonCursorItem    ** ppItem,
                          psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonCursorGetLast( psonCursor         * pCursor,
                         psonCursorItem    ** ppItem,
                         psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonCursorGetNext( psonCursor         * pCursor,
                         psonCursorItem     * pOldItem,
                         psonCursorItem    ** ppItem,
                         psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonCursorGetPrevious( psonCursor         * pCursor,
                             psonCursorItem     * pOldItem,
                             psonCursorItem    ** ppItem,
                             psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonCursorInit( psonCursor         * pCursor,
                      ptrdiff_t            parentOffset,
                      size_t               numberOfBlocks,
                      psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonCursorInsertFirst( psonCursor         * pCursor,
                             unsigned char      * pItem,
                             psonItemTypeEnum     itemType,
                             psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonCursorInsertLast( psonCursor         * pCursor,
                            unsigned char      * pItem,
                            psonItemTypeEnum     itemType,
                            psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonCursorSize( psonCursor * pCursor,
                      size_t     * pNumItems );
 

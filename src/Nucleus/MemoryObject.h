@@ -68,25 +68,21 @@ typedef struct psonMemObject psonMemObject;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-PHOTON_ENGINE_EXPORT
 enum psoErrors 
 psonMemObjectInit( psonMemObject   * pMemObj,
                    psonMemObjIdent   objType,
                    psonBlockGroup  * pGroup,
                    size_t            numBlocks );
 
-PHOTON_ENGINE_EXPORT
 enum psoErrors 
 psonMemObjectFini( psonMemObject      * pMemObj,
                    psonAllocTypeEnum    allocType,
                    psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 unsigned char* psonMalloc( psonMemObject      * pMemObj,
                            size_t               numBytes,
                            psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonFree( psonMemObject      * pMemObj,
                unsigned char      * ptr, 
                size_t               numBytes,
@@ -132,7 +128,6 @@ void psonLockNoFailure( psonMemObject      * pMemObj,
    psocAcquireProcessLock ( &pMemObj->lock, pContext->pidLocker );
 }
 
-PHOTON_ENGINE_EXPORT
 void psonMemObjectStatus( psonMemObject * pMemObject, 
                           psoObjStatus  * pStatus );
 

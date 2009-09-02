@@ -108,22 +108,18 @@ typedef struct psonSet psonSet;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-PHOTON_ENGINE_EXPORT
 bool psonSetCopy( psonSet            * pOldSet, 
                   psonSet            * pNewSet,
                   psonHashTxItem     * pHashItem,
                   const char         * origName,
                   psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonSetEmpty( psonSet            * pSet,
                    psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonSetFini( psonSet            * pSet,
                   psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSetInit( psonSet             * pSet,
                   ptrdiff_t             parentOffset,
                   size_t                numberOfBlocks,
@@ -135,31 +131,26 @@ bool psonSetInit( psonSet             * pSet,
                   psonDataDefinition  * pDataDefinition,
                   psonSessionContext  * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSetGetFirst( psonSet            * pSet,
                       psonSetItem       ** ppIterator,
                       uint32_t             bufferLength,
                       psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSetGetNext( psonSet            * pSet,
                      psonSetItem       ** ppIterator,
                      uint32_t             bufferLength,
                      psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSetInsert( psonSet            * pSet,
                     const void         * pItem, 
                     uint32_t             length,
                     psonDataDefinition * pDefinition,
                     psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonSetRelease( psonSet            * pSet,
                      psonSetItem        * pSetItem,
                      psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonSetStatus( psonSet      * pSet,
                     psoObjStatus * pStatus );
 

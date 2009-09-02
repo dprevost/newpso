@@ -297,7 +297,13 @@ psoErrors psonTxTestObjectStatus( psonTxStatus * pStatus, ptrdiff_t txOffset )
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-         
+
+#if defined(PSO_TRACE)
+void psonTxStatusDump( psonTxStatus * pStatus, int indent );
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 END_C_DECLS
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

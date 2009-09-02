@@ -116,7 +116,6 @@ typedef struct psonTx psonTx;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-PHOTON_ENGINE_EXPORT
 bool psonTxAddOps( psonTx             * pTx,
                    psonTxType           txType,
                    ptrdiff_t            parentOffset, 
@@ -125,23 +124,18 @@ bool psonTxAddOps( psonTx             * pTx,
                    psonMemObjIdent      childType,
                    psonSessionContext * pContext );
    
-PHOTON_ENGINE_EXPORT
 void psonTxRemoveLastOps( psonTx * pTx, psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonTxInit( psonTx             * pTx,
                  size_t               numberOfBlocks,
                  psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 void psonTxFini( psonTx             * pTx, 
                  psonSessionContext * pContext );
 
-PHOTON_ENGINE_EXPORT
 bool psonTxCommit( psonTx             * pTx,
                    psonSessionContext * pContext );
                   
-PHOTON_ENGINE_EXPORT
 bool psonTxRollback( psonTx             * pTx,
                      psonSessionContext * pContext );
 

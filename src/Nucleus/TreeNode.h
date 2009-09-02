@@ -93,6 +93,12 @@ void psonTreeNodeFini( psonTreeNode * pNode )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonTreeNodeDump( psonTreeNode * pNode, int indent );
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 END_C_DECLS
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

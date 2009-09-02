@@ -958,7 +958,6 @@ error_handler:
 
 /*
  * This function is called when a session is committed or rollbacked.
- * The local lock on the session (if any) is already taken.
  */
 void psoaFastMapResetReader( void * map )
 {
