@@ -36,6 +36,10 @@ def set_options(opt):
       help='Set this flag to including all the tests. Must be added when running configure')
    opt.add_option('--less-tests', action='store_false', dest='more_tests',
       help='Set this flag to exclude some long-running tests. Must be removed when running configure')
+   opt.add_option('--enable-trace', action='store_true', default=False, dest='use_trace',
+      help='enable trace (debugging). You should not use this on production systems for performance reasons.')
+   opt.add_option('--disable-trace', action='store_false', dest='use_trace',
+      help='disable trace.')
    opt.tool_options('gcc')
    opt.tool_options('g++')
 

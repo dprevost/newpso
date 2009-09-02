@@ -135,6 +135,9 @@ def configure(conf):
          conf.define('PSO_UNIT_TESTS', 1)
 
    conf.env['MORE_TESTS'] = Options.options.more_tests
+   use_trace = Options.options.use_trace
+   if use_trace:
+      conf.define('PSO_TRACE', 1)
    
    # Testing for ptrdiff_t
    conf.check_cc(

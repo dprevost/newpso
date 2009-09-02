@@ -33,7 +33,9 @@ nucleus_list = [
         'Session.c',
         'Set.c',
         'TopFolder.c',
-        'Transaction.c']
+        'Transaction.c',
+        'TreeNode.c',
+        'TxStatus.c' ]
 
 def build(bld):
    nucleus_lib = bld.new_task_gen(
