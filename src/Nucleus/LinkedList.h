@@ -65,6 +65,10 @@ typedef struct psonLinkedList psonLinkedList;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonLinkedListDump( psonLinkedList * pList, int indent );
+#endif
+
 /** Cleanup the list once we're done with it. */
 void psonLinkedListFini( psonLinkedList * pList );
 

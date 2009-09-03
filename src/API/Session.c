@@ -814,7 +814,6 @@ int psoInitSession( PSO_HANDLE * sessionHandle )
    
    memset( pSession, 0, sizeof(psoaSession) );
    pSession->type = PSOA_SESSION;
-   pSession->context.pLogFile = NULL;
 
    pSession->context.pidLocker = getpid();
    psocInitErrorHandler( &pSession->context.errorHandler );
@@ -1111,6 +1110,20 @@ int psoaSessionOpenObj( psoaSession             * pSession,
    }
    
    return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void psoaSessionTrace( psoaSession * pSession,
+                       bool          traceOn )
+{
+   PSO_PRE_CONDITION( pSession   != NULL );
+   
+   pSession->context.traceOn = traceOn;
+#if !defined(PSO_TRACE)
+   if ( traceOn ) fprintf( stderr, "Warning: not built with trace enable\n" );
+#endif
+
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

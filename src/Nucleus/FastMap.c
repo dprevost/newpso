@@ -133,6 +133,31 @@ void psonFastMapDump( psonFastMap * pMap, int indent )
       pMap, SET_OFFSET(pMap) );
    if ( pMap == NULL ) return;
 
+   psonMemObjectDump( &pMap->memObject, indent + 2 );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Node offset: "PSO_PTRDIFF_T_FORMAT"\n", pMap->nodeOffset );
+
+   psonHashDump( &pMap->hashObj, indent + 2 );
+#if 0
+   struct psonHash hashObj;
+
+   /** Offset to the data definition */
+   ptrdiff_t dataDefOffset;
+
+   /** Offset to the key definition */
+   ptrdiff_t keyDefOffset;
+
+   /* Creation flags */
+   uint32_t flags;
+
+   ptrdiff_t latestVersion;
+
+   ptrdiff_t editVersion;
+   
+   /** Variable size struct - always put at the end */
+   struct psonBlockGroup blockGroup;
+#endif
 }
 #endif
 

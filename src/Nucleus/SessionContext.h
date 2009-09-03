@@ -64,7 +64,8 @@ struct psonSessionContext
     */
    void *pAllocator;
    
-   void* pLogFile;
+   bool traceOn;
+//   void* pLogFile;
    
 };
 
@@ -83,7 +84,8 @@ void psonInitSessionContext( psonSessionContext * pContext )
    pContext->lockObject   = PSON_NULL_OFFSET;
    pContext->pTransaction = NULL;
    pContext->pAllocator   = NULL;
-   pContext->pLogFile     = NULL;
+//   pContext->pLogFile     = NULL;
+   pContext->traceOn      = false;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

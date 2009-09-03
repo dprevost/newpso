@@ -93,6 +93,10 @@ int psoaSessionOpenObj( psoaSession             * pSession,
                         uint32_t                  nameLengthInBytes,
                         struct psoaCommonObject * pObject );
 
+PHOTON_API_EXPORT
+void psoaSessionTrace( psoaSession * pSession,
+                       bool          traceOn );
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 END_C_DECLS

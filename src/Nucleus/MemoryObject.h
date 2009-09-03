@@ -68,6 +68,10 @@ typedef struct psonMemObject psonMemObject;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonMemObjectDump( psonMemObject * pMemObj, int indent );
+#endif
+
 enum psoErrors 
 psonMemObjectInit( psonMemObject   * pMemObj,
                    psonMemObjIdent   objType,

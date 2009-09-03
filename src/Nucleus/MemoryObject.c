@@ -22,6 +22,110 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonMemObjectDump( psonMemObject * pMemObj, int indent )
+{
+   DO_INDENT( indent );
+   fprintf(stderr, "psonMemObject (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+      pMemObj, SET_OFFSET(pMemObj) );
+   if ( pMemObj == NULL ) return;
+   
+   switch( pMemObj->objType ) {
+   case PSON_IDENT_CLEAR:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: \"Clear!!!\" likely an error\n" );
+      break;
+      
+   case PSON_IDENT_LIMBO:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: \"Limbo!!!\" likely an error\n" );
+      break;
+      
+   case PSON_IDENT_ALLOCATED:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: \"Allocated!!!\" likely an error\n" );
+      break;
+      
+   case PSON_IDENT_FIRST:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: \"First!!!\" likely an error\n" );
+      break;
+      
+   case PSON_IDENT_ALLOCATOR:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: Main memory allocator\n" );
+      break;
+      
+   case PSON_IDENT_FOLDER:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: Folder\n" );
+      break;
+      
+   case PSON_IDENT_HASH_MAP:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: Hash Map\n" );
+      break;
+      
+   case PSON_IDENT_PROCESS:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: Process\n" );
+      break;
+      
+   case PSON_IDENT_PROCESS_MGR:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: Process Manager\n" );
+      break;
+      
+   case PSON_IDENT_QUEUE:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: Queue\n" );
+      break;
+      
+   case PSON_IDENT_SESSION:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: Session\n" );
+      break;
+      
+   case PSON_IDENT_TRANSACTION:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: Transaction\n" );
+      break;
+      
+   case PSON_IDENT_MAP:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: Fast Map\n" );
+      break;
+      
+   case PSON_IDENT_CURSOR:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: Cursor\n" );
+      break;
+      
+   case PSON_IDENT_LAST:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: \"Last!!!\" likely an error\n" );
+      break;
+      
+   default:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Object type: Unknown, likely an error\n" );
+      break;
+   }
+   
+#if 0   
+   /** The lock... obviously */
+   psocProcessLock lock;
+#endif
+
+   /** Total number of blocks for the current object */
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Total number of blocks: "PSO_SIZE_T_FORMAT"\n", 
+      pMemObj->totalBlocks );
+   
+   psonLinkedListDump( &pMemObj->listBlockGroup, indent + 2 );
+}
+#endif
+
 /** 
  * Initialize a psonMemObject struct. This will also initialize the lock
  * itself (each basic memory object has a lock), the initial group of

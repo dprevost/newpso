@@ -22,6 +22,30 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonLinkedListDump( psonLinkedList * pList, int indent )
+{
+   DO_INDENT( indent );
+   fprintf(stderr, "psonLinkedList (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+      pList, SET_OFFSET(pList) );
+   if ( pList == NULL ) return;
+   
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Current size of the list: "PSO_SIZE_T_FORMAT"\n",
+      pList->currentSize );
+
+   if ( pList->initialized == PSON_LIST_SIGNATURE ) {
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Signature is ok.\n" );
+   }
+   else {
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Signature is wrong - value is %d, exepted: %d\n",
+         pList->initialized, PSON_LIST_SIGNATURE );
+   }
+}
+#endif
+
 /* Cleanup the list once we're done with it. */
 void psonLinkedListFini( psonLinkedList* pList )
 {   
