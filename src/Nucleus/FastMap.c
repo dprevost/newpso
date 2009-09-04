@@ -72,7 +72,6 @@ bool psonFastMapCopy( psonFastMap        * pOldMap,
 
    pNewMap->dataDefOffset = pOldMap->dataDefOffset;
    pNewMap->keyDefOffset = pOldMap->keyDefOffset;
-   pNewMap->flags = pOldMap->flags;
    
    errcode = psonHashCopy( &pOldMap->hashObj, &pNewMap->hashObj, pContext );
    if ( errcode != PSO_OK ) {
@@ -139,25 +138,24 @@ void psonFastMapDump( psonFastMap * pMap, int indent )
    fprintf( stderr, "Node offset: "PSO_PTRDIFF_T_FORMAT"\n", pMap->nodeOffset );
 
    psonHashDump( &pMap->hashObj, indent + 2 );
-#if 0
-   struct psonHash hashObj;
 
-   /** Offset to the data definition */
-   ptrdiff_t dataDefOffset;
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Data definition offset: "PSO_PTRDIFF_T_FORMAT"\n",
+      pMap->dataDefOffset );
 
-   /** Offset to the key definition */
-   ptrdiff_t keyDefOffset;
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Key definition offset: "PSO_PTRDIFF_T_FORMAT"\n",
+      pMap->keyDefOffset );
 
-   /* Creation flags */
-   uint32_t flags;
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Latest version offset: "PSO_PTRDIFF_T_FORMAT"\n",
+      pMap->latestVersion );
 
-   ptrdiff_t latestVersion;
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Edit version offset: "PSO_PTRDIFF_T_FORMAT"\n",
+      pMap->editVersion );
 
-   ptrdiff_t editVersion;
-   
-   /** Variable size struct - always put at the end */
-   struct psonBlockGroup blockGroup;
-#endif
+   psonBlockGroupDump( &pMap->blockGroup, indent + 2 );
 }
 #endif
 
@@ -455,7 +453,6 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
    pHashMap->keyDefOffset  = SET_OFFSET(pKeyDefinition);
    pHashMap->latestVersion = hashItemOffset;
    pHashMap->editVersion   = PSON_NULL_OFFSET;
-   pHashMap->flags = pDefinition->flags;
    
    return true;
 }

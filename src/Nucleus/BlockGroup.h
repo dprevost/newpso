@@ -92,6 +92,10 @@ typedef struct psonEndBlockGroup psonEndBlockGroup;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonBlockGroupDump( psonBlockGroup * pGroup, int indent );
+#endif
+
 void psonBlockGroupFini( psonBlockGroup* pGroup );
 
 /** 

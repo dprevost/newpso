@@ -61,9 +61,6 @@ struct psonFastMap
    /** Offset to the key definition */
    ptrdiff_t keyDefOffset;
 
-   /* Creation flags */
-   uint32_t flags;
-
    ptrdiff_t latestVersion;
 
    ptrdiff_t editVersion;

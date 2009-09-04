@@ -22,6 +22,51 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonBlockGroupDump( psonBlockGroup * pGroup, int indent )
+{
+   DO_INDENT( indent );
+   fprintf(stderr, "psonBlockGroup (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+      pGroup, SET_OFFSET(pGroup) );
+   if ( pGroup == NULL ) return;
+
+#if 0
+   /** Type of memory object */
+   psonMemObjIdent objType;
+
+   /** Our own node for the link list of all groups of a memory object */
+   psonLinkNode node;
+#endif
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Number of blocks: "PSO_SIZE_T_FORMAT"\n",
+      pGroup->numBlocks );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Maximum available memory: "PSO_SIZE_T_FORMAT"\n",
+      pGroup->maxFreeBytes );
+   
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Current amount of free memory: "PSO_SIZE_T_FORMAT"\n",
+      pGroup->freeBytes );
+   
+   psonLinkedListDump( &pGroup->freeList, indent + 2 );
+   
+   if ( pGroup->isDeletable ) {
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "This group of blocks can be deleted\n" );
+   }
+   else {
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "This group of blocks cannot be deleted (first group)\n" );
+   }
+
+   psonMemBitmapDump( &pGroup->bitmap, indent + 2 );
+}
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void psonBlockGroupFini( psonBlockGroup * pGroup )
 {
    PSO_PRE_CONDITION( pGroup != NULL );
@@ -117,3 +162,4 @@ void psonBlockGroupInit( psonBlockGroup  * pGroup,
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
