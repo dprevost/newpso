@@ -30,13 +30,9 @@ void psonBlockGroupDump( psonBlockGroup * pGroup, int indent )
       pGroup, SET_OFFSET(pGroup) );
    if ( pGroup == NULL ) return;
 
-#if 0
-   /** Type of memory object */
-   psonMemObjIdent objType;
+   psonMemObjIdentifierDump( pGroup->objType, indent + 2 );
 
-   /** Our own node for the link list of all groups of a memory object */
-   psonLinkNode node;
-#endif
+   psonLinkNodeDump( &pGroup->node, indent + 2 );
 
    DO_INDENT( indent + 2 );
    fprintf( stderr, "Number of blocks: "PSO_SIZE_T_FORMAT"\n",

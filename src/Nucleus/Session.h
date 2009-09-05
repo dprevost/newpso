@@ -139,6 +139,10 @@ bool psonSessionCloseCursor( psonSession        * pSession,
                              psonCursorContext  * pObject,
                              psonSessionContext * pContext );
 
+#if defined(PSO_TRACE)
+void psonSessionDump( psonSession * pSession, int indent );
+#endif
+
 void psonSessionFini( psonSession        * pSession,
                       psonSessionContext * pContext );
 

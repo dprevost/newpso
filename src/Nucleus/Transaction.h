@@ -123,7 +123,11 @@ bool psonTxAddOps( psonTx             * pTx,
                    ptrdiff_t            childOffset,
                    psonMemObjIdent      childType,
                    psonSessionContext * pContext );
-   
+
+#if defined(PSO_TRACE)
+void psonTxDump( psonTx * pTx, int indent );
+#endif
+
 void psonTxRemoveLastOps( psonTx * pTx, psonSessionContext * pContext );
 
 bool psonTxInit( psonTx             * pTx,

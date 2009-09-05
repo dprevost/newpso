@@ -72,6 +72,10 @@ typedef struct psonCursor psonCursor;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonCursorDump( psonCursor * pCursor, int indent );
+#endif
+
 void psonCursorEmpty( psonCursor         * pCursor,
                       psonSessionContext * pContext );
 

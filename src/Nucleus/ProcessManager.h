@@ -68,6 +68,10 @@ bool psonProcMgrAddProcess( psonProcMgr        * pManager,
                             psonProcess       ** ppCleanupProcess,
                             psonSessionContext * pContext );
 
+#if defined(PSO_TRACE)
+void psonProcMgrDump( psonProcMgr * pManager, int indent );
+#endif
+
 /*
  * This function is for the server - to recover from crashes in
  * real time.

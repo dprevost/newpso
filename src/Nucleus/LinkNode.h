@@ -71,6 +71,14 @@ typedef struct psonFreeBufferNode psonFreeBufferNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonFreeBufferNodeDump( psonFreeBufferNode * pBuffer, int indent );
+#endif
+
+#if defined(PSO_TRACE)
+void psonLinkNodeDump( psonLinkNode * pNode, int indent );
+#endif
+
 /** Initialize the elements of the psonLinkNode to PSON_NULL_OFFSET. */
 static inline
 void psonLinkNodeInit( psonLinkNode * pNode )

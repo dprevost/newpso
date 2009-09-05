@@ -26,6 +26,24 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonCursorDump( psonCursor * pCursor, int indent )
+{
+   DO_INDENT( indent );
+   fprintf(stderr, "psonCursor (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+      pCursor, SET_OFFSET(pCursor) );
+   if ( pCursor == NULL ) return;
+
+   psonMemObjectDump( &pCursor->memObject, indent + 2 );
+
+   psonLinkedListDump( &pCursor->listOfElements, indent + 2 );
+
+   psonBlockGroupDump( &pCursor->blockGroup, indent + 2 );
+}
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void psonCursorEmpty( psonCursor         * pCursor,
                       psonSessionContext * pContext )
 {

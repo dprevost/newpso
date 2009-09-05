@@ -77,6 +77,10 @@ typedef struct psonMemAlloc psonMemAlloc;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonMemAllocDump( psonMemAlloc * pAlloc, int indent );
+#endif
+
 /** 
  * Initialize the psonMemAlloc struct. The second argument is the start of
  * the shared memory itself. 

@@ -157,6 +157,11 @@ typedef enum psonMemObjIdentifier psonMemObjIdent;
 
 #define PSON_IDENT_PAGE_GROUP   0x80000000
 
+
+#if defined(PSO_TRACE)
+void psonMemObjIdentifierDump( psonMemObjIdent identifier, int indent );
+#endif
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 enum psonItemTypeEnum

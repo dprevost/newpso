@@ -65,6 +65,16 @@ typedef struct psonKeyDefinition psonKeyDefinition;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonDataDefinitionDump( psonDataDefinition * pDataDefinition, int indent );
+#endif
+
+#if defined(PSO_TRACE)
+void psonKeyDefinitionDump( psonKeyDefinition * pKeyDefinition, int indent );
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 END_C_DECLS
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -95,6 +95,10 @@ bool psonSeqSetDelete( psonSeqSet         * pSeqSet,
                        uint32_t             keyLength, 
                        psonSessionContext * pContext );
 
+#if defined(PSO_TRACE)
+void psonSeqSetDump( psonSeqSet * pSeqSet, int indent );
+#endif
+
 void psonSeqSetEmpty( psonSeqSet         * pSeqSet,
                       psonSessionContext * pContext );
 

@@ -65,6 +65,10 @@ typedef struct psonProcess psonProcess;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonProcessDump( psonProcess * process, int indent );
+#endif
+
 bool psonProcessInit( psonProcess        * pProcess,
                       pid_t                pid,
                       psonSessionContext * pContext );
