@@ -180,6 +180,75 @@ void psonHashTxDelete( psonHashTx         * pHash,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonHashTxDump( psonHashTx * pHash,
+                     int          indent )
+{
+   DO_INDENT( indent );
+   fprintf( stderr, "psonHashTx (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+      pHash, SET_OFFSET(pHash) );
+   if ( pHash == NULL ) return;
+   
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Offset of the memory object we belong to: "
+      PSO_PTRDIFF_T_FORMAT"\n", pHash->memObjOffset );
+   
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Offset to our array "PSO_PTRDIFF_T_FORMAT"\n",
+      pHash->arrayOffset ); 
+   
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Number of items: "PSO_SIZE_T_FORMAT"\n", 
+      pHash->numberOfItems );
+   
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Total amount of bytes of data: "PSO_SIZE_T_FORMAT"\n",
+      pHash->totalDataSizeInBytes );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Index into the array of lengths : %d\n", 
+      pHash->lengthIndex );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Mimimum index value: %d\n", pHash->lengthIndexMinimum );
+
+   switch( pHash->enumResize ) {
+   case PSON_HASH_NO_RESIZE:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "No need to resize the array\n" );
+      break;
+      
+   case PSON_HASH_TIME_TO_GROW:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "The array needs to grow\n" );
+      break;
+      
+   case PSON_HASH_TIME_TO_SHRINK:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "The array needs to shrink\n" );
+      break;
+      
+   default:
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Unknown value for enumResize - value: %d\n",
+         pHash->enumResize );
+      break;
+   }
+   
+   if ( pHash->initialized == PSON_HASH_TX_SIGNATURE ) {
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Signature is ok.\n" );
+   }
+   else {
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Signature is wrong - value is %d, exepted: %d\n",
+         pHash->initialized, PSON_HASH_TX_SIGNATURE );
+   }
+}
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void psonHashTxFini( psonHashTx * pHash )
 {
    PSO_PRE_CONDITION( pHash != NULL );
