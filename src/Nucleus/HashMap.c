@@ -228,6 +228,44 @@ the_exit:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonHashMapDump( psonHashMap * pHashMap, int indent )
+{
+   DO_INDENT( indent );
+   fprintf(stderr, "psonFastMap (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+      pHashMap, SET_OFFSET(pHashMap) );
+   if ( pHashMap == NULL ) return;
+
+   psonMemObjectDump( &pHashMap->memObject, indent + 2 );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Node offset: "PSO_PTRDIFF_T_FORMAT"\n", pHashMap->nodeOffset );
+
+   psonHashTxDump( &pHashMap->hashObj, indent + 2 );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Data definition offset: "PSO_PTRDIFF_T_FORMAT"\n",
+      pHashMap->dataDefOffset );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Key definition offset: "PSO_PTRDIFF_T_FORMAT"\n",
+      pHashMap->keyDefOffset );
+
+   if ( pHashMap->isSystemObject ) {
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "This folder is a system object\n" );
+   }
+   else {
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "This folder is not a system object\n" );
+   }
+
+   psonBlockGroupDump( &pHashMap->blockGroup, indent + 2 );
+}
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void psonHashMapFini( psonHashMap        * pHashMap,
                       psonSessionContext * pContext )
 {
@@ -639,7 +677,6 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
    
    pHashMap->dataDefOffset = SET_OFFSET(pDataDefinition);
    pHashMap->keyDefOffset  = SET_OFFSET(pKeyDefinition);
-   pHashMap->flags = pDefinition->flags;
 
    pHashMap->isSystemObject = false;
 

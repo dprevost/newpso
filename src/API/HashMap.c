@@ -457,9 +457,6 @@ int psoHashMapInsert( PSO_HANDLE   objectHandle,
    psonHashMap * pMemHashMap;
    int errcode = 0;
    bool ok = true;
-   psoaDataDefinition * pDefinition = NULL;
-   psonDataDefinition * pMemDefinition = NULL;
-   psonDataDefinition * pDef;
    
    pHashMap = (psoaHashMap *) objectHandle;
    if ( pHashMap == NULL ) return PSO_NULL_HANDLE;
@@ -487,32 +484,17 @@ int psoHashMapInsert( PSO_HANDLE   objectHandle,
 
       pMemHashMap = (psonHashMap *) pHashMap->object.pMyMemObject;
 
-      if ( pDefinition != NULL ) {
-         if ( !(pMemHashMap->flags & PSO_MULTIPLE_DATA_DEFINITIONS) ) {
-            errcode = PSO_DATA_DEF_UNSUPPORTED;
-         }
-         else {
-            pDef = GET_PTR_FAST( pMemHashMap->dataDefOffset, psonDataDefinition );
-            if ( pDefinition->pMemDefinition->type != pDef->type ) {
-               errcode = PSO_INVALID_DATA_DEFINITION_TYPE;
-            }
-         }
-         pMemDefinition = pDefinition->pMemDefinition;
+      if ( pMemHashMap->isSystemObject ) {
+         errcode = PSO_SYSTEM_OBJECT;
       }
-
-      if ( errcode == PSO_OK ) {
-         if ( pMemHashMap->isSystemObject ) {
-            errcode = PSO_SYSTEM_OBJECT;
-         }
-         else {
-            ok = psonHashMapInsert( pMemHashMap,
-                                    key,
-                                    keyLength,
-                                    data,
-                                    dataLength,
-                                    &pHashMap->object.pSession->context );
-            PSO_POST_CONDITION( ok == true || ok == false );
-         }
+      else {
+         ok = psonHashMapInsert( pMemHashMap,
+                                 key,
+                                 keyLength,
+                                 data,
+                                 dataLength,
+                                 &pHashMap->object.pSession->context );
+         PSO_POST_CONDITION( ok == true || ok == false );
       }
    }
    else {
@@ -605,9 +587,6 @@ int psoHashMapReplace( PSO_HANDLE   objectHandle,
    psonHashMap * pMemHashMap;
    int errcode = PSO_OK;
    bool ok = true;
-   psoaDataDefinition * pDefinition = NULL;
-   psonDataDefinition * pMemDefinition = NULL;
-   psonDataDefinition * pDef;
    
    pHashMap = (psoaHashMap *) objectHandle;
    if ( pHashMap == NULL ) return PSO_NULL_HANDLE;
@@ -628,33 +607,17 @@ int psoHashMapReplace( PSO_HANDLE   objectHandle,
    if ( ! pHashMap->object.pSession->terminated ) {
 
       pMemHashMap = (psonHashMap *) pHashMap->object.pMyMemObject;
-
-      if ( pDefinition != NULL ) {
-         if ( !(pMemHashMap->flags & PSO_MULTIPLE_DATA_DEFINITIONS) ) {
-            errcode = PSO_DATA_DEF_UNSUPPORTED;
-         }
-         else {
-            pDef = GET_PTR_FAST( pMemHashMap->dataDefOffset, psonDataDefinition );
-            if ( pDefinition->pMemDefinition->type != pDef->type ) {
-               errcode = PSO_INVALID_DATA_DEFINITION_TYPE;
-            }
-         }
-         pMemDefinition = pDefinition->pMemDefinition;
+      if ( pMemHashMap->isSystemObject ) {
+         errcode = PSO_SYSTEM_OBJECT;
       }
-
-      if ( errcode == PSO_OK ) {
-         if ( pMemHashMap->isSystemObject ) {
-            errcode = PSO_SYSTEM_OBJECT;
-         }
-         else {
-            ok = psonHashMapReplace( pMemHashMap,
-                                     key,
-                                     keyLength,
-                                     data,
-                                     dataLength,
-                                     &pHashMap->object.pSession->context );
-            PSO_POST_CONDITION( ok == true || ok == false );
-         }
+      else {
+         ok = psonHashMapReplace( pMemHashMap,
+                                  key,
+                                  keyLength,
+                                  data,
+                                  dataLength,
+                                  &pHashMap->object.pSession->context );
+         PSO_POST_CONDITION( ok == true || ok == false );
       }
    }
    else {

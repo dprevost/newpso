@@ -618,6 +618,14 @@ void psonMemAllocClose( psonMemAlloc       * pAlloc,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonMemAllocDump( psonMemAlloc * pAlloc, int indent )
+{
+}
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 bool psonMemAllocStats( psonMemAlloc       * pAlloc,
                         psoInfo            * pInfo,
                         psonSessionContext * pContext )

@@ -56,16 +56,13 @@ struct psonHashMap
    /** Basic info for all leaves and branches of our tree. */
    ptrdiff_t nodeOffset;
 
-   struct psonHashTx      hashObj;
+   struct psonHashTx hashObj;
 
    /** Offset to the data definition */
-   ptrdiff_t            dataDefOffset;
+   ptrdiff_t dataDefOffset;
 
    /** Offset to the key definition */
    ptrdiff_t keyDefOffset;
-
-   /* Creation flags */
-   uint32_t flags;
 
    /*
     * This field cannot be set or modified by the API. It is set to false

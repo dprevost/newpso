@@ -152,34 +152,6 @@ public:
                 psoUint32 & returnedLength );
 
    /**
-    * \brief Retrieve the data definition of the last accessed record.
-    *
-    * Queues will usually contain data records with an identical layout (data 
-    * definition of the items). This layout was defined when the queue was 
-    * created. 
-    *
-    * You can also insert and retrieve data records with different layouts if
-    * the object was created with the flag PSO_MULTIPLE_DATA_DEFINITIONS. The
-    * layout defined when a queue is created is then used as the default one.
-    * 
-    * The DataDefinition object returned by this method can be used to 
-    * access the layout on a record-by-record base.
-    *
-    * Note: you only need to get this object once. The hidden fields 
-    * associated with this object will be updated after each record is
-    * retrieved. The object will point to the data definition of the 
-    * queue itself when initially constructed.
-    * 
-    * This function returns a new object. It is the responsability of the
-    * caller to delete the object.
-    *
-    * \return A new data definition of the items retrieved from the queue.
-    *
-    * \exception pso::Exception An abnormal error occured.
-    */
-   DataDefinition * GetRecordDefinition();
-
-   /**
     * Open an existing FIFO queue (see Session::CreateObject to create a new 
     * queue).
     *
