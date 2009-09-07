@@ -33,7 +33,7 @@ void setup_test()
 {
    bool ok;
    psonTxStatus txStatus;
-   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0 };
    psonKeyDefinition keyDef;
    psonDataDefinition fields;
    

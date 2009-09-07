@@ -30,7 +30,7 @@ int main( int argc, char * argv[] )
 {
    PSO_HANDLE sessionHandle;
    int errcode;
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, 0 }, returnedDef;
+   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 }, returnedDef;
    psoFieldDefinition fields[1] = {
       { "Field_1", PSO_VARCHAR, {10} }
    };

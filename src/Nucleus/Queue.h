@@ -82,7 +82,7 @@ struct psonQueue
    ptrdiff_t  dataDefOffset;
 
    /* Creation flags */
-   uint32_t flags;
+   //uint32_t flags;
    
    /**
     * Number of valid items. Valid items are the number of items NOT counting

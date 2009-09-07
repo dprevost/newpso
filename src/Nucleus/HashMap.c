@@ -232,7 +232,7 @@ the_exit:
 void psonHashMapDump( psonHashMap * pHashMap, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonFastMap (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf(stderr, "psonHashMap (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pHashMap, SET_OFFSET(pHashMap) );
    if ( pHashMap == NULL ) return;
 

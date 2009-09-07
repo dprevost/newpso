@@ -35,7 +35,7 @@ int main( int argc, char * argv[] )
    const char * data1 = "My Data1";
    const char * key2  = "My Key2";
    const char * data2 = "My Data2";
-   psoObjectDefinition mapDef = { PSO_HASH_MAP, 0, 0, 0 };
+   psoObjectDefinition mapDef = { PSO_HASH_MAP, 0, 0 };
    psoKeyFieldDefinition keyDef = { "MyKey", PSO_KEY_VARCHAR, 10 };
    psoFieldDefinition fields[1] = {
       { "Field_1", PSO_VARCHAR, {10} }

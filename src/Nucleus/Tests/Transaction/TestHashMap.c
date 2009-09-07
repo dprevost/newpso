@@ -41,7 +41,7 @@ void test_pass( void ** state )
    char * data2 = "My data2";
    char * data3 = "My data3";
    psonHashTxItem * pHashItem;
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
    psonKeyDefinition key;
    psonDataDefinition fields;
    psonTreeNode node;

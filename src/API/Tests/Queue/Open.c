@@ -33,7 +33,7 @@ int main( int argc, char * argv[] )
    PSO_HANDLE objHandle2, sessionHandle2;
    int errcode;
    char junk[12];
-   psoObjectDefinition defQueue = { PSO_QUEUE, 0, 0, 0 };
+   psoObjectDefinition defQueue = { PSO_QUEUE, 0, 0 };
    psoFieldDefinition fields[1] = {
       { "Field_1", PSO_VARCHAR, {10} }
    };

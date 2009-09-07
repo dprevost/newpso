@@ -22,7 +22,7 @@
 
 psonFolder * pFolder;
 psonSessionContext context;
-psoObjectDefinition def = { PSO_FOLDER, 0, 0, 0 };
+psoObjectDefinition def = { PSO_FOLDER, 0, 0 };
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -158,7 +158,7 @@ void test_null_name( void ** state )
 void test_wrong_type( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   psoObjectDefinition local_def = { 0, 0, 0, 0 };
+   psoObjectDefinition local_def = { 0, 0, 0 };
 
    expect_assert_failure( psonAPIFolderCreateObject( pFolder,
                                                      "Test1",

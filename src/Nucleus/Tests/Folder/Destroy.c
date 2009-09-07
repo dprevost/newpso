@@ -22,7 +22,7 @@
 
 psonFolder * pFolder;
 psonSessionContext context;
-psoObjectDefinition def = { PSO_FOLDER, 0, 0, 0 };
+psoObjectDefinition def = { PSO_FOLDER, 0, 0 };
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

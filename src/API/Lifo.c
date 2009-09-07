@@ -399,9 +399,6 @@ int psoLifoPush( PSO_HANDLE   objectHandle,
    psonQueue * pMemLifo;
    int errcode = PSO_OK;
    bool ok = true;
-   psonDataDefinition * pMemDefinition = NULL;
-   psoaDataDefinition * pDefinition = NULL;
-   psonDataDefinition * pDef;
 
    pLifo = (psoaLifo *) objectHandle;
    if ( pLifo == NULL ) return PSO_NULL_HANDLE;
@@ -423,27 +420,12 @@ int psoLifoPush( PSO_HANDLE   objectHandle,
    if ( ! pLifo->object.pSession->terminated ) {
       pMemLifo = (psonQueue *) pLifo->object.pMyMemObject;
 
-      if ( pDefinition != NULL ) {
-         if ( !(pMemLifo->flags & PSO_MULTIPLE_DATA_DEFINITIONS) ) {
-            errcode = PSO_DATA_DEF_UNSUPPORTED;
-         }
-         else {
-            pDef = GET_PTR_FAST( pMemLifo->dataDefOffset, psonDataDefinition );
-            if ( pDefinition->pMemDefinition->type != pDef->type ) {
-               errcode = PSO_INVALID_DATA_DEFINITION_TYPE;
-            }
-         }
-         pMemDefinition = pDefinition->pMemDefinition;
-      }
-
-      if ( errcode == PSO_OK ) {
-         ok = psonQueueInsert( pMemLifo,
-                               data,
-                               dataLength,
-                               PSON_QUEUE_LAST,
-                               &pLifo->object.pSession->context );
-         PSO_POST_CONDITION( ok == true || ok == false );
-      }
+      ok = psonQueueInsert( pMemLifo,
+                            data,
+                            dataLength,
+                            PSON_QUEUE_LAST,
+                            &pLifo->object.pSession->context );
+      PSO_POST_CONDITION( ok == true || ok == false );
    }
    else {
       errcode = PSO_SESSION_IS_TERMINATED;

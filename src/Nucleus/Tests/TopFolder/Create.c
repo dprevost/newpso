@@ -22,7 +22,7 @@
 
 psonFolder * pTopFolder;
 psonSessionContext context;
-psoObjectDefinition def = { PSO_QUEUE, 0, 0, 0 };
+psoObjectDefinition def = { PSO_QUEUE, 0, 0 };
 psonDataDefinition dataDef;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -155,7 +155,7 @@ void test_null_name( void ** state )
 void test_wrong_type( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   psoObjectDefinition def2 = { 0, 0, 0, 0 };
+   psoObjectDefinition def2 = { 0, 0, 0 };
 
    expect_assert_failure( psonTopFolderCreateObject( pTopFolder,
                                                      "Test1/Test2",

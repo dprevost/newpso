@@ -40,7 +40,7 @@ extern psocErrMsgHandle g_qsrErrorHandle;
 bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
 {
    bool ok;
-   psoObjectDefinition defMap = { PSO_HASH_MAP, 0, 0, 0 };
+   psoObjectDefinition defMap = { PSO_HASH_MAP, 0, 0 };
    psonFolder * pTree, * pFolder;
    psonHashMap * pHashMap;
    psonDataDefinition dummyDataDefinition;

@@ -34,7 +34,7 @@ void setup_test()
 {
    bool ok;
    char * ptr;
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
    psonKeyDefinition keyDef;
    psonDataDefinition fields;
 

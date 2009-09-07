@@ -332,7 +332,6 @@ bool psonSetInit( psonSet             * pSet,
    psonLinkedListInit( &pSet->listOfElements );
 
    pSet->dataDefOffset = SET_OFFSET(pDataDefinition);
-   pSet->flags = pDefinition->flags;
    
    return true;
 }

@@ -31,7 +31,7 @@ psonTreeNode node;
 void setup_test()
 {
    bool ok;
-   psoObjectDefinition def = { PSO_FOLDER, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_FOLDER, 0, 0 };
    
    pFolder = initFolderTest( &context );
 
@@ -150,7 +150,7 @@ void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    bool ok;
-   psoObjectDefinition def = { PSO_FOLDER, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_FOLDER, 0, 0 };
    
    ok = psonFolderGetStatus( pFolder,
                              "test2",

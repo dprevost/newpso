@@ -31,9 +31,9 @@ void test_pass( void ** state )
    bool ok;
    psonFolderItem item;
    psonTxStatus status;
-   psoObjectDefinition mapDef = { PSO_HASH_MAP, 0, 0, 0 };
+   psoObjectDefinition mapDef = { PSO_HASH_MAP, 0, 0 };
    psonKeyDefinition key;
-   psoObjectDefinition folderDef = { PSO_FOLDER, 0, 0, 0 };
+   psoObjectDefinition folderDef = { PSO_FOLDER, 0, 0 };
    psonDataDefinition fields;
    psonTreeNode node;
 

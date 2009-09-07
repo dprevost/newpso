@@ -33,7 +33,7 @@ psonTreeNode mapNode;
 void setup_test()
 {
    bool ok;
-   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0 };
    psonKeyDefinition keyDef;
    psonDataDefinition fields;
    

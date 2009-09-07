@@ -31,7 +31,7 @@ void setup_test()
    psonSessionContext context;
    bool ok;
    psonTxStatus status;
-   psoObjectDefinition def = { PSO_FOLDER, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_FOLDER, 0, 0 };
    
    pFolder = initFolderTest( &context );
 

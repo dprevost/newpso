@@ -23,7 +23,7 @@
 psonQueue * pQueue;
 psonSessionContext context;
 psonTxStatus status;
-psoObjectDefinition def = { PSO_QUEUE, 0, 0, 0 };
+psoObjectDefinition def = { PSO_QUEUE, 0, 0 };
 psonDataDefinition fields;
 psonTreeNode queueNode;
 

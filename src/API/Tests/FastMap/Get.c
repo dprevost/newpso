@@ -48,7 +48,7 @@ void test_pass( void ** state )
    const char * data = "My Data";
    char buffer[200];
    uint32_t length;
-   psoObjectDefinition mapDef = { PSO_FAST_MAP, 0, 0, 0 };
+   psoObjectDefinition mapDef = { PSO_FAST_MAP, 0, 0 };
    psoKeyFieldDefinition keyDef = { "MyKey", PSO_KEY_VARCHAR, 10 };
    psoFieldDefinition fields[1] = {
       { "Field_1", PSO_VARCHAR, {10} }

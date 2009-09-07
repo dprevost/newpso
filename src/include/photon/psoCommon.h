@@ -173,16 +173,6 @@ struct psoObjectDefinition
 {
    /** The object type. */
    enum psoObjectType type;
-
-   /**
-    * Flags defining the properties of the object.
-    *
-    * Currently defined flags:
-    *     - PSO_MULTIPLE_DATA_DEFINITIONS
-    *
-    * Flags should be ORed.
-    */
-   psoUint32 flags;
    
    /**
     * Optimization feature - not implemented yet.

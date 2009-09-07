@@ -56,7 +56,7 @@ bool psonAPIFolderCreateFolder( psonFolder          * pFolder,
    uint32_t first = 0;
    const char * name = objectName;
    bool ok;
-   psoObjectDefinition definition = { PSO_FOLDER, 0, 0, 0 };
+   psoObjectDefinition definition = { PSO_FOLDER, 0, 0 };
    
    PSO_PRE_CONDITION( pFolder     != NULL );
    PSO_PRE_CONDITION( objectName  != NULL );

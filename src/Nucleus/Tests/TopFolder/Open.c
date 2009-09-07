@@ -23,7 +23,7 @@
 psonFolder * pTopFolder;
 psonSessionContext context;
 psonFolderItem folderItem;
-psoObjectDefinition def = { PSO_QUEUE, 0, 0, 0 };
+psoObjectDefinition def = { PSO_QUEUE, 0, 0 };
 psonDataDefinition dataDef;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

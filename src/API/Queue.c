@@ -399,9 +399,6 @@ int psoQueuePush( PSO_HANDLE   objectHandle,
    psonQueue * pMemQueue;
    int errcode = PSO_OK;
    bool ok = true;
-   psonDataDefinition * pMemDefinition = NULL;
-   psoaDataDefinition * pDefinition = NULL;
-   psonDataDefinition * pDef;
    
    pQueue = (psoaQueue *) objectHandle;
    if ( pQueue == NULL ) return PSO_NULL_HANDLE;
@@ -422,26 +419,12 @@ int psoQueuePush( PSO_HANDLE   objectHandle,
 
    if ( ! pQueue->object.pSession->terminated ) {
       pMemQueue = (psonQueue *) pQueue->object.pMyMemObject;
-      if ( pDefinition != NULL ) {
-         if ( !(pMemQueue->flags & PSO_MULTIPLE_DATA_DEFINITIONS) ) {
-            errcode = PSO_DATA_DEF_UNSUPPORTED;
-         }
-         else {
-            pDef = GET_PTR_FAST( pMemQueue->dataDefOffset, psonDataDefinition );
-            if ( pDefinition->pMemDefinition->type != pDef->type ) {
-               errcode = PSO_INVALID_DATA_DEFINITION_TYPE;
-            }
-         }
-         pMemDefinition = pDefinition->pMemDefinition;
-      }
-      if ( errcode == PSO_OK ) {
-         ok = psonQueueInsert( pMemQueue,
-                               data,
-                               dataLength,
-                               PSON_QUEUE_LAST,
-                               &pQueue->object.pSession->context );
-         PSO_POST_CONDITION( ok == true || ok == false );
-      }
+      ok = psonQueueInsert( pMemQueue,
+                            data,
+                            dataLength,
+                            PSON_QUEUE_LAST,
+                            &pQueue->object.pSession->context );
+      PSO_POST_CONDITION( ok == true || ok == false );
    }
    else {
       errcode = PSO_SESSION_IS_TERMINATED;
@@ -469,9 +452,6 @@ int psoQueuePushNow( PSO_HANDLE   objectHandle,
    psonQueue * pMemQueue;
    int errcode = PSO_OK;
    bool ok = true;
-   psoaDataDefinition * pDefinition = NULL;
-   psonDataDefinition * pMemDefinition = NULL;
-   psonDataDefinition * pDef;
 
    pQueue = (psoaQueue *) objectHandle;
    if ( pQueue == NULL ) return PSO_NULL_HANDLE;
@@ -492,26 +472,12 @@ int psoQueuePushNow( PSO_HANDLE   objectHandle,
    
    if ( ! pQueue->object.pSession->terminated ) {
       pMemQueue = (psonQueue *) pQueue->object.pMyMemObject;
-      if ( pDefinition != NULL ) {
-         if ( !(pMemQueue->flags & PSO_MULTIPLE_DATA_DEFINITIONS) ) {
-            errcode = PSO_DATA_DEF_UNSUPPORTED;
-         }
-         else {
-            pDef = GET_PTR_FAST( pMemQueue->dataDefOffset, psonDataDefinition );
-            if ( pDefinition->pMemDefinition->type != pDef->type ) {
-               errcode = PSO_INVALID_DATA_DEFINITION_TYPE;
-            }
-         }
-         pMemDefinition = pDefinition->pMemDefinition;
-      }
-      if ( errcode == PSO_OK ) {
-         ok = psonQueueInsertNow( pMemQueue,
-                                  data,
-                                  dataLength,
-                                  PSON_QUEUE_LAST,
-                                  &pQueue->object.pSession->context );
-         PSO_POST_CONDITION( ok == true || ok == false );
-      }
+      ok = psonQueueInsertNow( pMemQueue,
+                               data,
+                               dataLength,
+                               PSON_QUEUE_LAST,
+                               &pQueue->object.pSession->context );
+      PSO_POST_CONDITION( ok == true || ok == false );
    }
    else {
       errcode = PSO_SESSION_IS_TERMINATED;

@@ -42,7 +42,7 @@ int main( int argc, char * argv[] )
    struct dummy * data1 = NULL;
    size_t lenData;
 
-   psoObjectDefinition queueDef = { PSO_QUEUE, 0, 0, 0 };
+   psoObjectDefinition queueDef = { PSO_QUEUE, 0, 0 };
 
    psoFieldDefinition fields[5] = {
       { "field1", PSO_TINYINT,   {0} },

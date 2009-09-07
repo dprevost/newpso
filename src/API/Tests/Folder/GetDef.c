@@ -31,7 +31,7 @@ int main( int argc, char * argv[] )
 {
    PSO_HANDLE objHandle, sessionHandle;
    int errcode;
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
    psoFieldDefinition dataDef = { "Field_1", PSO_VARCHAR, {120} };
    psoKeyFieldDefinition keyDef = { "Key1", PSO_KEY_VARCHAR, 80 };
    PSO_HANDLE dataDefHandle, keyDefHandle;

@@ -30,7 +30,7 @@ void setup_test()
 {
    bool ok;
    psonTxStatus status;
-   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0 };
    psonKeyDefinition keyDef;
    psonDataDefinition fields;
    
@@ -153,7 +153,7 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    bool ok;
    psonTxStatus status;
-   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0 };
    psonKeyDefinition keyDef;
    psonDataDefinition fields;
    

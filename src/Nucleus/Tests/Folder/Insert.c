@@ -23,7 +23,7 @@
 psonFolder* pFolder;
 psonSessionContext context;
 psonTxStatus status;
-psoObjectDefinition def = { PSO_FOLDER, 0, 0, 0 };
+psoObjectDefinition def = { PSO_FOLDER, 0, 0 };
 psonTreeNode node;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

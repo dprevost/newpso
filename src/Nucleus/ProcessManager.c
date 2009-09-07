@@ -25,32 +25,6 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonProcMgrInit( psonProcMgr        * pManager,
-                      psonSessionContext * pContext )
-{
-   psoErrors errcode;
-
-   PSO_PRE_CONDITION( pManager != NULL );
-   PSO_PRE_CONDITION( pContext != NULL );
-
-   errcode = psonMemObjectInit( &pManager->memObject, 
-                                PSON_IDENT_PROCESS_MGR,
-                                &pManager->blockGroup,
-                                1 ); /* A single block */
-   if ( errcode != PSO_OK ) {
-      psocSetError( &pContext->errorHandler,
-                    g_psoErrorHandle,
-                    errcode );
-      return false;
-   }
-
-   psonLinkedListInit( &pManager->listOfProcesses );
-      
-   return true;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
 bool psonProcMgrAddProcess( psonProcMgr        * pManager,
                             pid_t                pid, 
                             psonProcess       ** ppProcess,
@@ -99,6 +73,24 @@ bool psonProcMgrAddProcess( psonProcMgr        * pManager,
    
    return ok;
 }
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+#if defined(PSO_TRACE)
+void psonProcMgrDump( psonProcMgr * pManager, int indent )
+{
+   DO_INDENT( indent );
+   fprintf(stderr, "psonProcMgr (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+      pManager, SET_OFFSET(pManager) );
+   if ( pManager == NULL ) return;
+
+   psonMemObjectDump( &pManager->memObject, indent + 2 );
+
+   psonLinkedListDump( &pManager->listOfProcesses, indent + 2 );
+
+   psonBlockGroupDump( &pManager->blockGroup, indent + 2 );
+}
+#endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -158,6 +150,32 @@ bool psonProcMgrFindProcess( psonProcMgr        * pManager,
       return false;
    }
 
+   return true;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+bool psonProcMgrInit( psonProcMgr        * pManager,
+                      psonSessionContext * pContext )
+{
+   psoErrors errcode;
+
+   PSO_PRE_CONDITION( pManager != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
+
+   errcode = psonMemObjectInit( &pManager->memObject, 
+                                PSON_IDENT_PROCESS_MGR,
+                                &pManager->blockGroup,
+                                1 ); /* A single block */
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pContext->errorHandler,
+                    g_psoErrorHandle,
+                    errcode );
+      return false;
+   }
+
+   psonLinkedListInit( &pManager->listOfProcesses );
+      
    return true;
 }
 

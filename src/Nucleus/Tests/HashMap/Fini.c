@@ -29,7 +29,7 @@ psonTreeNode mapNode;
 
 void setup_test()
 {
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
    psonKeyDefinition keyDef;
    psonDataDefinition fields;
    bool ok;

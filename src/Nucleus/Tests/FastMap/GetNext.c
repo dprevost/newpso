@@ -35,7 +35,7 @@ void setup_test()
    bool ok;
    char * key1  = "my key1";
    char * key2  = "my key2";
-   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0 };
    psonKeyDefinition keyDef;
    psonDataDefinition fields;
    

@@ -26,7 +26,7 @@ psonSessionContext context;
 psonKeyDefinition * retKeyDef = NULL;
 psonDataDefinition * retDataDef = NULL;
 psoObjectDefinition retDef;
-psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, 0 };
+psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
 psonKeyDefinition keyDef;
 psonDataDefinition fieldDef;
 

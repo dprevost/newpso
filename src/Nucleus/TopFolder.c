@@ -97,7 +97,7 @@ bool psonTopFolderCreateFolder( psonFolder          * pFolder,
    bool ok;
    uint32_t first = 0;
    const char * name = objectName;
-   psoObjectDefinition definition = { PSO_FOLDER, 0, 0, 0 };
+   psoObjectDefinition definition = { PSO_FOLDER, 0, 0 };
 
    PSO_PRE_CONDITION( pFolder     != NULL );
    PSO_PRE_CONDITION( objectName  != NULL );

@@ -56,7 +56,7 @@ void test_pass( void ** state )
    char key[] = "My Key";
    size_t lenData;
 
-   psoObjectDefinition hashMapDef = { PSO_FAST_MAP, 0, 0, 0 };
+   psoObjectDefinition hashMapDef = { PSO_FAST_MAP, 0, 0 };
    psoKeyFieldDefinition keyDef = { "MyKey", PSO_KEY_LONGVARCHAR, 0 };
 
    psoFieldDefinition fields[5] = {

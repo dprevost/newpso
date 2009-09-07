@@ -35,7 +35,7 @@ void setup_test()
    char * key2  = "my key2";
    char * key3  = "my key3";
    char * data  = "my data";
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
    psonKeyDefinition keyDef;
    psonDataDefinition fields;
 

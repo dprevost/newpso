@@ -32,7 +32,7 @@ int main( int argc, char * argv[] )
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
-   psoObjectDefinition defQueue = { PSO_QUEUE, 0, 0, 0 };
+   psoObjectDefinition defQueue = { PSO_QUEUE, 0, 0 };
    psoFieldDefinition fields[1] = {
       { "Field_1", PSO_VARCHAR, {10} }
    };

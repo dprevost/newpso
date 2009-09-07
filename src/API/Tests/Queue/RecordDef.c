@@ -31,7 +31,7 @@ int main( int argc, char * argv[] )
 {
    PSO_HANDLE objHandle, sessionHandle;
    int errcode;
-   psoObjectDefinition queueDef = { PSO_QUEUE, 0, 0, 0 };
+   psoObjectDefinition queueDef = { PSO_QUEUE, 0, 0 };
    psoFieldDefinition fields[1] = {
       { "Field_1", PSO_VARCHAR, {10} }
    };

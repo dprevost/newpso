@@ -93,6 +93,49 @@ void psonQueueCommitRemove( psonQueue          * pQueue,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_TRACE)
+void psonQueueDump( psonQueue * pQueue, int indent )
+{
+   DO_INDENT( indent );
+   fprintf(stderr, "psonQueue (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+      pQueue, SET_OFFSET(pQueue) );
+   if ( pQueue == NULL ) return;
+
+   psonMemObjectDump( &pQueue->memObject, indent + 2 );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Node offset: "PSO_PTRDIFF_T_FORMAT"\n", pQueue->nodeOffset );
+
+#if 0
+   /** The type of queue (as decided when psoCreateQueue() was called). */
+   enum psoObjectType queueType;
+
+   /** Our own doubly-linked list, to hold the data. */
+   psonLinkedList listOfElements;
+
+   /** Offset to the data definition */
+   ptrdiff_t  dataDefOffset;
+
+   /* Creation flags */
+   uint32_t flags;
+   
+   /**
+    * Number of valid items. Valid items are the number of items NOT counting
+    * items that might be added (but not committed) - also, items which are
+    * removed but not committed are counted as valid).
+    */
+   size_t numValidItems;
+#endif
+
+   /** Variable size struct - always put at the end */
+   struct psonBlockGroup blockGroup;
+   psonBlockGroupDump( &pQueue->blockGroup, indent + 2 );
+
+}
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void psonQueueFini( psonQueue          * pQueue,
                     psonSessionContext * pContext )
 {
@@ -387,7 +430,6 @@ bool psonQueueInit( psonQueue           * pQueue,
    psonLinkedListInit( &pQueue->listOfElements );
 
    pQueue->dataDefOffset = SET_OFFSET(pDataDefinition);
-   pQueue->flags = pDefinition->flags;
    
    return true;
 }

@@ -24,72 +24,6 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonProcessInit( psonProcess        * pProcess,
-                      pid_t                pid,
-                      psonSessionContext * pContext )
-{
-   psoErrors errcode;
-
-   PSO_PRE_CONDITION( pProcess != NULL );
-   PSO_PRE_CONDITION( pContext != NULL );
-   PSO_PRE_CONDITION( pid > 0 );
-
-   errcode = psonMemObjectInit( &pProcess->memObject, 
-                                PSON_IDENT_PROCESS,
-                                &pProcess->blockGroup,
-                                1 ); /* A single block */
-   if ( errcode != PSO_OK ) {
-      psocSetError( &pContext->errorHandler,
-                    g_psoErrorHandle,
-                    errcode );
-      return false;
-   }
-
-   pProcess->pid = pid;
-   pProcess->processIsTerminating = false;
-
-   psonLinkedListInit( &pProcess->listOfSessions );
-
-   return true;
-}
-   
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void psonProcessFini( psonProcess        * pProcess,
-                      psonSessionContext * pContext )
-{
-   psonSession  * pSession = NULL;
-   psonLinkNode * pNode    = NULL;
-   bool ok;
-   
-   PSO_PRE_CONDITION( pProcess != NULL );
-   PSO_PRE_CONDITION( pContext != NULL );
-   PSO_PRE_CONDITION( pProcess->memObject.objType == PSON_IDENT_PROCESS );
-
-   /*
-    * Eliminate all sessions in the list. This is probably not needed
-    * as we will release the blocks of memory to the allocator as the
-    * last step. This might be reviewed eventually.
-    */
-
-   while ( psonLinkedListPeakFirst( &pProcess->listOfSessions, 
-                                    &pNode ) ) {
-      pSession = (psonSession*)
-         ((char*)pNode - offsetof( psonSession, node ));
-
-      ok = psonProcessRemoveSession( pProcess, pSession, pContext );
-      PSO_POST_CONDITION( ok == true || ok == false );
-   }
-
-   /* 
-    * This will remove the blocks of allocated memory.
-    * It must be the last operation on that piece of memory.
-    */
-   psonMemObjectFini(  &pProcess->memObject, PSON_ALLOC_ANY, pContext );
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
 bool psonProcessAddSession( psonProcess        * pProcess,
                             void               * pApiSession,
                             psonSession       ** ppSession,
@@ -151,31 +85,69 @@ bool psonProcessAddSession( psonProcess        * pProcess,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonProcessRemoveSession( psonProcess        * pProcess,
-                               psonSession        * pSession,
-                               psonSessionContext * pContext )
+#if defined(PSO_TRACE)
+void psonProcessDump( psonProcess * process, int indent )
 {
-   PSO_PRE_CONDITION( pProcess != NULL );
-   PSO_PRE_CONDITION( pSession != NULL );
-   PSO_PRE_CONDITION( pContext != NULL );
+   DO_INDENT( indent );
+   fprintf(stderr, "psonProcess (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+      process, SET_OFFSET(process) );
+   if ( process == NULL ) return;
 
-   /* For recovery purposes, always lock before doing anything! */
-   if ( psonLock( &pProcess->memObject, pContext ) ) {
-      psonLinkedListRemoveItem( &pProcess->listOfSessions, 
-                                &pSession->node );
-      
-      psonSessionFini( pSession, pContext );
+   psonMemObjectDump( &process->memObject, indent + 2 );
 
-      psonUnlock( &pProcess->memObject, pContext );
+   psonLinkNodeDump( &process->node, indent + 2 );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Process pid: %ud\n", process->pid );
+
+   psonLinkedListDump( &process->listOfSessions, indent + 2 );
+
+   if ( process->processIsTerminating ) {
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "This process is ending\n" );
    }
    else {
-      psocSetError( &pContext->errorHandler, 
-                    g_psoErrorHandle, 
-                    PSO_ENGINE_BUSY );
-      return false;
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "This process is not ending\n" );
    }
+
+   psonBlockGroupDump( &process->blockGroup, indent + 2 );
+}
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void psonProcessFini( psonProcess        * pProcess,
+                      psonSessionContext * pContext )
+{
+   psonSession  * pSession = NULL;
+   psonLinkNode * pNode    = NULL;
+   bool ok;
    
-   return true;
+   PSO_PRE_CONDITION( pProcess != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
+   PSO_PRE_CONDITION( pProcess->memObject.objType == PSON_IDENT_PROCESS );
+
+   /*
+    * Eliminate all sessions in the list. This is probably not needed
+    * as we will release the blocks of memory to the allocator as the
+    * last step. This might be reviewed eventually.
+    */
+
+   while ( psonLinkedListPeakFirst( &pProcess->listOfSessions, 
+                                    &pNode ) ) {
+      pSession = (psonSession*)
+         ((char*)pNode - offsetof( psonSession, node ));
+
+      ok = psonProcessRemoveSession( pProcess, pSession, pContext );
+      PSO_POST_CONDITION( ok == true || ok == false );
+   }
+
+   /* 
+    * This will remove the blocks of allocated memory.
+    * It must be the last operation on that piece of memory.
+    */
+   psonMemObjectFini(  &pProcess->memObject, PSON_ALLOC_ANY, pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -224,6 +196,66 @@ bool psonProcessGetNextSession( psonProcess        * pProcess,
    }
    
    return ok;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+bool psonProcessInit( psonProcess        * pProcess,
+                      pid_t                pid,
+                      psonSessionContext * pContext )
+{
+   psoErrors errcode;
+
+   PSO_PRE_CONDITION( pProcess != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
+   PSO_PRE_CONDITION( pid > 0 );
+
+   errcode = psonMemObjectInit( &pProcess->memObject, 
+                                PSON_IDENT_PROCESS,
+                                &pProcess->blockGroup,
+                                1 ); /* A single block */
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pContext->errorHandler,
+                    g_psoErrorHandle,
+                    errcode );
+      return false;
+   }
+
+   pProcess->pid = pid;
+   pProcess->processIsTerminating = false;
+
+   psonLinkedListInit( &pProcess->listOfSessions );
+
+   return true;
+}
+   
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+bool psonProcessRemoveSession( psonProcess        * pProcess,
+                               psonSession        * pSession,
+                               psonSessionContext * pContext )
+{
+   PSO_PRE_CONDITION( pProcess != NULL );
+   PSO_PRE_CONDITION( pSession != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
+
+   /* For recovery purposes, always lock before doing anything! */
+   if ( psonLock( &pProcess->memObject, pContext ) ) {
+      psonLinkedListRemoveItem( &pProcess->listOfSessions, 
+                                &pSession->node );
+      
+      psonSessionFini( pSession, pContext );
+
+      psonUnlock( &pProcess->memObject, pContext );
+   }
+   else {
+      psocSetError( &pContext->errorHandler, 
+                    g_psoErrorHandle, 
+                    PSO_ENGINE_BUSY );
+      return false;
+   }
+   
+   return true;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

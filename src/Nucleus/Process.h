@@ -65,28 +65,17 @@ typedef struct psonProcess psonProcess;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
-void psonProcessDump( psonProcess * process, int indent );
-#endif
-
-bool psonProcessInit( psonProcess        * pProcess,
-                      pid_t                pid,
-                      psonSessionContext * pContext );
-   
-void psonProcessFini( psonProcess        * pProcess,
-                      psonSessionContext * pContext );
-
 bool psonProcessAddSession( psonProcess        * pProcess,
                             void               * pApiSession,
                             psonSession       ** pSession,
                             psonSessionContext * pContext );
 
-/*
- * Takes a lock on the current object. Not on the psonSession itself. 
- */
-bool psonProcessRemoveSession( psonProcess        * pProcess,
-                               psonSession        * pSession,
-                               psonSessionContext * pContext );
+#if defined(PSO_TRACE)
+void psonProcessDump( psonProcess * process, int indent );
+#endif
+
+void psonProcessFini( psonProcess        * pProcess,
+                      psonSessionContext * pContext );
 
 bool psonProcessGetFirstSession( psonProcess        * pProcess,
                                  psonSession       ** ppSession,
@@ -96,6 +85,17 @@ bool psonProcessGetNextSession( psonProcess        * pProcess,
                                 psonSession        * pCurrent,
                                 psonSession       ** ppNext,
                                 psonSessionContext * pContext );
+
+bool psonProcessInit( psonProcess        * pProcess,
+                      pid_t                pid,
+                      psonSessionContext * pContext );
+   
+/*
+ * Takes a lock on the current object. Not on the psonSession itself. 
+ */
+bool psonProcessRemoveSession( psonProcess        * pProcess,
+                               psonSession        * pSession,
+                               psonSessionContext * pContext );
 
 static inline
 void psonProcessNoMoreSessionAllowed( psonProcess        * pProcess,

@@ -621,6 +621,44 @@ void psonMemAllocClose( psonMemAlloc       * pAlloc,
 #if defined(PSO_TRACE)
 void psonMemAllocDump( psonMemAlloc * pAlloc, int indent )
 {
+   DO_INDENT( indent );
+   fprintf(stderr, "psonMemAlloc (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+      pAlloc, SET_OFFSET(pAlloc) );
+   if ( pAlloc == NULL ) return;
+
+   psonMemObjectDump( &pAlloc->memObj, indent + 2 );
+   
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Total space currently allocated: "PSO_SIZE_T_FORMAT"\n",
+      pAlloc->totalAllocBlocks );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Number of malloc calls: "PSO_SIZE_T_FORMAT"\n",
+      pAlloc->numMallocCalls );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Number of free calls: "PSO_SIZE_T_FORMAT"\n",
+      pAlloc->numFreeCalls );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Number of API objects: "PSO_SIZE_T_FORMAT"\n",
+      pAlloc->numApiObjects );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Number of groups of blocks: "PSO_SIZE_T_FORMAT"\n",
+      pAlloc->numGroups );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Total size of the shared memory: "PSO_SIZE_T_FORMAT"\n",
+      pAlloc->totalLength );
+
+   psonLinkedListDump( &pAlloc->freeList, indent + 2 );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Bitmap offset: "PSO_PTRDIFF_T_FORMAT"\n",
+      pAlloc->bitmapOffset );
+   
+   psonBlockGroupDump( &pAlloc->blockGroup, indent + 2 );
 }
 #endif
 

@@ -31,7 +31,7 @@ psonTreeNode node;
 void setup_test()
 {
    bool ok;
-   psoObjectDefinition def = { PSO_FOLDER, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_FOLDER, 0, 0 };
    
    pFolder = initFolderTest( &context );
 
@@ -133,7 +133,7 @@ void test_pass( void ** state )
    bool ok;
    psonTreeNode * pDescriptor;
    psonTxStatus * txItemStatus;
-   psoObjectDefinition def = { PSO_FOLDER, 0, 0, 0 };
+   psoObjectDefinition def = { PSO_FOLDER, 0, 0 };
    
    GET_PTR( pDescriptor, item.pHashItem->dataOffset, psonTreeNode );
    GET_PTR( txItemStatus, pDescriptor->txStatusOffset, psonTxStatus );
