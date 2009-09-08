@@ -1120,7 +1120,7 @@ void psoaSessionTrace( psoaSession * pSession,
    PSO_PRE_CONDITION( pSession   != NULL );
    
    pSession->context.traceOn = traceOn;
-#if !defined(PSO_TRACE)
+#if !defined(PSO_USE_TRACE)
    if ( traceOn ) fprintf( stderr, "Warning: not built with trace enable\n" );
 #endif
 

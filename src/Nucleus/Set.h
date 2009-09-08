@@ -114,7 +114,7 @@ bool psonSetCopy( psonSet            * pOldSet,
                   const char         * origName,
                   psonSessionContext * pContext );
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonSetDump( psonSet * pSet, int indent );
 #endif
 

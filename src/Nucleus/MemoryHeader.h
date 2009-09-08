@@ -82,7 +82,7 @@ typedef struct psonMemoryHeader psonMemoryHeader;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonMemoryHeaderDump( psonMemoryHeader * pHeader, int indent );
 #endif
 

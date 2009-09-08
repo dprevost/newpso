@@ -70,7 +70,7 @@ bool psonProcessAddSession( psonProcess        * pProcess,
                             psonSession       ** pSession,
                             psonSessionContext * pContext );
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonProcessDump( psonProcess * process, int indent );
 #endif
 

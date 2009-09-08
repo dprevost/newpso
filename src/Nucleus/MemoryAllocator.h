@@ -77,7 +77,7 @@ typedef struct psonMemAlloc psonMemAlloc;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonMemAllocDump( psonMemAlloc * pAlloc, int indent );
 #endif
 

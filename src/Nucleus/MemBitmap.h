@@ -46,7 +46,7 @@ typedef struct psonMemBitmap psonMemBitmap;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonMemBitmapDump( psonMemBitmap * pBitmap, int indent );
 #endif
 

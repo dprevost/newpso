@@ -124,7 +124,7 @@ bool psonHashDelWithKey( psonHash            * pHash,
                          uint32_t              keyLength,
                          psonSessionContext  * pContext );
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonHashDump( psonHash * pHash,
                    int        indent );
 #endif

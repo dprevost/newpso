@@ -71,11 +71,11 @@ typedef struct psonFreeBufferNode psonFreeBufferNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonFreeBufferNodeDump( psonFreeBufferNode * pBuffer, int indent );
 #endif
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonLinkNodeDump( psonLinkNode * pNode, int indent );
 #endif
 

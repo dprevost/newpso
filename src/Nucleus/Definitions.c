@@ -22,7 +22,7 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonDataDefinitionDump( psonDataDefinition * pDataDefinition, int indent )
 {
    unsigned int i, j;
@@ -93,7 +93,7 @@ void psonDataDefinitionDump( psonDataDefinition * pDataDefinition, int indent )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonKeyDefinitionDump( psonKeyDefinition * pKeyDefinition, int indent )
 {
    DO_INDENT( indent );
@@ -106,7 +106,7 @@ void psonKeyDefinitionDump( psonKeyDefinition * pKeyDefinition, int indent )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonMemObjIdentifierDump( psonMemObjIdent identifier, int indent )
 {
    switch( identifier ) {

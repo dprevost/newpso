@@ -420,7 +420,7 @@ bool psonHashDelWithKey( psonHash            * pHash,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonHashDump( psonHash * pHash,
                    int        indent )
 {

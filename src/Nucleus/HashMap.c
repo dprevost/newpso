@@ -228,7 +228,7 @@ the_exit:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonHashMapDump( psonHashMap * pHashMap, int indent )
 {
    DO_INDENT( indent );

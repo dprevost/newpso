@@ -298,7 +298,7 @@ psoErrors psonTxTestObjectStatus( psonTxStatus * pStatus, ptrdiff_t txOffset )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonTxStatusDump( psonTxStatus * pStatus, int indent );
 #endif
 

@@ -123,6 +123,48 @@ bool psonSeqSetDelete( psonSeqSet         * pSeqSet,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_USE_TRACE)
+void psonSeqSetDump( psonSeqSet * pSeqSet, int indent )
+{
+   DO_INDENT( indent );
+   fprintf(stderr, "psonSeqSet (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+      pSeqSet, SET_OFFSET(pSeqSet) );
+   if ( pSeqSet == NULL ) return;
+
+   psonMemObjectDump( &pSeqSet->memObject, indent + 2 );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Node offset: "PSO_PTRDIFF_T_FORMAT"\n", pSeqSet->nodeOffset );
+
+   psonHashDump( &pSeqSet->hashObj, indent + 2 );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Data definition offset: "PSO_PTRDIFF_T_FORMAT"\n",
+      pSeqSet->dataDefOffset );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Key definition offset: "PSO_PTRDIFF_T_FORMAT"\n",
+      pSeqSet->keyDefOffset );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Number of valid data items: "PSO_SIZE_T_FORMAT"\n",
+      pSeqSet->numValidItems );
+   
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Latest version offset: "PSO_PTRDIFF_T_FORMAT"\n",
+      pSeqSet->latestVersion );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Edit version offset: "PSO_PTRDIFF_T_FORMAT"\n",
+      pSeqSet->editVersion );
+
+   psonBlockGroupDump( &pSeqSet->blockGroup, indent + 2 );
+}
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void psonSeqSetEmpty( psonSeqSet         * pSeqSet,
                       psonSessionContext * pContext )
 {

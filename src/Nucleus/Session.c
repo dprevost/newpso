@@ -112,6 +112,48 @@ bool psonSessionCloseCursor( psonSession        * pSession,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if defined(PSO_USE_TRACE)
+void psonSessionDump( psonSession * pSession, int indent )
+{
+   int i;
+   
+   DO_INDENT( indent );
+   fprintf(stderr, "psonSession (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+      pSession, SET_OFFSET(pSession) );
+   if ( pSession == NULL ) return;
+
+   psonMemObjectDump( &pSession->memObject, indent + 2 );
+
+   psonLinkNodeDump( &pSession->node, indent + 2 );
+
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Pointer to the psoaSession: %p\n",
+      pSession->pApiSession );
+   
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Pointer to our transaction object: %p\n",
+      pSession->pTransaction );
+   
+   psonLinkedListDump( &pSession->listOfObjects, indent + 2 );
+
+   psonLinkedListDump( &pSession->listOfCursors, indent + 2 );
+
+   for ( i = 0; i < PSON_MAX_LOCK_DEPTH; ++i ) {
+      DO_INDENT( indent + 2 );
+      fprintf( stderr, "Offset to lock %d: "PSO_PTRDIFF_T_FORMAT"\n",
+         i, pSession->lockOffsets[i] );
+   }
+   
+   DO_INDENT( indent + 2 );
+   fprintf( stderr, "Number of locks we are holding: %d\n", 
+      pSession->numLocks );
+   
+   psonBlockGroupDump( &pSession->blockGroup, indent + 2 );
+}
+#endif
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void psonSessionFini( psonSession        * pSession,
                       psonSessionContext * pContext )
 {

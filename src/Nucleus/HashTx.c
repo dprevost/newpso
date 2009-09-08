@@ -180,7 +180,7 @@ void psonHashTxDelete( psonHashTx         * pHash,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonHashTxDump( psonHashTx * pHash,
                      int          indent )
 {

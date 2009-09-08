@@ -124,7 +124,7 @@ bool psonTxAddOps( psonTx             * pTx,
                    psonMemObjIdent      childType,
                    psonSessionContext * pContext );
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonTxDump( psonTx * pTx, int indent );
 #endif
 

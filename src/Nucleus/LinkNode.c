@@ -22,7 +22,7 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonFreeBufferNodeDump( psonFreeBufferNode * pBuffer, int indent )
 {
    fprintf(stderr, "psonFreeBufferNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
@@ -39,7 +39,7 @@ void psonFreeBufferNodeDump( psonFreeBufferNode * pBuffer, int indent )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonLinkNodeDump( psonLinkNode * pNode, int indent )
 {
    fprintf(stderr, "psonLinkNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",

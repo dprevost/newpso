@@ -53,7 +53,7 @@ struct psonSequentialSet
    struct psonMemObject memObject;
 
    /** Basic info for all leaves and branches of our tree. */
-//   struct psonTreeNode  nodeObject;
+   struct psonTreeNode  nodeObject;
 
    /** Offset to the data definition */
    ptrdiff_t  dataDefOffset;
@@ -61,9 +61,6 @@ struct psonSequentialSet
    /** Offset to the key definition */
    ptrdiff_t keyDefOffset;
 
-   /* Creation flags */
-   uint32_t flags;
-   
    /**
     * Number of valid items. Valid items are the number of items NOT counting
     * items that might be added (but not committed) - also, items which are
@@ -95,7 +92,7 @@ bool psonSeqSetDelete( psonSeqSet         * pSeqSet,
                        uint32_t             keyLength, 
                        psonSessionContext * pContext );
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonSeqSetDump( psonSeqSet * pSeqSet, int indent );
 #endif
 

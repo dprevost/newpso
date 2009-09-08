@@ -26,7 +26,7 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonCursorDump( psonCursor * pCursor, int indent )
 {
    DO_INDENT( indent );

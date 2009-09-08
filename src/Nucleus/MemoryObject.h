@@ -68,7 +68,7 @@ typedef struct psonMemObject psonMemObject;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonMemObjectDump( psonMemObject * pMemObj, int indent );
 #endif
 

@@ -780,7 +780,7 @@ the_exit:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonFolderDump( psonFolder * pFolder, int indent )
 {
    DO_INDENT( indent );
@@ -1886,6 +1886,11 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
    PSO_PRE_CONDITION( strLength > 0 );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
 
+   PSO_TRACE( pContext,
+      fprintf( stderr, "Object Name: %s\n", objectName );
+      psonFolderDump(pFolder, 0);
+      );
+
    errcode = psonValidateString( objectName, 
                                  strLength, 
                                  &partialLength, 
@@ -1913,12 +1918,17 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
        * once we have many types of objects
        */
 
+      PSO_TRACE( pContext,
+                 fprintf( stderr, "Object Name: %s\n", objectName );
+                 psonFolderDump(pFolder, 0);
+                 );
+
       found = psonHashTxGet( &pFolder->hashObj, 
-                           (unsigned char *)objectName, 
-                           partialLength * sizeof(char), 
-                           &previousHashItem,
-                           &bucket,
-                           pContext );
+                             (unsigned char *)objectName, 
+                             partialLength * sizeof(char), 
+                             &previousHashItem,
+                             &bucket,
+                             pContext );
       if ( found ) {
          while ( previousHashItem->nextSameKey != PSON_NULL_OFFSET ) {
             GET_PTR( previousHashItem, previousHashItem->nextSameKey, psonHashTxItem );

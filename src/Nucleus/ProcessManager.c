@@ -76,7 +76,7 @@ bool psonProcMgrAddProcess( psonProcMgr        * pManager,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonProcMgrDump( psonProcMgr * pManager, int indent )
 {
    DO_INDENT( indent );

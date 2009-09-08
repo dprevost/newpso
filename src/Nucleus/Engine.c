@@ -22,7 +22,7 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonMemObjIdentifierDump( psonMemObjIdent identifier, int indent )
 {
    switch( identifier ) {

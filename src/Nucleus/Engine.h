@@ -158,7 +158,7 @@ typedef enum psonMemObjIdentifier psonMemObjIdent;
 #define PSON_IDENT_PAGE_GROUP   0x80000000
 
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonMemObjIdentifierDump( psonMemObjIdent identifier, int indent );
 #endif
 
@@ -194,7 +194,7 @@ typedef enum psonAllocTypeEnum psonAllocTypeEnum;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 #  define DO_INDENT(LOOP) {\
    int ijk_loop_kji;\
    for( ijk_loop_kji = 0; ijk_loop_kji < (LOOP); ijk_loop_kji++ ) {\
@@ -202,6 +202,20 @@ typedef enum psonAllocTypeEnum psonAllocTypeEnum;
    }\
 }
 #endif
+
+#if defined(PSO_USE_TRACE)
+#  define PSO_TRACE(CONTEXT,TRACES) \
+if ( CONTEXT->traceOn ) {\
+   TRACES\
+}
+#else
+#  define PSO_TRACE(CONTEXT,TRACES)
+#endif
+
+//
+//#  if defined(PSO_USE_TRACE)
+
+#define PSO_END_TRACE 
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
    

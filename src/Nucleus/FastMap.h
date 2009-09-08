@@ -84,7 +84,7 @@ bool psonFastMapDelete( psonFastMap        * pHashMap,
                         uint32_t             keyLength, 
                         psonSessionContext * pContext );
 
-#if defined(PSO_TRACE)
+#if defined(PSO_USE_TRACE)
 void psonFastMapDump( psonFastMap * pMap, int indent );
 #endif
 
