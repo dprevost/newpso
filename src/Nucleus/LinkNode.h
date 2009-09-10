@@ -24,6 +24,7 @@
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #include "Nucleus/Engine.h"       
+#include "Nucleus/SessionContext.h"       
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -79,32 +80,45 @@ void psonFreeBufferNodeDump( psonFreeBufferNode * pBuffer, int indent );
 void psonLinkNodeDump( psonLinkNode * pNode, int indent );
 #endif
 
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 /** Initialize the elements of the psonLinkNode to PSON_NULL_OFFSET. */
 static inline
-void psonLinkNodeInit( psonLinkNode * pNode )
+void psonLinkNodeInit( psonLinkNode       * pNode,
+                       psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pNode != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    pNode->nextOffset     = PSON_NULL_OFFSET;
    pNode->previousOffset = PSON_NULL_OFFSET;
 }
 
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 static inline
-void psonLinkNodeFini( psonLinkNode * pNode )
+void psonLinkNodeFini( psonLinkNode       * pNode,
+                       psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pNode != NULL );
+   PSO_TRACE_ENTER( pContext );
 
-   psonLinkNodeInit( pNode );
+   pNode->nextOffset     = PSON_NULL_OFFSET;
+   pNode->previousOffset = PSON_NULL_OFFSET;
 }
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /** Test the values of the elements of the psonLinkNode.
  *  Return true if both elements are not the PSON_NULL_OFFSET
  *  and false if one or both are the PSON_NULL_OFFSET.
  */
 static inline
-bool psonLinkNodeTest( psonLinkNode * pNode )
+bool psonLinkNodeTest( psonLinkNode       * pNode,
+                       psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pNode != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    if ( pNode->nextOffset     == PSON_NULL_OFFSET || 
         pNode->previousOffset == PSON_NULL_OFFSET ) {
@@ -122,3 +136,4 @@ END_C_DECLS
 #endif /* PSON_LINK_NODE_H */
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+

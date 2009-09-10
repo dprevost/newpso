@@ -45,15 +45,18 @@ bool psonFastMapCopy( psonFastMap        * pOldMap,
    PSO_PRE_CONDITION( pNewMap      != NULL );
    PSO_PRE_CONDITION( pNewHashItem != NULL );
    PSO_PRE_CONDITION( pContext     != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    errcode = psonMemObjectInit( &pNewMap->memObject, 
                                 PSON_IDENT_MAP,
                                 &pNewMap->blockGroup,
-                                pOldMap->memObject.totalBlocks );
+                                pOldMap->memObject.totalBlocks,
+                                pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
@@ -67,6 +70,7 @@ bool psonFastMapCopy( psonFastMap        * pOldMap,
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, 
                     errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
@@ -76,12 +80,14 @@ bool psonFastMapCopy( psonFastMap        * pOldMap,
    errcode = psonHashCopy( &pOldMap->hashObj, &pNewMap->hashObj, pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    pNewMap->latestVersion = pOldMap->latestVersion;
    pOldMap->editVersion = SET_OFFSET( pNewHashItem );
    pNewMap->editVersion = SET_OFFSET( pNewHashItem );
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -99,6 +105,7 @@ bool psonFastMapDelete( psonFastMap        * pHashMap,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
    
    found = psonHashDelWithKey( &pHashMap->hashObj, 
                                (unsigned char *)pKey,
@@ -106,6 +113,7 @@ bool psonFastMapDelete( psonFastMap        * pHashMap,
                                pContext );
    if ( ! found ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NO_SUCH_ITEM );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
@@ -119,6 +127,7 @@ bool psonFastMapDelete( psonFastMap        * pHashMap,
       psonHashResize( &pHashMap->hashObj, pContext );
    }
 
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -167,6 +176,7 @@ void psonFastMapEmpty( psonFastMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
    
    psonHashEmpty( &pHashMap->hashObj, pContext );
 
@@ -179,6 +189,7 @@ void psonFastMapEmpty( psonFastMap        * pHashMap,
    if ( pHashMap->hashObj.enumResize != PSON_HASH_NO_RESIZE ) {
       psonHashResize( &pHashMap->hashObj, pContext );
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -189,14 +200,17 @@ void psonFastMapFini( psonFastMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
 
-   psonHashFini( &pHashMap->hashObj );
+   psonHashFini( &pHashMap->hashObj, pContext );
    
    /* 
     * Must be the last call since it will release the blocks of
     * memory to the allocator.
     */
    psonMemObjectFini(  &pHashMap->memObject, PSON_ALLOC_API_OBJ, pContext );
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -221,6 +235,7 @@ bool psonFastMapGet( psonFastMap        * pHashMap,
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -259,6 +274,7 @@ bool psonFastMapGet( psonFastMap        * pHashMap,
    txHashMapStatus->usageCounter++;
    *ppHashItem = pHashItem;
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 
 the_exit:
@@ -271,6 +287,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -291,6 +308,7 @@ bool psonFastMapGetFirst( psonFastMap        * pHashMap,
    PSO_PRE_CONDITION( pItem    != NULL )
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -298,13 +316,17 @@ bool psonFastMapGetFirst( psonFastMap        * pHashMap,
    if ( txHashMapStatus->status & PSON_TXS_DESTROYED || 
       txHashMapStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_IS_DELETED );
+
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
    found = psonHashGetFirst( &pHashMap->hashObj, 
-                             &pHashItem );
+                             &pHashItem,
+                             pContext );
    if ( ! found ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_IS_EMPTY );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
@@ -316,17 +338,20 @@ bool psonFastMapGetFirst( psonFastMap        * pHashMap,
    if ( bufferLength < pHashItem->dataLength ) {
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, PSO_INVALID_LENGTH );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    if ( keyLength < pHashItem->keyLength ) {
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, PSO_INVALID_LENGTH );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
    txHashMapStatus->usageCounter++;
    pItem->pHashItem = pHashItem;
 
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
    
@@ -349,6 +374,7 @@ bool psonFastMapGetNext( psonFastMap        * pHashMap,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
    PSO_PRE_CONDITION( pItem->pHashItem  != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -356,6 +382,7 @@ bool psonFastMapGetNext( psonFastMap        * pHashMap,
    if ( txHashMapStatus->status & PSON_TXS_DESTROYED || 
       txHashMapStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_IS_DELETED );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
@@ -363,7 +390,8 @@ bool psonFastMapGetNext( psonFastMap        * pHashMap,
    
    found = psonHashGetNext( &pHashMap->hashObj, 
                             previousHashItem,
-                            &pHashItem );
+                            &pHashItem,
+                            pContext );
    if ( ! found ) {
       /* 
        * If we come here, there are no additional data items to retrieve. As 
@@ -374,6 +402,7 @@ bool psonFastMapGetNext( psonFastMap        * pHashMap,
       pItem->pHashItem = NULL;
       psonFastMapReleaseNoLock( pHashMap, previousHashItem, pContext );
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_REACHED_THE_END );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
@@ -390,6 +419,7 @@ bool psonFastMapGetNext( psonFastMap        * pHashMap,
    if ( keyLength < pHashItem->keyLength ) {
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, PSO_INVALID_LENGTH );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
@@ -397,6 +427,7 @@ bool psonFastMapGetNext( psonFastMap        * pHashMap,
    pItem->pHashItem = pHashItem;
    psonFastMapReleaseNoLock( pHashMap, previousHashItem, pContext );
 
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -424,15 +455,18 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
    PSO_PRE_CONDITION( hashItemOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( parentOffset   != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
+   PSO_TRACE_ENTER( pContext );
    
    errcode = psonMemObjectInit( &pHashMap->memObject, 
                                 PSON_IDENT_MAP,
                                 &pHashMap->blockGroup,
-                                numberOfBlocks );
+                                numberOfBlocks,
+                                pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
@@ -446,6 +480,7 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
@@ -454,6 +489,7 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
    pHashMap->latestVersion = hashItemOffset;
    pHashMap->editVersion   = PSON_NULL_OFFSET;
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -476,6 +512,7 @@ bool psonFastMapInsert( psonFastMap        * pHashMap,
    PSO_PRE_CONDITION( keyLength  > 0 );
    PSO_PRE_CONDITION( itemLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    errcode = psonHashInsert( &pHashMap->hashObj, 
                              (unsigned char *)pKey, 
@@ -486,9 +523,11 @@ bool psonFastMapInsert( psonFastMap        * pHashMap,
                              pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -502,10 +541,12 @@ bool psonFastMapRelease( psonFastMap        * pHashMap,
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    psonFastMapReleaseNoLock( pHashMap,
                              pHashItem,
                              pContext );
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -527,6 +568,7 @@ void psonFastMapReleaseNoLock( psonFastMap        * pHashMap,
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -550,6 +592,7 @@ void psonFastMapReleaseNoLock( psonFastMap        * pHashMap,
          psonHashResize( &pHashMap->hashObj, pContext );
       }
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -571,6 +614,7 @@ bool psonFastMapReplace( psonFastMap        * pHashMap,
    PSO_PRE_CONDITION( keyLength  > 0 );
    PSO_PRE_CONDITION( dataLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    errcode = psonHashUpdate( &pHashMap->hashObj, 
                              (unsigned char *)pKey, 
@@ -581,16 +625,19 @@ bool psonFastMapReplace( psonFastMap        * pHashMap,
                              pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonFastMapStatus( psonFastMap  * pHashMap,
-                        psoObjStatus * pStatus )
+void psonFastMapStatus( psonFastMap        * pHashMap,
+                        psoObjStatus       * pStatus,
+                        psonSessionContext * pContext )
 {
    psonHashItem * pHashItem = NULL;
    psonTxStatus  * txHashMapStatus;
@@ -600,6 +647,7 @@ void psonFastMapStatus( psonFastMap  * pHashMap,
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pStatus  != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -608,9 +656,12 @@ void psonFastMapStatus( psonFastMap  * pHashMap,
    pStatus->numDataItem = pHashMap->hashObj.numberOfItems;
    pStatus->maxDataLength = 0;
    pStatus->maxKeyLength  = 0;
-   if ( pStatus->numDataItem == 0 ) return;
-
-   found = psonHashGetFirst( &pHashMap->hashObj, &pHashItem );
+   if ( pStatus->numDataItem == 0 ) {
+      PSO_TRACE_EXIT( pContext );
+      return;
+   }
+   
+   found = psonHashGetFirst( &pHashMap->hashObj, &pHashItem, pContext );
    while ( found ) {
       if ( pHashItem->dataLength > pStatus->maxDataLength ) {
          pStatus->maxDataLength = pHashItem->dataLength;
@@ -621,8 +672,10 @@ void psonFastMapStatus( psonFastMap  * pHashMap,
 
       found = psonHashGetNext( &pHashMap->hashObj, 
                                pHashItem,
-                               &pHashItem );
+                               &pHashItem,
+                               pContext );
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -469,9 +469,9 @@ int psoLifoStatus( PSO_HANDLE     objectHandle,
       pMemLifo = (psonQueue *) pLifo->object.pMyMemObject;
       
       if ( psonLock(&pMemLifo->memObject, pContext) ) {
-         psonMemObjectStatus( &pMemLifo->memObject, pStatus );
+         psonMemObjectStatus( &pMemLifo->memObject, pStatus, pContext );
 
-         psonQueueStatus( pMemLifo, pStatus );
+         psonQueueStatus( pMemLifo, pStatus, pContext );
          pStatus->type = PSO_LIFO;
 
          psonUnlock( &pMemLifo->memObject, pContext );

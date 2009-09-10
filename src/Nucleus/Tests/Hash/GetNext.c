@@ -23,12 +23,12 @@
 
 psonHash * pHash;
 psonHashItem * firstItem, * nextItem;
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
-   psonSessionContext context;
    enum psoErrors errcode;
    char* key1 = "My Key 1";
    char* key2 = "My Key 2";
@@ -60,7 +60,7 @@ void setup_test()
                              &context );
    assert( errcode == PSO_OK );
    
-   found = psonHashGetFirst( pHash, &firstItem );
+   found = psonHashGetFirst( pHash, &firstItem, &context );
    assert( found );
 }
 
@@ -75,12 +75,26 @@ void teardown_test()
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonHashGetNext( pHash,
+                                           firstItem,
+                                           &nextItem,
+                                           NULL ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void test_null_hash( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonHashGetNext( NULL,
                                            firstItem,
-                                           &nextItem ) );
+                                           &nextItem,
+                                           &context ) );
 #endif
    return;
 }
@@ -92,7 +106,8 @@ void test_null_next_item( void ** state )
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonHashGetNext( pHash,
                                            firstItem,
-                                           NULL ) );
+                                           NULL,
+                                           &context ) );
 #endif
    return;
 }
@@ -104,7 +119,8 @@ void test_null_prev_item( void ** state )
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonHashGetNext( pHash,
                                            NULL,
-                                           &nextItem ) );
+                                           &nextItem,
+                                           &context ) );
 #endif
    return;
 }
@@ -118,14 +134,16 @@ void test_pass( void ** state )
    
    found = psonHashGetNext( pHash,
                             firstItem,
-                            &nextItem );
+                            &nextItem,
+                            &context );
    assert_true( found );
    assert_false( nextItem == NULL );
    
    /* Only 2 items - should fail gracefully ! */
    found = psonHashGetNext( pHash,
                             nextItem,
-                            &nextItem );
+                            &nextItem,
+                            &context );
    assert_false( found );
    
 #endif
@@ -139,6 +157,7 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
+      unit_test_setup_teardown( test_null_context,      setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_hash,      setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_next_item, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_prev_item, setup_test, teardown_test ),

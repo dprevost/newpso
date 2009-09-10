@@ -35,9 +35,9 @@ void setup_empty()
    
    pFolder = initFolderTest( &context );
 
-   psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
-   psonTreeNodeInit( &node, SET_OFFSET( pFolder ), PSO_FOLDER,
-                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
+   psonTxStatusInit( &status, SET_OFFSET(context.pTransaction), &context );
+   psonTreeNodeInit( &node, SET_OFFSET(pFolder), PSO_FOLDER,
+                     SET_OFFSET(&status), PSON_NULL_OFFSET, &context );
    
    ok = psonFolderInit( pFolder, 0, 1, 0, &node, &context );
    assert( ok );
@@ -53,9 +53,9 @@ void setup_test()
    
    pFolder = initFolderTest( &context );
 
-   psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
-   psonTreeNodeInit( &node, SET_OFFSET( pFolder ), PSO_FOLDER,
-                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
+   psonTxStatusInit( &status, SET_OFFSET(context.pTransaction), &context );
+   psonTreeNodeInit( &node, SET_OFFSET(pFolder), PSO_FOLDER,
+                     SET_OFFSET(&status), PSON_NULL_OFFSET, &context );
    
    ok = psonFolderInit( pFolder, 0, 1, 0, &node, &context );
    assert( ok );

@@ -25,8 +25,9 @@
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline
-bool psonIsBufferFree( psonMemBitmap * pBitmap,
-                       ptrdiff_t       offset )
+bool psonIsBufferFree( psonMemBitmap      * pBitmap,
+                       ptrdiff_t            offset,
+                       psonSessionContext * pContext )
 {
    size_t byte, bit;
    size_t inUnitsOfAllocation;
@@ -34,6 +35,7 @@ bool psonIsBufferFree( psonMemBitmap * pBitmap,
    
    PSO_PRE_CONDITION( pBitmap != NULL );
    PSO_PRE_CONDITION( offset  != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    localOffset = offset - pBitmap->baseAddressOffset;
    if ( localOffset < 0 ) return false;
@@ -55,9 +57,10 @@ bool psonIsBufferFree( psonMemBitmap * pBitmap,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline
-void psonSetBufferAllocated( psonMemBitmap * pBitmap,
-                             ptrdiff_t       offset,
-                             size_t          length )
+void psonSetBufferAllocated( psonMemBitmap      * pBitmap,
+                             ptrdiff_t            offset,
+                             size_t               length,
+                             psonSessionContext * pContext )
 {
    size_t byte, bit, i;
    size_t inUnitsOfAllocation;
@@ -66,6 +69,7 @@ void psonSetBufferAllocated( psonMemBitmap * pBitmap,
    PSO_PRE_CONDITION( pBitmap != NULL );
    PSO_PRE_CONDITION( offset  != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( length > 0 );
+   PSO_TRACE_ENTER( pContext );
    
    localOffset = offset - pBitmap->baseAddressOffset;
 
@@ -93,9 +97,10 @@ void psonSetBufferAllocated( psonMemBitmap * pBitmap,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline
-void psonSetBufferFree( psonMemBitmap * pBitmap,
-                        ptrdiff_t       offset,
-                        size_t          length )
+void psonSetBufferFree( psonMemBitmap      * pBitmap,
+                        ptrdiff_t            offset,
+                        size_t               length,
+                        psonSessionContext * pContext )
 {
    size_t byte, bit, i;
    size_t inUnitsOfAllocation;
@@ -104,6 +109,7 @@ void psonSetBufferFree( psonMemBitmap * pBitmap,
    PSO_PRE_CONDITION( pBitmap != NULL );
    PSO_PRE_CONDITION( offset  != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( length > 0 );
+   PSO_TRACE_ENTER( pContext );
 
    localOffset = offset - pBitmap->baseAddressOffset;
    
@@ -131,12 +137,15 @@ void psonSetBufferFree( psonMemBitmap * pBitmap,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline
-size_t psonGetBitmapLengthBytes( size_t length, size_t allocationUnit )
+size_t psonGetBitmapLengthBytes( size_t               length,
+                                 size_t               allocationUnit,
+                                 psonSessionContext * pContext )
 {
    /* Testing that it is non-zero and a power of two */
    PSO_PRE_CONDITION( allocationUnit > 0  && 
                       ! (allocationUnit & (allocationUnit-1)) );
    PSO_PRE_CONDITION( length > 0 );
+   PSO_TRACE_ENTER( pContext );
    
    /* We "align" it to a multiple of allocationUnit */
    length = ((length - 1) / allocationUnit + 1 ) * allocationUnit;

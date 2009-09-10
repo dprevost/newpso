@@ -38,6 +38,7 @@ bool psonSeqSetCopy( psonSeqSet         * pOldSet,
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( origName  != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    errcode = psonMemObjectInit( &pNewSet->memObject, 
                                 PSON_IDENT_MAP,
@@ -98,6 +99,7 @@ bool psonSeqSetDelete( psonSeqSet         * pSeqSet,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
    
    found = psonHashDelWithKey( &pSeqSet->hashObj, 
                                (unsigned char *)pKey,
@@ -171,6 +173,7 @@ void psonSeqSetEmpty( psonSeqSet         * pSeqSet,
    PSO_PRE_CONDITION( pSeqSet != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
    
    psonHashEmpty( &pSeqSet->hashObj, pContext );
 
@@ -193,6 +196,7 @@ void psonSeqSetFini( psonSeqSet         * pSeqSet,
    PSO_PRE_CONDITION( pSeqSet != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    psonHashFini( &pSeqSet->hashObj );
 //   psonTreeNodeFini( &pSeqSet->nodeObject );
@@ -225,6 +229,7 @@ bool psonSeqSetGet( psonSeqSet         * pSeqSet,
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( txSeqSetStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
    
@@ -293,6 +298,7 @@ bool psonSeqSetGetFirst( psonSeqSet         * pSeqSet,
    PSO_PRE_CONDITION( pItem    != NULL )
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( txSeqSetStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
 
@@ -349,6 +355,7 @@ bool psonSeqSetGetNext( psonSeqSet         * pSeqSet,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
    PSO_PRE_CONDITION( pItem->pHashItem  != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( txSeqSetStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
 
@@ -427,6 +434,7 @@ bool psonSeqSetInit( psonSeqSet          * pSeqSet,
    PSO_PRE_CONDITION( parentOffset   != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
    PSO_PRE_CONDITION( origNameLength > 0 );
+   PSO_TRACE_ENTER( pContext );
    
    errcode = psonMemObjectInit( &pSeqSet->memObject, 
                                 PSON_IDENT_MAP,
@@ -486,6 +494,7 @@ bool psonSeqSetInsert( psonSeqSet         * pSeqSet,
    PSO_PRE_CONDITION( keyLength  > 0 );
    PSO_PRE_CONDITION( itemLength > 0 );
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    errcode = psonHashInsert( &pSeqSet->hashObj, 
                              (unsigned char *)pKey, 
@@ -520,6 +529,7 @@ void psonSeqSetRelease( psonSeqSet         * pSeqSet,
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( txSeqSetStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
 
@@ -564,6 +574,7 @@ bool psonSeqSetReplace( psonSeqSet        * pSeqSet,
    PSO_PRE_CONDITION( keyLength  > 0 );
    PSO_PRE_CONDITION( dataLength > 0 );
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    errcode = psonHashUpdate( &pSeqSet->hashObj, 
                              (unsigned char *)pKey, 
@@ -598,6 +609,7 @@ void psonSeqSetStatus( psonSeqSet  * pSeqSet,
    PSO_PRE_CONDITION( pSeqSet != NULL );
    PSO_PRE_CONDITION( pStatus  != NULL );
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( txStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
 

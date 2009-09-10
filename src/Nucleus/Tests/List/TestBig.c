@@ -91,15 +91,15 @@ void test_pass( void ** state )
    
    for ( i = 0; i < MAX_ELEMENTS; ++i ) {
       dummy[i].dummy1 = i;
-      psonLinkNodeInit( &dummy[i].node );
+      psonLinkNodeInit( &dummy[i].node, &context );
    }
 
    /* Initialize the list */
-   psonLinkedListInit( &list );
+   psonLinkedListInit( &list, &context );
 
    for ( i = 0; i < INITIAL_LIST_SIZE; ++i ) {
-      psonLinkNodeInit( &dummy[i].node );
-      psonLinkedListPutLast( &list, &dummy[i].node );
+      psonLinkNodeInit( &dummy[i].node, &context );
+      psonLinkedListPutLast( &list, &dummy[i].node, &context );
       dummy[i].isInUse = 1;
    }
    numInList = INITIAL_LIST_SIZE;
@@ -137,8 +137,8 @@ void test_pass( void ** state )
          }
          assert_false( k == randElement );
          
-         psonLinkNodeInit( &dummy[k].node );
-         psonLinkedListPutFirst( &list, &dummy[k].node );
+         psonLinkNodeInit( &dummy[k].node, &context );
+         psonLinkedListPutFirst( &list, &dummy[k].node, &context );
 
          dummy[k].isInUse = 1;
          numInList++;
@@ -164,15 +164,15 @@ void test_pass( void ** state )
          }
          assert_false( k == randElement );
 
-         psonLinkNodeInit( &dummy[k].node );
-         psonLinkedListPutLast( &list, &dummy[k].node );
+         psonLinkNodeInit( &dummy[k].node, &context );
+         psonLinkedListPutLast( &list, &dummy[k].node, &context );
 
          dummy[k].isInUse = 1;
          numInList++;
          break;
          
       case 2:
-         ok = psonLinkedListGetFirst( &list, &pNode );
+         ok = psonLinkedListGetFirst( &list, &pNode, &context );
          assert_true( ok );
          
          pDummy = (dummyStruct* )
@@ -183,7 +183,7 @@ void test_pass( void ** state )
          break;
          
       case 3:
-         ok = psonLinkedListGetLast( &list, &pNode );
+         ok = psonLinkedListGetLast( &list, &pNode, &context );
          assert_true( ok );
          
          pDummy = (dummyStruct* )
@@ -211,7 +211,7 @@ void test_pass( void ** state )
          }
          assert_false( k == randElement );
 
-         psonLinkedListRemoveItem( &list, &dummy[k].node );
+         psonLinkedListRemoveItem( &list, &dummy[k].node, &context );
 
          dummy[k].isInUse = 0;         
          numInList--;
@@ -223,18 +223,19 @@ void test_pass( void ** state )
 
       /* Test the iterators */
       if ( ((i+1)%GET_NEXT_LOOP ) == 0 ) {
-         ok = psonLinkedListPeakFirst( &list, &pNode );
+         ok = psonLinkedListPeakFirst( &list, &pNode, &context );
           
          while ( ok ) {
-            ok = psonLinkedListPeakNext( &list, pNode, &pNode );
+            ok = psonLinkedListPeakNext( &list, pNode, &pNode, &context );
          }
 
-         ok = psonLinkedListPeakLast( &list, &pNode );
+         ok = psonLinkedListPeakLast( &list, &pNode, &context );
          
          while ( ok ) {
             ok = psonLinkedListPeakPrevious( &list, 
                                              pNode, 
-                                             &pNode );
+                                             &pNode,
+                                             &context );
          }
       } /* End of if ((i+1)%GET_NEXT_LOOP ) == 0 */
 
@@ -243,7 +244,7 @@ void test_pass( void ** state )
    errcode = TestList( &list );
    assert_true( errcode == 0 );
 
-   psonLinkedListFini( &list );
+   psonLinkedListFini( &list, &context );
 
 #endif
    return;

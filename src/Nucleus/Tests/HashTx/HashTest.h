@@ -83,7 +83,8 @@ psonHashTx* initHashTest( psonSessionContext * pContext )
    errcode = psonMemObjectInit( &pDummy->memObject, 
                                 PSON_IDENT_ALLOCATOR,
                                 &pDummy->blockGroup,
-                                2 );
+                                2,
+                                pContext );
    assert( errcode == PSO_OK );
    g_memObjOffset = SET_OFFSET(&pDummy->memObject);
    
@@ -136,7 +137,8 @@ void initHashCopyTest( psonHashTx          ** ppOldHash,
    errcode = psonMemObjectInit( &pDummy1->memObject, 
                                 PSON_IDENT_ALLOCATOR,
                                 &pDummy1->blockGroup,
-                                2 );
+                                2,
+                                pContext );
    assert( errcode == PSO_OK );
    
    errcode = psonHashTxInit( &pDummy1->hashObj, 
@@ -151,7 +153,8 @@ void initHashCopyTest( psonHashTx          ** ppOldHash,
    errcode = psonMemObjectInit( &pDummy2->memObject, 
                                 PSON_IDENT_ALLOCATOR,
                                 &pDummy2->blockGroup,
-                                2 );
+                                2,
+                                pContext );
    assert( errcode == PSO_OK );
 
    if ( sameLength ) {

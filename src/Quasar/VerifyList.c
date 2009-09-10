@@ -92,8 +92,9 @@ struct repairKit
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 enum qsrRecoverError 
-qsrVerifyList( qsrVerifyStruct      * pVerify,
-                struct psonLinkedList * pList )
+qsrVerifyList( qsrVerifyStruct       * pVerify,
+               struct psonLinkedList * pList,
+               psonSessionContext    * pContext )
 {
    psonLinkNode * next, * previous;
    ptrdiff_t headOffset;
@@ -125,7 +126,7 @@ qsrVerifyList( qsrVerifyStruct      * pVerify,
          break;
       }
       else {
-         if ( qsrVerifyOffset( pVerify, next->nextOffset ) ) {
+         if ( qsrVerifyOffset( pVerify, next->nextOffset, pContext ) ) {
             kit.forwardChainLen++;
          }
          else {
@@ -148,7 +149,7 @@ qsrVerifyList( qsrVerifyStruct      * pVerify,
          break;
       }
       else {
-         if ( qsrVerifyOffset( pVerify, next->previousOffset ) ) {
+         if ( qsrVerifyOffset( pVerify, next->previousOffset, pContext ) ) {
             kit.backwardChainLen++;
          }
          else {

@@ -79,7 +79,7 @@ void setup_test()
                                &context );
    assert( errcode == PSO_OK );
    
-   found = psonHashTxGetFirst( pHash, &offsetFirstItem );
+   found = psonHashTxGetFirst( pHash, &offsetFirstItem, &context );
    assert( found );
 }
 
@@ -93,12 +93,26 @@ void teardown_test()
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonHashTxGetNext( pHash,
+                                             offsetNextItem,
+                                             &offsetNextItem,
+                                             NULL ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void test_null_hash( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonHashTxGetNext( NULL,
                                              offsetNextItem,
-                                             &offsetNextItem ) );
+                                             &offsetNextItem,
+                                             &context ) );
 #endif
    return;
 }
@@ -110,7 +124,8 @@ void test_null_next_offset( void ** state )
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonHashTxGetNext( pHash,
                                              offsetNextItem,
-                                             NULL ) );
+                                             NULL,
+                                             &context ) );
 #endif
    return;
 }
@@ -122,7 +137,8 @@ void test_null_prev_offset( void ** state )
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonHashTxGetNext( pHash,
                                              PSON_NULL_OFFSET,
-                                             &offsetNextItem ) );
+                                             &offsetNextItem,
+                                             &context ) );
 #endif
    return;
 }
@@ -136,14 +152,16 @@ void test_pass( void ** state )
    
    found = psonHashTxGetNext( pHash,
                               offsetFirstItem,
-                              &offsetNextItem );
+                              &offsetNextItem,
+                              &context );
    assert_true( found );
    assert_true( offsetNextItem != PSON_NULL_OFFSET );
    
    /* Only 2 items - should fail gracefully ! */
    found = psonHashTxGetNext( pHash,
                               offsetNextItem,
-                              &offsetNextItem );
+                              &offsetNextItem,
+                              &context );
    assert_false( found );
    
 #endif
@@ -157,6 +175,7 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
+      unit_test_setup_teardown( test_null_context,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_hash,        setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_next_offset, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_prev_offset, setup_test, teardown_test ),

@@ -25,6 +25,7 @@
 #include "Nucleus/MemBitmap.h"
 #include "Nucleus/LinkNode.h"
 #include "Nucleus/LinkedList.h"
+#include "Nucleus/SessionContext.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -96,15 +97,17 @@ typedef struct psonEndBlockGroup psonEndBlockGroup;
 void psonBlockGroupDump( psonBlockGroup * pGroup, int indent );
 #endif
 
-void psonBlockGroupFini( psonBlockGroup* pGroup );
+void psonBlockGroupFini( psonBlockGroup     * pGroup,
+                         psonSessionContext * pContext );
 
 /** 
  * Initialize the psonBlockGroup struct. 
  */
-void psonBlockGroupInit( psonBlockGroup  * pGroup,
-                         ptrdiff_t         firstBlockOffset,
-                         size_t            numBlocks,
-                         psonMemObjIdent   objType );
+void psonBlockGroupInit( psonBlockGroup     * pGroup,
+                         ptrdiff_t            firstBlockOffset,
+                         size_t               numBlocks,
+                         psonMemObjIdent      objType,
+                         psonSessionContext * pContext );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -122,12 +125,14 @@ ptrdiff_t psonEndBlockOffset( ptrdiff_t firstBlockOffset,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-void psonEndBlockSet( ptrdiff_t firstBlockOffset, 
-                      size_t    numBlocks, 
-                      bool      limboStatus,
-                      bool      lastBlock )
+void psonEndBlockSet( ptrdiff_t            firstBlockOffset, 
+                      size_t               numBlocks, 
+                      bool                 limboStatus,
+                      bool                 lastBlock,
+                      psonSessionContext * pContext )
 {
    psonEndBlockGroup* endBlock;
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( endBlock, 
             firstBlockOffset + (numBlocks <<  PSON_BLOCK_SHIFT) -

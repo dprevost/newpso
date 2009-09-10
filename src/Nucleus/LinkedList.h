@@ -70,75 +70,88 @@ void psonLinkedListDump( psonLinkedList * pList, int indent );
 #endif
 
 /** Cleanup the list once we're done with it. */
-void psonLinkedListFini( psonLinkedList * pList );
+void psonLinkedListFini( psonLinkedList     * pList,
+                         psonSessionContext * pContext );
 
 /** Removes and returns the first item on the list. */
 static inline 
-bool psonLinkedListGetFirst( psonLinkedList  * pList,
-                             psonLinkNode   ** ppItem );
+bool psonLinkedListGetFirst( psonLinkedList     * pList,
+                             psonLinkNode      ** ppItem,
+                             psonSessionContext * pContext );
 
 /** Removes and returns the last item on the list. */ 
 static inline 
-bool psonLinkedListGetLast( psonLinkedList  * pList,
-                            psonLinkNode   ** ppItem );
+bool psonLinkedListGetLast( psonLinkedList     * pList,
+                            psonLinkNode      ** ppItem,
+                            psonSessionContext * pContext );
 
 /** Initialize the linked list. */
-void psonLinkedListInit( psonLinkedList * pList );
+void psonLinkedListInit( psonLinkedList     * pList,
+                         psonSessionContext * pContext );
 
 /** Adds pNewItem to the beginning of the list. */
 static inline 
-void psonLinkedListPutFirst( psonLinkedList * pList,
-                             psonLinkNode   * pNewItem );
+void psonLinkedListPutFirst( psonLinkedList     * pList,
+                             psonLinkNode       * pNewItem,
+                             psonSessionContext * pContext );
 
 /** Adds pNewItem to the tail of the list. */
 static inline 
-void psonLinkedListPutLast( psonLinkedList * pList,
-                            psonLinkNode   * pNewItem );
+void psonLinkedListPutLast( psonLinkedList     * pList,
+                            psonLinkNode       * pNewItem,
+                            psonSessionContext * pContext );
 
 /** Returns the first item on the list. The item is not removed. */
 static inline
-bool psonLinkedListPeakFirst( psonLinkedList  * pList,
-                              psonLinkNode   ** ppItem );
+bool psonLinkedListPeakFirst( psonLinkedList     * pList,
+                              psonLinkNode      ** ppItem,
+                              psonSessionContext * pContext );
 
 /** Returns the last item on the list. The item is not removed. */
 static inline
-bool psonLinkedListPeakLast( psonLinkedList  * pList,
-                             psonLinkNode   ** ppItem );
+bool psonLinkedListPeakLast( psonLinkedList     * pList,
+                             psonLinkNode      ** ppItem,
+                             psonSessionContext * pContext );
 
 /** Returns the item just after pCurrent. The item is not removed. */
 static inline
-bool psonLinkedListPeakNext( psonLinkedList * pList, 
-                             psonLinkNode   * pCurrent, 
-                             psonLinkNode  ** ppNext );
+bool psonLinkedListPeakNext( psonLinkedList     * pList, 
+                             psonLinkNode       * pCurrent, 
+                             psonLinkNode      ** ppNext,
+                             psonSessionContext * pContext );
 
 /** Returns the item just before pCurrent. The item is not removed. */
 static inline
-bool psonLinkedListPeakPrevious( psonLinkedList * pList,
-                                 psonLinkNode   * pCurrent, 
-                                 psonLinkNode  ** ppPrevious );
+bool psonLinkedListPeakPrevious( psonLinkedList     * pList,
+                                 psonLinkNode       * pCurrent, 
+                                 psonLinkNode      ** ppPrevious,
+                                 psonSessionContext * pContext );
 
 /** 
  * Remove the item pointed to by pRemovedItem from the list (this 
  * assumes that pRemovedItem is in the list... otherwise big trouble!)
  */
 static inline
-void psonLinkedListRemoveItem( psonLinkedList * pList,
-                               psonLinkNode   * pRemovedItem );
+void psonLinkedListRemoveItem( psonLinkedList     * pList,
+                               psonLinkNode       * pRemovedItem,
+                               psonSessionContext * pContext );
 
 /** 
  * Replace the item pointed to by pOldItem with the item pNewItem (this 
  * assumes that pOldItem is in the list... otherwise big trouble!)
  */
 static inline 
-void psonLinkedListReplaceItem( psonLinkedList * pList,
-                                psonLinkNode   * pOldItem,
-                                psonLinkNode   * pNewItem );
+void psonLinkedListReplaceItem( psonLinkedList     * pList,
+                                psonLinkNode       * pOldItem,
+                                psonLinkNode       * pNewItem,
+                                psonSessionContext * pContext );
 
 /** Search in the list to see if pUnknown is in it or not - used by the
  *  crash recovery algorithm, psonFree, etc. 
  */
-bool psonLinkedListIsValid( psonLinkedList * pList,
-                            psonLinkNode   * pUnknown );
+bool psonLinkedListIsValid( psonLinkedList     * pList,
+                            psonLinkNode       * pUnknown,
+                            psonSessionContext * pContext );
 
 /*
  * The next functions are part of the recovery algorithm and should not
@@ -148,7 +161,8 @@ bool psonLinkedListIsValid( psonLinkedList * pList,
 /** Reset the list to be empty - used by the
  *  crash recovery algorithm
  */
-void psonLinkedListReset( psonLinkedList * pList );
+void psonLinkedListReset( psonLinkedList     * pList,
+                          psonSessionContext * pContext );
 
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

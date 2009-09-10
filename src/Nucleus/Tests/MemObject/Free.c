@@ -38,7 +38,8 @@ void setup_test()
    errcode = psonMemObjectInit( pObj, 
                                 PSON_IDENT_ALLOCATOR,
                                 &pDummy->blockGroup,
-                                4 );
+                                4,
+                                &context );
    assert( errcode == PSO_OK );
    
    buff[0] = psonMalloc( pObj, PSON_BLOCK_SIZE, &context );

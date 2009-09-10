@@ -101,56 +101,61 @@ void qsrResetBitmap( psonMemBitmap * pBitmap )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-bool qsrVerifyOffset( qsrVerifyStruct * pVerify, ptrdiff_t offset )
+bool qsrVerifyOffset( qsrVerifyStruct    * pVerify,
+                      ptrdiff_t            offset, 
+                      psonSessionContext * pContext )
 {
-   return psonIsBufferFree( pVerify->pBitmap, offset );
+   return psonIsBufferFree( pVerify->pBitmap, offset, pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void 
-qsrPopulateBitmap( struct qsrVerifyStruct   * pVerify,
+qsrPopulateBitmap( struct qsrVerifyStruct    * pVerify,
+                   struct psonMemObject      * pMemObj,
+                   struct psonSessionContext * pContext );
+
+enum qsrRecoverError
+qsrVerifyFastMap( qsrVerifyStruct    * pVerify,
+                  struct psonFastMap * pHashMap, 
+                  psonSessionContext * pContext  );
+
+enum qsrRecoverError
+qsrVerifyFolder( qsrVerifyStruct    * pVerify,
+                 struct psonFolder  * pFolder,
+                 psonSessionContext * pContext );
+
+enum qsrRecoverError
+qsrVerifyHash( qsrVerifyStruct    * pVerify,
+               struct psonHash    * pHash,
+               ptrdiff_t            memObjOffset, 
+               psonSessionContext * pContext );
+
+enum qsrRecoverError
+qsrVerifyHashTx( qsrVerifyStruct    * pVerify,
+                 struct psonHashTx  * pHash,
+                 ptrdiff_t            memObjOffset,
+                 psonSessionContext * pContext );
+
+enum qsrRecoverError
+qsrVerifyList( qsrVerifyStruct       * pVerify,
+               struct psonLinkedList * pList,
+               psonSessionContext    * pContext );
+
+enum qsrRecoverError
+qsrVerifyHashMap( qsrVerifyStruct    * pVerify,
+                  struct psonHashMap * pHashMap, 
+                  psonSessionContext * pContext  );
+
+enum qsrRecoverError
+qsrVerifyMemObject( struct qsrVerifyStruct    * pVerify,
                     struct psonMemObject      * pMemObj,
                     struct psonSessionContext * pContext );
 
 enum qsrRecoverError
-qsrVerifyFastMap( qsrVerifyStruct   * pVerify,
-                   struct psonFastMap     * pHashMap, 
-                   psonSessionContext * pContext  );
-
-enum qsrRecoverError
-qsrVerifyFolder( qsrVerifyStruct   * pVerify,
-                  struct psonFolder  * pFolder,
-                  psonSessionContext * pContext );
-
-enum qsrRecoverError
-qsrVerifyHash( qsrVerifyStruct * pVerify,
-                struct psonHash  * pHash,
-                ptrdiff_t          memObjOffset );
-
-enum qsrRecoverError
-qsrVerifyHashTx( qsrVerifyStruct  * pVerify,
-                  struct psonHashTx * pHash,
-                  ptrdiff_t           memObjOffset );
-
-enum qsrRecoverError
-qsrVerifyList( qsrVerifyStruct      * pVerify,
-                struct psonLinkedList * pList );
-
-enum qsrRecoverError
-qsrVerifyHashMap( qsrVerifyStruct   * pVerify,
-                   struct psonHashMap * pHashMap, 
-                   psonSessionContext * pContext  );
-
-enum qsrRecoverError
-qsrVerifyMemObject( struct qsrVerifyStruct   * pVerify,
-                     struct psonMemObject      * pMemObj,
-                     struct psonSessionContext * pContext );
-
-enum qsrRecoverError
-qsrVerifyQueue( qsrVerifyStruct   * pVerify,
-                 struct psonQueue   * pQueue, 
-                 psonSessionContext * pContext  );
+qsrVerifyQueue( qsrVerifyStruct    * pVerify,
+                struct psonQueue   * pQueue, 
+                psonSessionContext * pContext  );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

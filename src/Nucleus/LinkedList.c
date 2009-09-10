@@ -46,15 +46,19 @@ void psonLinkedListDump( psonLinkedList * pList, int indent )
 }
 #endif
 
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 /* Cleanup the list once we're done with it. */
-void psonLinkedListFini( psonLinkedList* pList )
+void psonLinkedListFini( psonLinkedList     * pList,
+                         psonSessionContext * pContext )
 {   
    PSO_PRE_CONDITION( pList != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
+   PSO_TRACE_ENTER( pContext );
    
    /* We reset the node element to PSON_NULL_OFFSET. */
-   psonLinkNodeInit( &pList->head );
+   psonLinkNodeInit( &pList->head, pContext );
 
    pList->currentSize    = 0;
    pList->initialized    = 0;
@@ -62,11 +66,13 @@ void psonLinkedListFini( psonLinkedList* pList )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonLinkedListInit( psonLinkedList* pList )
+void psonLinkedListInit( psonLinkedList     * pList,
+                         psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_TRACE_ENTER( pContext );
    
-   psonLinkNodeInit( &pList->head );
+   psonLinkNodeInit( &pList->head, pContext );
    pList->currentSize = 0;
 
    /* Make the list circular by pointing it back to itself. */
@@ -78,11 +84,13 @@ void psonLinkedListInit( psonLinkedList* pList )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonLinkedListReset( psonLinkedList* pList )
+void psonLinkedListReset( psonLinkedList     * pList,
+                          psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
+   PSO_TRACE_ENTER( pContext );
 
    pList->currentSize = 0;
 
@@ -93,8 +101,9 @@ void psonLinkedListReset( psonLinkedList* pList )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonLinkedListIsValid( psonLinkedList* pList,
-                            psonLinkNode*   pUnknown )
+bool psonLinkedListIsValid( psonLinkedList     * pList,
+                            psonLinkNode       * pUnknown,
+                            psonSessionContext * pContext )
 {
    bool valid = false;
    
@@ -104,6 +113,7 @@ bool psonLinkedListIsValid( psonLinkedList* pList,
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( pUnknown   != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    pItem = &pList->head;
    

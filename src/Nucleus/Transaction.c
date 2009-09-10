@@ -36,6 +36,7 @@ bool psonAddLockTx( psonTx             * pTx,
    PSO_PRE_CONDITION( pTx      != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pMemObj  != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    ok = txHashInsert( pTx, pMemObj, pContext );
    if ( !ok ) {
@@ -58,6 +59,7 @@ bool psonLockTx( psonTx             * pTx,
    
    PSO_PRE_CONDITION( pMemObj  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    ok = psocTestLockPidValue( &pMemObj->lock, pContext->pidLocker );
    PSO_POST_CONDITION( ok == true || ok == false );
@@ -79,7 +81,8 @@ bool psonLockTx( psonTx             * pTx,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static
-void psonClearLocks( psonTx * pTx )
+void psonClearLocks( psonTx             * pTx,
+                     psonSessionContext * pContext )
 {
    psonMemObject * pMemObj = NULL;
    bool ok;
@@ -87,6 +90,7 @@ void psonClearLocks( psonTx * pTx )
    
    PSO_PRE_CONDITION( pTx      != NULL );
    PSO_PRE_CONDITION( pTx->signature == PSON_TX_SIGNATURE );
+   PSO_TRACE_ENTER( pContext );
    
    ok = txHashGetFirst( pTx, &rowNumber, &pMemObj );
    while ( ok ) {
@@ -110,17 +114,19 @@ bool psonTxInit( psonTx             * pTx,
    PSO_PRE_CONDITION( pTx      != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( numberOfBlocks  > 0 );
+   PSO_TRACE_ENTER( pContext );
    
    errcode = psonMemObjectInit( &pTx->memObject, 
                                 PSON_IDENT_TRANSACTION,
                                 &pTx->blockGroup,
-                                numberOfBlocks );
+                                numberOfBlocks,
+                                pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
       return false;
    }
 
-   psonLinkedListInit( &pTx->listOfOps );
+   psonLinkedListInit( &pTx->listOfOps, pContext );
    ok = txHashInit( pTx, 100, pContext );
    if ( !ok ) return false;
    
@@ -138,13 +144,14 @@ void psonTxFini( psonTx             * pTx,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pTx->listOfOps.currentSize == 0 );
    PSO_PRE_CONDITION( pTx->signature == PSON_TX_SIGNATURE );
+   PSO_TRACE_ENTER( pContext );
    
    /* Synch the shared memory */
 #if 0
    MemoryManager::Instance()->Sync( &pContext->errorHandler );
 #endif
 
-   psonLinkedListFini( &pTx->listOfOps );
+   psonLinkedListFini( &pTx->listOfOps, pContext );
    pTx->signature = 0;
    
    /* This will remove the blocks of allocated memory */
@@ -168,6 +175,7 @@ bool psonTxAddOps( psonTx             * pTx,
    PSO_PRE_CONDITION( parentOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( childOffset  != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( pTx->signature == PSON_TX_SIGNATURE );
+   PSO_TRACE_ENTER( pContext );
 
    pOps = (psonTxOps *) psonMalloc( &pTx->memObject,
                                     sizeof(psonTxOps), 
@@ -179,8 +187,8 @@ bool psonTxAddOps( psonTx             * pTx,
       pOps->childOffset  = childOffset;
       pOps->childType    = childType;
 
-      psonLinkNodeInit(  &pOps->node );
-      psonLinkedListPutLast( &pTx->listOfOps, &pOps->node );
+      psonLinkNodeInit(  &pOps->node, pContext );
+      psonLinkedListPutLast( &pTx->listOfOps, &pOps->node, pContext );
 
       return true;
    }
@@ -204,8 +212,9 @@ void psonTxRemoveLastOps( psonTx             * pTx,
    PSO_PRE_CONDITION( pTx != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pTx->signature == PSON_TX_SIGNATURE );
+   PSO_TRACE_ENTER( pContext );
    
-   ok = psonLinkedListGetLast( &pTx->listOfOps, &pDummy );
+   ok = psonLinkedListGetLast( &pTx->listOfOps, &pDummy, pContext );
 
    PSO_POST_CONDITION( ok );
    
@@ -239,6 +248,7 @@ bool psonTxCommit( psonTx             * pTx,
    PSO_PRE_CONDITION( pTx      != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pTx->signature == PSON_TX_SIGNATURE );
+   PSO_TRACE_ENTER( pContext );
       
    /* Synch the shared memory  (commented out - too slow) */
 #if 0
@@ -256,7 +266,7 @@ bool psonTxCommit( psonTx             * pTx,
     * First pass - we lock all objects of interest. This is the only place 
     * were we can return false.
     */
-   ok = psonLinkedListPeakFirst( &pTx->listOfOps, &pLinkNode );
+   ok = psonLinkedListPeakFirst( &pTx->listOfOps, &pLinkNode, pContext );
    PSO_POST_CONDITION( ok == true || ok == false );
    while ( ok ) {
       pChildMemObject = parentMemObject = NULL;
@@ -268,7 +278,7 @@ bool psonTxCommit( psonTx             * pTx,
       okLock = psonLockTx( pTx, parentMemObject, pContext );
       PSO_POST_CONDITION( okLock == true || okLock == false );
       if ( ! okLock ) {
-         psonClearLocks( pTx );
+         psonClearLocks( pTx, pContext );
          return false;
       }
       /* We only lock the child for these two ops */
@@ -282,19 +292,20 @@ bool psonTxCommit( psonTx             * pTx,
          okLock = psonLockTx( pTx, pChildMemObject, pContext );
          PSO_POST_CONDITION( okLock == true || okLock == false );
          if ( ! okLock ) {
-            psonClearLocks( pTx );
+            psonClearLocks( pTx, pContext );
             return false;
          }
       }
 
-      ok = psonLinkedListPeakNext( &pTx->listOfOps, pLinkNode, &pLinkNode );
+      ok = psonLinkedListPeakNext( &pTx->listOfOps, 
+                                   pLinkNode, &pLinkNode, pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
    }
    
    /*
     * Second pass - we commit all operations.
     */
-   ok = psonLinkedListPeakFirst( &pTx->listOfOps, &pLinkNode );
+   ok = psonLinkedListPeakFirst( &pTx->listOfOps, &pLinkNode, pContext );
    PSO_POST_CONDITION( ok == true || ok == false );
    while ( ok ) {
 
@@ -322,7 +333,7 @@ bool psonTxCommit( psonTx             * pTx,
             GET_PTR( pQueue, pOps->parentOffset, psonQueue );
             parentMemObject = &pQueue->memObject;
 
-            psonQueueCommitAdd( pQueue, pOps->childOffset );
+            psonQueueCommitAdd( pQueue, pOps->childOffset, pContext );
          }
          /* We should not come here */
          else {
@@ -342,7 +353,7 @@ bool psonTxCommit( psonTx             * pTx,
          pChildStatus = &pHashItem->txStatus;
          GET_PTR( parentNode, parentFolder->nodeOffset, psonTreeNode );
          
-         psonTxStatusClearTx( pChildStatus );
+         psonTxStatusClearTx( pChildStatus, pContext );
          parentNode->txCounter--;
 
          /* If needed */
@@ -400,7 +411,7 @@ bool psonTxCommit( psonTx             * pTx,
              * as "Remove is committed" so that the last "user" do delete
              * it.
              */
-            psonTxStatusCommitRemove( pChildStatus );
+            psonTxStatusCommitRemove( pChildStatus, pContext );
          }
          else {
             /* 
@@ -442,7 +453,8 @@ bool psonTxCommit( psonTx             * pTx,
 
       } /* end of switch on type of ops */
 
-      ok = psonLinkedListPeakNext( &pTx->listOfOps, pLinkNode, &pLinkNode );
+      ok = psonLinkedListPeakNext( &pTx->listOfOps, 
+                                   pLinkNode, &pLinkNode, pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
                 
    } /* end of while loop on the list of ops */
@@ -451,9 +463,9 @@ bool psonTxCommit( psonTx             * pTx,
     * Third pass: we unlock everything and release the memory of the
     * transaction list.
     */
-   psonClearLocks( pTx );
+   psonClearLocks( pTx, pContext );
 
-   while ( psonLinkedListGetFirst( &pTx->listOfOps, &pLinkNode ) ) {
+   while ( psonLinkedListGetFirst( &pTx->listOfOps, &pLinkNode, pContext ) ) {
       pOps = (psonTxOps*) ((char*)pLinkNode - offsetof( psonTxOps, node ));
       psonFree( &pTx->memObject, (unsigned char*) pOps, sizeof(psonTxOps), 
                 pContext );
@@ -484,6 +496,7 @@ bool psonTxRollback( psonTx             * pTx,
    PSO_PRE_CONDITION( pTx      != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pTx->signature == PSON_TX_SIGNATURE );
+   PSO_TRACE_ENTER( pContext );
 
 #if 0
    /* Synch the shared memory */
@@ -499,7 +512,7 @@ bool psonTxRollback( psonTx             * pTx,
     * First pass - we lock all objects of interest. This is the only place 
     * were we can return false.
     */
-   ok = psonLinkedListPeakFirst( &pTx->listOfOps, &pLinkNode );
+   ok = psonLinkedListPeakFirst( &pTx->listOfOps, &pLinkNode, pContext );
    PSO_POST_CONDITION( ok == true || ok == false );
    while ( ok ) {
       pChildMemObject = parentMemObject = NULL;
@@ -511,7 +524,7 @@ bool psonTxRollback( psonTx             * pTx,
       okLock = psonLockTx( pTx, parentMemObject, pContext );
       PSO_POST_CONDITION( okLock == true || okLock == false );
       if ( ! okLock ) {
-         psonClearLocks( pTx );
+         psonClearLocks( pTx, pContext );
          return false;
       }
       /* We only lock the child for these two ops */
@@ -525,19 +538,20 @@ bool psonTxRollback( psonTx             * pTx,
          okLock = psonLockTx( pTx, pChildMemObject, pContext );
          PSO_POST_CONDITION( okLock == true || okLock == false );
          if ( ! okLock ) {
-            psonClearLocks( pTx );
+            psonClearLocks( pTx, pContext );
             return false;
          }
       }
 
-      ok = psonLinkedListPeakNext( &pTx->listOfOps, pLinkNode, &pLinkNode );
+      ok = psonLinkedListPeakNext( &pTx->listOfOps, 
+                                   pLinkNode, &pLinkNode, pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
    }
 
    /*
     * Second pass - we rollback all operations.
     */
-   ok = psonLinkedListPeakLast( &pTx->listOfOps, &pLinkNode );
+   ok = psonLinkedListPeakLast( &pTx->listOfOps, &pLinkNode, pContext );
    PSO_POST_CONDITION( ok == true || ok == false );
    while ( ok ) {
       parentFolder = pChildFolder = NULL;
@@ -602,7 +616,7 @@ bool psonTxRollback( psonTx             * pTx,
              * as "Remove is committed" so that the last "user" do delete
              * it.
              */
-            psonTxStatusCommitRemove( pChildStatus );
+            psonTxStatusCommitRemove( pChildStatus, pContext );
          }
          else {
             /* 
@@ -646,7 +660,7 @@ bool psonTxRollback( psonTx             * pTx,
          GET_PTR( parentNode, parentFolder->nodeOffset, psonTreeNode );
          pChildStatus = &pHashItem->txStatus;
 
-         psonTxStatusClearTx( pChildStatus );
+         psonTxStatusClearTx( pChildStatus, pContext );
          parentNode->txCounter--;
 
          /* If needed */
@@ -668,7 +682,8 @@ bool psonTxRollback( psonTx             * pTx,
             parentMemObject = &pQueue->memObject;
 
             psonQueueRollbackRemove( pQueue, 
-                                     pOps->childOffset );
+                                     pOps->childOffset,
+                                     pContext );
          }
          /* We should not come here */
          else {
@@ -679,7 +694,8 @@ bool psonTxRollback( psonTx             * pTx,
 
       } /* end of switch on type of ops */
 
-      ok = psonLinkedListPeakPrevious( &pTx->listOfOps, pLinkNode, &pLinkNode );
+      ok = psonLinkedListPeakPrevious( &pTx->listOfOps, 
+                                       pLinkNode, &pLinkNode, pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
                 
    } /* end of while loop on the list of ops */
@@ -688,9 +704,9 @@ bool psonTxRollback( psonTx             * pTx,
     * Third pass: we unlock everything and release the memory of the
     * transaction list.
     */
-   psonClearLocks( pTx );
+   psonClearLocks( pTx, pContext );
 
-   while ( psonLinkedListGetFirst( &pTx->listOfOps, &pLinkNode ) ) {
+   while ( psonLinkedListGetFirst( &pTx->listOfOps, &pLinkNode, pContext ) ) {
       pOps = (psonTxOps*) ((char*)pLinkNode - offsetof( psonTxOps, node ));
       psonFree( &pTx->memObject, (unsigned char*) pOps, sizeof(psonTxOps), 
                 pContext );

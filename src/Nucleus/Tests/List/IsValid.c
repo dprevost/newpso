@@ -23,27 +23,26 @@
 
 psonLinkedList list;
 psonLinkNode node, node2;
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
-   psonSessionContext context;
-   
    initTest( &context );
    InitMem();
 
-   psonLinkNodeInit( &node );
-   psonLinkedListInit( &list );
+   psonLinkNodeInit( &node, &context );
+   psonLinkedListInit( &list, &context );
    
-   psonLinkedListPutLast( &list, &node );
+   psonLinkedListPutLast( &list, &node, &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void teardown_test()
 {
-   psonLinkedListFini( &list );
+   psonLinkedListFini( &list, &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -54,8 +53,18 @@ void test_invalid_sig( void ** state )
    int save = list.initialized;
 
    list.initialized = 0;
-   expect_assert_failure( psonLinkedListIsValid( &list, &node ) );
+   expect_assert_failure( psonLinkedListIsValid( &list, &node, &context ) );
    list.initialized = save;
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonLinkedListIsValid( &list, &node, NULL ) );
 #endif
    return;
 }
@@ -65,7 +74,7 @@ void test_invalid_sig( void ** state )
 void test_null_list( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonLinkedListIsValid( NULL, &node ) );
+   expect_assert_failure( psonLinkedListIsValid( NULL, &node, &context ) );
 #endif
    return;
 }
@@ -75,7 +84,7 @@ void test_null_list( void ** state )
 void test_null_unknown( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonLinkedListIsValid( &list, NULL ) );
+   expect_assert_failure( psonLinkedListIsValid( &list, NULL, &context ) );
 #endif
    return;
 }
@@ -87,12 +96,12 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    int valid;
    
-   psonLinkNodeInit( &node2 );
+   psonLinkNodeInit( &node2, &context );
    
-   valid = psonLinkedListIsValid( &list, &node );
+   valid = psonLinkedListIsValid( &list, &node, &context );
    assert_true( valid );
    
-   valid = psonLinkedListIsValid( &list, &node2 );
+   valid = psonLinkedListIsValid( &list, &node2, &context );
    assert_false( valid );
    
 #endif
@@ -107,6 +116,7 @@ int main()
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
       unit_test_setup_teardown( test_invalid_sig,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_list,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_unknown, setup_test, teardown_test ),
       unit_test_setup_teardown( test_pass,         setup_test, teardown_test )

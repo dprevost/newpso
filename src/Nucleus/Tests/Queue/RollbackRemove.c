@@ -37,9 +37,9 @@ void setup_test()
    
    pQueue = initQueueTest( &context );
 
-   psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   psonTxStatusInit( &status, SET_OFFSET(context.pTransaction), &context );
    psonTreeNodeInit( &queueNode, SET_OFFSET( pQueue ), PSO_QUEUE,
-                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
+                     SET_OFFSET(&status), PSON_NULL_OFFSET, &context );
 
    ok = psonQueueInit( pQueue, 
                        0, 1, &queueNode,
@@ -63,7 +63,7 @@ void setup_test()
    /* Must commit the insert before we attempt to remove */
    ok = psonQueueGetFirst( pQueue, &pQueueItem, 100, &context );
    assert( ok );
-   psonQueueCommitAdd( pQueue, SET_OFFSET(pQueueItem) );
+   psonQueueCommitAdd( pQueue, SET_OFFSET(pQueueItem), &context );
 
    ok = psonQueueRemove( pQueue,
                          &pQueueItem,
@@ -83,11 +83,24 @@ void teardown_test()
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonQueueRollbackRemove( pQueue, 
+                                                   SET_OFFSET( pQueueItem ),
+                                                   NULL ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void test_null_offset( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonQueueRollbackRemove( pQueue, 
-                                                   PSON_NULL_OFFSET ) );
+                                                   PSON_NULL_OFFSET,
+                                                   &context ) );
 #endif
    return;
 }
@@ -98,7 +111,8 @@ void test_null_queue( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonQueueRollbackRemove( NULL, 
-                                                   SET_OFFSET( pQueueItem ) ) );
+                                                   SET_OFFSET( pQueueItem ),
+                                                   &context ) );
 #endif
    return;
 }
@@ -108,7 +122,7 @@ void test_null_queue( void ** state )
 void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   psonQueueRollbackRemove( pQueue, SET_OFFSET( pQueueItem ) );
+   psonQueueRollbackRemove( pQueue, SET_OFFSET( pQueueItem ), &context );
 #endif
    return;
 }
@@ -120,9 +134,10 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_null_offset, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_queue,  setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,        setup_test, teardown_test )
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_offset,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_queue,   setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

@@ -147,14 +147,17 @@ bool qsrCreateMem( qsrMemoryManager   * pManager,
    errcode = psonMemObjectInit( &pFolder->memObject, 
                                 PSON_IDENT_FOLDER,
                                 &pFolder->blockGroup,
-                                1 );
+                                1,
+                                pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler,
                     g_qsrErrorHandle,
                     errcode );
       return false;
    }
-   psonTxStatusInit( &pManager->pHeader->topHashItem.txStatus, PSON_NULL_OFFSET );
+   psonTxStatusInit( &pManager->pHeader->topHashItem.txStatus,
+                     PSON_NULL_OFFSET,
+                     pContext );
 
    pFolder->nodeOffset = SET_OFFSET(&(*ppHeader)->topTreeNode);
 

@@ -23,13 +23,12 @@
 
 psonMemBitmap * pBitmap;
 unsigned char * ptr;
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
-   psonSessionContext context;
-   
    initTest( &context );
 
    ptr = malloc( PSON_BLOCK_SIZE*10 );
@@ -41,7 +40,8 @@ void setup_test()
    psonMemBitmapInit( pBitmap, 
                       SET_OFFSET(ptr),
                       10*PSON_BLOCK_SIZE,
-                      8 );
+                      8,
+                      &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -58,7 +58,17 @@ void teardown_test()
 void test_null_bitmap( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonMemBitmapFini( NULL ) );
+   expect_assert_failure( psonMemBitmapFini( NULL, &context ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonMemBitmapFini( pBitmap, NULL ) );
 #endif
    return;
 }
@@ -72,10 +82,11 @@ void test_pass( void ** state )
    
    /* We do this to test that fini() zero things out */
    psonSetBufferAllocated( pBitmap,
-                           PSON_BLOCK_SIZE, /* offset */
-                           PSON_BLOCK_SIZE ); /* length */
+                           PSON_BLOCK_SIZE,  /* offset */
+                           PSON_BLOCK_SIZE,  /* length */
+                           &context ); 
                              
-   psonMemBitmapFini( pBitmap );
+   psonMemBitmapFini( pBitmap, &context );
 
    assert_true( pBitmap->lengthInBits == 0 );
    assert_true( pBitmap->allocGranularity == 0 );
@@ -95,8 +106,9 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_null_bitmap, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,        setup_test, teardown_test )
+      unit_test_setup_teardown( test_null_bitmap,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

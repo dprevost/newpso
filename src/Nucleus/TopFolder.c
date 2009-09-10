@@ -44,6 +44,7 @@ bool psonTopFolderCloseObject( psonFolderItem     * pFolderItem,
    
    PSO_PRE_CONDITION( pFolderItem != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pChildNode, pFolderItem->pHashItem->dataOffset, psonTreeNode );
    
@@ -102,6 +103,7 @@ bool psonTopFolderCreateFolder( psonFolder          * pFolder,
    PSO_PRE_CONDITION( pFolder     != NULL );
    PSO_PRE_CONDITION( objectName  != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    strLength = nameLengthInBytes;
 
@@ -186,6 +188,7 @@ bool psonTopFolderCreateObject( psonFolder          * pFolder,
    PSO_PRE_CONDITION( pDefinition->type > PSO_FOLDER && 
                       pDefinition->type < PSO_LAST_OBJECT_TYPE );
    PSO_PRE_CONDITION( pDataDefinition != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    strLength = nameLengthInBytes;
 
@@ -263,6 +266,7 @@ bool psonTopFolderDestroyObject( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pFolder    != NULL );
    PSO_PRE_CONDITION( objectName != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    strLength = nameLengthInBytes;
    
@@ -339,6 +343,7 @@ bool psonTopFolderEditObject( psonFolder         * pFolder,
    PSO_PRE_CONDITION( objectName  != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
    PSO_PRE_CONDITION( objectType > 0 && objectType < PSO_LAST_OBJECT_TYPE );
+   PSO_TRACE_ENTER( pContext );
 
    strLength = nameLengthInBytes;
    if ( strLength > PSO_MAX_FULL_NAME_LENGTH ) {
@@ -429,6 +434,7 @@ bool psonTopFolderGetDef( psonFolder          * pFolder,
    PSO_PRE_CONDITION( ppKeyDefinition  != NULL );
    PSO_PRE_CONDITION( ppDataDefinition != NULL );
    PSO_PRE_CONDITION( pContext         != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    *ppDataDefinition = NULL;
    *ppKeyDefinition = NULL;
@@ -522,6 +528,7 @@ bool psonTopFolderGetDefLength( psonFolder          * pFolder,
    PSO_PRE_CONDITION( pKeyDefLength  != NULL );
    PSO_PRE_CONDITION( pDataDefLength != NULL );
    PSO_PRE_CONDITION( pContext       != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    strLength = nameLengthInBytes;
    
@@ -603,6 +610,7 @@ bool psonTopFolderGetStatus( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pStatus    != NULL );
    PSO_PRE_CONDITION( objectName != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    strLength = nameLengthInBytes;
    
@@ -624,10 +632,10 @@ bool psonTopFolderGetStatus( psonFolder         * pFolder,
    if ( strLength == 0 ) {
       /* Getting the status of the top folder (special case). */
       if ( psonLock( &pFolder->memObject, pContext ) ) {
-         psonMemObjectStatus( &pFolder->memObject, pStatus );
+         psonMemObjectStatus( &pFolder->memObject, pStatus, pContext );
          pStatus->type = PSO_FOLDER;
          
-         psonAPIFolderStatus( pFolder, pStatus );
+         psonAPIFolderStatus( pFolder, pStatus, pContext );
 
          psonUnlock( &pFolder->memObject, pContext );
       }
@@ -693,6 +701,7 @@ bool psonTopFolderOpenObject( psonFolder         * pFolder,
    PSO_PRE_CONDITION( objectName  != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
    PSO_PRE_CONDITION( objectType > 0 && objectType < PSO_LAST_OBJECT_TYPE );
+   PSO_TRACE_ENTER( pContext );
 
    strLength = nameLengthInBytes;
    if ( strLength > PSO_MAX_FULL_NAME_LENGTH ) {

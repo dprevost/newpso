@@ -90,10 +90,20 @@ void teardown_test()
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonHashTxGetFirst( pHash, &offsetFirstItem, NULL ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void test_null_hash( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonHashTxGetFirst( NULL, &offsetFirstItem ) );
+   expect_assert_failure( psonHashTxGetFirst( NULL, &offsetFirstItem, &context ) );
 #endif
    return;
 }
@@ -103,7 +113,7 @@ void test_null_hash( void ** state )
 void test_null_offset( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonHashTxGetFirst( pHash, NULL ) );
+   expect_assert_failure( psonHashTxGetFirst( pHash, NULL, &context ) );
 #endif
    return;
 }
@@ -115,7 +125,7 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    bool found;
    
-   found = psonHashTxGetFirst( pHash, &offsetFirstItem );
+   found = psonHashTxGetFirst( pHash, &offsetFirstItem, &context );
    assert_true( found );
    assert_false( offsetFirstItem == PSON_NULL_OFFSET );
    
@@ -130,9 +140,10 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_null_hash,   setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_offset, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,        setup_test, teardown_test )
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_hash,    setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_offset,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

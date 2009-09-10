@@ -54,16 +54,16 @@ void test_pass( void ** state )
       assert_true( pBitmap->bitmap[0] == 0xc0 );
    }
    
-   isFree = psonIsBufferFree( pBitmap, 0 );
+   isFree = psonIsBufferFree( pBitmap, 0, &context );
    assert_false( isFree );
    
-   isFree = psonIsBufferFree( pBitmap, 2*PSON_BLOCK_SIZE );
+   isFree = psonIsBufferFree( pBitmap, 2*PSON_BLOCK_SIZE, &context );
    assert_true( isFree );
    
-   isFree = psonIsBufferFree( pBitmap, -PSON_BLOCK_SIZE );
+   isFree = psonIsBufferFree( pBitmap, -PSON_BLOCK_SIZE, &context );
    assert_false( isFree );
    
-   isFree = psonIsBufferFree( pBitmap, 50*PSON_BLOCK_SIZE );
+   isFree = psonIsBufferFree( pBitmap, 50*PSON_BLOCK_SIZE, &context );
    assert_false( isFree );
    
 #endif

@@ -29,20 +29,22 @@ BEGIN_C_DECLS
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void qsrVerify( psonMemoryHeader * pMemoryAddress, 
-                 size_t           * pNumObjectsOK,
-                 size_t           * pNumObjectsRepaired,
-                 size_t           * pNumObjectsDeleted,
-                 size_t           * pNumObjectsError,
-                 FILE             * fp );
+void qsrVerify( psonMemoryHeader   * pMemoryAddress, 
+                size_t             * pNumObjectsOK,
+                size_t             * pNumObjectsRepaired,
+                size_t             * pNumObjectsDeleted,
+                size_t             * pNumObjectsError,
+                FILE               * fp,
+                psonSessionContext * pContext );
 
-void qsrRepair( psonMemoryHeader * pMemoryAddress,
-                 size_t           * pNumObjectsOK,
-                 size_t           * pNumObjectsRepaired,
-                 size_t           * pNumObjectsDeleted,
-                 size_t           * pNumObjectsError,
-                 FILE             * fp );
-     
+void qsrRepair( psonMemoryHeader   * pMemoryAddress,
+                size_t             * pNumObjectsOK,
+                size_t             * pNumObjectsRepaired,
+                size_t             * pNumObjectsDeleted,
+                size_t             * pNumObjectsError,
+                FILE               * fp,
+                psonSessionContext * pContext );
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 END_C_DECLS

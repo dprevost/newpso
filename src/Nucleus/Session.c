@@ -42,6 +42,7 @@ bool psonSessionAddObj( psonSession        * pSession,
    PSO_PRE_CONDITION( pContext      != NULL );
    PSO_PRE_CONDITION( objOffset     != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( objType > 0 && objType < PSO_LAST_OBJECT_TYPE );
+   PSO_TRACE_ENTER( pContext );
    
    /* For recovery purposes, always lock before doing anything! */
    if ( psonLock( &pSession->memObject, pContext ) ) {
@@ -52,9 +53,10 @@ bool psonSessionAddObj( psonSession        * pSession,
          pCurrentBuffer->type      = objType;
          pCurrentBuffer->pCommonObject = pCommonObject;
 
-         psonLinkNodeInit( &pCurrentBuffer->node );
+         psonLinkNodeInit( &pCurrentBuffer->node, pContext );
          psonLinkedListPutLast( &pSession->listOfObjects, 
-                                &pCurrentBuffer->node );
+                                &pCurrentBuffer->node,
+                                pContext );
          *ppObject = pCurrentBuffer;
          ok = true;
       }
@@ -84,6 +86,7 @@ bool psonSessionCloseCursor( psonSession        * pSession,
    PSO_PRE_CONDITION( pSession       != NULL );
    PSO_PRE_CONDITION( pCursorContext != NULL );
    PSO_PRE_CONDITION( pContext       != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    /* For recovery purposes, always lock before doing anything! */
    if ( psonLock( &pSession->memObject, pContext ) ) {
@@ -92,7 +95,8 @@ bool psonSessionCloseCursor( psonSession        * pSession,
       psonCursorFini( pCursorContext->cursor, pContext );
 
       psonLinkedListRemoveItem( &pSession->listOfCursors, 
-                                &pCursorContext->node );
+                                &pCursorContext->node,
+                                pContext );
       psonFree( &pSession->memObject, 
                 (unsigned char *)pCursorContext, 
                 sizeof(psonCursorContext),
@@ -163,6 +167,7 @@ void psonSessionFini( psonSession        * pSession,
    PSO_PRE_CONDITION( pSession != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pSession->memObject.objType == PSON_IDENT_SESSION );
+   PSO_TRACE_ENTER( pContext );
    
    /*
     * Eliminate all objects in the list. This is probably not needed
@@ -170,7 +175,9 @@ void psonSessionFini( psonSession        * pSession,
     * last step. This might be reviewed eventually.
     */
 
-   while ( psonLinkedListPeakFirst( &pSession->listOfObjects, &pNode ) ) {
+   while ( psonLinkedListPeakFirst( &pSession->listOfObjects, 
+                                    &pNode,
+                                    pContext ) ) {
       pObject = (psonObjectContext*)
          ((char*)pNode - offsetof( psonObjectContext, node ));
       psonSessionRemoveObj( pSession, pObject, pContext );
@@ -198,9 +205,11 @@ bool psonSessionGetFirst( psonSession        * pSession,
    PSO_PRE_CONDITION( pSession != NULL );
    PSO_PRE_CONDITION( ppObject != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    ok = psonLinkedListPeakFirst( &pSession->listOfObjects, 
-                                 &pNode );
+                                 &pNode,
+                                 pContext );
    if ( ok ) {
       *ppObject = (psonObjectContext*)
          ((char*)pNode - offsetof( psonObjectContext, node ));
@@ -222,18 +231,20 @@ bool psonSessionInit( psonSession        * pSession,
    PSO_PRE_CONDITION( pSession    != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
    PSO_PRE_CONDITION( pApiSession != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    errcode = psonMemObjectInit( &pSession->memObject, 
                                 PSON_IDENT_SESSION,
                                 &pSession->blockGroup,
-                                1 ); /* A single block */
+                                1,
+                                pContext ); /* A single block */
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
    }
    else {
-      psonLinkedListInit( &pSession->listOfObjects );
+      psonLinkedListInit( &pSession->listOfObjects, pContext );
 
       pTx = (psonTx*) psonMallocBlocks( pContext->pAllocator, PSON_ALLOC_ANY, 1, pContext );
       if ( pTx != NULL ) {
@@ -279,6 +290,7 @@ bool psonSessionOpenCursor( psonSession        * pSession,
    PSO_PRE_CONDITION( pSession != NULL );
    PSO_PRE_CONDITION( ppCursor != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    /* For recovery purposes, always lock before doing anything! */
    if ( psonLock( &pSession->memObject, pContext ) ) {
@@ -296,9 +308,10 @@ bool psonSessionOpenCursor( psonSession        * pSession,
                pCurrentBuffer->offset = SET_OFFSET(pCursor);
                pCurrentBuffer->cursor = pCursor;
                
-               psonLinkNodeInit( &pCurrentBuffer->node );
+               psonLinkNodeInit( &pCurrentBuffer->node, pContext );
                psonLinkedListPutLast( &pSession->listOfCursors, 
-                                      &pCurrentBuffer->node );
+                                      &pCurrentBuffer->node,
+                                      pContext );
                *ppCursor = pCurrentBuffer;
                ok = true;
             }
@@ -347,8 +360,9 @@ bool psonSessionRemoveFirst( psonSession        * pSession,
    
    PSO_PRE_CONDITION( pSession != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
+   PSO_TRACE_ENTER( pContext );
 
-   if ( psonLinkedListGetFirst(&pSession->listOfObjects, &pNode) ) {
+   if ( psonLinkedListGetFirst(&pSession->listOfObjects, &pNode, pContext) ) {
       pObject = (psonObjectContext*)
          ((char*)pNode - offsetof( psonObjectContext, node ));
 
@@ -371,11 +385,13 @@ bool psonSessionRemoveObj( psonSession        * pSession,
    PSO_PRE_CONDITION( pSession != NULL );
    PSO_PRE_CONDITION( pObject  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    /* For recovery purposes, always lock before doing anything! */
    if ( psonLock( &pSession->memObject, pContext ) ) {
       psonLinkedListRemoveItem( &pSession->listOfObjects, 
-                                &pObject->node );
+                                &pObject->node,
+                                pContext );
       psonFree( &pSession->memObject, 
                 (unsigned char *)pObject, 
                 sizeof(psonObjectContext),

@@ -45,6 +45,7 @@ void psonHashMapCommitAdd( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pHashItem, itemOffset, psonHashTxItem );
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
@@ -88,6 +89,7 @@ void psonHashMapCommitRemove( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( pHashItem, itemOffset, psonHashTxItem );
@@ -147,13 +149,14 @@ bool psonHashMapDelete( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
-      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pTransaction) ) 
-         || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus ) ) {
+      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pTransaction), pContext ) 
+         || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus, pContext ) ) {
          errcode = PSO_OBJECT_IS_DELETED;
          goto the_exit;
       }
@@ -272,8 +275,9 @@ void psonHashMapFini( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
+   PSO_TRACE_ENTER( pContext );
 
-   psonHashTxFini( &pHashMap->hashObj );
+   psonHashTxFini( &pHashMap->hashObj, pContext );
    
    /* 
     * Must be the last call since it will release the blocks of
@@ -304,13 +308,14 @@ bool psonHashMapGet( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
-      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pTransaction) ) 
-         || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus ) ) {
+      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pTransaction), pContext ) 
+         || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus, pContext ) ) {
          errcode = PSO_OBJECT_IS_DELETED;
          goto the_exit;
       }
@@ -427,13 +432,15 @@ bool psonHashMapGetFirst( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pItem    != NULL )
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
       found = psonHashTxGetFirst( &pHashMap->hashObj, 
-                                &firstItemOffset );
+                                  &firstItemOffset,
+                                  pContext );
       while ( found ) {
          GET_PTR( pHashItem, firstItemOffset, psonHashTxItem );
          txItemStatus = &pHashItem->txStatus;
@@ -495,7 +502,8 @@ bool psonHashMapGetFirst( psonHashMap        * pHashMap,
   
          found = psonHashTxGetNext( &pHashMap->hashObj, 
                                   firstItemOffset,
-                                  &firstItemOffset );
+                                  &firstItemOffset,
+                                  pContext );
       }
    }
    else {
@@ -531,6 +539,7 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
    PSO_PRE_CONDITION( pItem->pHashItem  != NULL );
    PSO_PRE_CONDITION( pItem->itemOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -541,7 +550,8 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
       found = psonHashTxGetNext( &pHashMap->hashObj, 
                                  itemOffset,
-                                 &itemOffset );
+                                 &itemOffset,
+                                 pContext );
       while ( found ) {
          GET_PTR( pHashItem, itemOffset, psonHashTxItem );
          txItemStatus = &pHashItem->txStatus;
@@ -603,8 +613,9 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
          }
   
          found = psonHashTxGetNext( &pHashMap->hashObj, 
-                                  itemOffset,
-                                  &itemOffset );
+                                    itemOffset,
+                                    &itemOffset,
+                                    pContext );
       }
    }
    else {
@@ -650,11 +661,13 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
    PSO_PRE_CONDITION( pDataDefinition != NULL );
    PSO_PRE_CONDITION( parentOffset    != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
+   PSO_TRACE_ENTER( pContext );
    
    errcode = psonMemObjectInit( &pHashMap->memObject, 
                                 PSON_IDENT_HASH_MAP,
                                 &pHashMap->blockGroup,
-                                numberOfBlocks );
+                                numberOfBlocks,
+                                pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
@@ -706,13 +719,14 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( keyLength  > 0 );
    PSO_PRE_CONDITION( itemLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
-      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pTransaction) ) 
-         || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus ) ) {
+      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pTransaction), pContext ) 
+         || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus, pContext ) ) {
          errcode = PSO_OBJECT_IS_DELETED;
          goto the_exit;
       }
@@ -766,7 +780,7 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
       }
       
       txItemStatus = &pHashItem->txStatus;
-      psonTxStatusInit( txItemStatus, SET_OFFSET(pContext->pTransaction) );
+      psonTxStatusInit( txItemStatus, SET_OFFSET(pContext->pTransaction), pContext );
       pMapNode->txCounter++;
       txItemStatus->status = PSON_TXS_ADDED;
       if ( previousHashItem != NULL ) {
@@ -806,6 +820,7 @@ bool psonHashMapRelease( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
       psonHashMapReleaseNoLock( pHashMap,
@@ -842,6 +857,7 @@ void psonHashMapReleaseNoLock( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -903,13 +919,14 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( keyLength  > 0 );
    PSO_PRE_CONDITION( itemLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
-      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pTransaction) ) 
-         || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus ) ) {
+      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pTransaction), pContext ) 
+         || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus, pContext ) ) {
          errcode = PSO_OBJECT_IS_DELETED;
          goto the_exit;
       }
@@ -975,11 +992,11 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
       }
       
       txItemStatus = &pHashItem->txStatus;
-      psonTxStatusInit( txItemStatus, SET_OFFSET(pContext->pTransaction) );
+      psonTxStatusInit( txItemStatus, SET_OFFSET(pContext->pTransaction), pContext );
       txItemStatus->status = PSON_TXS_DESTROYED;
 
       txItemStatus = &pNewHashItem->txStatus;
-      psonTxStatusInit( txItemStatus, SET_OFFSET(pContext->pTransaction) );
+      psonTxStatusInit( txItemStatus, SET_OFFSET(pContext->pTransaction), pContext );
       txItemStatus->status = PSON_TXS_REPLACED;
 
       pHashItem->nextSameKey = SET_OFFSET(pNewHashItem);
@@ -1021,6 +1038,7 @@ void psonHashMapRollbackAdd( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( pHashItem, itemOffset, psonHashTxItem );
@@ -1059,7 +1077,7 @@ void psonHashMapRollbackAdd( psonHashMap        * pHashMap,
       }
    }
    else {
-      psonTxStatusCommitRemove( txItemStatus );
+      psonTxStatusCommitRemove( txItemStatus, pContext );
    }
 }
 
@@ -1076,6 +1094,7 @@ void psonHashMapRollbackRemove( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( pHashItem, itemOffset, psonHashTxItem );
@@ -1085,7 +1104,7 @@ void psonHashMapRollbackRemove( psonHashMap        * pHashMap,
     * This call resets the transaction (to "none") and remove the 
     * bit that flag this data as being in the process of being removed.
     */
-   psonTxStatusUnmarkAsDestroyed( txItemStatus );
+   psonTxStatusUnmarkAsDestroyed( txItemStatus, pContext );
    pMapNode->txCounter--;
    
    /*
@@ -1111,8 +1130,9 @@ void psonHashMapRollbackRemove( psonHashMap        * pHashMap,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonHashMapStatus( psonHashMap  * pHashMap,
-                        psoObjStatus * pStatus )
+void psonHashMapStatus( psonHashMap        * pHashMap,
+                        psoObjStatus       * pStatus,
+                        psonSessionContext * pContext )
 {
    psonHashTxItem* pHashItem = NULL;
    ptrdiff_t  firstItemOffset;
@@ -1123,6 +1143,7 @@ void psonHashMapStatus( psonHashMap  * pHashMap,
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pStatus  != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -1134,7 +1155,8 @@ void psonHashMapStatus( psonHashMap  * pHashMap,
    if ( pStatus->numDataItem == 0 ) return;
 
    found = psonHashTxGetFirst( &pHashMap->hashObj, 
-                               &firstItemOffset );
+                               &firstItemOffset,
+                               pContext );
    while ( found ) {
       GET_PTR( pHashItem, firstItemOffset, psonHashTxItem );
       if ( pHashItem->dataLength > pStatus->maxDataLength ) {
@@ -1145,8 +1167,9 @@ void psonHashMapStatus( psonHashMap  * pHashMap,
       }
 
       found = psonHashTxGetNext( &pHashMap->hashObj, 
-                               firstItemOffset,
-                               &firstItemOffset );
+                                 firstItemOffset,
+                                 &firstItemOffset,
+                                 pContext );
    }
 }
 

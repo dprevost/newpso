@@ -32,14 +32,16 @@ void psonQueueReleaseNoLock( psonQueue          * pQueue,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonQueueCommitAdd( psonQueue * pQueue, 
-                         ptrdiff_t   itemOffset )
+void psonQueueCommitAdd( psonQueue          * pQueue, 
+                         ptrdiff_t            itemOffset,
+                         psonSessionContext * pContext )
 {
    psonQueueItem * pQueueItem;
    psonTreeNode * pQueueNode = NULL;
    
    PSO_PRE_CONDITION( pQueue   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
    GET_PTR( pQueueItem, itemOffset, psonQueueItem );
@@ -48,7 +50,7 @@ void psonQueueCommitAdd( psonQueue * pQueue,
     * A new entry that isn't yet committed cannot be accessed by some
     * other session. Clearing it is ok.
     */
-   psonTxStatusClearTx( &pQueueItem->txStatus );
+   psonTxStatusClearTx( &pQueueItem->txStatus, pContext );
    pQueueNode->txCounter--;
 }
 
@@ -65,6 +67,7 @@ void psonQueueCommitRemove( psonQueue          * pQueue,
    PSO_PRE_CONDITION( pQueue   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pQueueItem, itemOffset, psonQueueItem );
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
@@ -78,7 +81,8 @@ void psonQueueCommitRemove( psonQueue          * pQueue,
       len =  pQueueItem->dataLength + offsetof( psonQueueItem, data );
       
       psonLinkedListRemoveItem( &pQueue->listOfElements,
-                                &pQueueItem->node );
+                                &pQueueItem->node,
+                                pContext );
       psonFree( &pQueue->memObject, 
                 (unsigned char * )pQueueItem,
                 len,
@@ -87,7 +91,7 @@ void psonQueueCommitRemove( psonQueue          * pQueue,
       pQueueNode->txCounter--;
    }
    else {
-      psonTxStatusCommitRemove( &pQueueItem->txStatus );
+      psonTxStatusCommitRemove( &pQueueItem->txStatus, pContext );
    }
 }
 
@@ -141,8 +145,9 @@ void psonQueueFini( psonQueue          * pQueue,
    PSO_PRE_CONDITION( pQueue   != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
+   PSO_TRACE_ENTER( pContext );
 
-   psonLinkedListFini( &pQueue->listOfElements );
+   psonLinkedListFini( &pQueue->listOfElements, pContext );
    psonMemObjectFini(  &pQueue->memObject, PSON_ALLOC_API_OBJ, pContext );
 }
 
@@ -165,14 +170,16 @@ bool psonQueueGetFirst( psonQueue          * pQueue,
    PSO_PRE_CONDITION( ppIterator != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
    GET_PTR( txQueueStatus, pQueueNode->txStatusOffset, psonTxStatus );
    
    if ( psonLock( &pQueue->memObject, pContext ) ) {
       /* This call can only fail if the queue is empty. */
-      okList = psonLinkedListPeakFirst( &pQueue->listOfElements, &pNode );
-      
+      okList = psonLinkedListPeakFirst( &pQueue->listOfElements, 
+                                        &pNode,
+                                        pContext );
       while ( okList ) {
          pQueueItem = (psonQueueItem*)
             ((char*)pNode - offsetof( psonQueueItem, node ));
@@ -239,7 +246,8 @@ bool psonQueueGetFirst( psonQueue          * pQueue,
          }
          okList =  psonLinkedListPeakNext( &pQueue->listOfElements, 
                                            pNode, 
-                                           &pNode );
+                                           &pNode,
+                                           pContext );
       }
    }
    else {
@@ -286,6 +294,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
    PSO_PRE_CONDITION( ppIterator != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
    GET_PTR( txQueueStatus, pQueueNode->txStatusOffset, psonTxStatus );
@@ -295,7 +304,8 @@ bool psonQueueGetNext( psonQueue          * pQueue,
       pOldItem = (psonQueueItem*) *ppIterator;
       okList =  psonLinkedListPeakNext( &pQueue->listOfElements, 
                                         &pOldItem->node, 
-                                        &pNode );
+                                        &pNode,
+                                        pContext );
       
       while ( okList ) {
          pQueueItem = (psonQueueItem*)
@@ -365,7 +375,8 @@ bool psonQueueGetNext( psonQueue          * pQueue,
          }
          okList =  psonLinkedListPeakNext( &pQueue->listOfElements, 
                                            pNode, 
-                                           &pNode );
+                                           &pNode,
+                                           pContext );
       }
    }
    else {
@@ -412,11 +423,13 @@ bool psonQueueInit( psonQueue           * pQueue,
    PSO_PRE_CONDITION( pDataDefinition != NULL );
    PSO_PRE_CONDITION( parentOffset    != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
+   PSO_TRACE_ENTER( pContext );
    
    errcode = psonMemObjectInit( &pQueue->memObject, 
                                 PSON_IDENT_QUEUE,
                                 &pQueue->blockGroup,
-                                numberOfBlocks );
+                                numberOfBlocks,
+                                pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
@@ -426,7 +439,7 @@ bool psonQueueInit( psonQueue           * pQueue,
 
    pQueue->nodeOffset = SET_OFFSET( pQueueNode );
 
-   psonLinkedListInit( &pQueue->listOfElements );
+   psonLinkedListInit( &pQueue->listOfElements, pContext );
 
    pQueue->dataDefOffset = SET_OFFSET(pDataDefinition);
    
@@ -455,13 +468,16 @@ bool psonQueueInsert( psonQueue          * pQueue,
    PSO_PRE_CONDITION( firstOrLast == PSON_QUEUE_FIRST || 
       firstOrLast == PSON_QUEUE_LAST );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
    GET_PTR( txQueueStatus, pQueueNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pQueue->memObject, pContext ) ) {
-      if ( ! psonTxStatusIsValid( txQueueStatus, SET_OFFSET(pContext->pTransaction) ) 
-         || psonTxStatusIsMarkedAsDestroyed( txQueueStatus ) ) {
+      if ( ! psonTxStatusIsValid( txQueueStatus, 
+                                  SET_OFFSET(pContext->pTransaction),
+                                  pContext ) 
+         || psonTxStatusIsMarkedAsDestroyed( txQueueStatus, pContext ) ) {
          errcode = PSO_OBJECT_IS_DELETED;
          goto the_exit;
       }
@@ -475,7 +491,7 @@ bool psonQueueInsert( psonQueue          * pQueue,
          goto the_exit;
       }
    
-      psonLinkNodeInit( &pQueueItem->node );
+      psonLinkNodeInit( &pQueueItem->node, pContext );
       pQueueItem->dataLength = length;
       memcpy( pQueueItem->data, pItem, length );
    
@@ -497,14 +513,18 @@ bool psonQueueInsert( psonQueue          * pQueue,
 
       if ( firstOrLast == PSON_QUEUE_FIRST ) {
          psonLinkedListPutFirst( &pQueue->listOfElements,
-                                 &pQueueItem->node );
+                                 &pQueueItem->node,
+                                 pContext );
       }
       else {
          psonLinkedListPutLast( &pQueue->listOfElements,
-                                &pQueueItem->node );
+                                &pQueueItem->node,
+                                pContext );
       }
       
-      psonTxStatusInit( &pQueueItem->txStatus, SET_OFFSET(pContext->pTransaction) );
+      psonTxStatusInit( &pQueueItem->txStatus,
+                        SET_OFFSET(pContext->pTransaction),
+                        pContext );
       pQueueNode->txCounter++;
       pQueueItem->txStatus.status = PSON_TXS_ADDED;
 
@@ -552,13 +572,16 @@ bool psonQueueInsertNow( psonQueue          * pQueue,
    PSO_PRE_CONDITION( firstOrLast == PSON_QUEUE_FIRST || 
       firstOrLast == PSON_QUEUE_LAST );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
    GET_PTR( txQueueStatus, pQueueNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pQueue->memObject, pContext ) ) {
-      if ( ! psonTxStatusIsValid( txQueueStatus, SET_OFFSET(pContext->pTransaction) ) 
-         || psonTxStatusIsMarkedAsDestroyed( txQueueStatus ) ) {
+      if ( ! psonTxStatusIsValid( txQueueStatus,
+                                  SET_OFFSET(pContext->pTransaction),
+                                  pContext ) 
+         || psonTxStatusIsMarkedAsDestroyed( txQueueStatus, pContext ) ) {
          errcode = PSO_OBJECT_IS_DELETED;
          goto the_exit;
       }
@@ -572,20 +595,22 @@ bool psonQueueInsertNow( psonQueue          * pQueue,
          goto the_exit;
       }
    
-      psonLinkNodeInit( &pQueueItem->node );
+      psonLinkNodeInit( &pQueueItem->node, pContext );
       pQueueItem->dataLength = length;
       memcpy( pQueueItem->data, pItem, length );
       
       if ( firstOrLast == PSON_QUEUE_FIRST ) {
          psonLinkedListPutFirst( &pQueue->listOfElements,
-                                 &pQueueItem->node );
+                                 &pQueueItem->node,
+                                 pContext );
       }
       else {
          psonLinkedListPutLast( &pQueue->listOfElements,
-                                &pQueueItem->node );
+                                &pQueueItem->node,
+                                pContext );
       }
       
-      psonTxStatusInit( &pQueueItem->txStatus, PSON_NULL_OFFSET );
+      psonTxStatusInit( &pQueueItem->txStatus, PSON_NULL_OFFSET, pContext );
 
       psonUnlock( &pQueue->memObject, pContext );
    }
@@ -620,6 +645,7 @@ bool psonQueueRelease( psonQueue          * pQueue,
    PSO_PRE_CONDITION( pQueueItem != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
+   PSO_TRACE_ENTER( pContext );
 
    if ( psonLock( &pQueue->memObject, pContext ) ) {
       psonQueueReleaseNoLock( pQueue,
@@ -656,6 +682,7 @@ void psonQueueReleaseNoLock( psonQueue          * pQueue,
    PSO_PRE_CONDITION( pQueueItem != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
+   PSO_TRACE_ENTER( pContext );
 
    txItemStatus = &pQueueItem->txStatus;
    
@@ -666,10 +693,11 @@ void psonQueueReleaseNoLock( psonQueue          * pQueue,
    txQueueStatus->usageCounter--;
 
    if ( (txItemStatus->usageCounter == 0) && 
-      psonTxStatusIsRemoveCommitted(txItemStatus) ) {
+      psonTxStatusIsRemoveCommitted(txItemStatus, pContext) ) {
       /* Time to really delete the record! */
       psonLinkedListRemoveItem( &pQueue->listOfElements, 
-                                &pQueueItem->node );
+                                &pQueueItem->node,
+                                pContext );
 
       len =  pQueueItem->dataLength + offsetof( psonQueueItem, data );
       psonFree( &pQueue->memObject, 
@@ -703,24 +731,31 @@ bool psonQueueRemove( psonQueue          * pQueue,
    PSO_PRE_CONDITION( firstOrLast == PSON_QUEUE_FIRST || 
       firstOrLast == PSON_QUEUE_LAST );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
 
    GET_PTR( txParentStatus, pQueueNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pQueue->memObject, pContext ) ) {
-      if ( ! psonTxStatusIsValid( txParentStatus, SET_OFFSET(pContext->pTransaction) ) 
-         || psonTxStatusIsMarkedAsDestroyed( txParentStatus ) ) {
+      if ( ! psonTxStatusIsValid( txParentStatus,
+                                  SET_OFFSET(pContext->pTransaction),
+                                  pContext ) 
+         || psonTxStatusIsMarkedAsDestroyed( txParentStatus, pContext ) ) {
          errcode = PSO_OBJECT_IS_DELETED;
          goto the_exit;
       }
    
       /* This call can only fail if the queue is empty. */
       if ( firstOrLast == PSON_QUEUE_FIRST ) {
-         okList = psonLinkedListPeakFirst( &pQueue->listOfElements, &pNode );
+         okList = psonLinkedListPeakFirst( &pQueue->listOfElements,
+                                           &pNode,
+                                           pContext );
       }
       else {
-         okList = psonLinkedListPeakLast( &pQueue->listOfElements, &pNode );
+         okList = psonLinkedListPeakLast( &pQueue->listOfElements, 
+                                          &pNode,
+                                          pContext );
       }
       
       while ( okList ) {
@@ -754,11 +789,13 @@ bool psonQueueRemove( psonQueue          * pQueue,
             PSO_POST_CONDITION( ok == true || ok == false );
             if ( ! ok ) goto the_exit;
       
-            psonTxStatusSetTx( txItemStatus, SET_OFFSET(pContext->pTransaction) );
+            psonTxStatusSetTx( txItemStatus,
+                               SET_OFFSET(pContext->pTransaction),
+                               pContext );
             pQueueNode->txCounter++;
             txItemStatus->usageCounter++;
             txParentStatus->usageCounter++;
-            psonTxStatusMarkAsDestroyed( txItemStatus );
+            psonTxStatusMarkAsDestroyed( txItemStatus, pContext );
 
             *ppQueueItem = pItem;
 
@@ -767,19 +804,21 @@ bool psonQueueRemove( psonQueue          * pQueue,
             return true;
          }
          /* We test the type of flag to return the proper error code (if needed) */
-         if ( ! psonTxStatusIsRemoveCommitted(txItemStatus) ) {
+         if ( ! psonTxStatusIsRemoveCommitted(txItemStatus, pContext) ) {
             queueIsEmpty = false;
          }
          
          if ( firstOrLast == PSON_QUEUE_FIRST ) {
             okList = psonLinkedListPeakNext( &pQueue->listOfElements, 
                                              pNode, 
-                                             &pNode );
+                                             &pNode,
+                                             pContext );
          }
          else {
             okList = psonLinkedListPeakPrevious( &pQueue->listOfElements, 
                                                  pNode, 
-                                                 &pNode );
+                                                 &pNode,
+                                                 pContext );
          }
       }
    }
@@ -817,6 +856,7 @@ void psonQueueRollbackAdd( psonQueue          * pQueue,
    PSO_PRE_CONDITION( pQueue   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
 
@@ -833,7 +873,8 @@ void psonQueueRollbackAdd( psonQueue          * pQueue,
     */
    if ( txStatus->usageCounter == 0 ) {
       psonLinkedListRemoveItem( &pQueue->listOfElements,
-                                &pQueueItem->node );
+                                &pQueueItem->node,
+                                pContext );
       psonFree( &pQueue->memObject, 
                 (unsigned char *) pQueueItem, 
                 len, 
@@ -842,20 +883,22 @@ void psonQueueRollbackAdd( psonQueue          * pQueue,
       pQueueNode->txCounter--;
    }
    else {
-      psonTxStatusCommitRemove( txStatus );
+      psonTxStatusCommitRemove( txStatus, pContext );
    }
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonQueueRollbackRemove( psonQueue * pQueue, 
-                              ptrdiff_t   itemOffset )
+void psonQueueRollbackRemove( psonQueue          * pQueue, 
+                              ptrdiff_t            itemOffset,
+                              psonSessionContext * pContext )
 {
    psonQueueItem * pQueueItem;
    psonTreeNode * pQueueNode = NULL;
    
    PSO_PRE_CONDITION( pQueue     != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pQueueItem, itemOffset, psonQueueItem );
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
@@ -864,15 +907,16 @@ void psonQueueRollbackRemove( psonQueue * pQueue,
     * This call resets the transaction (to "none") and remove the bit 
     * that flag this data as being in the process of being removed.
     */
-   psonTxStatusUnmarkAsDestroyed(  &pQueueItem->txStatus );
+   psonTxStatusUnmarkAsDestroyed( &pQueueItem->txStatus, pContext );
 
    pQueueNode->txCounter--;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonQueueStatus( psonQueue    * pQueue,
-                      psoObjStatus * pStatus )
+void psonQueueStatus( psonQueue          * pQueue,
+                      psoObjStatus       * pStatus,
+                      psonSessionContext * pContext )
 {
    psonQueueItem * pQueueItem = NULL;
    psonLinkNode * pNode = NULL;
@@ -882,6 +926,7 @@ void psonQueueStatus( psonQueue    * pQueue,
    
    PSO_PRE_CONDITION( pQueue  != NULL );
    PSO_PRE_CONDITION( pStatus != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
    GET_PTR( txStatus, pQueueNode->txStatusOffset, psonTxStatus );
@@ -894,7 +939,8 @@ void psonQueueStatus( psonQueue    * pQueue,
    
    /* This call can only fail if the queue is empty. */
    okList = psonLinkedListPeakFirst( &pQueue->listOfElements, 
-                                     &pNode );
+                                     &pNode,
+                                     pContext );
 
    while ( okList ) {
       pQueueItem = (psonQueueItem*)
@@ -905,7 +951,8 @@ void psonQueueStatus( psonQueue    * pQueue,
       
       okList =  psonLinkedListPeakNext( &pQueue->listOfElements, 
                                         pNode, 
-                                        &pNode );
+                                        &pNode,
+                                        pContext );
    }
 }
 

@@ -155,8 +155,9 @@ bool psonSetRelease( psonSet            * pSet,
                      psonSetItem        * pSetItem,
                      psonSessionContext * pContext );
 
-void psonSetStatus( psonSet      * pSet,
-                    psoObjStatus * pStatus );
+void psonSetStatus( psonSet            * pSet,
+                    psoObjStatus       * pStatus,
+                    psonSessionContext * pContext );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

@@ -43,7 +43,7 @@ qsrCheckFolderContent( qsrVerifyStruct   * pVerify,
    /* The easy case */
    if ( pFolder->hashObj.numberOfItems == 0 ) return rc;
 
-   found = psonHashTxGetFirst( &pFolder->hashObj, &offset );
+   found = psonHashTxGetFirst( &pFolder->hashObj, &offset, pContext );
    while ( found ) {
       GET_PTR( pItem, offset, psonHashTxItem );
       GET_PTR( pNode, pItem->dataOffset, psonTreeNode );
@@ -81,8 +81,9 @@ qsrCheckFolderContent( qsrVerifyStruct   * pVerify,
       
       previousOffset = offset;
       found = psonHashTxGetNext( &pFolder->hashObj,
-                               previousOffset,
-                               &offset );
+                                 previousOffset,
+                                 &offset,
+                                 pContext );
 
       switch ( valid ) {
       case QSR_REC_OK:
@@ -220,7 +221,8 @@ qsrVerifyFolder( qsrVerifyStruct    * pVerify,
    if ( bTestObject ) {
       rc2 = qsrVerifyHashTx( pVerify, 
                               &pFolder->hashObj, 
-                              SET_OFFSET(&pFolder->memObject) );
+                              SET_OFFSET(&pFolder->memObject),
+                              pContext );
       if ( rc2 > QSR_REC_START_ERRORS ) {
          pVerify->spaces -= 2;
          return rc2;

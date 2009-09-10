@@ -51,7 +51,22 @@ void test_invalid_type( void ** state )
    expect_assert_failure( psonMemObjectInit( pObj, 
                                              (psonMemObjIdent)(PSON_IDENT_LAST + 200),
                                              &pDummy->blockGroup,
-                                             4 ) );
+                                             4,
+                                             &context ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonMemObjectInit( pObj, 
+                                             PSON_IDENT_ALLOCATOR,
+                                             &pDummy->blockGroup,
+                                             4,
+                                             NULL ) );
 #endif
    return;
 }
@@ -64,7 +79,8 @@ void test_null_group( void ** state )
    expect_assert_failure( psonMemObjectInit( pObj, 
                                              PSON_IDENT_ALLOCATOR,
                                              NULL,
-                                             4 ) );
+                                             4,
+                                             &context ) );
 #endif
    return;
 }
@@ -77,7 +93,8 @@ void test_null_obj( void ** state )
    expect_assert_failure( psonMemObjectInit( NULL, 
                                              PSON_IDENT_ALLOCATOR,
                                              &pDummy->blockGroup,
-                                             4 ) );
+                                             4,
+                                             &context ) );
 #endif
    return;
 }
@@ -90,7 +107,8 @@ void test_zero_pages( void ** state )
    expect_assert_failure( psonMemObjectInit( pObj, 
                                              PSON_IDENT_ALLOCATOR,
                                              &pDummy->blockGroup,
-                                             0 ) );
+                                             0,
+                                             &context ) );
 #endif
    return;
 }
@@ -103,7 +121,8 @@ void test_zero_type( void ** state )
    expect_assert_failure( psonMemObjectInit( pObj, 
                                              (psonMemObjIdent)0,
                                              &pDummy->blockGroup,
-                                             4 ) );
+                                             4,
+                                             &context ) );
 #endif
    return;
 }
@@ -118,7 +137,8 @@ void test_pass( void ** state )
    errcode = psonMemObjectInit( pObj, 
                                 PSON_IDENT_ALLOCATOR,
                                 &pDummy->blockGroup,
-                                4 );
+                                4,
+                                &context );
    assert_true( errcode == PSO_OK );
    assert_true( pObj->objType == PSON_IDENT_ALLOCATOR );
    assert_true( pObj->totalBlocks == 4 );
@@ -137,6 +157,7 @@ int main()
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
       unit_test_setup_teardown( test_invalid_type, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_group,   setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_obj,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_zero_pages,   setup_test, teardown_test ),

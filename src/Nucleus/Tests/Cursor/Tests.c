@@ -41,7 +41,7 @@ void test1( void ** state )
    assert_true( ok );
 
    /* Number of items at start */
-   psonCursorSize( pCursor, &numItems );
+   psonCursorSize( pCursor, &numItems, &context );
    assert_true( numItems == 0 );
 
    /* Emptying an empty cursor */
@@ -111,12 +111,12 @@ void test1( void ** state )
    assert_true( pItem->itemOffset == SET_OFFSET((unsigned char *)0x3) );
 
    /* Number of items */
-   psonCursorSize( pCursor, &numItems );
+   psonCursorSize( pCursor, &numItems, &context );
    assert_true( numItems == 3 );
 
    /* Emptying the cursor */
    psonCursorEmpty( pCursor, &context );
-   psonCursorSize( pCursor, &numItems );
+   psonCursorSize( pCursor, &numItems, &context );
    assert_true( numItems == 0 );
 
 #endif

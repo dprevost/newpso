@@ -25,8 +25,9 @@
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 enum qsrRecoverError
-qsrCheckQueueContent( qsrVerifyStruct * pVerify,
-                       struct psonQueue * pQueue )
+qsrCheckQueueContent( qsrVerifyStruct    * pVerify,
+                      struct psonQueue   * pQueue,
+                      psonSessionContext * pContext )
 {
    psonTxStatus * txItemStatus;
    psonLinkNode * pNode = NULL, * pDeletedNode = NULL;
@@ -34,7 +35,7 @@ qsrCheckQueueContent( qsrVerifyStruct * pVerify,
    enum qsrRecoverError rc = QSR_REC_OK;
    bool ok;
    
-   ok = psonLinkedListPeakFirst( &pQueue->listOfElements, &pNode );
+   ok = psonLinkedListPeakFirst( &pQueue->listOfElements, &pNode, pContext );
    while ( ok ) {
       pQueueItem = (psonQueueItem*) 
          ((char*)pNode - offsetof( psonQueueItem, node ));
@@ -81,14 +82,17 @@ qsrCheckQueueContent( qsrVerifyStruct * pVerify,
       
       ok =  psonLinkedListPeakNext( &pQueue->listOfElements, 
                                     pNode, 
-                                    &pNode );
+                                    &pNode,
+                                    pContext );
       /*
        * We need the old node to be able to get to the next node. That's
        * why we save the node to be deleted and delete it until after we
        * retrieve the next node.
        */
       if ( pDeletedNode != NULL && pVerify->doRepair ) {
-         psonLinkedListRemoveItem( &pQueue->listOfElements, pDeletedNode );
+         psonLinkedListRemoveItem( &pQueue->listOfElements,
+                                   pDeletedNode,
+                                   pContext );
          qsrEcho( pVerify, "Queue item removed from shared memory" );
       }
       pDeletedNode = NULL;
@@ -192,7 +196,7 @@ qsrVerifyQueue( qsrVerifyStruct   * pVerify,
    }
    
    if ( bTestObject ) {
-      rc2 = qsrVerifyList( pVerify, &pQueue->listOfElements );
+      rc2 = qsrVerifyList( pVerify, &pQueue->listOfElements, pContext );
       if ( rc2 > QSR_REC_START_ERRORS ) {
          pVerify->spaces -= 2;
          return rc2;
@@ -201,7 +205,7 @@ qsrVerifyQueue( qsrVerifyStruct   * pVerify,
       if ( rc2 > rc ) rc = rc2;
    }
    
-   rc2 = qsrCheckQueueContent( pVerify, pQueue );
+   rc2 = qsrCheckQueueContent( pVerify, pQueue, pContext );
    /* At this point rc is either 0 or QSR_REC_CHANGES */
    if ( rc2 > rc ) rc = rc2;
    pVerify->spaces -= 2;

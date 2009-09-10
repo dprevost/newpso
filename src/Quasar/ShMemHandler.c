@@ -445,7 +445,8 @@ bool qsrHandlerInit( qsrHandler          * pHandler,
                      &numObjectsRepaired,
                      &numObjectsDeleted,
                      &numObjectsError,
-                     fp );
+                     fp,
+                     &pHandler->context );
          if ( fp != stderr ) fclose( fp );
          return (numObjectsError == 0);
       }
@@ -454,7 +455,8 @@ bool qsrHandlerInit( qsrHandler          * pHandler,
                   &numObjectsRepaired,
                   &numObjectsDeleted,
                   &numObjectsError,
-                  fp );
+                  fp,
+                  &pHandler->context );
       if ( fp != stderr ) fclose( fp );
 
       fprintf( stderr, "Number of objects with no defects: "PSO_SIZE_T_FORMAT"\n", numObjectsOK );

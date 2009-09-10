@@ -212,6 +212,21 @@ if ( CONTEXT->traceOn ) {\
 #  define PSO_TRACE(CONTEXT,TRACES)
 #endif
 
+#if defined(PSO_USE_TRACE)
+#  define PSO_TRACE_ENTER(CONTEXT) \
+if ( CONTEXT->traceOn ) {\
+   fprintf( stderr, "Entering function %s\n", __func__ );\
+}
+#  define PSO_TRACE_EXIT(CONTEXT) \
+if ( CONTEXT->traceOn ) {\
+   fprintf( stderr, "Exiting function %s\n", __func__ );\
+}
+#else
+#  define PSO_TRACE_ENTER(CONTEXT)
+#  define PSO_TRACE_EXIT(CONTEXT)
+#endif
+
+
 //
 //#  if defined(PSO_USE_TRACE)
 

@@ -70,10 +70,11 @@ void psonMemObjectDump( psonMemObject * pMemObj, int indent )
  */
 
 enum psoErrors 
-psonMemObjectInit( psonMemObject   * pMemObj,
-                   psonMemObjIdent   objType,
-                   psonBlockGroup  * pGroup,
-                   size_t            numBlocks )
+psonMemObjectInit( psonMemObject      * pMemObj,
+                   psonMemObjIdent      objType,
+                   psonBlockGroup     * pGroup,
+                   size_t               numBlocks,
+                   psonSessionContext * pContext )
 {
    bool ok;
    
@@ -82,6 +83,7 @@ psonMemObjectInit( psonMemObject   * pMemObj,
    PSO_PRE_CONDITION( numBlocks > 0 );
    PSO_PRE_CONDITION( objType > PSON_IDENT_FIRST && 
                       objType < PSON_IDENT_LAST );
+   PSO_TRACE_ENTER( pContext );
 
    /* In case InitProcessLock fails */
    pMemObj->objType = PSON_IDENT_CLEAR;
@@ -95,17 +97,19 @@ psonMemObjectInit( psonMemObject   * pMemObj,
    if ( ! ok ) return PSO_NOT_ENOUGH_RESOURCES;
    
    pMemObj->objType = objType;
-   psonLinkedListInit( &pMemObj->listBlockGroup );
+   psonLinkedListInit( &pMemObj->listBlockGroup, pContext );
    
    psonBlockGroupInit( pGroup,
                        SET_OFFSET(pMemObj),
                        numBlocks,
-                       objType );
+                       objType,
+                       pContext );
    
    /* Add the blockGroup to the list of groups of the memObject */
-   psonLinkNodeInit( &pGroup->node );
+   psonLinkNodeInit( &pGroup->node, pContext );
    psonLinkedListPutFirst( &pMemObj->listBlockGroup, 
-                           &pGroup->node );
+                           &pGroup->node,
+                           pContext );
                            
    pMemObj->totalBlocks = numBlocks;
    
@@ -141,14 +145,15 @@ psonMemObjectFini( psonMemObject      * pMemObj,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pMemObj->objType > PSON_IDENT_FIRST && 
                       pMemObj->objType < PSON_IDENT_LAST );
+   PSO_TRACE_ENTER( pContext );
 
    /*
     * We retrieve the first node - and leave it alone.
     */
-   ok = psonLinkedListGetFirst( &pMemObj->listBlockGroup, &firstNode );
+   ok = psonLinkedListGetFirst( &pMemObj->listBlockGroup, &firstNode, pContext );
    PSO_PRE_CONDITION( ok );
 
-   while ( psonLinkedListGetFirst(&pMemObj->listBlockGroup, &dummy) ) {
+   while ( psonLinkedListGetFirst(&pMemObj->listBlockGroup, &dummy, pContext) ) {
       pGroup = (psonBlockGroup*)( 
          (unsigned char*)dummy - offsetof(psonBlockGroup,node));
 
@@ -163,7 +168,7 @@ psonMemObjectFini( psonMemObject      * pMemObj,
 
    pMemObj->totalBlocks = 0;
 
-   psonLinkedListFini( &pMemObj->listBlockGroup );
+   psonLinkedListFini( &pMemObj->listBlockGroup, pContext );
 
    if ( ! psocFiniProcessLock( &pMemObj->lock ) ) {
       return PSO_SEM_DESTROY_ERROR;
@@ -201,6 +206,7 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
    PSO_PRE_CONDITION( pMemObj  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( numBytes > 0 );
+   PSO_TRACE_ENTER( pContext );
    
    requestedChunks = (numBytes-1)/PSON_ALLOCATION_UNIT + 1;
    
@@ -208,7 +214,9 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
     * The first loop is done on the list of block groups of the current 
     * memory object.
     */
-   okGroup = psonLinkedListPeakFirst( &pMemObj->listBlockGroup, &dummy );
+   okGroup = psonLinkedListPeakFirst( &pMemObj->listBlockGroup,
+                                      &dummy,
+                                      pContext );
    while ( okGroup ) {
       currentGroup = (psonBlockGroup*)( 
          (unsigned char*)dummy - offsetof(psonBlockGroup,node));
@@ -222,7 +230,9 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
           * This second loop is done on the list of free chunks in the 
           * current block group.
           */
-         okChunk = psonLinkedListPeakFirst( &currentGroup->freeList, &dummy );
+         okChunk = psonLinkedListPeakFirst( &currentGroup->freeList,
+                                            &dummy,
+                                            pContext );
          while ( okChunk ) {
             currentNode = (psonFreeBufferNode*)( 
                (unsigned char*)dummy - offsetof(psonFreeBufferNode,node));
@@ -233,17 +243,19 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
                if ( remainingChunks == 0 ) {
                   /* Remove the chunk from the list */
                   psonLinkedListRemoveItem( &currentGroup->freeList, 
-                                            &currentNode->node );
+                                            &currentNode->node,
+                                            pContext );
                }
                else {
                   newNode = (psonFreeBufferNode*)
                             ((unsigned char*) currentNode + 
                             (requestedChunks*PSON_ALLOCATION_UNIT));
                   newNode->numBuffers = remainingChunks;
-                  psonLinkNodeInit( &newNode->node );
+                  psonLinkNodeInit( &newNode->node, pContext );
                   psonLinkedListReplaceItem( &currentGroup->freeList, 
                                              &currentNode->node, 
-                                             &newNode->node );
+                                             &newNode->node,
+                                             pContext );
                   /*
                    * Put the offset of the first free chunk on the last free 
                    * chunk. This makes it simpler/faster to rejoin groups 
@@ -261,7 +273,8 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
                /* Set the bitmap of chunks of the current block group. */
                psonSetBufferAllocated( &currentGroup->bitmap, 
                                        SET_OFFSET(currentNode), 
-                                       requestedChunks*PSON_ALLOCATION_UNIT );
+                                       requestedChunks*PSON_ALLOCATION_UNIT,
+                                       pContext );
                               
                return (unsigned char*) currentNode;
             } /* end if of numChunks >= requestedChunks */
@@ -269,14 +282,16 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
             oldNode = currentNode;
             okChunk = psonLinkedListPeakNext( &currentGroup->freeList,
                                               &oldNode->node,
-                                              &dummy );
+                                              &dummy,
+                                              pContext );
          } /* end of second loop on chunks */
       } /* end of test on freeBytes */
       
       oldGroup = currentGroup;
       okGroup = psonLinkedListPeakNext( &pMemObj->listBlockGroup,
                                         &oldGroup->node,
-                                        &dummy );
+                                        &dummy,
+                                        pContext );
    } /* end of first loop on block groups */
 
    /*
@@ -317,14 +332,19 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
       psonBlockGroupInit( currentGroup, 
                           SET_OFFSET( currentGroup ), 
                           i, 
-                          pMemObj->objType );
+                          pMemObj->objType,
+                          pContext );
       /* Add the blockGroup to the list of groups of the memObject */
-      psonLinkNodeInit( &currentGroup->node );
-      psonLinkedListPutLast( &pMemObj->listBlockGroup, &currentGroup->node );
+      psonLinkNodeInit( &currentGroup->node, pContext );
+      psonLinkedListPutLast( &pMemObj->listBlockGroup,
+                             &currentGroup->node,
+                             pContext );
       pMemObj->totalBlocks += i;
       
       /* Allocate the memory (the chunks) needed to satisfy the request. */
-      okChunk = psonLinkedListPeakFirst( &currentGroup->freeList, &dummy );
+      okChunk = psonLinkedListPeakFirst( &currentGroup->freeList,
+                                         &dummy,
+                                         pContext );
       if ( okChunk ) {
          currentNode = (psonFreeBufferNode*)( 
             (unsigned char*)dummy + offsetof(psonFreeBufferNode,node));
@@ -334,17 +354,19 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
          if ( remainingChunks == 0 ) {
             /* Remove the node from the list */
             psonLinkedListRemoveItem( &currentGroup->freeList, 
-                                      &currentNode->node );
+                                      &currentNode->node,
+                                      pContext );
          }
          else {
             newNode = (psonFreeBufferNode*)
                       ((unsigned char*) currentNode + 
                       (requestedChunks*PSON_ALLOCATION_UNIT));
             newNode->numBuffers = remainingChunks;
-            psonLinkNodeInit( &newNode->node );
+            psonLinkNodeInit( &newNode->node, pContext );
             psonLinkedListReplaceItem( &currentGroup->freeList, 
                                        &currentNode->node, 
-                                       &newNode->node );
+                                       &newNode->node,
+                                       pContext );
             /*
              * Put the offset of the first free chunk on the last free 
              * chunk. This makes it simpler/faster to rejoin groups 
@@ -362,7 +384,8 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
          /* Set the bitmap */
          psonSetBufferAllocated( &currentGroup->bitmap, 
                                  SET_OFFSET(currentNode), 
-                                 requestedChunks*PSON_ALLOCATION_UNIT );
+                                 requestedChunks*PSON_ALLOCATION_UNIT,
+                                 pContext );
                               
          return (unsigned char*) currentNode;
       }
@@ -400,6 +423,7 @@ void psonFree( psonMemObject*      pMemObj,
    PSO_PRE_CONDITION( pMemObj  != NULL );
    PSO_PRE_CONDITION( ptr      != NULL );
    PSO_PRE_CONDITION( numBytes > 0 );
+   PSO_TRACE_ENTER( pContext );
 
    /*
     * Ajust numBytes so that it is a multiple of PSON_ALLOCATION_UNIT,
@@ -408,7 +432,9 @@ void psonFree( psonMemObject*      pMemObj,
    numBytes = ((numBytes-1)/PSON_ALLOCATION_UNIT+1)*PSON_ALLOCATION_UNIT;
    
    /* Find to which blockgroup ptr belongs to */
-   ok = psonLinkedListPeakFirst( &pMemObj->listBlockGroup, &dummy );
+   ok = psonLinkedListPeakFirst( &pMemObj->listBlockGroup,
+                                 &dummy,
+                                 pContext );
    while ( ok ) {
       currentGroup = (psonBlockGroup*)( 
          (unsigned char*)dummy - offsetof(psonBlockGroup,node));
@@ -423,7 +449,8 @@ void psonFree( psonMemObject*      pMemObj,
       oldGroup = currentGroup;
       ok = psonLinkedListPeakNext( &pMemObj->listBlockGroup,
                                    &oldGroup->node,
-                                   &dummy );
+                                   &dummy,
+                                   pContext );
    }
    PSO_PRE_CONDITION( goodGroup != NULL );
 
@@ -434,11 +461,14 @@ void psonFree( psonMemObject*      pMemObj,
     * is in the freeList or not.
     */
    p = ptr - PSON_ALLOCATION_UNIT;
-   otherBufferisFree = psonIsBufferFree( &goodGroup->bitmap, SET_OFFSET(p) );
+   otherBufferisFree = psonIsBufferFree( &goodGroup->bitmap,
+                                         SET_OFFSET(p),
+                                         pContext );
    if ( otherBufferisFree ) {
       /* Find the start of that free group of chunks */
       if ( psonIsBufferFree( &goodGroup->bitmap, 
-         SET_OFFSET( ptr - 2*PSON_ALLOCATION_UNIT ) ) ) {
+                             SET_OFFSET( ptr - 2*PSON_ALLOCATION_UNIT ),
+                             pContext ) ) {
          /* The free group has more than one chunk */
          offset = *((ptrdiff_t*)p);
          GET_PTR( p, offset, unsigned char);
@@ -457,9 +487,10 @@ void psonFree( psonMemObject*      pMemObj,
        */
       p = ptr; /* This is needed further down */
       ((psonFreeBufferNode*)p)->numBuffers = numBytes/PSON_ALLOCATION_UNIT;
-      psonLinkNodeInit( &((psonFreeBufferNode*)p)->node );
+      psonLinkNodeInit( &((psonFreeBufferNode*)p)->node, pContext );
       psonLinkedListPutLast( &goodGroup->freeList, 
-                             &((psonFreeBufferNode*)p)->node );
+                             &((psonFreeBufferNode*)p)->node,
+                             pContext );
    }
 
    /* 
@@ -471,11 +502,13 @@ void psonFree( psonMemObject*      pMemObj,
     */
    otherNode = (psonFreeBufferNode*)( ptr + numBytes);
    otherBufferisFree = psonIsBufferFree( &goodGroup->bitmap, 
-                                         SET_OFFSET(otherNode) );
+                                         SET_OFFSET(otherNode),
+                                         pContext );
    if ( otherBufferisFree ) {
       ((psonFreeBufferNode*)p)->numBuffers += otherNode->numBuffers;
       psonLinkedListRemoveItem( &goodGroup->freeList, 
-                                &otherNode->node );
+                                &otherNode->node,
+                                pContext );
       memset( otherNode, 0, sizeof(psonFreeBufferNode) );
    }
 
@@ -485,9 +518,11 @@ void psonFree( psonMemObject*      pMemObj,
       numBlocks = goodGroup->numBlocks;
       pMemObj->totalBlocks -= numBlocks;
       /* Remove the blockGroup to the list of groups of the memObject */
-      psonLinkedListRemoveItem( &pMemObj->listBlockGroup, &goodGroup->node );
+      psonLinkedListRemoveItem( &pMemObj->listBlockGroup,
+                                &goodGroup->node,
+                                pContext );
 
-      psonBlockGroupFini( goodGroup );
+      psonBlockGroupFini( goodGroup, pContext );
       
       psonFreeBlocks( pContext->pAllocator,
                       PSON_ALLOC_ANY,
@@ -497,8 +532,9 @@ void psonFree( psonMemObject*      pMemObj,
    }
    else {
       /* Set the bitmap */
-      psonSetBufferFree( &goodGroup->bitmap, SET_OFFSET(ptr), numBytes );
-   
+      psonSetBufferFree( &goodGroup->bitmap, SET_OFFSET(ptr),
+                         numBytes,
+                         pContext );
       /*
        * Put the offset of the first free block on the last free block.
        * This makes it simpler/faster to rejoin groups of free blocks. But 
@@ -515,8 +551,9 @@ void psonFree( psonMemObject*      pMemObj,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonMemObjectStatus( psonMemObject * pMemObj, 
-                          psoObjStatus  * pStatus )
+void psonMemObjectStatus( psonMemObject      * pMemObj, 
+                          psoObjStatus       * pStatus,
+                          psonSessionContext * pContext )
 {
    psonLinkNode * dummy;
    psonBlockGroup * pGroup;
@@ -524,6 +561,7 @@ void psonMemObjectStatus( psonMemObject * pMemObj,
    
    PSO_PRE_CONDITION( pMemObj != NULL );
    PSO_PRE_CONDITION( pStatus != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    pStatus->numBlocks = pMemObj->totalBlocks;
    pStatus->numBlockGroup = pMemObj->listBlockGroup.currentSize;
@@ -532,7 +570,9 @@ void psonMemObjectStatus( psonMemObject * pMemObj,
    /*
     * We retrieve the first node
     */
-   ok = psonLinkedListPeakFirst( &pMemObj->listBlockGroup, &dummy );
+   ok = psonLinkedListPeakFirst( &pMemObj->listBlockGroup,
+                                 &dummy,
+                                 pContext );
    PSO_PRE_CONDITION( ok );
 
    while ( ok ) {
@@ -542,7 +582,8 @@ void psonMemObjectStatus( psonMemObject * pMemObj,
 
       ok = psonLinkedListPeakNext( &pMemObj->listBlockGroup,
                                    dummy,
-                                   &dummy );
+                                   &dummy,
+                                   pContext );
    }
 }
 

@@ -41,15 +41,15 @@ qsrVerifyMemObject( struct qsrVerifyStruct   * pVerify,
     * Reset the bitmap and the the list of groups.
     */
    qsrResetBitmap( pVerify->pBitmap );
-   psonSetBufferFree( pVerify->pBitmap, 0, pAlloc->totalLength );
+   psonSetBufferFree( pVerify->pBitmap, 0, pAlloc->totalLength, pContext );
 
-   rc = qsrVerifyList( pVerify, &pMemObj->listBlockGroup );
+   rc = qsrVerifyList( pVerify, &pMemObj->listBlockGroup, pContext );
    if ( rc > QSR_REC_START_ERRORS ) return rc;
    
    /*
     * We retrieve the first node
     */
-   ok = psonLinkedListPeakFirst( &pMemObj->listBlockGroup, &dummy );
+   ok = psonLinkedListPeakFirst( &pMemObj->listBlockGroup, &dummy, pContext );
    while ( ok ) {
       pGroup = (psonBlockGroup*)( 
          (unsigned char*)dummy - offsetof(psonBlockGroup,node));
@@ -57,7 +57,8 @@ qsrVerifyMemObject( struct qsrVerifyStruct   * pVerify,
       
       ok = psonLinkedListPeakNext( &pMemObj->listBlockGroup,
                                    dummy,
-                                   &dummy );
+                                   &dummy,
+                                   pContext );
    }
    if ( numBlocks != pMemObj->totalBlocks ) {
       rc = QSR_REC_CHANGES;
@@ -73,9 +74,9 @@ qsrVerifyMemObject( struct qsrVerifyStruct   * pVerify,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void qsrPopulateBitmap( struct qsrVerifyStruct   * pVerify,
-                         struct psonMemObject      * pMemObj,
-                         struct psonSessionContext * pContext )
+void qsrPopulateBitmap( struct qsrVerifyStruct    * pVerify,
+                        struct psonMemObject      * pMemObj,
+                        struct psonSessionContext * pContext )
 {
    psonLinkNode * dummy;
    psonBlockGroup * pGroup;
@@ -89,18 +90,20 @@ void qsrPopulateBitmap( struct qsrVerifyStruct   * pVerify,
    /*
     * We retrieve the first node
     */
-   ok = psonLinkedListPeakFirst( &pMemObj->listBlockGroup, &dummy );
+   ok = psonLinkedListPeakFirst( &pMemObj->listBlockGroup, &dummy, pContext );
    while ( ok ) {
       pGroup = (psonBlockGroup*)( 
          (unsigned char*)dummy - offsetof(psonBlockGroup,node));
 
       psonSetBufferFree( pVerify->pBitmap, 
          SET_OFFSET( pGroup )/PSON_BLOCK_SIZE*PSON_BLOCK_SIZE, 
-         pGroup->numBlocks*PSON_BLOCK_SIZE );
+         pGroup->numBlocks*PSON_BLOCK_SIZE,
+         pContext );
       
       ok = psonLinkedListPeakNext( &pMemObj->listBlockGroup,
                                    dummy,
-                                   &dummy );
+                                   &dummy,
+                                   pContext );
    }
 }
 

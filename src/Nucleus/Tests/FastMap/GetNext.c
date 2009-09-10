@@ -42,9 +42,9 @@ void setup_test()
    pHashMap = initHashMapTest( &context );
    assert( pHashMap );
    
-   psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ), &context );
    psonTreeNodeInit( &mapNode, SET_OFFSET( pHashMap ), PSO_FAST_MAP,
-                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET, &context );
    
    ok = psonFastMapInit( pHashMap, 0, 1, 0, &mapNode,
                          SET_OFFSET(pHashMap), &def, &keyDef, 

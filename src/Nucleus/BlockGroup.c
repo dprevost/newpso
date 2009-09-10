@@ -63,18 +63,22 @@ void psonBlockGroupDump( psonBlockGroup * pGroup, int indent )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonBlockGroupFini( psonBlockGroup * pGroup )
+void psonBlockGroupFini( psonBlockGroup     * pGroup,
+                         psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pGroup != NULL );
+   PSO_TRACE_ENTER( pContext );
 
-   psonMemBitmapFini(  &pGroup->bitmap );
-   psonLinkedListFini( &pGroup->freeList );
-   psonLinkNodeFini(   &pGroup->node );
+   psonMemBitmapFini(  &pGroup->bitmap, pContext );
+   psonLinkedListFini( &pGroup->freeList, pContext );
+   psonLinkNodeFini(   &pGroup->node, pContext );
 
    pGroup->numBlocks = 0;
    pGroup->maxFreeBytes = 0;
    pGroup->freeBytes = 0;
    pGroup->objType = PSON_IDENT_CLEAR;
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -83,10 +87,11 @@ void psonBlockGroupFini( psonBlockGroup * pGroup )
  * Note: no need to initialize the endBlock struct. It is set by the 
  * memory allocator when calling psonMallocBlocks().
  */
-void psonBlockGroupInit( psonBlockGroup  * pGroup,
-                         ptrdiff_t         firstBlockOffset,
-                         size_t            numBlocks,
-                         psonMemObjIdent   objType )
+void psonBlockGroupInit( psonBlockGroup     * pGroup,
+                         ptrdiff_t            firstBlockOffset,
+                         size_t               numBlocks,
+                         psonMemObjIdent      objType,
+                         psonSessionContext * pContext )
 {
    ptrdiff_t groupOffset;
    size_t currentLength;
@@ -96,17 +101,19 @@ void psonBlockGroupInit( psonBlockGroup  * pGroup,
    PSO_PRE_CONDITION( firstBlockOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numBlocks > 0 );
    PSO_PRE_CONDITION( objType > PSON_IDENT_FIRST && objType < PSON_IDENT_LAST );
+   PSO_TRACE_ENTER( pContext );
 
    pGroup->numBlocks = numBlocks;
    pGroup->objType = PSON_IDENT_PAGE_GROUP & objType;
    
-   psonLinkNodeInit( &pGroup->node );
-   psonLinkedListInit( &pGroup->freeList );
+   psonLinkNodeInit( &pGroup->node, pContext );
+   psonLinkedListInit( &pGroup->freeList, pContext );
    
    psonMemBitmapInit( &pGroup->bitmap,
                       firstBlockOffset,
                       numBlocks << PSON_BLOCK_SHIFT, 
-                      PSON_ALLOCATION_UNIT );
+                      PSON_ALLOCATION_UNIT,
+                      pContext );
    
    /* Is the blockGroup struct at the beginning of the group ? */
    groupOffset = SET_OFFSET(pGroup);
@@ -131,7 +138,8 @@ void psonBlockGroupInit( psonBlockGroup  * pGroup,
    currentLength += offsetof(psonBlockGroup,bitmap) +
                     offsetof(psonMemBitmap,bitmap) +
                     psonGetBitmapLengthBytes( numBlocks << PSON_BLOCK_SHIFT, 
-                                              PSON_ALLOCATION_UNIT );
+                                              PSON_ALLOCATION_UNIT,
+                                              pContext );
    currentLength = ((currentLength-1)/PSON_ALLOCATION_UNIT+1)*PSON_ALLOCATION_UNIT;
    
    pGroup->maxFreeBytes = (numBlocks << PSON_BLOCK_SHIFT) - currentLength;
@@ -145,16 +153,21 @@ void psonBlockGroupInit( psonBlockGroup  * pGroup,
     * + firstBlockOffset with length "maxFreeBytes". Insert it in our freeList.
     */
    GET_PTR( firstNode, firstBlockOffset+currentLength, psonFreeBufferNode );
-   psonLinkNodeInit( &firstNode->node );
+   psonLinkNodeInit( &firstNode->node, pContext );
    firstNode->numBuffers = pGroup->maxFreeBytes/PSON_ALLOCATION_UNIT;
 
-   psonLinkedListPutFirst( &pGroup->freeList, &firstNode->node );
+   psonLinkedListPutFirst( &pGroup->freeList, &firstNode->node, pContext );
 
    /* And set the bitmap */
-   psonSetBufferAllocated( &pGroup->bitmap, firstBlockOffset, currentLength );
+   psonSetBufferAllocated( &pGroup->bitmap,
+                           firstBlockOffset,
+                           currentLength,
+                           pContext );
    psonSetBufferAllocated( &pGroup->bitmap, 
                            psonEndBlockOffset(firstBlockOffset, numBlocks), 
-                           PSON_ALLOCATION_UNIT );
+                           PSON_ALLOCATION_UNIT,
+                           pContext );
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

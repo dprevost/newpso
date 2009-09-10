@@ -142,8 +142,9 @@ bool psonAPIFolderGetNext( psonFolder         * pFolder,
                            psonSessionContext * pContext );
 
 /* Retrieve the status of the current folder */
-void psonAPIFolderStatus( psonFolder   * pFolder,
-                          psoObjStatus * pStatus );
+void psonAPIFolderStatus( psonFolder         * pFolder,
+                          psoObjStatus       * pStatus,
+                          psonSessionContext * pContext );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

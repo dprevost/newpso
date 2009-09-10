@@ -59,10 +59,20 @@ void teardown_test()
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonCursorSize( pCursor, &size, NULL ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void test_null_cursor( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonCursorSize( NULL, &size ) );
+   expect_assert_failure( psonCursorSize( NULL, &size, &context ) );
 #endif
    return;
 }
@@ -72,7 +82,7 @@ void test_null_cursor( void ** state )
 void test_null_size( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonCursorSize( pCursor, NULL ) );
+   expect_assert_failure( psonCursorSize( pCursor, NULL, &context ) );
 #endif
    return;
 }
@@ -84,7 +94,7 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    bool ok;
    
-   psonCursorSize( pCursor, &size );
+   psonCursorSize( pCursor, &size, &context );
    assert_true( size == 2 );
    
    ok = psonCursorInsertLast( pCursor,
@@ -93,7 +103,7 @@ void test_pass( void ** state )
                               &context );
    assert_true( ok );
 
-   psonCursorSize( pCursor, &size );
+   psonCursorSize( pCursor, &size, &context );
    assert_true( size == 3 );
 
 #endif
@@ -107,9 +117,10 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_null_cursor, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_size,   setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,        setup_test, teardown_test )
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_cursor,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_size,    setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

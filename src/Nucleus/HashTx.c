@@ -42,7 +42,7 @@ size_t calculateItemLength( uint32_t keyLength,
                             uint32_t dataLength )
 {
    size_t len;
-   
+
    len = offsetof(psonHashTxItem, key) + keyLength;
    len = ((len-1)/PSOC_ALIGNMENT_STRUCT + 1)*PSOC_ALIGNMENT_STRUCT;
    
@@ -87,13 +87,16 @@ psonHashResizeEnum isItTimeToResize( psonHashTx * pHash )
 static bool findKey( psonHashTx          * pHash,
                      ptrdiff_t           * pArray,
                      const unsigned char * pKey,
-                     uint32_t                keyLength,
+                     uint32_t              keyLength,
                      psonHashTxItem     ** ppItem,
                      psonHashTxItem     ** ppPreviousItem,
-                     size_t              * pBucket )
+                     size_t              * pBucket,
+                     psonSessionContext  * pContext )
 {
    ptrdiff_t currentOffset, nextOffset;
    psonHashTxItem* pItem;
+
+   PSO_TRACE_ENTER( pContext );
 
    *pBucket = hash_it( pKey, keyLength ) % g_psonArrayLengths[pHash->lengthIndex];
    currentOffset = pArray[*pBucket];
@@ -142,6 +145,7 @@ void psonHashTxDelete( psonHashTx         * pHash,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pItem    != NULL );
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
@@ -249,10 +253,12 @@ void psonHashTxDump( psonHashTx * pHash,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonHashTxFini( psonHashTx * pHash )
+void psonHashTxFini( psonHashTx         * pHash,
+                     psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pHash != NULL );
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
+   PSO_TRACE_ENTER( pContext );
    
    pHash->initialized = 0;
 }
@@ -277,12 +283,13 @@ bool psonHashTxGet( psonHashTx          * pHash,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
 
    keyFound = findKey( pHash, pArray, pKey, keyLength, 
-                       &pItem, &dummy, pBucket );
+                       &pItem, &dummy, pBucket, pContext );
 
    if ( keyFound ) *ppItem = pItem;
 
@@ -296,8 +303,9 @@ bool psonHashTxGet( psonHashTx          * pHash,
 #  pragma warning(disable:4702) 
 #endif
 
-bool psonHashTxGetFirst( psonHashTx * pHash,
-                         ptrdiff_t  * pFirstItemOffset )
+bool psonHashTxGetFirst( psonHashTx         * pHash,
+                         ptrdiff_t          * pFirstItemOffset,
+                         psonSessionContext * pContext )
 {
    ptrdiff_t* pArray, currentOffset;
    bool SHOULD_NOT_REACHED_THIS = true;
@@ -305,6 +313,7 @@ bool psonHashTxGetFirst( psonHashTx * pHash,
    
    PSO_PRE_CONDITION( pHash != NULL );
    PSO_PRE_CONDITION( pFirstItemOffset != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
    
@@ -337,9 +346,10 @@ bool psonHashTxGetFirst( psonHashTx * pHash,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonHashTxGetNext( psonHashTx * pHash,
-                        ptrdiff_t    previousOffset,
-                        ptrdiff_t  * pNextItemOffset )
+bool psonHashTxGetNext( psonHashTx         * pHash,
+                        ptrdiff_t            previousOffset,
+                        ptrdiff_t          * pNextItemOffset,
+                        psonSessionContext * pContext )
 {
    ptrdiff_t* pArray, currentOffset;
    size_t i;
@@ -349,6 +359,7 @@ bool psonHashTxGetNext( psonHashTx * pHash,
    PSO_PRE_CONDITION( pNextItemOffset != NULL );
    PSO_PRE_CONDITION( previousOffset != PSON_NULL_OFFSET );
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
@@ -390,6 +401,7 @@ enum psoErrors psonHashTxInit( psonHashTx         * pHash,
    
    PSO_PRE_CONDITION( pHash != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    pHash->numberOfItems = 0;
    pHash->totalDataSizeInBytes = 0;
@@ -460,6 +472,7 @@ enum psoErrors psonHashTxInsert( psonHashTx          * pHash,
    PSO_PRE_CONDITION( keyLength  > 0 );
    PSO_PRE_CONDITION( dataLength > 0 );
    PSO_PRE_CONDITION( bucket < g_psonArrayLengths[pHash->lengthIndex] );
+   PSO_TRACE_ENTER( pContext );
 
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
    
@@ -524,6 +537,7 @@ enum psoErrors psonHashTxResize( psonHashTx         * pHash,
    PSO_PRE_CONDITION( pHash != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
+   PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );

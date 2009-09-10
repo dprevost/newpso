@@ -21,13 +21,15 @@
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline
-bool psonLinkedListGetFirst( psonLinkedList  * pList,
-                             psonLinkNode   ** ppItem )
+bool psonLinkedListGetFirst( psonLinkedList     * pList,
+                             psonLinkNode      ** ppItem,
+                             psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( ppItem     != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    /* Check for empty queue. */
    if ( pList->currentSize == 0 ) return false;
@@ -52,13 +54,15 @@ bool psonLinkedListGetFirst( psonLinkedList  * pList,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline
-bool psonLinkedListGetLast( psonLinkedList  * pList,
-                            psonLinkNode   ** ppItem )
+bool psonLinkedListGetLast( psonLinkedList     * pList,
+                            psonLinkNode      ** ppItem,
+                            psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( ppItem     != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    /* Check for empty list. */
    if ( pList->currentSize == 0 ) return false;
@@ -83,8 +87,9 @@ bool psonLinkedListGetLast( psonLinkedList  * pList,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline void 
-psonLinkedListPutLast( psonLinkedList * pList,
-                       psonLinkNode   * pNewItem )
+psonLinkedListPutLast( psonLinkedList     * pList,
+                       psonLinkNode       * pNewItem,
+                       psonSessionContext * pContext )
 {
    ptrdiff_t tmpOffset;
    
@@ -94,6 +99,7 @@ psonLinkedListPutLast( psonLinkedList * pList,
    PSO_PRE_CONDITION( pNewItem   != NULL );
    PSO_PRE_CONDITION( pNewItem->previousOffset == PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( pNewItem->nextOffset     == PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    tmpOffset = SET_OFFSET( pNewItem );
 
@@ -114,8 +120,9 @@ psonLinkedListPutLast( psonLinkedList * pList,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline void 
-psonLinkedListPutFirst( psonLinkedList * pList,
-                        psonLinkNode   * pNewItem )
+psonLinkedListPutFirst( psonLinkedList     * pList,
+                        psonLinkNode       * pNewItem,
+                        psonSessionContext * pContext )
 {
    ptrdiff_t tmpOffset;
    
@@ -125,6 +132,7 @@ psonLinkedListPutFirst( psonLinkedList * pList,
    PSO_PRE_CONDITION( pNewItem   != NULL );
    PSO_PRE_CONDITION( pNewItem->previousOffset == PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( pNewItem->nextOffset     == PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    tmpOffset = SET_OFFSET( pNewItem );
 
@@ -146,8 +154,9 @@ psonLinkedListPutFirst( psonLinkedList * pList,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline void 
-psonLinkedListRemoveItem( psonLinkedList * pList,
-                          psonLinkNode   * pRemovedItem )
+psonLinkedListRemoveItem( psonLinkedList     * pList,
+                          psonLinkNode       * pRemovedItem,
+                          psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
    /* Test to see if the list is initialized */
@@ -156,6 +165,7 @@ psonLinkedListRemoveItem( psonLinkedList * pList,
    PSO_PRE_CONDITION( pRemovedItem->previousOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( pRemovedItem->nextOffset     != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( pList->currentSize > 0 );
+   PSO_TRACE_ENTER( pContext );
 
    GET_PTR_FAST( pRemovedItem->nextOffset, psonLinkNode )->previousOffset = 
       pRemovedItem->previousOffset;
@@ -169,13 +179,15 @@ psonLinkedListRemoveItem( psonLinkedList * pList,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline
-bool psonLinkedListPeakFirst( psonLinkedList *  pList,
-                              psonLinkNode   ** ppItem )
+bool psonLinkedListPeakFirst( psonLinkedList     * pList,
+                              psonLinkNode      ** ppItem,
+                              psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( ppItem     != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    /* Check for empty list. */
    if ( pList->currentSize == 0 ) return false;
@@ -190,13 +202,15 @@ bool psonLinkedListPeakFirst( psonLinkedList *  pList,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline
-bool psonLinkedListPeakLast( psonLinkedList  * pList,
-                             psonLinkNode   ** ppItem )
+bool psonLinkedListPeakLast( psonLinkedList     * pList,
+                             psonLinkNode      ** ppItem,
+                             psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( ppItem     != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    /* Check for empty list. */
    if ( pList->currentSize == 0 ) return false;
@@ -211,9 +225,10 @@ bool psonLinkedListPeakLast( psonLinkedList  * pList,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline
-bool psonLinkedListPeakNext( psonLinkedList * pList,
-                             psonLinkNode   * pCurrent, 
-                             psonLinkNode  ** ppNext )
+bool psonLinkedListPeakNext( psonLinkedList     * pList,
+                             psonLinkNode       * pCurrent, 
+                             psonLinkNode      ** ppNext,
+                             psonSessionContext * pContext )
 {
    psonLinkNode* pNext;
 
@@ -224,6 +239,7 @@ bool psonLinkedListPeakNext( psonLinkedList * pList,
    PSO_PRE_CONDITION( ppNext     != NULL );
    PSO_PRE_CONDITION( pCurrent->previousOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( pCurrent->nextOffset     != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    pNext = GET_PTR_FAST( pCurrent->nextOffset, psonLinkNode );
    if ( pNext == &pList->head ) return false;
@@ -238,9 +254,10 @@ bool psonLinkedListPeakNext( psonLinkedList * pList,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 inline
-bool psonLinkedListPeakPrevious( psonLinkedList * pList,
-                                 psonLinkNode   * pCurrent, 
-                                 psonLinkNode  ** ppPrevious )
+bool psonLinkedListPeakPrevious( psonLinkedList     * pList,
+                                 psonLinkNode       * pCurrent, 
+                                 psonLinkNode      ** ppPrevious,
+                                 psonSessionContext * pContext )
 {
    psonLinkNode* pPrevious;
 
@@ -251,6 +268,7 @@ bool psonLinkedListPeakPrevious( psonLinkedList * pList,
    PSO_PRE_CONDITION( ppPrevious != NULL );
    PSO_PRE_CONDITION( pCurrent->previousOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( pCurrent->nextOffset     != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    pPrevious = GET_PTR_FAST( pCurrent->previousOffset, psonLinkNode );
    if ( pPrevious == &pList->head ) return false;
@@ -269,9 +287,10 @@ bool psonLinkedListPeakPrevious( psonLinkedList * pList,
  * assumes that pOldItem is in the list... otherwise big trouble!)
  */
 inline void 
-psonLinkedListReplaceItem( psonLinkedList * pList,
-                           psonLinkNode   * pOldItem,
-                           psonLinkNode   * pNewItem )
+psonLinkedListReplaceItem( psonLinkedList     * pList,
+                           psonLinkNode       * pOldItem,
+                           psonLinkNode       * pNewItem,
+                           psonSessionContext * pContext )
 {
    ptrdiff_t tmpOffset;
 
@@ -285,6 +304,7 @@ psonLinkedListReplaceItem( psonLinkedList * pList,
    PSO_PRE_CONDITION( pNewItem->previousOffset == PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( pNewItem->nextOffset     == PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( pList->currentSize > 0 );
+   PSO_TRACE_ENTER( pContext );
 
    tmpOffset = SET_OFFSET( pNewItem );
    pNewItem->nextOffset     = pOldItem->nextOffset;

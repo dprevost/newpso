@@ -39,9 +39,9 @@ void setup_test()
    
    pHashMap = initHashMapTest( &context );
 
-   psonTxStatusInit( &txStatus, SET_OFFSET( context.pTransaction ) );
+   psonTxStatusInit( &txStatus, SET_OFFSET( context.pTransaction ), &context );
    psonTreeNodeInit( &mapNode, SET_OFFSET( pHashMap ), PSO_FAST_MAP,
-                     SET_OFFSET( &txStatus ), PSON_NULL_OFFSET );
+                     SET_OFFSET( &txStatus ), PSON_NULL_OFFSET, &context );
    
    ok = psonFastMapInit( pHashMap, 0, 1, 0, &mapNode,
                          SET_OFFSET(pHashMap), &def, &keyDef, 
@@ -68,10 +68,20 @@ void teardown_test()
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonFastMapStatus( pHashMap, &status, NULL ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void test_null_map( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonFastMapStatus( NULL, &status ) );
+   expect_assert_failure( psonFastMapStatus( NULL, &status, &context ) );
 #endif
    return;
 }
@@ -81,7 +91,7 @@ void test_null_map( void ** state )
 void test_null_status( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonFastMapStatus( pHashMap, NULL ) );
+   expect_assert_failure( psonFastMapStatus( pHashMap, NULL, &context ) );
 #endif
    return;
 }
@@ -111,7 +121,7 @@ void test_pass( void ** state )
                            &context );
    assert_true( ok );
    
-   psonFastMapStatus( pHashMap, &status );
+   psonFastMapStatus( pHashMap, &status, &context );
 
    assert_true( status.numDataItem == 3 );
    
@@ -126,9 +136,10 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_null_map,    setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_status, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,        setup_test, teardown_test )
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_map,     setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_status,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

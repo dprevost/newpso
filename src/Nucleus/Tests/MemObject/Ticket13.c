@@ -43,7 +43,8 @@ void test_pass( void ** state )
    errcode = psonMemObjectInit( &pDummy->memObject, 
                                 PSON_IDENT_FOLDER,
                                 &pDummy->blockGroup,
-                                1 );
+                                1,
+                                &context );
    assert_true( errcode == PSO_OK );
    
    /*

@@ -73,10 +73,11 @@ void psonMemObjectDump( psonMemObject * pMemObj, int indent );
 #endif
 
 enum psoErrors 
-psonMemObjectInit( psonMemObject   * pMemObj,
-                   psonMemObjIdent   objType,
-                   psonBlockGroup  * pGroup,
-                   size_t            numBlocks );
+psonMemObjectInit( psonMemObject      * pMemObj,
+                   psonMemObjIdent      objType,
+                   psonBlockGroup     * pGroup,
+                   size_t               numBlocks,
+                   psonSessionContext * pContext );
 
 enum psoErrors 
 psonMemObjectFini( psonMemObject      * pMemObj,
@@ -100,6 +101,7 @@ bool psonLock( psonMemObject      * pMemObj,
 
    PSO_PRE_CONDITION( pMemObj  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    if ( pContext->lockOffsets != NULL ) {
       psonSessionAddLock( pContext, SET_OFFSET( pMemObj ) );
@@ -124,6 +126,7 @@ void psonLockNoFailure( psonMemObject      * pMemObj,
 {
    PSO_PRE_CONDITION( pMemObj  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    if ( pContext->lockOffsets != NULL ) {
       psonSessionAddLock( pContext, SET_OFFSET( pMemObj ) );
@@ -132,8 +135,9 @@ void psonLockNoFailure( psonMemObject      * pMemObj,
    psocAcquireProcessLock ( &pMemObj->lock, pContext->pidLocker );
 }
 
-void psonMemObjectStatus( psonMemObject * pMemObject, 
-                          psoObjStatus  * pStatus );
+void psonMemObjectStatus( psonMemObject      * pMemObject, 
+                          psoObjStatus       * pStatus,
+                          psonSessionContext * pContext );
 
 static inline
 void psonUnlock( psonMemObject      * pMemObj,
@@ -141,6 +145,7 @@ void psonUnlock( psonMemObject      * pMemObj,
 {
    PSO_PRE_CONDITION( pMemObj  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    if ( pContext->lockOffsets != NULL ) {
       psonSessionRemoveLock( pContext, SET_OFFSET( pMemObj ) );

@@ -807,9 +807,9 @@ int psoFastMapStatus( PSO_HANDLE     objectHandle,
       pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
       
       if ( psonLock(&pMemHashMap->memObject, pContext) ) {
-         psonMemObjectStatus( &pMemHashMap->memObject, pStatus );
+         psonMemObjectStatus( &pMemHashMap->memObject, pStatus, pContext );
 
-         psonFastMapStatus( pMemHashMap, pStatus );
+         psonFastMapStatus( pMemHashMap, pStatus, pContext );
          pStatus->type = PSO_FAST_MAP;
 
          psonUnlock( &pMemHashMap->memObject, pContext );

@@ -79,7 +79,8 @@ void initHashCopyTest( psonHash          ** ppOldHash,
    errcode = psonMemObjectInit( &pDummy1->memObject, 
                                 PSON_IDENT_ALLOCATOR,
                                 &pDummy1->blockGroup,
-                                2 );
+                                2,
+                                pContext );
    assert( errcode == PSO_OK );
    
    errcode = psonHashInit( &pDummy1->hashObj, 
@@ -94,7 +95,8 @@ void initHashCopyTest( psonHash          ** ppOldHash,
    errcode = psonMemObjectInit( &pDummy2->memObject, 
                                 PSON_IDENT_ALLOCATOR,
                                 &pDummy2->blockGroup,
-                                2 );
+                                2,
+                                pContext );
    assert( errcode == PSO_OK );
 
    if ( sameLength ) {

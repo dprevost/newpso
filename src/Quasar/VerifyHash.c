@@ -38,9 +38,10 @@
  */
  
 enum qsrRecoverError
-qsrVerifyHash( qsrVerifyStruct * pVerify,
-                struct psonHash  * pHash,
-                ptrdiff_t          offset )
+qsrVerifyHash( qsrVerifyStruct    * pVerify,
+               struct psonHash    * pHash,
+               ptrdiff_t            offset, 
+               psonSessionContext * pContext )
 {
    ptrdiff_t * pArray;
    size_t i, bucket;
@@ -72,7 +73,7 @@ qsrVerifyHash( qsrVerifyStruct * pVerify,
       }
    }
 
-   if ( ! qsrVerifyOffset( pVerify, pHash->arrayOffset ) ) {
+   if ( ! qsrVerifyOffset( pVerify, pHash->arrayOffset, pContext ) ) {
       qsrEcho( pVerify, 
          "Hash::arrayOffset is invalid - aborting the hash verification" );
       return QSR_REC_UNRECOVERABLE_ERROR;
@@ -92,7 +93,7 @@ qsrVerifyHash( qsrVerifyStruct * pVerify,
       while ( currentOffset != PSON_NULL_OFFSET ) {
          removeItem = false;
          
-         if ( ! qsrVerifyOffset( pVerify, currentOffset ) ) {
+         if ( ! qsrVerifyOffset( pVerify, currentOffset, pContext ) ) {
             rc = QSR_REC_CHANGES;
             qsrEcho( pVerify, 
                "Hash item offset is invalid - jumping to next offset" );
@@ -124,14 +125,14 @@ qsrVerifyHash( qsrVerifyStruct * pVerify,
                removeItem = true;
             }
             else {
-               if ( ! qsrVerifyOffset( pVerify, pItem->dataOffset ) ) {
+               if ( ! qsrVerifyOffset( pVerify, pItem->dataOffset, pContext ) ) {
                   rc = QSR_REC_CHANGES;
                   qsrEcho( pVerify, "HashItem::dataOffset is invalid" );
                   removeItem = true;
                }
                else {
                   if ( ! qsrVerifyOffset( 
-                        pVerify, pItem->dataOffset + pItem->dataLength ) ) {
+                        pVerify, pItem->dataOffset + pItem->dataLength, pContext ) ) {
                      rc = QSR_REC_CHANGES;
                      qsrEcho( pVerify, "HashItem::dataOffset is invalid" );
                      removeItem = true;

@@ -21,12 +21,37 @@
 #include "Nucleus/MemBitmap.h"
 #include "Nucleus/Tests/EngineTestCommon.h"
 
+psonSessionContext context;
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void setup_test()
+{
+   initTest( &context );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonGetBitmapLengthBytes( 1024, 8, NULL ) );
+#endif
+   return;
+}
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_poweroftwo7( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonGetBitmapLengthBytes( 1024, 7 ) );
+   expect_assert_failure( psonGetBitmapLengthBytes( 1024, 7, &context ) );
 #endif
    return;
 }
@@ -36,7 +61,7 @@ void test_poweroftwo7( void ** state )
 void test_poweroftwo9( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonGetBitmapLengthBytes( 1024, 9 ) );
+   expect_assert_failure( psonGetBitmapLengthBytes( 1024, 9, &context ) );
 #endif
    return;
 }
@@ -46,7 +71,7 @@ void test_poweroftwo9( void ** state )
 void test_zero_granu( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonGetBitmapLengthBytes( 1024, 0 ) );
+   expect_assert_failure( psonGetBitmapLengthBytes( 1024, 0, &context ) );
 #endif
    return;
 }
@@ -56,7 +81,7 @@ void test_zero_granu( void ** state )
 void test_zero_length( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonGetBitmapLengthBytes( 0, 8 ) );
+   expect_assert_failure( psonGetBitmapLengthBytes( 0, 8, &context ) );
 #endif
    return;
 }
@@ -68,25 +93,25 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    size_t calculatedSize;
    
-   calculatedSize = psonGetBitmapLengthBytes( 1024, 8 );
+   calculatedSize = psonGetBitmapLengthBytes( 1024, 8, &context );
    assert_true( calculatedSize == 1024/8/8 );
    
-   calculatedSize = psonGetBitmapLengthBytes( 1023, 8 );
+   calculatedSize = psonGetBitmapLengthBytes( 1023, 8, &context );
    assert_true( calculatedSize == 1024/8/8 );
    
-   calculatedSize = psonGetBitmapLengthBytes( 1025, 8 );
+   calculatedSize = psonGetBitmapLengthBytes( 1025, 8, &context );
    assert_true( calculatedSize == 1024/8/8 + 1 );
    
-   calculatedSize = psonGetBitmapLengthBytes( 1016, 8 );
+   calculatedSize = psonGetBitmapLengthBytes( 1016, 8, &context );
    assert_true( calculatedSize == 1024/8/8 );
    
-   calculatedSize = psonGetBitmapLengthBytes( 1024+63, 8 );
+   calculatedSize = psonGetBitmapLengthBytes( 1024+63, 8, &context );
    assert_true( calculatedSize == 1024/8/8 + 1 );
    
-   calculatedSize = psonGetBitmapLengthBytes( 1024+64, 8 );
+   calculatedSize = psonGetBitmapLengthBytes( 1024+64, 8, &context );
    assert_true( calculatedSize == 1024/8/8 + 1 );
    
-   calculatedSize = psonGetBitmapLengthBytes( 1024+65, 8 );
+   calculatedSize = psonGetBitmapLengthBytes( 1024+65, 8, &context );
    assert_true( calculatedSize == 1024/8/8 + 2 );
    
 #endif
@@ -100,11 +125,12 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test( test_poweroftwo7 ),
-      unit_test( test_poweroftwo9 ),
-      unit_test( test_zero_granu ),
-      unit_test( test_zero_length ),
-      unit_test( test_pass )
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_poweroftwo7,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_poweroftwo9,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_zero_granu,   setup_test, teardown_test ),
+      unit_test_setup_teardown( test_zero_length,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test ),
    };
 
    rc = run_tests(tests);

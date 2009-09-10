@@ -662,9 +662,9 @@ int psoHashMapStatus( PSO_HANDLE     objectHandle,
       pMemHashMap = (psonHashMap *) pHashMap->object.pMyMemObject;
       
       if ( psonLock(&pMemHashMap->memObject, pContext) ) {
-         psonMemObjectStatus( &pMemHashMap->memObject, pStatus );
+         psonMemObjectStatus( &pMemHashMap->memObject, pStatus, pContext );
 
-         psonHashMapStatus( pMemHashMap, pStatus );
+         psonHashMapStatus( pMemHashMap, pStatus, pContext );
          pStatus->type = PSO_HASH_MAP;
             
          psonUnlock( &pMemHashMap->memObject, pContext );

@@ -23,13 +23,13 @@
 
 psonMemBitmap * pBitmap;
 unsigned char * ptr;
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
    size_t i;
-   psonSessionContext context;
    
    initTest( &context );
 
@@ -57,7 +57,22 @@ void test_null_bitmap( void ** state )
    expect_assert_failure( psonMemBitmapInit( NULL, 
                                              SET_OFFSET(ptr),
                                              10*PSON_BLOCK_SIZE,
-                                             8 ) );
+                                             8,
+                                             &context ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonMemBitmapInit( pBitmap, 
+                                             SET_OFFSET(ptr),
+                                             10*PSON_BLOCK_SIZE,
+                                             8,
+                                             NULL ) );
 #endif
    return;
 }
@@ -70,7 +85,8 @@ void test_null_offset( void ** state )
    expect_assert_failure( psonMemBitmapInit( pBitmap, 
                                              PSON_NULL_OFFSET,
                                              10*PSON_BLOCK_SIZE,
-                                             8 ) );
+                                             8,
+                                             &context ) );
 #endif
    return;
 }
@@ -83,7 +99,8 @@ void test_poweroftwo7( void ** state )
    expect_assert_failure( psonMemBitmapInit( pBitmap, 
                                              SET_OFFSET(ptr),
                                              10*PSON_BLOCK_SIZE,
-                                             7 ) );
+                                             7,
+                                             &context ) );
 #endif
    return;
 }
@@ -96,7 +113,8 @@ void test_poweroftwo9( void ** state )
    expect_assert_failure( psonMemBitmapInit( pBitmap, 
                                              SET_OFFSET(ptr),
                                              10*PSON_BLOCK_SIZE,
-                                             9 ) );
+                                             9,
+                                             &context ) );
 #endif
    return;
 }
@@ -109,7 +127,8 @@ void test_zero_granu( void ** state )
    expect_assert_failure( psonMemBitmapInit( pBitmap, 
                                              SET_OFFSET(ptr),
                                              10*PSON_BLOCK_SIZE,
-                                             0 ) );
+                                             0,
+                                             &context ) );
 #endif
    return;
 }
@@ -122,7 +141,8 @@ void test_zero_length( void ** state )
    expect_assert_failure( psonMemBitmapInit( pBitmap, 
                                              SET_OFFSET(ptr),
                                              0,
-                                             8 ) );
+                                             8,
+                                             &context ) );
 #endif
    return;
 }
@@ -138,7 +158,8 @@ void test_pass( void ** state )
    psonMemBitmapInit( pBitmap, 
                       SET_OFFSET(ptr),
                       10*PSON_BLOCK_SIZE,
-                      8 );
+                      8,
+                      &context );
    
    assert_true( pBitmap->lengthInBits == 10*PSON_BLOCK_SIZE/8 );
    assert_true( pBitmap->allocGranularity == 8 );
@@ -147,7 +168,7 @@ void test_pass( void ** state )
       assert_true( pBitmap->bitmap[i] == 0 );
    }
    
-   psonMemBitmapFini( pBitmap );
+   psonMemBitmapFini( pBitmap, &context );
 
 #endif
    return;
@@ -160,13 +181,14 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_null_bitmap, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_offset, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_poweroftwo7, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_poweroftwo9, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_zero_granu,  setup_test, teardown_test ),
-      unit_test_setup_teardown( test_zero_length, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,        setup_test, teardown_test )
+      unit_test_setup_teardown( test_null_bitmap,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_offset,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_poweroftwo7,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_poweroftwo9,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_zero_granu,   setup_test, teardown_test ),
+      unit_test_setup_teardown( test_zero_length,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

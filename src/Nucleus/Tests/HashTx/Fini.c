@@ -22,12 +22,12 @@
 #include "Nucleus/Tests/HashTx/HashTest.h"
 
 psonHashTx * pHash;
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
-   psonSessionContext context;
    enum psoErrors errcode;
    
    pHash = initHashTest( &context );
@@ -46,10 +46,20 @@ void teardown_test()
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonHashTxFini( pHash, NULL ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void test_null_hash( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonHashTxFini( NULL ) );
+   expect_assert_failure( psonHashTxFini( NULL, &context ) );
 #endif
    return;
 }
@@ -59,7 +69,7 @@ void test_null_hash( void ** state )
 void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   psonHashTxFini( pHash );
+   psonHashTxFini( pHash, &context );
 #endif
    return;
 }
@@ -71,8 +81,9 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_null_hash, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,      setup_test, teardown_test )
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_hash,    setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

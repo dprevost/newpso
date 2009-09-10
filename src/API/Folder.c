@@ -834,9 +834,9 @@ int psoFolderStatus( PSO_HANDLE     objectHandle,
       
       if ( psonLock(&pMemFolder->memObject, pContext) ) {
 
-         psonMemObjectStatus( &pMemFolder->memObject, pStatus );
+         psonMemObjectStatus( &pMemFolder->memObject, pStatus, pContext );
 
-         psonAPIFolderStatus( pMemFolder, pStatus );
+         psonAPIFolderStatus( pMemFolder, pStatus, pContext );
          pStatus->type = PSO_FOLDER;
             
          psonUnlock( &pMemFolder->memObject, pContext );

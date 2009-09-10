@@ -35,7 +35,7 @@ const char * MYCXX = "cl.exe";
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-static int psonGetErrorMsg( int errnum, char *msg, unsigned int msgLength )
+static int psonGetErrorMsg( int errnum, char * msg, unsigned int msgLength )
 {
    const char * theMsg;
 

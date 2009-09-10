@@ -151,6 +151,7 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
    PSO_PRE_CONDITION( pBaseAddress != NULL );
    PSO_PRE_CONDITION( length >= (3 << PSON_BLOCK_SHIFT) );
    PSO_INV_CONDITION( g_pBaseAddr != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    pContext->pAllocator = (void *) pAlloc;
    /*
@@ -168,7 +169,7 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
 
    /* Calculate the size of the bitmap of the allocator */
    bitmapLength = offsetof( psonMemBitmap, bitmap ) + 
-                  psonGetBitmapLengthBytes( length, PSON_BLOCK_SIZE );
+                  psonGetBitmapLengthBytes( length, PSON_BLOCK_SIZE, pContext );
    /* Align it on PSON_ALLOCATION_UNIT bytes boundary */
    bitmapLength = ( (bitmapLength - 1) / PSON_ALLOCATION_UNIT + 1 ) * 
                  PSON_ALLOCATION_UNIT;
@@ -181,7 +182,7 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
                  offsetof( psonBlockGroup, bitmap ) + 
                  offsetof( psonMemBitmap, bitmap ) +
                  psonGetBitmapLengthBytes( neededBlocks << PSON_BLOCK_SHIFT, 
-                                           PSON_ALLOCATION_UNIT ) +
+                                           PSON_ALLOCATION_UNIT, pContext ) +
                  PSON_ALLOCATION_UNIT; /* The endBlock struct */
 
    /* Align it on PSON_ALLOCATION_UNIT bytes boundary */
@@ -196,18 +197,21 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
    errcode = psonMemObjectInit( &pAlloc->memObj,                         
                                 PSON_IDENT_ALLOCATOR,
                                 &pAlloc->blockGroup,
-                                neededBlocks );
+                                neededBlocks,
+                                pContext );
    if ( errcode != PSO_OK ) return errcode;
    
    psonEndBlockSet( SET_OFFSET(pAlloc), 
                     neededBlocks, 
                     false,   /* isInLimbo */
-                    false ); /* is at the end of the shared memory */
+                    false,
+                    pContext ); /* is at the end of the shared memory */
                                               
    /* Add the blockGroup to the list of groups of the memObject */
-   psonLinkNodeInit( &pAlloc->blockGroup.node );
+   psonLinkNodeInit( &pAlloc->blockGroup.node, pContext );
    psonLinkedListPutFirst( &pAlloc->memObj.listBlockGroup, 
-                           &pAlloc->blockGroup.node );
+                           &pAlloc->blockGroup.node,
+                           pContext );
 
    /* The overall header and the memory allocator itself */
    pAlloc->totalAllocBlocks = neededBlocks+1; 
@@ -224,20 +228,22 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
    psonMemBitmapInit( pBitmap,
                       0,
                       pAlloc->totalLength,
-                      PSON_BLOCK_SIZE );
-   psonSetBufferAllocated( pBitmap, 0, (neededBlocks+1) << PSON_BLOCK_SHIFT );
+                      PSON_BLOCK_SIZE,
+                      pContext );
+   psonSetBufferAllocated( pBitmap, 0, 
+      (neededBlocks+1) << PSON_BLOCK_SHIFT, pContext );
    pAlloc->bitmapOffset = SET_OFFSET( pBitmap );
    
    /* Initialize the linked list */
-   psonLinkedListInit( &pAlloc->freeList );
+   psonLinkedListInit( &pAlloc->freeList, pContext );
    
    /* Now put the rest of the free blocks in our free list */
    pNode = (psonFreeBufferNode*)(pBaseAddress + ((neededBlocks+1) << PSON_BLOCK_SHIFT));
    pNode->numBuffers = (length >> PSON_BLOCK_SHIFT) - (neededBlocks+1);
-   psonLinkNodeInit( &pNode->node );
-   psonLinkedListPutFirst( &pAlloc->freeList, &pNode->node );   
+   psonLinkNodeInit( &pNode->node, pContext );
+   psonLinkedListPutFirst( &pAlloc->freeList, &pNode->node, pContext );
    
-   psonEndBlockSet( SET_OFFSET(pNode), pNode->numBuffers, false, true );
+   psonEndBlockSet( SET_OFFSET(pNode), pNode->numBuffers, false, true, pContext );
    
    return PSO_OK;
 }
@@ -252,9 +258,9 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
  * tweak it).
  */
 static inline 
-psonFreeBufferNode * FindBuffer( psonMemAlloc     * pAlloc,
-                                 size_t             requestedBlocks,
-                                 psocErrorHandler * pError )
+psonFreeBufferNode * FindBuffer( psonMemAlloc       * pAlloc,
+                                 size_t               requestedBlocks,
+                                 psonSessionContext * pContext )
 {
    size_t i;
    /* size_t is unsigned. This is check by autoconf AC_TYPE_SIZE_T */
@@ -264,6 +270,7 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc     * pAlloc,
    psonLinkNode * currentNode = NULL;
    psonLinkNode * bestNode = NULL;
    bool ok;
+   PSO_TRACE_ENTER( pContext );
 
    /* 
     * A bit tricky. To avoid fragmentation, we search for the best fitted
@@ -273,7 +280,7 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc     * pAlloc,
     * reallocating arrays...).[N is BEST_FIT_MAX_LOOP, a define just in
     * case the compiler can optimize the loop].
     */
-   ok = psonLinkedListPeakFirst( &pAlloc->freeList, &oldNode );
+   ok = psonLinkedListPeakFirst( &pAlloc->freeList, &oldNode, pContext );
    if ( ! ok ) goto error_exit;
 
    numBlocks = ((psonFreeBufferNode*)oldNode)->numBuffers;
@@ -291,7 +298,8 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc     * pAlloc,
    for ( i = 0; i < BEST_FIT_MAX_LOOP; ++i ) {
       ok = psonLinkedListPeakNext( &pAlloc->freeList,
                                    oldNode,
-                                   &currentNode );
+                                   &currentNode,
+                                   pContext );
       if ( ! ok ) {
          if ( bestNode == NULL ) goto error_exit;
          break;
@@ -313,7 +321,8 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc     * pAlloc,
    while ( bestNode == NULL ) {
       ok = psonLinkedListPeakNext( &pAlloc->freeList,
                                    oldNode,
-                                   &currentNode );
+                                   &currentNode,
+                                   pContext );
       if ( ! ok ) goto error_exit;
 
       numBlocks = ((psonFreeBufferNode*)currentNode)->numBuffers;
@@ -332,7 +341,9 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc     * pAlloc,
     * versus a lack of a chunk big enough to accomodate the # of requested
     * blocks.
     */
-   psocSetError( pError, g_psoErrorHandle, PSO_NOT_ENOUGH_PSO_MEMORY );
+   psocSetError( &pContext->errorHandler,
+                 g_psoErrorHandle,
+                 PSO_NOT_ENOUGH_PSO_MEMORY );
 
    return NULL;
 }
@@ -358,6 +369,7 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
    PSO_PRE_CONDITION( pAlloc   != NULL );
    PSO_PRE_CONDITION( requestedBlocks > 0 );
    PSO_INV_CONDITION( g_pBaseAddr != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    ok = psocTryAcquireProcessLock( &pAlloc->memObj.lock, 
                                    getpid(),
@@ -371,21 +383,22 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
    
    GET_PTR( pBitmap, pAlloc->bitmapOffset, psonMemBitmap );
    
-   pNode = FindBuffer( pAlloc, requestedBlocks, &pContext->errorHandler );
+   pNode = FindBuffer( pAlloc, requestedBlocks, pContext );
    if ( pNode != NULL ) {
       newNumBlocks = pNode->numBuffers - requestedBlocks;
       if ( newNumBlocks == 0 ) {
          /* Remove the node from the list */
-         psonLinkedListRemoveItem( &pAlloc->freeList, &pNode->node );
+         psonLinkedListRemoveItem( &pAlloc->freeList, &pNode->node, pContext );
       }
       else {
          pNewNode = (psonFreeBufferNode*)
                     ((unsigned char*) pNode + (requestedBlocks << PSON_BLOCK_SHIFT));
          pNewNode->numBuffers = newNumBlocks;
-         psonLinkNodeInit( &pNewNode->node );
+         psonLinkNodeInit( &pNewNode->node, pContext );
          psonLinkedListReplaceItem( &pAlloc->freeList, 
                                     &pNode->node, 
-                                    &pNewNode->node );
+                                    &pNewNode->node,
+                                    pContext );
          
          /* Reset the psonEndBlock struct */
          psonEndBlockSet( SET_OFFSET(pNewNode), 
@@ -393,7 +406,8 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
                           false,
                           psonMemAllocLastBlock( pAlloc,
                                                  SET_OFFSET(pNewNode),
-                                                 newNumBlocks ) );
+                                                 newNumBlocks ),
+                          pContext );
       }
       /* Set the first bytes to "allocated" and set the endBlock of the
        * newly allocated blocks.
@@ -405,7 +419,8 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
                        false,
                        psonMemAllocLastBlock( pAlloc,
                                               SET_OFFSET(pNode),
-                                              requestedBlocks ) );
+                                              requestedBlocks ),
+                       pContext );
       
       pAlloc->totalAllocBlocks += requestedBlocks;   
       pAlloc->numMallocCalls++;
@@ -414,7 +429,8 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
       
       /* Set the bitmap */
       psonSetBufferAllocated( pBitmap, SET_OFFSET(pNode), 
-                              requestedBlocks << PSON_BLOCK_SHIFT );
+                              requestedBlocks << PSON_BLOCK_SHIFT,
+                              pContext );
    }
    psocReleaseProcessLock( &pAlloc->memObj.lock );
 
@@ -443,6 +459,7 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
    PSO_PRE_CONDITION( pAlloc   != NULL );
    PSO_PRE_CONDITION( ptr      != NULL );
    PSO_PRE_CONDITION( numBlocks > 0 );
+   PSO_TRACE_ENTER( pContext );
 
    if ( ! psonLock( &pAlloc->memObj, pContext ) ) {
       /* 
@@ -494,7 +511,9 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
       psocReadMemoryBarrier();
 
       GET_PTR( previousNode, endBlock->firstBlockOffset, psonFreeBufferNode );
-      otherBufferisFree = psonIsBufferFree( pBitmap, endBlock->firstBlockOffset );
+      otherBufferisFree = psonIsBufferFree( pBitmap,
+                                            endBlock->firstBlockOffset,
+                                            pContext );
 
       if ( isInLimbo ) {
          previousNode->numBuffers = newNode->numBuffers + endBlock->numBlocks;
@@ -514,7 +533,8 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
           */
          previousNode->numBuffers += newNode->numBuffers;
          psonLinkedListRemoveItem( &pAlloc->freeList, 
-                                   &previousNode->node );
+                                   &previousNode->node,
+                                   pContext );
          newNode = previousNode;
       }
       
@@ -542,11 +562,14 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
    endBlock = (psonEndBlockGroup*)((unsigned char*)otherNode-PSON_ALLOCATION_UNIT);
       
    while ( ! endBlock->lastBlock ) {
-      otherBufferisFree = psonIsBufferFree( pBitmap, SET_OFFSET(otherNode) );
+      otherBufferisFree = psonIsBufferFree( pBitmap,
+                                            SET_OFFSET(otherNode),
+                                            pContext );
       if ( otherBufferisFree ) {
          newNode->numBuffers += otherNode->numBuffers;
          psonLinkedListRemoveItem( &pAlloc->freeList, 
-                                   &otherNode->node );
+                                   &otherNode->node,
+                                   pContext );
       }
       else {
          ident = pFreeHeader->identifier;
@@ -579,8 +602,8 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
     * All consolidation done. Complete the job by putting the group in the
     * free list and setting the bitmap.
     */
-   psonLinkNodeInit( &newNode->node );
-   psonLinkedListPutLast( &pAlloc->freeList, &newNode->node );
+   psonLinkNodeInit( &newNode->node, pContext );
+   psonLinkedListPutLast( &pAlloc->freeList, &newNode->node, pContext );
                              
    pAlloc->totalAllocBlocks -= numBlocks;   
    pAlloc->numFreeCalls++;
@@ -588,14 +611,18 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
    if ( allocType == PSON_ALLOC_API_OBJ ) pAlloc->numApiObjects--;
 
    /* Set the bitmap */
-   psonSetBufferFree( pBitmap, SET_OFFSET(newNode), newNode->numBuffers << PSON_BLOCK_SHIFT );
+   psonSetBufferFree( pBitmap,
+                      SET_OFFSET(newNode),
+                      newNode->numBuffers << PSON_BLOCK_SHIFT,
+                      pContext );
 
    psonEndBlockSet( SET_OFFSET(newNode), 
                     newNode->numBuffers, 
                     false, /* limbo flag */
                     psonMemAllocLastBlock( pAlloc,
                                            SET_OFFSET(newNode),
-                                           newNode->numBuffers ));
+                                           newNode->numBuffers ),
+                    pContext );
    
    psonUnlock( &pAlloc->memObj, pContext );
 
@@ -609,6 +636,7 @@ void psonMemAllocClose( psonMemAlloc       * pAlloc,
 {
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pAlloc   != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    pAlloc->totalAllocBlocks = 0;
    pAlloc->numMallocCalls   = 0;
@@ -676,6 +704,7 @@ bool psonMemAllocStats( psonMemAlloc       * pAlloc,
    PSO_PRE_CONDITION( pAlloc   != NULL );
    PSO_PRE_CONDITION( pInfo    != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    if ( psonLock( &pAlloc->memObj, pContext ) ) {
 
@@ -688,7 +717,8 @@ bool psonMemAllocStats( psonMemAlloc       * pAlloc,
       pInfo->largestFreeInBytes   = 0;
       
       ok = psonLinkedListPeakFirst( &pAlloc->freeList,
-                                    &currentNode );
+                                    &currentNode,
+                                    pContext );
       while ( ok ) {
          numBlocks = ((psonFreeBufferNode*)currentNode)->numBuffers;
          if ( numBlocks > pInfo->largestFreeInBytes ) {
@@ -698,7 +728,8 @@ bool psonMemAllocStats( psonMemAlloc       * pAlloc,
          oldNode = currentNode;
          ok = psonLinkedListPeakNext( &pAlloc->freeList,
                                       oldNode,
-                                      &currentNode );
+                                      &currentNode,
+                                      pContext );
       }
       pInfo->largestFreeInBytes = pInfo->largestFreeInBytes << PSON_BLOCK_SHIFT;
       

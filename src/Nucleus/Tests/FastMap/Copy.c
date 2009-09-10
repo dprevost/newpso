@@ -39,9 +39,11 @@ void setup_test()
    
    initHashMapCopyTest( &pOldMap, &pNewMap, &context );
 
-   psonTxStatusInit( &hashItem.txStatus, SET_OFFSET( context.pTransaction ) );
+   psonTxStatusInit( &hashItem.txStatus, 
+                     SET_OFFSET( context.pTransaction ), &context );
    psonTreeNodeInit( &mapNode, SET_OFFSET( pOldMap ), PSO_FAST_MAP,
-                     SET_OFFSET( &hashItem.txStatus ), PSON_NULL_OFFSET );
+                     SET_OFFSET( &hashItem.txStatus ),
+                     PSON_NULL_OFFSET, &context );
    hashItem.dataOffset = SET_OFFSET( &mapNode );
    
    ok = psonFastMapInit( pOldMap, 0, 1, 0, &mapNode,

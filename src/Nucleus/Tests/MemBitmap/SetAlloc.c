@@ -23,13 +23,12 @@
 
 psonMemBitmap * pBitmap;
 unsigned char * ptr;
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
-   psonSessionContext context;
-   
    initTest( &context );
 
    ptr = malloc( PSON_BLOCK_SIZE*10 );
@@ -41,7 +40,8 @@ void setup_test()
    psonMemBitmapInit( pBitmap, 
                       SET_OFFSET(ptr),
                       10*PSON_BLOCK_SIZE,
-                      8 );
+                      8,
+                      &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -60,7 +60,21 @@ void test_null_bitmap( void ** state )
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonSetBufferAllocated( NULL,
                                                   PSON_BLOCK_SIZE/2,
-                                                  PSON_BLOCK_SIZE/4 ) );
+                                                  PSON_BLOCK_SIZE/4,
+                                                  &context ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonSetBufferAllocated( pBitmap,
+                                                  PSON_BLOCK_SIZE/2,
+                                                  PSON_BLOCK_SIZE/4,
+                                                  NULL ) );
 #endif
    return;
 }
@@ -72,7 +86,8 @@ void test_null_offset( void ** state )
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonSetBufferAllocated( pBitmap,
                                                   PSON_NULL_OFFSET,
-                                                  PSON_BLOCK_SIZE/4 ) );
+                                                  PSON_BLOCK_SIZE/4,
+                                                  &context ) );
 #endif
    return;
 }
@@ -84,7 +99,8 @@ void test_zero_length( void ** state )
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonSetBufferAllocated( pBitmap,
                                                   PSON_BLOCK_SIZE/2,
-                                                  0 ) );
+                                                  0,
+                                                  &context ) );
 #endif
    return;
 }
@@ -98,14 +114,15 @@ void test_pass( void ** state )
    
    psonSetBufferAllocated( pBitmap,
                            PSON_BLOCK_SIZE/2, /* offset */
-                           PSON_BLOCK_SIZE/4 ); /* length */
+                           PSON_BLOCK_SIZE/4,
+                           &context ); /* length */
 
    for ( i = PSON_BLOCK_SIZE/2/8/8; i < PSON_BLOCK_SIZE*3/4/8/8 ; ++i ) {
       assert_true( pBitmap->bitmap[i] == 0xff );
    }
    assert_true( pBitmap->bitmap[PSON_BLOCK_SIZE*3/4/8/8] == 0 );
    
-   psonMemBitmapFini( pBitmap );
+   psonMemBitmapFini( pBitmap, &context );
 
 #endif
    return;
@@ -118,10 +135,11 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_null_bitmap, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_offset, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_zero_length, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,        setup_test, teardown_test )
+      unit_test_setup_teardown( test_null_bitmap,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_offset,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_zero_length,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

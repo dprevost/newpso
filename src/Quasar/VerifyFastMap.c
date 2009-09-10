@@ -134,7 +134,8 @@ qsrVerifyFastMap( qsrVerifyStruct   * pVerify,
    if ( bTestObject ) {
       rc2 = qsrVerifyHash( pVerify, 
                            &pHashMap->hashObj, 
-                           SET_OFFSET(&pHashMap->memObject) );
+                           SET_OFFSET(&pHashMap->memObject),
+                           pContext );
       if ( rc2 > QSR_REC_START_ERRORS ) {
          pVerify->spaces -= 2;
          return rc2;

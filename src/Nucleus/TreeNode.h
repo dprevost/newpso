@@ -21,7 +21,8 @@
 #ifndef PSON_TREE_NODE_H
 #define PSON_TREE_NODE_H
 
-#include "Engine.h"
+#include "Nucleus/Engine.h"
+#include "Nucleus/SessionContext.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -62,13 +63,15 @@ typedef struct psonTreeNode psonTreeNode;
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline 
-void psonTreeNodeInit( psonTreeNode * pNode,
-                       ptrdiff_t      myOffset,
-                       psoObjectType  apiType,
-                       ptrdiff_t      txStatusOffset,
-                       ptrdiff_t      parentOffset )
+void psonTreeNodeInit( psonTreeNode       * pNode,
+                       ptrdiff_t            myOffset,
+                       psoObjectType        apiType,
+                       ptrdiff_t            txStatusOffset,
+                       ptrdiff_t            parentOffset,
+                       psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pNode != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    pNode->offset         = myOffset;
    pNode->apiType        = apiType;
@@ -80,9 +83,11 @@ void psonTreeNodeInit( psonTreeNode * pNode,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline 
-void psonTreeNodeFini( psonTreeNode * pNode )
+void psonTreeNodeFini( psonTreeNode       * pNode,
+                       psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pNode != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    pNode->offset         = PSON_NULL_OFFSET;
    pNode->apiType        = 0;

@@ -23,7 +23,8 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include "Engine.h"       
+#include "Nucleus/Engine.h"       
+#include "Nucleus/SessionContext.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -93,13 +94,15 @@ typedef struct psonTxStatus psonTxStatus;
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-void psonTxStatusCommitEdit( psonTxStatus * pOldStatus, 
-                             psonTxStatus * pNewStatus )
+void psonTxStatusCommitEdit( psonTxStatus       * pOldStatus, 
+                             psonTxStatus       * pNewStatus,
+                             psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pOldStatus != NULL );
    PSO_PRE_CONDITION( pNewStatus != NULL );
    PSO_PRE_CONDITION( pNewStatus->txOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( pNewStatus->status & PSON_TXS_EDIT );
+   PSO_TRACE_ENTER( pContext );
 
    /* Remove the EDIT bit */
    pNewStatus->status = pOldStatus->status & (uint32_t )(~PSON_TXS_EDIT);
@@ -112,9 +115,11 @@ void psonTxStatusCommitEdit( psonTxStatus * pOldStatus,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-void psonTxStatusRollbackEdit( psonTxStatus * pOldStatus )
+void psonTxStatusRollbackEdit( psonTxStatus       * pOldStatus,
+                               psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pOldStatus != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    /* Remove the EDIT bit */
    pOldStatus->status &= (uint32_t )(~PSON_TXS_EDIT);
@@ -127,9 +132,12 @@ void psonTxStatusRollbackEdit( psonTxStatus * pOldStatus )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline 
-void psonTxStatusInit( psonTxStatus * pStatus, ptrdiff_t txOffset )
+void psonTxStatusInit( psonTxStatus       * pStatus,
+                       ptrdiff_t            txOffset,
+                       psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pStatus != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    pStatus->txOffset = txOffset;
    pStatus->status = PSON_TXS_OK;
@@ -140,9 +148,12 @@ void psonTxStatusInit( psonTxStatus * pStatus, ptrdiff_t txOffset )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-void psonTxStatusSetTx( psonTxStatus * pStatus, ptrdiff_t txOffset )
+void psonTxStatusSetTx( psonTxStatus      * pStatus,
+                        ptrdiff_t           txOffset,
+                       psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pStatus != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    pStatus->txOffset = txOffset;
 }
@@ -150,11 +161,13 @@ void psonTxStatusSetTx( psonTxStatus * pStatus, ptrdiff_t txOffset )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline 
-void psonTxStatusFini( psonTxStatus * pStatus )
+void psonTxStatusFini( psonTxStatus       * pStatus,
+                       psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pStatus != NULL );
    PSO_PRE_CONDITION( pStatus->status == PSON_TXS_OK );
    PSO_PRE_CONDITION( pStatus->usageCounter == 0 );
+   PSO_TRACE_ENTER( pContext );
 
    pStatus->txOffset = PSON_NULL_OFFSET;
 }
@@ -162,10 +175,13 @@ void psonTxStatusFini( psonTxStatus * pStatus )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-bool psonTxStatusIsValid( psonTxStatus * pStatus, ptrdiff_t txOffset )
+bool psonTxStatusIsValid( psonTxStatus       * pStatus,
+                          ptrdiff_t            txOffset,
+                          psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pStatus  != NULL );
    PSO_PRE_CONDITION( txOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    if ( pStatus->txOffset == PSON_NULL_OFFSET ) return true;
    if ( pStatus->txOffset == txOffset ) return true;
@@ -176,10 +192,12 @@ bool psonTxStatusIsValid( psonTxStatus * pStatus, ptrdiff_t txOffset )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-void psonTxStatusClearTx( psonTxStatus * pStatus )
+void psonTxStatusClearTx( psonTxStatus       * pStatus,
+                          psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pStatus != NULL );
    PSO_PRE_CONDITION( pStatus->txOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    pStatus->txOffset = PSON_NULL_OFFSET;
    pStatus->status = PSON_TXS_OK;
@@ -188,9 +206,11 @@ void psonTxStatusClearTx( psonTxStatus * pStatus )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
    
 static inline
-bool psonTxStatusIsMarkedAsDestroyed( psonTxStatus * pStatus )
+bool psonTxStatusIsMarkedAsDestroyed( psonTxStatus       * pStatus,
+                                      psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pStatus != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    return (pStatus->status & PSON_TXS_DESTROYED);
 }
@@ -198,9 +218,11 @@ bool psonTxStatusIsMarkedAsDestroyed( psonTxStatus * pStatus )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-bool psonTxStatusIsRemoveCommitted( psonTxStatus * pStatus )
+bool psonTxStatusIsRemoveCommitted( psonTxStatus       * pStatus,
+                                    psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pStatus != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    if (pStatus->status & PSON_TXS_DESTROYED_COMMITTED) return true;
    return false;
@@ -209,9 +231,11 @@ bool psonTxStatusIsRemoveCommitted( psonTxStatus * pStatus )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-void psonTxStatusMarkAsDestroyed( psonTxStatus * pStatus )
+void psonTxStatusMarkAsDestroyed( psonTxStatus       * pStatus,
+                                  psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pStatus != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    pStatus->status |= PSON_TXS_DESTROYED;
 }
@@ -219,10 +243,13 @@ void psonTxStatusMarkAsDestroyed( psonTxStatus * pStatus )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-void psonTxStatusCommitRemove( psonTxStatus * pStatus )
+void psonTxStatusCommitRemove( psonTxStatus       * pStatus,
+                               psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pStatus != NULL );
    PSO_PRE_CONDITION( pStatus->txOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
+
    /* Note - do not add this:
     *    PSO_PRE_CONDITION( pStatus->status & PSON_TXS_DESTROYED );
     *
@@ -236,10 +263,12 @@ void psonTxStatusCommitRemove( psonTxStatus * pStatus )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-void psonTxStatusUnmarkAsDestroyed( psonTxStatus * pStatus )
+void psonTxStatusUnmarkAsDestroyed( psonTxStatus       * pStatus,
+                                    psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pStatus != NULL );
    PSO_PRE_CONDITION( pStatus->txOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    pStatus->status &= (uint32_t )(~PSON_TXS_DESTROYED);
    /* 
@@ -254,9 +283,11 @@ void psonTxStatusUnmarkAsDestroyed( psonTxStatus * pStatus )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-bool psonTxStatusSelfTest( psonTxStatus * pStatus )
+bool psonTxStatusSelfTest( psonTxStatus       * pStatus,
+                           psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pStatus != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    if ( pStatus->txOffset != PSON_NULL_OFFSET ) return false;
 
@@ -266,10 +297,13 @@ bool psonTxStatusSelfTest( psonTxStatus * pStatus )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-psoErrors psonTxTestObjectStatus( psonTxStatus * pStatus, ptrdiff_t txOffset )
+psoErrors psonTxTestObjectStatus( psonTxStatus       * pStatus,
+                                  ptrdiff_t            txOffset,
+                                  psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pStatus != NULL );
    PSO_PRE_CONDITION( txOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
 
    /* 
     * If the transaction id of the object is equal to the 

@@ -65,7 +65,6 @@ struct psonSessionContext
    void *pAllocator;
    
    bool traceOn;
-//   void* pLogFile;
    
 };
 
@@ -91,45 +90,47 @@ void psonInitSessionContext( psonSessionContext * pContext )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-void psonSessionAddLock( psonSessionContext * pSession,
+void psonSessionAddLock( psonSessionContext * pContext,
                          ptrdiff_t            memObjectOffset )
 {
-   PSO_PRE_CONDITION( pSession != NULL );
-   PSO_PRE_CONDITION( *pSession->numLocks < PSON_MAX_LOCK_DEPTH );
+   PSO_PRE_CONDITION( pContext != NULL );
+   PSO_PRE_CONDITION( *pContext->numLocks < PSON_MAX_LOCK_DEPTH );
    PSO_PRE_CONDITION( memObjectOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
    
-   pSession->lockOffsets[*pSession->numLocks] = memObjectOffset;
-   (*pSession->numLocks)++;
+   pContext->lockOffsets[*pContext->numLocks] = memObjectOffset;
+   (*pContext->numLocks)++;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
-void psonSessionRemoveLock( psonSessionContext * pSession,
+void psonSessionRemoveLock( psonSessionContext * pContext,
                             ptrdiff_t            memObjectOffset )
 {
    int i, j, n;
    
-   PSO_PRE_CONDITION( pSession != NULL );
-   PSO_PRE_CONDITION( *pSession->numLocks > 0 );
+   PSO_PRE_CONDITION( pContext != NULL );
+   PSO_PRE_CONDITION( *pContext->numLocks > 0 );
    PSO_PRE_CONDITION( memObjectOffset != PSON_NULL_OFFSET );
+   PSO_TRACE_ENTER( pContext );
    
-   n = *pSession->numLocks;
+   n = *pContext->numLocks;
 
-   for ( i = 0; i < *pSession->numLocks; ++i ) {
-      if ( pSession->lockOffsets[i] == memObjectOffset ) {
+   for ( i = 0; i < *pContext->numLocks; ++i ) {
+      if ( pContext->lockOffsets[i] == memObjectOffset ) {
          /* Shift the following pointers */
-         for ( j = i+1; j < *pSession->numLocks; ++j ) {
-            pSession->lockOffsets[j-1] = pSession->lockOffsets[j];
+         for ( j = i+1; j < *pContext->numLocks; ++j ) {
+            pContext->lockOffsets[j-1] = pContext->lockOffsets[j];
          }
          
-         pSession->lockOffsets[*pSession->numLocks-1] = PSON_NULL_OFFSET;         
-         (*pSession->numLocks)--;
+         pContext->lockOffsets[*pContext->numLocks-1] = PSON_NULL_OFFSET;         
+         (*pContext->numLocks)--;
       }
    }
    
    /* Will fail if pMemObject was not in the array */
-   PSO_POST_CONDITION( n == (*pSession->numLocks + 1) );
+   PSO_POST_CONDITION( n == (*pContext->numLocks + 1) );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

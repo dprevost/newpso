@@ -37,6 +37,7 @@ bool psonProcMgrAddProcess( psonProcMgr        * pManager,
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( ppProcess != NULL );
    PSO_PRE_CONDITION( pid > 0 );
+   PSO_TRACE_ENTER( pContext );
 
    /* For recovery purposes, always lock before doing anything! */
    if ( psonLock( &pManager->memObject, pContext ) ) {
@@ -46,9 +47,10 @@ bool psonProcMgrAddProcess( psonProcMgr        * pManager,
          ok = psonProcessInit( pCurrentBuffer, pid, pContext );
          PSO_POST_CONDITION( ok == true || ok == false );
          if ( ok ) {
-            psonLinkNodeInit( &pCurrentBuffer->node );
+            psonLinkNodeInit( &pCurrentBuffer->node, pContext );
             psonLinkedListPutLast( &pManager->listOfProcesses, 
-                                   &pCurrentBuffer->node );
+                                   &pCurrentBuffer->node,
+                                   pContext );
             *ppProcess = pCurrentBuffer;
          }
          else {
@@ -108,13 +110,15 @@ bool psonProcMgrFindProcess( psonProcMgr        * pManager,
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( ppProcess != NULL );
    PSO_PRE_CONDITION( pid > 0 );
+   PSO_TRACE_ENTER( pContext );
    
    *ppProcess = NULL;
    
    /* For recovery purposes, always lock before doing anything! */
    if ( psonLock( &pManager->memObject, pContext ) ) {
       ok = psonLinkedListPeakFirst( &pManager->listOfProcesses, 
-                                    &pNodeCurrent );
+                                    &pNodeCurrent,
+                                    pContext );
       if ( ok ) {
          pCurrent = (psonProcess*)
             ((char*)pNodeCurrent - offsetof( psonProcess, node ));
@@ -123,7 +127,8 @@ bool psonProcMgrFindProcess( psonProcMgr        * pManager,
          while ( (*ppProcess == NULL) &&
                  psonLinkedListPeakNext( &pManager->listOfProcesses, 
                                          pNodeCurrent, 
-                                         &pNodeNext ) ) {
+                                         &pNodeNext,
+                                         pContext ) ) {
             pNext = (psonProcess*)
                ((char*)pNodeNext - offsetof( psonProcess, node ));
             if ( pNext->pid == pid ) *ppProcess = pNext;
@@ -162,11 +167,13 @@ bool psonProcMgrInit( psonProcMgr        * pManager,
 
    PSO_PRE_CONDITION( pManager != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
+   PSO_TRACE_ENTER( pContext );
 
    errcode = psonMemObjectInit( &pManager->memObject, 
                                 PSON_IDENT_PROCESS_MGR,
                                 &pManager->blockGroup,
-                                1 ); /* A single block */
+                                1,
+                                pContext ); /* A single block */
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
@@ -174,7 +181,7 @@ bool psonProcMgrInit( psonProcMgr        * pManager,
       return false;
    }
 
-   psonLinkedListInit( &pManager->listOfProcesses );
+   psonLinkedListInit( &pManager->listOfProcesses, pContext );
       
    return true;
 }
@@ -188,11 +195,13 @@ bool psonProcMgrRemoveProcess( psonProcMgr        * pManager,
    PSO_PRE_CONDITION( pManager != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pProcess != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    /* For recovery purposes, always lock before doing anything! */
    if ( psonLock( &pManager->memObject, pContext ) ) {
       psonLinkedListRemoveItem( &pManager->listOfProcesses, 
-                                &pProcess->node );
+                                &pProcess->node,
+                                pContext );
    
       psonProcessFini( pProcess, pContext );
                       

@@ -22,13 +22,12 @@
 #include "Nucleus/Tests/EngineTestCommon.h"
 
 psonLinkedList list;
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
-   psonSessionContext context;
-   
    initTest( &context );
    InitMem();
 }
@@ -41,10 +40,20 @@ void teardown_test()
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonLinkedListInit( &list, NULL ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void test_null_list( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonLinkedListInit( NULL ) );
+   expect_assert_failure( psonLinkedListInit( NULL, &context ) );
 #endif
    return;
 }
@@ -55,9 +64,9 @@ void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    
-   psonLinkedListInit( &list );
+   psonLinkedListInit( &list, &context );
    
-   psonLinkedListFini( &list );
+   psonLinkedListFini( &list, &context );
    
 #endif
    return;
@@ -70,8 +79,9 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_null_list, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,      setup_test, teardown_test )
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_list,    setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

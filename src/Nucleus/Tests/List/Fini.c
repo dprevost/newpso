@@ -22,17 +22,16 @@
 #include "Nucleus/Tests/EngineTestCommon.h"
 
 psonLinkedList list;
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
-   psonSessionContext context;
-   
    initTest( &context );
    InitMem();
    
-   psonLinkedListInit( &list );
+   psonLinkedListInit( &list, &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -49,9 +48,21 @@ void test_invalid_sig( void ** state )
    int save = list.initialized;
 
    list.initialized = 0;
-   expect_assert_failure( psonLinkedListFini( &list ) );
+   expect_assert_failure( psonLinkedListFini( &list, &context ) );
    list.initialized = save;
-   psonLinkedListFini( &list );
+   psonLinkedListFini( &list, &context );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonLinkedListFini( &list, NULL ) );
+   
+   psonLinkedListFini( &list, &context );
 #endif
    return;
 }
@@ -61,9 +72,9 @@ void test_invalid_sig( void ** state )
 void test_null_list( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonLinkedListFini( NULL ) );
+   expect_assert_failure( psonLinkedListFini( NULL, &context ) );
    
-   psonLinkedListFini( &list );
+   psonLinkedListFini( &list, &context );
 #endif
    return;
 }
@@ -74,7 +85,7 @@ void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    
-   psonLinkedListFini( &list );
+   psonLinkedListFini( &list, &context );
 
    assert_true( list.initialized == 0 );
    assert_true( list.currentSize == 0 );
@@ -90,9 +101,10 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_invalid_sig, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_list,   setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,        setup_test, teardown_test )
+      unit_test_setup_teardown( test_invalid_sig,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_list,    setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

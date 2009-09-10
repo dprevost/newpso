@@ -38,7 +38,7 @@ qsrCheckHashMapContent( qsrVerifyStruct   * pVerify,
    /* The easy case */
    if ( pHashMap->hashObj.numberOfItems == 0 ) return rc;
    
-   found = psonHashTxGetFirst( &pHashMap->hashObj, &offset );
+   found = psonHashTxGetFirst( &pHashMap->hashObj, &offset, pContext );
    while ( found ) {
       GET_PTR( pItem, offset, psonHashTxItem );
       txItemStatus = &pItem->txStatus;
@@ -90,8 +90,8 @@ qsrCheckHashMapContent( qsrVerifyStruct   * pVerify,
       previousOffset = offset;
       found = psonHashTxGetNext( &pHashMap->hashObj,
                                previousOffset,
-                               &offset );
-
+                               &offset,
+                               pContext );
       /*
        * We need the old item to be able to get to the next item. That's
        * why we save the item to be deleted and delete it until after we
@@ -205,8 +205,9 @@ qsrVerifyHashMap( qsrVerifyStruct   * pVerify,
 
    if ( bTestObject ) {
       rc2 = qsrVerifyHashTx( pVerify, 
-                              &pHashMap->hashObj, 
-                              SET_OFFSET(&pHashMap->memObject) );
+                             &pHashMap->hashObj, 
+                             SET_OFFSET(&pHashMap->memObject),
+                             pContext );
       if ( rc2 > QSR_REC_START_ERRORS ) {
          pVerify->spaces -= 2;
          return rc2;

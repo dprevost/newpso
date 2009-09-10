@@ -23,13 +23,12 @@
 
 psonBlockGroup * pGroup;
 unsigned char* ptr;
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
-   psonSessionContext context;
-   
    initTest( &context );
 
    ptr = malloc( PSON_BLOCK_SIZE*10 );
@@ -44,7 +43,8 @@ void setup_test()
    psonBlockGroupInit( pGroup, 
                       SET_OFFSET(ptr),
                       10,
-                      PSON_IDENT_QUEUE );   
+                      PSON_IDENT_QUEUE,
+                      &context );   
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -56,10 +56,20 @@ void teardown_test()
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonBlockGroupFini( pGroup, NULL ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void test_null_group( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonBlockGroupFini( NULL ) );
+   expect_assert_failure( psonBlockGroupFini( NULL, &context ) );
 #endif
    return;
 }
@@ -70,7 +80,7 @@ void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
 
-   psonBlockGroupFini( pGroup );
+   psonBlockGroupFini( pGroup, &context );
    
    assert_true( pGroup->node.nextOffset == PSON_NULL_OFFSET );
    assert_true( pGroup->node.previousOffset == PSON_NULL_OFFSET );
@@ -90,8 +100,9 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_null_group, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,       setup_test, teardown_test )
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_group,   setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

@@ -120,7 +120,8 @@ void psonHashTxDelete( psonHashTx         * pHash,
 void psonHashTxDump( psonHashTx * pHashTx, int indent );
 #endif
 
-void psonHashTxFini( psonHashTx * pHash );
+void psonHashTxFini( psonHashTx         * pHash,
+                     psonSessionContext * pContext );
 
 bool psonHashTxGet( psonHashTx          * pHash,
                     const unsigned char * pkey,
@@ -129,12 +130,14 @@ bool psonHashTxGet( psonHashTx          * pHash,
                     size_t              * pBucket,
                     psonSessionContext  * pContext );
 
-bool psonHashTxGetFirst( psonHashTx * pHash,
-                         ptrdiff_t  * pFirstItemOffset );
+bool psonHashTxGetFirst( psonHashTx         * pHash,
+                         ptrdiff_t          * pFirstItemOffset,
+                         psonSessionContext * pContext );
 
-bool psonHashTxGetNext( psonHashTx * pHash,
-                        ptrdiff_t    previousOffset,
-                        ptrdiff_t  * pNextItemOffset );
+bool psonHashTxGetNext( psonHashTx         * pHash,
+                        ptrdiff_t            previousOffset,
+                        ptrdiff_t          * pNextItemOffset,
+                        psonSessionContext * pContext );
 
 enum psoErrors psonHashTxInit( psonHashTx         * pHash,
                                ptrdiff_t            memObjOffset,

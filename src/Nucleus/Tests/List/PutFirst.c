@@ -23,25 +23,24 @@
 
 psonLinkedList list;
 psonLinkNode node;
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
-   psonSessionContext context;
-   
    initTest( &context );
    InitMem();
    
-   psonLinkNodeInit( &node );
-   psonLinkedListInit( &list );
+   psonLinkNodeInit( &node, &context );
+   psonLinkedListInit( &list, &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void teardown_test()
 {
-   psonLinkedListFini( &list );
+   psonLinkedListFini( &list, &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -52,8 +51,18 @@ void test_invalid_sig( void ** state )
    int save = list.initialized;
 
    list.initialized = 0;
-   expect_assert_failure( psonLinkedListPutFirst( &list, &node ) );
+   expect_assert_failure( psonLinkedListPutFirst( &list, &node, &context ) );
    list.initialized = save;
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonLinkedListPutFirst( &list, &node, NULL ) );
 #endif
    return;
 }
@@ -63,7 +72,7 @@ void test_invalid_sig( void ** state )
 void test_null_item( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonLinkedListPutFirst( &list, NULL ) );
+   expect_assert_failure( psonLinkedListPutFirst( &list, NULL, &context ) );
 #endif
    return;
 }
@@ -73,7 +82,7 @@ void test_null_item( void ** state )
 void test_null_list( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonLinkedListPutFirst( NULL, &node ) );
+   expect_assert_failure( psonLinkedListPutFirst( NULL, &node, &context ) );
 #endif
    return;
 }
@@ -84,7 +93,7 @@ void test_null_next( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    node.nextOffset = 0x12345;
-   expect_assert_failure( psonLinkedListPutFirst( &list, &node ) );
+   expect_assert_failure( psonLinkedListPutFirst( &list, &node, &context ) );
 #endif
    return;
 }
@@ -95,7 +104,7 @@ void test_null_previous( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    node.previousOffset = 0x12345;
-   expect_assert_failure( psonLinkedListPutFirst( &list, &node ) );
+   expect_assert_failure( psonLinkedListPutFirst( &list, &node, &context ) );
 #endif
    return;
 }
@@ -106,7 +115,7 @@ void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
 
-   psonLinkedListPutFirst( &list, &node );
+   psonLinkedListPutFirst( &list, &node, &context );
    assert_true( list.currentSize == 1 );
    
 #endif
@@ -121,6 +130,7 @@ int main()
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
       unit_test_setup_teardown( test_invalid_sig,   setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_context,  setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_item,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_list,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_next,     setup_test, teardown_test ),

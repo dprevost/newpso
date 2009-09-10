@@ -521,9 +521,9 @@ int psoQueueStatus( PSO_HANDLE     objectHandle,
       pMemQueue = (psonQueue *) pQueue->object.pMyMemObject;
       
       if ( psonLock(&pMemQueue->memObject, pContext) ) {
-         psonMemObjectStatus( &pMemQueue->memObject, pStatus );
+         psonMemObjectStatus( &pMemQueue->memObject, pStatus, pContext );
 
-         psonQueueStatus( pMemQueue, pStatus );
+         psonQueueStatus( pMemQueue, pStatus, pContext );
          pStatus->type = PSO_QUEUE;
 
          psonUnlock( &pMemQueue->memObject, pContext );

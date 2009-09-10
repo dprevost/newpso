@@ -50,10 +50,12 @@ void psonMemBitmapDump( psonMemBitmap * pBitmap, int indent )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonMemBitmapFini( psonMemBitmap* pBitmap )
+void psonMemBitmapFini( psonMemBitmap      * pBitmap,
+                        psonSessionContext * pContext )
 {
    size_t len, i;
    PSO_PRE_CONDITION( pBitmap != NULL );
+   PSO_TRACE_ENTER( pContext );
    
    len = ( (pBitmap->lengthInBits - 1 ) >> 3 ) + 1;
    for ( i = 0; i < len; ++i ) {
@@ -67,10 +69,11 @@ void psonMemBitmapFini( psonMemBitmap* pBitmap )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonMemBitmapInit( psonMemBitmap* pBitmap,
-                        ptrdiff_t      baseAddressOffset,
-                        size_t         totalLength,
-                        size_t         allocGranularity )
+void psonMemBitmapInit( psonMemBitmap      * pBitmap,
+                        ptrdiff_t            baseAddressOffset,
+                        size_t               totalLength,
+                        size_t               allocGranularity,
+                        psonSessionContext * pContext )
 {
    size_t len, i;
    
@@ -80,6 +83,7 @@ void psonMemBitmapInit( psonMemBitmap* pBitmap,
    /* Testing that it is non-zero and a power of two */
    PSO_PRE_CONDITION( allocGranularity > 0  && 
                       ! (allocGranularity & (allocGranularity-1)) );
+   PSO_TRACE_ENTER( pContext );
 
    pBitmap->lengthInBits = totalLength/allocGranularity;
    pBitmap->allocGranularity = allocGranularity;

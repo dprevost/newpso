@@ -101,6 +101,8 @@ static inline
 void psonProcessNoMoreSessionAllowed( psonProcess        * pProcess,
                                       psonSessionContext * pContext )
 {
+   PSO_TRACE_ENTER( pContext );
+
    if ( psonLock( &pProcess->memObject, pContext ) ) {
       pProcess->processIsTerminating = true;
       psonUnlock( &pProcess->memObject, pContext );

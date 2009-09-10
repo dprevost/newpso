@@ -132,7 +132,8 @@ void psonHashDump( psonHash * pHash,
 void psonHashEmpty( psonHash           * pHash,
                     psonSessionContext * pContext );
 
-void psonHashFini( psonHash * pHash );
+void psonHashFini( psonHash           * pHash,
+                   psonSessionContext * pContext );
 
 bool psonHashGet( psonHash            * pHash,
                   const unsigned char * pkey,
@@ -141,12 +142,14 @@ bool psonHashGet( psonHash            * pHash,
                   size_t              * pBucket,
                   psonSessionContext  * pContext );
 
-bool psonHashGetFirst( psonHash      * pHash,
-                       psonHashItem ** ppItem );
+bool psonHashGetFirst( psonHash           * pHash,
+                       psonHashItem      ** ppItem,
+                       psonSessionContext * pContext );
 
-bool psonHashGetNext( psonHash      * pHash,
-                      psonHashItem  * previousItem,
-                      psonHashItem ** nextItem );
+bool psonHashGetNext( psonHash           * pHash,
+                      psonHashItem       * previousItem,
+                      psonHashItem      ** nextItem,
+                      psonSessionContext * pContext );
 
 enum psoErrors psonHashInit( psonHash           * pHash,
                              ptrdiff_t            memObjOffset,

@@ -142,8 +142,9 @@ bool psonFastMapReplace( psonFastMap        * pHashMap,
                          uint32_t             itemLength,
                          psonSessionContext * pContext );
 
-void psonFastMapStatus( psonFastMap  * pHashMap,
-                        psoObjStatus * pStatus );
+void psonFastMapStatus( psonFastMap        * pHashMap,
+                        psoObjStatus       * pStatus,
+                        psonSessionContext * pContext );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

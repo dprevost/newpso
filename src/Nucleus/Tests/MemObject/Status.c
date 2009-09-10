@@ -37,7 +37,8 @@ void setup_test()
    errcode = psonMemObjectInit( &pDummy->memObject, 
                                 PSON_IDENT_FOLDER,
                                 &pDummy->blockGroup,
-                                1 );
+                                1,
+                                &context );
    assert( errcode == PSO_OK );
 }
 
@@ -51,10 +52,20 @@ void teardown_test()
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonMemObjectStatus( &pDummy->memObject, &status, NULL ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void test_null_memobj( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonMemObjectStatus( NULL, &status ) );
+   expect_assert_failure( psonMemObjectStatus( NULL, &status, &context ) );
 #endif
    return;
 }
@@ -64,7 +75,7 @@ void test_null_memobj( void ** state )
 void test_null_status( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonMemObjectStatus( &pDummy->memObject, NULL ) );
+   expect_assert_failure( psonMemObjectStatus( &pDummy->memObject, NULL, &context ) );
 #endif
    return;
 }
@@ -75,7 +86,7 @@ void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    
-   psonMemObjectStatus( &pDummy->memObject, &status );
+   psonMemObjectStatus( &pDummy->memObject, &status, &context );
 
    assert_true( status.numBlocks == 1 );
    assert_true( status.numBlockGroup == 1 );
@@ -92,9 +103,10 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_null_memobj, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_status, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,        setup_test, teardown_test )
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_memobj,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_status,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

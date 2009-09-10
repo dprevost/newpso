@@ -35,7 +35,8 @@ void setup_test()
    errcode = psonMemObjectInit( &pDummy->memObject, 
                                 PSON_IDENT_FOLDER,
                                 &pDummy->blockGroup,
-                                1 );
+                                1,
+                                &context );
    assert( errcode == PSO_OK );
 }
 

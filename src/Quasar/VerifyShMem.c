@@ -36,13 +36,14 @@ FILE *             g_fp = NULL;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void qsrValidate( psonMemoryHeader * pMemoryAddress, 
-                  size_t           * pNumObjectsOK,
-                  size_t           * pNumObjectsRepaired,
-                  size_t           * pNumObjectsDeleted,
-                  size_t           * pNumObjectsError,
-                  FILE             * fp,
-                  bool               doRepair )
+void qsrValidate( psonMemoryHeader   * pMemoryAddress, 
+                  size_t             * pNumObjectsOK,
+                  size_t             * pNumObjectsRepaired,
+                  size_t             * pNumObjectsDeleted,
+                  size_t             * pNumObjectsError,
+                  FILE               * fp,
+                  bool                 doRepair,
+                  psonSessionContext * pContext  )
 {
    struct psonProcessManager * processMgr;
    psonFolder * topFolder;
@@ -82,12 +83,15 @@ void qsrValidate( psonMemoryHeader * pMemoryAddress,
 
    /* allocate the bitmap */
    bitmapLength = offsetof( psonMemBitmap, bitmap ) + 
-      psonGetBitmapLengthBytes( memAllocator->totalLength, PSON_BLOCK_SIZE );
+      psonGetBitmapLengthBytes( memAllocator->totalLength,
+                                PSON_BLOCK_SIZE,
+                                pContext );
    verifyStruct.pBitmap = (psonMemBitmap *) malloc(bitmapLength);
    psonMemBitmapInit( verifyStruct.pBitmap,
                       0,
                       memAllocator->totalLength,
-                      PSON_BLOCK_SIZE );
+                      PSON_BLOCK_SIZE,
+                      pContext );
 
    // Test the lock of the allocator
    if ( psocIsItLocked( &memAllocator->memObj.lock ) ) {
@@ -131,12 +135,13 @@ void qsrValidate( psonMemoryHeader * pMemoryAddress,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void qsrVerify( psonMemoryHeader * pMemoryAddress, 
-                size_t           * pNumObjectsOK,
-                size_t           * pNumObjectsRepaired,
-                size_t           * pNumObjectsDeleted,
-                size_t           * pNumObjectsError,
-                FILE             * fp )
+void qsrVerify( psonMemoryHeader   * pMemoryAddress, 
+                size_t             * pNumObjectsOK,
+                size_t             * pNumObjectsRepaired,
+                size_t             * pNumObjectsDeleted,
+                size_t             * pNumObjectsError,
+                FILE               * fp,
+                psonSessionContext * pContext )
 {
    fprintf( fp, "Verification of sharedmemory (no repair) is starting\n" );
    
@@ -146,17 +151,19 @@ void qsrVerify( psonMemoryHeader * pMemoryAddress,
                 pNumObjectsDeleted,
                 pNumObjectsError, 
                 fp, 
-                false );
+                false,
+                pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void qsrRepair( psonMemoryHeader * pMemoryAddress, 
-                size_t           * pNumObjectsOK,
-                size_t           * pNumObjectsRepaired,
-                size_t           * pNumObjectsDeleted,
-                size_t           * pNumObjectsError,
-                FILE             * fp )
+void qsrRepair( psonMemoryHeader   * pMemoryAddress, 
+                size_t             * pNumObjectsOK,
+                size_t             * pNumObjectsRepaired,
+                size_t             * pNumObjectsDeleted,
+                size_t             * pNumObjectsError,
+                FILE               * fp,
+                psonSessionContext * pContext )
 {
    fprintf( fp, "Verification and repair (if needed) of shared memory is starting\n" );
    
@@ -166,7 +173,8 @@ void qsrRepair( psonMemoryHeader * pMemoryAddress,
                 pNumObjectsDeleted,
                 pNumObjectsError, 
                 fp, 
-                true );
+                true,
+                pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

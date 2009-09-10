@@ -100,8 +100,9 @@ typedef struct psonQueue psonQueue;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonQueueCommitAdd( psonQueue * pQueue, 
-                         ptrdiff_t   itemOffset );
+void psonQueueCommitAdd( psonQueue          * pQueue, 
+                         ptrdiff_t            itemOffset,
+                         psonSessionContext * pContext );
 
 void psonQueueCommitRemove( psonQueue          * pQueue, 
                             ptrdiff_t            itemOffset,
@@ -158,11 +159,13 @@ void psonQueueRollbackAdd( psonQueue          * pQueue,
                            ptrdiff_t            itemOffset,
                            psonSessionContext * pContext  );
 
-void psonQueueRollbackRemove( psonQueue * pQueue, 
-                              ptrdiff_t   itemOffset );
+void psonQueueRollbackRemove( psonQueue          * pQueue, 
+                              ptrdiff_t            itemOffset,
+                              psonSessionContext * pContext );
 
-void psonQueueStatus( psonQueue    * pQueue,
-                      psoObjStatus * pStatus );
+void psonQueueStatus( psonQueue          * pQueue,
+                      psoObjStatus       * pStatus,
+                      psonSessionContext * pContext );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

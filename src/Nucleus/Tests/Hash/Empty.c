@@ -97,7 +97,7 @@ void test_pass( void ** state )
    
    psonHashEmpty( pHash, &context );
    
-   found = psonHashGetFirst( pHash, &firstItem );
+   found = psonHashGetFirst( pHash, &firstItem, &context );
    assert_false( found );
    
 #endif

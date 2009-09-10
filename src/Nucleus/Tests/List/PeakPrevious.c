@@ -23,29 +23,28 @@
 
 psonLinkedList list;
 psonLinkNode node1, node2, *pNode;
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
-   psonSessionContext context;
-   
    initTest( &context );
    InitMem();
    
-   psonLinkNodeInit( &node1 );
-   psonLinkNodeInit( &node2 );
-   psonLinkedListInit( &list );
+   psonLinkNodeInit( &node1, &context );
+   psonLinkNodeInit( &node2, &context );
+   psonLinkedListInit( &list, &context );
    
-   psonLinkedListPutLast( &list, &node1 );
-   psonLinkedListPutLast( &list, &node2 );
+   psonLinkedListPutLast( &list, &node1, &context );
+   psonLinkedListPutLast( &list, &node2, &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void teardown_test()
 {
-   psonLinkedListFini( &list );
+   psonLinkedListFini( &list, &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -56,8 +55,18 @@ void test_invalid_sig( void ** state )
    int save = list.initialized;
 
    list.initialized = 0;
-   expect_assert_failure( psonLinkedListPeakPrevious( &list, &node2, &pNode ) );
+   expect_assert_failure( psonLinkedListPeakPrevious( &list, &node2, &pNode, &context ) );
    list.initialized = save;
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonLinkedListPeakPrevious( &list, &node2, &pNode, NULL ) );
 #endif
    return;
 }
@@ -67,7 +76,7 @@ void test_invalid_sig( void ** state )
 void test_null_current( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonLinkedListPeakPrevious( &list, NULL, &pNode ) );
+   expect_assert_failure( psonLinkedListPeakPrevious( &list, NULL, &pNode, &context ) );
 #endif
    return;
 }
@@ -77,7 +86,7 @@ void test_null_current( void ** state )
 void test_null_list( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonLinkedListPeakPrevious( NULL, &node2, &pNode ) );
+   expect_assert_failure( psonLinkedListPeakPrevious( NULL, &node2, &pNode, &context ) );
 #endif
    return;
 }
@@ -87,7 +96,7 @@ void test_null_list( void ** state )
 void test_null_previous( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonLinkedListPeakPrevious( &list, &node2, NULL ) );
+   expect_assert_failure( psonLinkedListPeakPrevious( &list, &node2, NULL, &context ) );
 #endif
    return;
 }
@@ -98,7 +107,7 @@ void test_null_next_offset( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    node2.nextOffset = PSON_NULL_OFFSET;
-   expect_assert_failure( psonLinkedListPeakPrevious( &list, &node2, &pNode ) );
+   expect_assert_failure( psonLinkedListPeakPrevious( &list, &node2, &pNode, &context ) );
 #endif
    return;
 }
@@ -109,7 +118,7 @@ void test_null_prev_offset( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    node2.previousOffset = PSON_NULL_OFFSET;
-   expect_assert_failure( psonLinkedListPeakPrevious( &list, &node2, &pNode ) );
+   expect_assert_failure( psonLinkedListPeakPrevious( &list, &node2, &pNode, &context ) );
 #endif
    return;
 }
@@ -121,7 +130,7 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    bool ok;
    
-   ok = psonLinkedListPeakPrevious( &list, &node2, &pNode );
+   ok = psonLinkedListPeakPrevious( &list, &node2, &pNode, &context );
    assert_true( ok );
    assert_true( pNode == &node1 );
    assert_true( list.currentSize == 2 );
@@ -137,13 +146,14 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_invalid_sig, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_invalid_sig,      setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_context,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_current,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_list,        setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_previous,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_next_offset, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_prev_offset, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
+      unit_test_setup_teardown( test_pass,             setup_test, teardown_test )
    };
 
    rc = run_tests(tests);

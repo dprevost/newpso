@@ -22,6 +22,7 @@
 #define PSON_MEM_BITMAP_H
 
 #include "Nucleus/Engine.h"
+#include "Nucleus/SessionContext.h"       
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -53,29 +54,36 @@ void psonMemBitmapDump( psonMemBitmap * pBitmap, int indent );
 /** 
  * Initialize the psonMemBitmap struct. 
  */
-void psonMemBitmapInit( psonMemBitmap * pBitmap,
-                        ptrdiff_t       offset,
-                        size_t          totalLength,
-                        size_t          allocationUnit );
+void psonMemBitmapInit( psonMemBitmap      * pBitmap,
+                        ptrdiff_t            offset,
+                        size_t               totalLength,
+                        size_t               allocationUnit,
+                        psonSessionContext * pContext );
 
-void psonMemBitmapFini( psonMemBitmap * pBitmap );
-
-static inline
-bool psonIsBufferFree( psonMemBitmap * pBitmap,
-                       ptrdiff_t       offset );
+void psonMemBitmapFini( psonMemBitmap      * pBitmap,
+                        psonSessionContext * pContext );
 
 static inline
-void psonSetBufferAllocated( psonMemBitmap * pBitmap,
-                             ptrdiff_t       offset,
-                             size_t          length );
+bool psonIsBufferFree( psonMemBitmap      * pBitmap,
+                       ptrdiff_t            offset,
+                       psonSessionContext * pContext );
 
 static inline
-void psonSetBufferFree( psonMemBitmap * pBitmap,
-                        ptrdiff_t       offset,
-                        size_t          length );
+void psonSetBufferAllocated( psonMemBitmap      * pBitmap,
+                             ptrdiff_t            offset,
+                             size_t               length,
+                             psonSessionContext * pContext );
 
 static inline
-size_t psonGetBitmapLengthBytes( size_t length, size_t allocationUnit );
+void psonSetBufferFree( psonMemBitmap      * pBitmap,
+                        ptrdiff_t            offset,
+                        size_t               length,
+                        psonSessionContext * pContext );
+
+static inline
+size_t psonGetBitmapLengthBytes( size_t               length,
+                                 size_t               allocationUnit,
+                                 psonSessionContext * pContext );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

@@ -115,8 +115,9 @@ bool psonCursorInsertLast( psonCursor         * pCursor,
                            psonItemTypeEnum     itemType,
                            psonSessionContext * pContext );
 
-void psonCursorSize( psonCursor * pCursor,
-                     size_t     * pNumItems );
+void psonCursorSize( psonCursor         * pCursor,
+                     size_t             * pNumItems,
+                     psonSessionContext * pContext );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

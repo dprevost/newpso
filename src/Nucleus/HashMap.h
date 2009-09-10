@@ -159,8 +159,9 @@ void psonHashMapRollbackRemove( psonHashMap        * pHashMap,
                                 ptrdiff_t            itemOffset,
                                 psonSessionContext * pContext  );
 
-void psonHashMapStatus( psonHashMap  * pHashMap,
-                        psoObjStatus * pStatus );
+void psonHashMapStatus( psonHashMap        * pHashMap,
+                        psoObjStatus       * pStatus,
+                        psonSessionContext * pContext );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

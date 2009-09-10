@@ -23,24 +23,23 @@
 
 psonLinkedList list;
 psonLinkNode* pNode;
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
-   psonSessionContext context;
-  
    initTest( &context );
    InitMem();
    
-   psonLinkedListInit( &list );
+   psonLinkedListInit( &list, &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void teardown_test()
 {
-   psonLinkedListFini( &list );
+   psonLinkedListFini( &list, &context );
    pNode = NULL;
 }
 
@@ -52,9 +51,19 @@ void test_invalid_sig( void ** state )
    int save = list.initialized;
 
    list.initialized = 0;
-   expect_assert_failure( psonLinkedListReset( &list ) );
+   expect_assert_failure( psonLinkedListReset( &list, &context ) );
    list.initialized = save;
-   psonLinkedListReset( &list );
+   psonLinkedListReset( &list, &context );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonLinkedListReset( &list, NULL ) );
 #endif
    return;
 }
@@ -64,7 +73,7 @@ void test_invalid_sig( void ** state )
 void test_null_list( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonLinkedListReset( NULL ) );
+   expect_assert_failure( psonLinkedListReset( NULL, &context ) );
 #endif
    return;
 }
@@ -76,12 +85,12 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    bool ok;
    
-   psonLinkedListReset( &list );
+   psonLinkedListReset( &list, &context );
 
    assert_true( list.initialized == PSON_LIST_SIGNATURE );
    assert_true( list.currentSize == 0 );
    
-   ok = psonLinkedListGetFirst( &list, &pNode );
+   ok = psonLinkedListGetFirst( &list, &pNode, &context );
    assert_false( ok ); /* The list is not empty after a reset... problem! */
 
 #endif
@@ -95,8 +104,9 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_invalid_sig, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_list,     setup_test, teardown_test ),
+      unit_test_setup_teardown( test_invalid_sig,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_list,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_pass,         setup_test, teardown_test )
    };
 

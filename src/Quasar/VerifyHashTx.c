@@ -38,9 +38,10 @@
  */
  
 enum qsrRecoverError
-qsrVerifyHashTx( qsrVerifyStruct  * pVerify,
-                  struct psonHashTx * pHash,
-                  ptrdiff_t           offset )
+qsrVerifyHashTx( qsrVerifyStruct    * pVerify,
+                 struct psonHashTx  * pHash,
+                 ptrdiff_t            offset,
+                 psonSessionContext * pContext )
 {
    ptrdiff_t * pArray;
    size_t i, bucket;
@@ -72,7 +73,7 @@ qsrVerifyHashTx( qsrVerifyStruct  * pVerify,
       }
    }
 
-   if ( ! qsrVerifyOffset( pVerify, pHash->arrayOffset ) ) {
+   if ( ! qsrVerifyOffset( pVerify, pHash->arrayOffset, pContext ) ) {
       qsrEcho( pVerify, 
          "HashTx::arrayOffset is invalid - aborting the hash verification" );
       return QSR_REC_UNRECOVERABLE_ERROR;
@@ -92,7 +93,7 @@ qsrVerifyHashTx( qsrVerifyStruct  * pVerify,
       while ( currentOffset != PSON_NULL_OFFSET ) {
          removeItem = false;
          
-         if ( ! qsrVerifyOffset( pVerify, currentOffset ) ) {
+         if ( ! qsrVerifyOffset( pVerify, currentOffset, pContext ) ) {
             rc = QSR_REC_CHANGES;
             qsrEcho( pVerify, 
                "Hash item offset is invalid - jumping to next offset" );
@@ -119,7 +120,7 @@ qsrVerifyHashTx( qsrVerifyStruct  * pVerify,
          else {
             /* test the hash item itself */
             if ( pItem->nextSameKey != PSON_NULL_OFFSET ) {
-               if ( ! qsrVerifyOffset( pVerify, pItem->nextSameKey ) ) {
+               if ( ! qsrVerifyOffset( pVerify, pItem->nextSameKey, pContext ) ) {
                   rc = QSR_REC_CHANGES;
                   qsrEcho( pVerify, "HashItem::nextSameKey is invalid" );
                   if ( pVerify->doRepair ) {
@@ -133,14 +134,15 @@ qsrVerifyHashTx( qsrVerifyStruct  * pVerify,
                removeItem = true;
             }
             else {
-               if ( ! qsrVerifyOffset( pVerify, pItem->dataOffset ) ) {
+               if ( ! qsrVerifyOffset( pVerify, pItem->dataOffset, pContext ) ) {
                   rc = QSR_REC_CHANGES;
                   qsrEcho( pVerify, "HashItem::dataOffset is invalid" );
                   removeItem = true;
                }
                else {
-                  if ( ! qsrVerifyOffset( 
-                        pVerify, pItem->dataOffset + pItem->dataLength ) ) {
+                  if ( ! qsrVerifyOffset( pVerify,
+                                          pItem->dataOffset + pItem->dataLength,
+                                          pContext ) ) {
                      rc = QSR_REC_CHANGES;
                      qsrEcho( pVerify, "HashItem::dataOffset is invalid" );
                      removeItem = true;

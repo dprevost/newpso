@@ -83,7 +83,8 @@ psonHash* initHashTest( psonSessionContext * pContext )
    errcode = psonMemObjectInit( &pDummy->memObject, 
                                 PSON_IDENT_ALLOCATOR,
                                 &pDummy->blockGroup,
-                                2 );
+                                2,
+                                pContext );
    assert( errcode == PSO_OK );
    g_memObjOffset = SET_OFFSET(&pDummy->memObject);
    

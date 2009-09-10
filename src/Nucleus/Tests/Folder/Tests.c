@@ -38,9 +38,9 @@ void test_pass( void ** state )
    /* Create "/" */
    pFolder1 = initFolderTest( &context );
 
-   psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ) );
+   psonTxStatusInit( &status, SET_OFFSET(context.pTransaction), &context );
    psonTreeNodeInit( &node, SET_OFFSET( pFolder1 ), PSO_FOLDER,
-                     SET_OFFSET( &status ), PSON_NULL_OFFSET );
+                     SET_OFFSET( &status ), PSON_NULL_OFFSET, &context );
    
    ok = psonFolderInit( pFolder1, 0, 1, 0, &node, &context );
    assert_true( ok );

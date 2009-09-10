@@ -20,51 +20,86 @@
 
 #include "Nucleus/LinkNode.h"
 
+psonSessionContext context;
+psonLinkNode node;
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void test_null_init( void ** state )
+void setup_test()
+{
+   memset( &context, 0, sizeof(psonSessionContext) );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void init_null_context( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonLinkNodeInit( NULL ) );
+   expect_assert_failure( psonLinkNodeInit( &node, NULL ) );
 #endif
    return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void test_null_test( void ** state )
+void init_null_node( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonLinkNodeTest( NULL ) );
+   expect_assert_failure( psonLinkNodeInit( NULL, &context ) );
 #endif
    return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void test_test( void ** state )
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonLinkNodeTest( &node, NULL ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_node( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonLinkNodeTest( NULL, &context ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    bool ok;
-   psonLinkNode node;
 
-   psonLinkNodeInit( &node );
+   psonLinkNodeInit( &node, &context );
 
-   ok = psonLinkNodeTest( &node );
+   ok = psonLinkNodeTest( &node, &context );
    assert_false( ok );
    
    node.nextOffset = 0x1234;
-   ok = psonLinkNodeTest( &node );
+   ok = psonLinkNodeTest( &node, &context );
    assert_false( ok );
    
-   psonLinkNodeInit( &node );
+   psonLinkNodeInit( &node, &context );
 
    node.previousOffset = 0x1234;
-   ok = psonLinkNodeTest( &node );
+   ok = psonLinkNodeTest( &node, &context );
    assert_false( ok );
    
    node.nextOffset = 0x1234;
-   ok = psonLinkNodeTest( &node );
+   ok = psonLinkNodeTest( &node, &context );
    assert_true( ok );
    
 #endif
@@ -78,9 +113,11 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test( test_null_init ),
-      unit_test( test_null_test ),
-      unit_test( test_test )
+      unit_test_setup_teardown( init_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( init_null_node,    setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_node,    setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test ),
    };
 
    rc = run_tests(tests);

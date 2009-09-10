@@ -26,6 +26,7 @@
 #if defined _WIN32
 //#  pragma warning(default:4273)
 #endif
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -35,12 +36,20 @@ void test_pass( void ** state )
    int errcode, i;
    char name [PSO_MAX_NAME_LENGTH+10];
    uint32_t partial;
-   bool last;
+   bool last, ok;
+
+   memset( &context, 0, sizeof(psonSessionContext) );
+   context.pidLocker = getpid();
+   
+   ok = psonInitEngine();
+   assert( ok );
+   psocInitErrorHandler( &context.errorHandler );
    
    errcode = psonValidateString( "Test2",
                                  5,
                                  &partial,
-                                 &last );
+                                 &last,
+                                 &context );
    assert_true( errcode == 0 );
    assert_true( partial == 5 );
    assert_true( last );
@@ -48,7 +57,8 @@ void test_pass( void ** state )
    errcode = psonValidateString( "Test2/Test555",
                                  13,
                                  &partial,
-                                 &last );
+                                 &last,
+                                 &context );
    assert_true( errcode == 0 );
    assert_true( partial == 5 );
    assert_false( last );
@@ -61,13 +71,15 @@ void test_pass( void ** state )
    errcode = psonValidateString( name,
                                  PSO_MAX_NAME_LENGTH+9, /* not 10 ! */
                                  &partial,
-                                 &last );
+                                 &last,
+                                 &context );
    assert_true( errcode == PSO_OBJECT_NAME_TOO_LONG );
    
    errcode = psonValidateString( "Test2/",
                                  6,
                                  &partial,
-                                 &last );
+                                 &last,
+                                 &context );
    assert_true( errcode == 0 );
    assert_true( partial == 5 );
    assert_true( last );
@@ -77,14 +89,16 @@ void test_pass( void ** state )
    errcode = psonValidateString( name,
                                  10,
                                  &partial,
-                                 &last );
+                                 &last,
+                                 &context );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
    
    name[4] = '=';
    errcode = psonValidateString( name,
                                  10,
                                  &partial,
-                                 &last );
+                                 &last,
+                                 &context );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    name[0] = '3';
@@ -92,14 +106,16 @@ void test_pass( void ** state )
    errcode = psonValidateString( name,
                                  10,
                                  &partial,
-                                 &last );
+                                 &last,
+                                 &context );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    name[0] = '_';
    errcode = psonValidateString( name,
                                  10,
                                  &partial,
-                                 &last );
+                                 &last,
+                                 &context );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
    
    name[0] = 't';
@@ -107,14 +123,16 @@ void test_pass( void ** state )
    errcode = psonValidateString( name,
                                  10,
                                  &partial,
-                                 &last );
+                                 &last,
+                                 &context );
    assert_true( errcode == 0 );
 
    name[4] = '3';
    errcode = psonValidateString( name,
                                  10,
                                  &partial,
-                                 &last );
+                                 &last,
+                                 &context );
    assert_true( errcode == 0 );
    
 #endif

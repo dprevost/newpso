@@ -53,8 +53,9 @@ void psonCursorEmpty( psonCursor         * pCursor,
    PSO_PRE_CONDITION( pCursor  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pCursor->memObject.objType == PSON_IDENT_CURSOR );
+   PSO_TRACE_ENTER( pContext );
 
-   while ( psonLinkedListGetFirst( &pCursor->listOfElements, &pNode ) ) {
+   while ( psonLinkedListGetFirst( &pCursor->listOfElements, &pNode, pContext ) ) {
       pCursorItem = (psonCursorItem *)
          ((char*)pNode - offsetof( psonCursorItem, node ));
       // Bug - must reduce the reference count of 
@@ -79,7 +80,7 @@ void psonCursorEmpty( psonCursor         * pCursor,
                 sizeof(psonCursorItem),
                 pContext );
    }
-
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -90,11 +91,14 @@ void psonCursorFini( psonCursor         * pCursor,
    PSO_PRE_CONDITION( pCursor  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pCursor->memObject.objType == PSON_IDENT_CURSOR );
+   PSO_TRACE_ENTER( pContext );
 
    psonCursorEmpty( pCursor, pContext );
    
-   psonLinkedListFini( &pCursor->listOfElements );
+   psonLinkedListFini( &pCursor->listOfElements, pContext );
    psonMemObjectFini(  &pCursor->memObject, PSON_ALLOC_API_OBJ, pContext );
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -110,14 +114,16 @@ bool psonCursorGetFirst( psonCursor         * pCursor,
    PSO_PRE_CONDITION( ppItem   != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pCursor->memObject.objType == PSON_IDENT_CURSOR );
+   PSO_TRACE_ENTER( pContext );
    
    /* This call can only fail if the queue is empty. */
-   okList = psonLinkedListPeakFirst( &pCursor->listOfElements, &pNode );
+   okList = psonLinkedListPeakFirst( &pCursor->listOfElements, &pNode, pContext );
    
    if ( okList ) {
       *ppItem = (psonCursorItem*) 
          ((char*)pNode - offsetof( psonCursorItem, node ));
 
+      PSO_TRACE_EXIT( pContext );
       return true;
    }
    
@@ -131,6 +137,7 @@ bool psonCursorGetFirst( psonCursor         * pCursor,
    
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_IS_EMPTY );
 
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -147,14 +154,16 @@ bool psonCursorGetLast( psonCursor         * pCursor,
    PSO_PRE_CONDITION( ppItem   != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pCursor->memObject.objType == PSON_IDENT_CURSOR );
+   PSO_TRACE_ENTER( pContext );
    
    /* This call can only fail if the queue is empty. */
-   okList = psonLinkedListPeakLast( &pCursor->listOfElements, &pNode );
+   okList = psonLinkedListPeakLast( &pCursor->listOfElements, &pNode, pContext );
    
    if ( okList ) {
       *ppItem = (psonCursorItem*) 
          ((char*)pNode - offsetof( psonCursorItem, node ));
 
+      PSO_TRACE_EXIT( pContext );
       return true;
    }
    
@@ -168,6 +177,7 @@ bool psonCursorGetLast( psonCursor         * pCursor,
    
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_IS_EMPTY );
 
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -186,15 +196,17 @@ bool psonCursorGetNext( psonCursor         * pCursor,
    PSO_PRE_CONDITION( ppItem   != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pCursor->memObject.objType == PSON_IDENT_CURSOR );
+   PSO_TRACE_ENTER( pContext );
    
    okList =  psonLinkedListPeakNext( &pCursor->listOfElements, 
                                      &pOldItem->node, 
-                                     &pNode );
-      
+                                     &pNode,
+                                     pContext );
    if ( okList ) {
       *ppItem = (psonCursorItem*)
          ((char*)pNode - offsetof( psonCursorItem, node ));
       
+      PSO_TRACE_EXIT( pContext );
       return true;
    }
    
@@ -208,6 +220,7 @@ bool psonCursorGetNext( psonCursor         * pCursor,
    
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_REACHED_THE_END );
 
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -226,15 +239,17 @@ bool psonCursorGetPrevious( psonCursor         * pCursor,
    PSO_PRE_CONDITION( ppItem   != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pCursor->memObject.objType == PSON_IDENT_CURSOR );
+   PSO_TRACE_ENTER( pContext );
    
    okList =  psonLinkedListPeakPrevious( &pCursor->listOfElements, 
                                          &pOldItem->node, 
-                                         &pNode );
-      
+                                         &pNode,
+                                         pContext );
    if ( okList ) {
       *ppItem = (psonCursorItem*)
          ((char*)pNode - offsetof( psonCursorItem, node ));
       
+      PSO_TRACE_EXIT( pContext );
       return true;
    }
    
@@ -248,6 +263,7 @@ bool psonCursorGetPrevious( psonCursor         * pCursor,
    
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_REACHED_THE_END );
 
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -264,20 +280,24 @@ bool psonCursorInit( psonCursor          * pCursor,
    PSO_PRE_CONDITION( pContext     != NULL );
    PSO_PRE_CONDITION( parentOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
+   PSO_TRACE_ENTER( pContext );
    
    errcode = psonMemObjectInit( &pCursor->memObject, 
                                 PSON_IDENT_CURSOR,
                                 &pCursor->blockGroup,
-                                numberOfBlocks );
+                                numberOfBlocks,
+                                pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
-   psonLinkedListInit( &pCursor->listOfElements );
+   psonLinkedListInit( &pCursor->listOfElements, pContext );
 
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -295,6 +315,7 @@ bool psonCursorInsertFirst( psonCursor         * pCursor,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pCursor->memObject.objType == PSON_IDENT_CURSOR );
    PSO_PRE_CONDITION( itemType > PSON_FIRST_ITEM && itemType < PSON_LAST_ITEM );
+   PSO_TRACE_ENTER( pContext );
 
    pCursorItem = (psonCursorItem *) psonMalloc( &pCursor->memObject,
                                                 sizeof(psonCursorItem),
@@ -302,17 +323,20 @@ bool psonCursorInsertFirst( psonCursor         * pCursor,
    if ( pCursorItem == NULL ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, 
                     PSO_NOT_ENOUGH_PSO_MEMORY );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
-   psonLinkNodeInit( &pCursorItem->node );
+   psonLinkNodeInit( &pCursorItem->node, pContext );
       
    pCursorItem->itemOffset = SET_OFFSET(pItem);
    pCursorItem->itemType = itemType;
 
    psonLinkedListPutFirst( &pCursor->listOfElements,
-                           &pCursorItem->node );
+                           &pCursorItem->node,
+                           pContext );
       
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -330,6 +354,7 @@ bool psonCursorInsertLast( psonCursor         * pCursor,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pCursor->memObject.objType == PSON_IDENT_CURSOR );
    PSO_PRE_CONDITION( itemType > PSON_FIRST_ITEM && itemType < PSON_LAST_ITEM );
+   PSO_TRACE_ENTER( pContext );
 
    pCursorItem = (psonCursorItem *) psonMalloc( &pCursor->memObject,
                                                 sizeof(psonCursorItem),
@@ -337,30 +362,37 @@ bool psonCursorInsertLast( psonCursor         * pCursor,
    if ( pCursorItem == NULL ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, 
                     PSO_NOT_ENOUGH_PSO_MEMORY );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
-   psonLinkNodeInit( &pCursorItem->node );
+   psonLinkNodeInit( &pCursorItem->node, pContext );
       
    pCursorItem->itemOffset = SET_OFFSET(pItem);
    pCursorItem->itemType = itemType;
 
    psonLinkedListPutLast( &pCursor->listOfElements,
-                          &pCursorItem->node );
+                          &pCursorItem->node,
+                          pContext );
       
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonCursorSize( psonCursor * pCursor,
-                     size_t     * pNumItems )
+void psonCursorSize( psonCursor         * pCursor,
+                     size_t             * pNumItems,
+                     psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pCursor   != NULL );
    PSO_PRE_CONDITION( pNumItems != NULL );
    PSO_PRE_CONDITION( pCursor->memObject.objType == PSON_IDENT_CURSOR );
+   PSO_TRACE_ENTER( pContext );
 
    *pNumItems = pCursor->listOfElements.currentSize;
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

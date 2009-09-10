@@ -23,12 +23,12 @@
 
 psonBlockGroup * pGroup;
 unsigned char* ptr;
+psonSessionContext context;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
-   psonSessionContext context;
    
    initTest( &context );
 
@@ -59,7 +59,22 @@ void test_invalid_type( void ** state )
    expect_assert_failure( psonBlockGroupInit( pGroup, 
                                               SET_OFFSET(ptr),
                                               10,
-                                              (psonMemObjIdent)(PSON_IDENT_LAST+200) ) );
+                                              (psonMemObjIdent)(PSON_IDENT_LAST+200),
+                                              &context ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_context( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonBlockGroupInit( pGroup, 
+                                              SET_OFFSET(ptr),
+                                              10,
+                                              PSON_IDENT_QUEUE,
+                                              NULL ) );
 #endif
    return;
 }
@@ -72,7 +87,8 @@ void test_null_group( void ** state )
    expect_assert_failure( psonBlockGroupInit( NULL, 
                                               SET_OFFSET(ptr),
                                               10,
-                                              PSON_IDENT_QUEUE ) );
+                                              PSON_IDENT_QUEUE,
+                                              &context ) );
 #endif
    return;
 }
@@ -85,7 +101,8 @@ void test_null_offset( void ** state )
    expect_assert_failure( psonBlockGroupInit( pGroup, 
                                               PSON_NULL_OFFSET,
                                               10,
-                                              PSON_IDENT_QUEUE ) );
+                                              PSON_IDENT_QUEUE,
+                                              &context ) );
 #endif
    return;
 }
@@ -98,7 +115,8 @@ void test_zero_blocks( void ** state )
    expect_assert_failure( psonBlockGroupInit( pGroup, 
                                               SET_OFFSET(ptr),
                                               0,
-                                              PSON_IDENT_QUEUE ) );
+                                              PSON_IDENT_QUEUE,
+                                              &context ) );
 #endif
    return;
 }
@@ -112,7 +130,8 @@ void test_pass( void ** state )
    psonBlockGroupInit( pGroup, 
                       SET_OFFSET(ptr),
                       10,
-                      PSON_IDENT_QUEUE );
+                      PSON_IDENT_QUEUE,
+                      &context );
    assert_true( pGroup->node.nextOffset == PSON_NULL_OFFSET );
    assert_true( pGroup->node.previousOffset == PSON_NULL_OFFSET );
    assert_true( pGroup->numBlocks == 10 );
@@ -122,15 +141,19 @@ void test_pass( void ** state )
    assert_false( pGroup->isDeletable );
    assert_true( pGroup->bitmap.baseAddressOffset == SET_OFFSET(ptr) );
    
-   psonBlockGroupFini( pGroup );
+   psonBlockGroupFini( pGroup, &context );
 
    /* A zero offset this time */
    pGroup = (psonBlockGroup*) ptr;
-   psonBlockGroupInit( pGroup, SET_OFFSET(ptr), 10, PSON_IDENT_QUEUE );
+   psonBlockGroupInit( pGroup,
+                       SET_OFFSET(ptr),
+                       10,
+                       PSON_IDENT_QUEUE,
+                       &context );
 
    assert_true( pGroup->isDeletable );
    
-   psonBlockGroupFini( pGroup );
+   psonBlockGroupFini( pGroup, &context );
    
 #endif
    return;
@@ -144,6 +167,7 @@ int main()
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
       unit_test_setup_teardown( test_invalid_type, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_group,   setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_offset,  setup_test, teardown_test ),
       unit_test_setup_teardown( test_zero_blocks,  setup_test, teardown_test ),
