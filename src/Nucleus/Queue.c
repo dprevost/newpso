@@ -52,6 +52,8 @@ void psonQueueCommitAdd( psonQueue          * pQueue,
     */
    psonTxStatusClearTx( &pQueueItem->txStatus, pContext );
    pQueueNode->txCounter--;
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -93,6 +95,7 @@ void psonQueueCommitRemove( psonQueue          * pQueue,
    else {
       psonTxStatusCommitRemove( &pQueueItem->txStatus, pContext );
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -149,6 +152,8 @@ void psonQueueFini( psonQueue          * pQueue,
 
    psonLinkedListFini( &pQueue->listOfElements, pContext );
    psonMemObjectFini(  &pQueue->memObject, PSON_ALLOC_API_OBJ, pContext );
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -242,6 +247,7 @@ bool psonQueueGetFirst( psonQueue          * pQueue,
             
             psonUnlock( &pQueue->memObject, pContext );
 
+            PSO_TRACE_EXIT( pContext );
             return true;
          }
          okList =  psonLinkedListPeakNext( &pQueue->listOfElements, 
@@ -252,6 +258,7 @@ bool psonQueueGetFirst( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
@@ -271,6 +278,7 @@ bool psonQueueGetFirst( psonQueue          * pQueue,
    psonUnlock( &pQueue->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
 
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -360,7 +368,8 @@ bool psonQueueGetNext( psonQueue          * pQueue,
                psocSetError( &pContext->errorHandler,
                              g_psoErrorHandle,
                              PSO_INVALID_LENGTH );
-                return false;
+               PSO_TRACE_EXIT( pContext );
+               return false;
             }
 
             txItemStatus->usageCounter++;
@@ -371,6 +380,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
             
             psonUnlock( &pQueue->memObject, pContext );
 
+            PSO_TRACE_EXIT( pContext );
             return true;
          }
          okList =  psonLinkedListPeakNext( &pQueue->listOfElements, 
@@ -381,6 +391,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
@@ -401,6 +412,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
    psonUnlock( &pQueue->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
 
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -434,6 +446,7 @@ bool psonQueueInit( psonQueue           * pQueue,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
@@ -443,6 +456,7 @@ bool psonQueueInit( psonQueue           * pQueue,
 
    pQueue->dataDefOffset = SET_OFFSET(pDataDefinition);
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -532,9 +546,11 @@ bool psonQueueInsert( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 
 the_exit:
@@ -548,6 +564,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
     
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -616,9 +633,11 @@ bool psonQueueInsertNow( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 
 the_exit:
@@ -632,6 +651,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
     
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -656,9 +676,11 @@ bool psonQueueRelease( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -707,6 +729,7 @@ void psonQueueReleaseNoLock( psonQueue          * pQueue,
 
       pQueueNode->txCounter--;
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -801,6 +824,7 @@ bool psonQueueRemove( psonQueue          * pQueue,
 
             psonUnlock( &pQueue->memObject, pContext );
 
+            PSO_TRACE_EXIT( pContext );
             return true;
          }
          /* We test the type of flag to return the proper error code (if needed) */
@@ -824,6 +848,7 @@ bool psonQueueRemove( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
@@ -839,6 +864,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -885,6 +911,7 @@ void psonQueueRollbackAdd( psonQueue          * pQueue,
    else {
       psonTxStatusCommitRemove( txStatus, pContext );
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -910,6 +937,8 @@ void psonQueueRollbackRemove( psonQueue          * pQueue,
    psonTxStatusUnmarkAsDestroyed( &pQueueItem->txStatus, pContext );
 
    pQueueNode->txCounter--;
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -935,7 +964,10 @@ void psonQueueStatus( psonQueue          * pQueue,
    pStatus->numDataItem = pQueue->listOfElements.currentSize;
    pStatus->maxDataLength = 0;
    pStatus->maxKeyLength  = 0;
-   if ( pStatus->numDataItem == 0 ) return;
+   if ( pStatus->numDataItem == 0 ) {
+      PSO_TRACE_EXIT( pContext );
+      return;
+   }
    
    /* This call can only fail if the queue is empty. */
    okList = psonLinkedListPeakFirst( &pQueue->listOfElements, 
@@ -954,6 +986,7 @@ void psonQueueStatus( psonQueue          * pQueue,
                                         &pNode,
                                         pContext );
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

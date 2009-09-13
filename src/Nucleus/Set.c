@@ -42,6 +42,8 @@ void psonSetFini( psonSet            * pSet,
 
    psonLinkedListFini( &pSet->listOfElements, pContext );
    psonMemObjectFini(  &pSet->memObject, PSON_ALLOC_API_OBJ, pContext );
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -127,6 +129,7 @@ bool psonSetGetFirst( psonSet            * pSet,
                psocSetError( &pContext->errorHandler,
                              g_psoErrorHandle,
                              PSO_INVALID_LENGTH );
+                PSO_TRACE_EXIT( pContext );
                 return false;
             }
 
@@ -136,6 +139,7 @@ bool psonSetGetFirst( psonSet            * pSet,
             
             psonUnlock( &pSet->memObject, pContext );
 
+            PSO_TRACE_EXIT( pContext );
             return true;
          }
          okList =  psonLinkedListPeakNext( &pSet->listOfElements, 
@@ -146,6 +150,7 @@ bool psonSetGetFirst( psonSet            * pSet,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
@@ -165,6 +170,7 @@ bool psonSetGetFirst( psonSet            * pSet,
    psonUnlock( &pSet->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
 
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -255,6 +261,7 @@ bool psonSetGetNext( psonSet            * pSet,
                psocSetError( &pContext->errorHandler,
                              g_psoErrorHandle,
                              PSO_INVALID_LENGTH );
+                PSO_TRACE_EXIT( pContext );
                 return false;
             }
 
@@ -265,6 +272,7 @@ bool psonSetGetNext( psonSet            * pSet,
             
             psonUnlock( &pSet->memObject, pContext );
 
+            PSO_TRACE_EXIT( pContext );
             return true;
          }
          okList =  psonLinkedListPeakNext( &pSet->listOfElements, 
@@ -275,6 +283,7 @@ bool psonSetGetNext( psonSet            * pSet,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
@@ -295,6 +304,7 @@ bool psonSetGetNext( psonSet            * pSet,
    psonUnlock( &pSet->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
 
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -334,6 +344,7 @@ bool psonSetInit( psonSet             * pSet,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
@@ -343,6 +354,7 @@ bool psonSetInit( psonSet             * pSet,
 
    pSet->dataDefOffset = SET_OFFSET(pDataDefinition);
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -429,9 +441,11 @@ bool psonSetInsert( psonSet            * pSet,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 
 the_exit:
@@ -445,6 +459,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
     
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -469,9 +484,11 @@ bool psonSetRelease( psonSet            * pSet,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -519,6 +536,7 @@ void psonSetReleaseNoLock( psonSet            * pSet,
 
       pSetNode->txCounter--;
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -544,25 +562,27 @@ void psonSetStatus( psonSet            * pSet,
    pStatus->numDataItem = pSet->listOfElements.currentSize;
    pStatus->maxDataLength = 0;
    pStatus->maxKeyLength  = 0;
-   if ( pStatus->numDataItem == 0 ) return;
-   
-   /* This call can only fail if the queue is empty. */
-   okList = psonLinkedListPeakFirst( &pSet->listOfElements, 
-                                     &pNode,
-                                     pContext );
 
-   while ( okList ) {
-      pSetItem = (psonSetItem*)
-         ((char*)pNode - offsetof( psonSetItem, node ));
-      if ( pSetItem->dataLength > pStatus->maxDataLength ) {
-         pStatus->maxDataLength = pSetItem->dataLength;
-      }
-      
-      okList =  psonLinkedListPeakNext( &pSet->listOfElements, 
-                                        pNode, 
+   if ( pStatus->numDataItem > 0 ) {
+      /* This call can only fail if the queue is empty. */
+      okList = psonLinkedListPeakFirst( &pSet->listOfElements, 
                                         &pNode,
                                         pContext );
+
+      while ( okList ) {
+         pSetItem = (psonSetItem*)
+            ((char*)pNode - offsetof( psonSetItem, node ));
+         if ( pSetItem->dataLength > pStatus->maxDataLength ) {
+            pStatus->maxDataLength = pSetItem->dataLength;
+         }
+      
+         okList =  psonLinkedListPeakNext( &pSet->listOfElements, 
+                                           pNode, 
+                                           &pNode,
+                                           pContext );
+      }
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

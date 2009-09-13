@@ -94,8 +94,11 @@ psonMemObjectInit( psonMemObject      * pMemObj,
     * The only possible error is a lack of resources when using semaphores, 
     * i.e. when the number of semaphores is greater than SEM_VALUE_MAX.
     */
-   if ( ! ok ) return PSO_NOT_ENOUGH_RESOURCES;
-   
+   if ( ! ok ) {
+      PSO_TRACE_EXIT( pContext );
+      return PSO_NOT_ENOUGH_RESOURCES;
+   }
+    
    pMemObj->objType = objType;
    psonLinkedListInit( &pMemObj->listBlockGroup, pContext );
    
@@ -113,6 +116,7 @@ psonMemObjectInit( psonMemObject      * pMemObj,
                            
    pMemObj->totalBlocks = numBlocks;
    
+   PSO_TRACE_EXIT( pContext );
    return PSO_OK;
 }
 
@@ -171,6 +175,7 @@ psonMemObjectFini( psonMemObject      * pMemObj,
    psonLinkedListFini( &pMemObj->listBlockGroup, pContext );
 
    if ( ! psocFiniProcessLock( &pMemObj->lock ) ) {
+      PSO_TRACE_EXIT( pContext );
       return PSO_SEM_DESTROY_ERROR;
    }
    
@@ -186,6 +191,7 @@ psonMemObjectFini( psonMemObject      * pMemObj,
                    pGroup->numBlocks,
                    pContext );
    
+   PSO_TRACE_EXIT( pContext );
    return PSO_OK;
 }
 
@@ -276,6 +282,7 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
                                        requestedChunks*PSON_ALLOCATION_UNIT,
                                        pContext );
                               
+               PSO_TRACE_EXIT( pContext );
                return (unsigned char*) currentNode;
             } /* end if of numChunks >= requestedChunks */
    
@@ -387,6 +394,7 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
                                  requestedChunks*PSON_ALLOCATION_UNIT,
                                  pContext );
                               
+         PSO_TRACE_EXIT( pContext );
          return (unsigned char*) currentNode;
       }
    }
@@ -400,6 +408,7 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
                  g_psoErrorHandle, 
                  PSO_NOT_ENOUGH_PSO_MEMORY );
 
+   PSO_TRACE_EXIT( pContext );
    return NULL;
 }
 
@@ -547,6 +556,7 @@ void psonFree( psonMemObject*      pMemObj,
           *((ptrdiff_t *)ptr) = SET_OFFSET(p);
       }
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -585,6 +595,7 @@ void psonMemObjectStatus( psonMemObject      * pMemObj,
                                    &dummy,
                                    pContext );
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

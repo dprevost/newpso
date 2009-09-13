@@ -51,6 +51,7 @@ bool psonIsBufferFree( psonMemBitmap      * pBitmap,
     */
    bit = 7 - (inUnitsOfAllocation & 7);
 
+   PSO_TRACE_EXIT( pContext );
    return ( (pBitmap->bitmap[byte] & (unsigned char)(1 << bit)) == 0 );
 }
 
@@ -92,6 +93,7 @@ void psonSetBufferAllocated( psonMemBitmap      * pBitmap,
       }
       bit--;
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -132,6 +134,7 @@ void psonSetBufferFree( psonMemBitmap      * pBitmap,
       }
       bit--;
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -150,6 +153,7 @@ size_t psonGetBitmapLengthBytes( size_t               length,
    /* We "align" it to a multiple of allocationUnit */
    length = ((length - 1) / allocationUnit + 1 ) * allocationUnit;
 
+   PSO_TRACE_EXIT( pContext );
    return ( (length/allocationUnit - 1) >> 3 ) + 1;
 }
 

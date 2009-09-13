@@ -82,6 +82,7 @@ bool psonProcessAddSession( psonProcess        * pProcess,
                     PSO_ENGINE_BUSY );
    }
    
+   PSO_TRACE_EXIT( pContext );
    return ok;
 }
 
@@ -152,6 +153,8 @@ void psonProcessFini( psonProcess        * pProcess,
     * It must be the last operation on that piece of memory.
     */
    psonMemObjectFini(  &pProcess->memObject, PSON_ALLOC_ANY, pContext );
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -174,6 +177,7 @@ bool psonProcessGetFirstSession( psonProcess        * pProcess,
          ((char*)pNode - offsetof( psonSession, node ));
    }
    
+   PSO_TRACE_EXIT( pContext );
    return ok;
 }
 
@@ -202,6 +206,7 @@ bool psonProcessGetNextSession( psonProcess        * pProcess,
          ((char*)pNode - offsetof( psonSession, node ));
    }
    
+   PSO_TRACE_EXIT( pContext );
    return ok;
 }
 
@@ -227,6 +232,7 @@ bool psonProcessInit( psonProcess        * pProcess,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
@@ -235,6 +241,7 @@ bool psonProcessInit( psonProcess        * pProcess,
 
    psonLinkedListInit( &pProcess->listOfSessions, pContext );
 
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
    
@@ -263,9 +270,11 @@ bool psonProcessRemoveSession( psonProcess        * pProcess,
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, 
                     PSO_ENGINE_BUSY );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 

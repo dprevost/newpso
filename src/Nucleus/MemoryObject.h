@@ -93,6 +93,8 @@ void psonFree( psonMemObject      * pMemObj,
                size_t               numBytes,
                psonSessionContext * pContext );
 
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 static inline
 bool psonLock( psonMemObject      * pMemObj,
                psonSessionContext * pContext )
@@ -117,8 +119,11 @@ bool psonLock( psonMemObject      * pMemObj,
       }
    }
    
+   PSO_TRACE_EXIT( pContext );
    return ok;
 }
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
 void psonLockNoFailure( psonMemObject      * pMemObj,
@@ -133,11 +138,17 @@ void psonLockNoFailure( psonMemObject      * pMemObj,
    }
    
    psocAcquireProcessLock ( &pMemObj->lock, pContext->pidLocker );
+
+   PSO_TRACE_EXIT( pContext );
 }
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void psonMemObjectStatus( psonMemObject      * pMemObject, 
                           psoObjStatus       * pStatus,
                           psonSessionContext * pContext );
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 static inline
 void psonUnlock( psonMemObject      * pMemObj,
@@ -152,6 +163,8 @@ void psonUnlock( psonMemObject      * pMemObj,
    }
    
    psocReleaseProcessLock ( &pMemObj->lock );
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

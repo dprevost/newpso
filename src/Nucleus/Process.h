@@ -107,6 +107,8 @@ void psonProcessNoMoreSessionAllowed( psonProcess        * pProcess,
       pProcess->processIsTerminating = true;
       psonUnlock( &pProcess->memObject, pContext );
    }
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

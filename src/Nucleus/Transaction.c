@@ -45,6 +45,7 @@ bool psonAddLockTx( psonTx             * pTx,
                     PSO_NOT_ENOUGH_PSO_MEMORY );
    }
 
+   PSO_TRACE_EXIT( pContext );
    return ok;
 }
 
@@ -75,6 +76,7 @@ bool psonLockTx( psonTx             * pTx,
       }
    }
    
+   PSO_TRACE_EXIT( pContext );
    return ok;
 }
 
@@ -100,6 +102,8 @@ void psonClearLocks( psonTx             * pTx,
    }
    
    txHashEmpty( pTx );
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -123,15 +127,20 @@ bool psonTxInit( psonTx             * pTx,
                                 pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
    psonLinkedListInit( &pTx->listOfOps, pContext );
    ok = txHashInit( pTx, 100, pContext );
-   if ( !ok ) return false;
+   if ( !ok ) {
+      PSO_TRACE_EXIT( pContext );
+      return false;
+   }
    
    pTx->signature = PSON_TX_SIGNATURE;
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -156,6 +165,8 @@ void psonTxFini( psonTx             * pTx,
    
    /* This will remove the blocks of allocated memory */
    psonMemObjectFini(  &pTx->memObject, PSON_ALLOC_ANY, pContext );
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -190,6 +201,7 @@ bool psonTxAddOps( psonTx             * pTx,
       psonLinkNodeInit(  &pOps->node, pContext );
       psonLinkedListPutLast( &pTx->listOfOps, &pOps->node, pContext );
 
+      PSO_TRACE_EXIT( pContext );
       return true;
    }
 
@@ -197,6 +209,7 @@ bool psonTxAddOps( psonTx             * pTx,
                  g_psoErrorHandle, 
                  PSO_NOT_ENOUGH_PSO_MEMORY );
 
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -224,6 +237,7 @@ void psonTxRemoveLastOps( psonTx             * pTx,
              (unsigned char *) pOps,
              sizeof(psonTxOps), 
              pContext );
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -259,6 +273,7 @@ bool psonTxCommit( psonTx             * pTx,
 
    if ( pTx->listOfOps.currentSize == 0 ) {
       /* All is well - nothing to commit */
+      PSO_TRACE_EXIT( pContext );
       return true;
    }
    
@@ -279,6 +294,7 @@ bool psonTxCommit( psonTx             * pTx,
       PSO_POST_CONDITION( okLock == true || okLock == false );
       if ( ! okLock ) {
          psonClearLocks( pTx, pContext );
+         PSO_TRACE_EXIT( pContext );
          return false;
       }
       /* We only lock the child for these two ops */
@@ -293,6 +309,7 @@ bool psonTxCommit( psonTx             * pTx,
          PSO_POST_CONDITION( okLock == true || okLock == false );
          if ( ! okLock ) {
             psonClearLocks( pTx, pContext );
+            PSO_TRACE_EXIT( pContext );
             return false;
          }
       }
@@ -471,6 +488,7 @@ bool psonTxCommit( psonTx             * pTx,
                 pContext );
    }
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -505,6 +523,7 @@ bool psonTxRollback( psonTx             * pTx,
 
    if ( pTx->listOfOps.currentSize == 0 ) {
       /* All is well - nothing to rollback */
+      PSO_TRACE_EXIT( pContext );
       return true;
    }
    
@@ -525,6 +544,7 @@ bool psonTxRollback( psonTx             * pTx,
       PSO_POST_CONDITION( okLock == true || okLock == false );
       if ( ! okLock ) {
          psonClearLocks( pTx, pContext );
+         PSO_TRACE_EXIT( pContext );
          return false;
       }
       /* We only lock the child for these two ops */
@@ -539,6 +559,7 @@ bool psonTxRollback( psonTx             * pTx,
          PSO_POST_CONDITION( okLock == true || okLock == false );
          if ( ! okLock ) {
             psonClearLocks( pTx, pContext );
+            PSO_TRACE_EXIT( pContext );
             return false;
          }
       }
@@ -712,6 +733,7 @@ bool psonTxRollback( psonTx             * pTx,
                 pContext );
    }
 
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 

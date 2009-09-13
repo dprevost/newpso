@@ -73,6 +73,7 @@ bool psonProcMgrAddProcess( psonProcMgr        * pManager,
                     PSO_ENGINE_BUSY );
    }
    
+   PSO_TRACE_EXIT( pContext );
    return ok;
 }
 
@@ -152,9 +153,11 @@ bool psonProcMgrFindProcess( psonProcMgr        * pManager,
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, 
                     errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -178,11 +181,13 @@ bool psonProcMgrInit( psonProcMgr        * pManager,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
    psonLinkedListInit( &pManager->listOfProcesses, pContext );
       
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -211,9 +216,11 @@ bool psonProcMgrRemoveProcess( psonProcMgr        * pManager,
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, 
                     PSO_ENGINE_BUSY );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 

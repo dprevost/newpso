@@ -62,6 +62,8 @@ void psonLinkedListFini( psonLinkedList     * pList,
 
    pList->currentSize    = 0;
    pList->initialized    = 0;
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -80,6 +82,8 @@ void psonLinkedListInit( psonLinkedList     * pList,
       SET_OFFSET( &pList->head );
 
    pList->initialized = PSON_LIST_SIGNATURE;
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -97,6 +101,8 @@ void psonLinkedListReset( psonLinkedList     * pList,
    /* Make the list circular by pointing it back to itself. */
    pList->head.previousOffset = pList->head.nextOffset = 
       SET_OFFSET( &pList->head );
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -127,6 +133,7 @@ bool psonLinkedListIsValid( psonLinkedList     * pList,
       GET_PTR( pItem, pItem->nextOffset, psonLinkNode );
    }
 
+   PSO_TRACE_EXIT( pContext );
    return valid;
 }
 

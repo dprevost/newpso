@@ -999,9 +999,9 @@ psonHashUpdate( psonHash            * pHash,
       pNewItem = (psonHashItem*) psonMalloc( pMemObject,
                                              newItemLength,
                                              pContext );
-      if ( pNewItem == NULL ) return {
+      if ( pNewItem == NULL ) {
          PSO_TRACE_EXIT( pContext );
-         PSO_NOT_ENOUGH_PSO_MEMORY;
+         return PSO_NOT_ENOUGH_PSO_MEMORY;
       }
       
       /* initialize the new record */

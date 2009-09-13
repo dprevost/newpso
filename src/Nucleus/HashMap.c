@@ -73,6 +73,7 @@ void psonHashMapCommitAdd( psonHashMap        * pHashMap,
          psonHashTxResize( &pHashMap->hashObj, pContext );
       }
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -128,6 +129,7 @@ void psonHashMapCommitRemove( psonHashMap        * pHashMap,
    else {
       txItemStatus->status = PSON_TXS_DESTROYED_COMMITTED;
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -213,9 +215,11 @@ bool psonHashMapDelete( psonHashMap        * pHashMap,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
+   PSO_TRACE_EXIT( pContext );
    return true;
    
 the_exit:
@@ -226,6 +230,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -284,6 +289,8 @@ void psonHashMapFini( psonHashMap        * pHashMap,
     * memory to the allocator.
     */
    psonMemObjectFini(  &pHashMap->memObject, PSON_ALLOC_API_OBJ, pContext );
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -394,9 +401,11 @@ bool psonHashMapGet( psonHashMap        * pHashMap,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
+   PSO_TRACE_EXIT( pContext );
    return true;
 
 the_exit:
@@ -410,6 +419,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -481,12 +491,14 @@ bool psonHashMapGetFirst( psonHashMap        * pHashMap,
                psonUnlock( &pHashMap->memObject, pContext );
                psocSetError( &pContext->errorHandler, 
                              g_psoErrorHandle, PSO_INVALID_LENGTH );
+               PSO_TRACE_EXIT( pContext );
                return false;
             }
             if ( keyLength < pHashItem->keyLength ) {
                psonUnlock( &pHashMap->memObject, pContext );
                psocSetError( &pContext->errorHandler, 
                              g_psoErrorHandle, PSO_INVALID_LENGTH );
+               PSO_TRACE_EXIT( pContext );
                return false;
             }
 
@@ -497,6 +509,7 @@ bool psonHashMapGetFirst( psonHashMap        * pHashMap,
 
             psonUnlock( &pHashMap->memObject, pContext );
             
+            PSO_TRACE_EXIT( pContext );
             return true;
          }
   
@@ -508,12 +521,14 @@ bool psonHashMapGetFirst( psonHashMap        * pHashMap,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
    psonUnlock( &pHashMap->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_IS_EMPTY );
 
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
    
@@ -592,12 +607,14 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
                psonUnlock( &pHashMap->memObject, pContext );
                psocSetError( &pContext->errorHandler, 
                              g_psoErrorHandle, PSO_INVALID_LENGTH );
+               PSO_TRACE_EXIT( pContext );
                return false;
             }
             if ( keyLength < pHashItem->keyLength ) {
                psonUnlock( &pHashMap->memObject, pContext );
                psocSetError( &pContext->errorHandler, 
                              g_psoErrorHandle, PSO_INVALID_LENGTH );
+               PSO_TRACE_EXIT( pContext );
                return false;
             }
 
@@ -609,6 +626,7 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
 
             psonUnlock( &pHashMap->memObject, pContext );
             
+            PSO_TRACE_EXIT( pContext );
             return true;
          }
   
@@ -620,6 +638,7 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
@@ -636,6 +655,7 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
    psonUnlock( &pHashMap->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_REACHED_THE_END );
 
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -672,6 +692,7 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
@@ -685,6 +706,7 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, 
                     errcode );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
    
@@ -693,6 +715,7 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
 
    pHashMap->isSystemObject = false;
 
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -791,9 +814,11 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
+   PSO_TRACE_EXIT( pContext );
    return true;
 
 the_exit:
@@ -807,6 +832,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -833,9 +859,11 @@ bool psonHashMapRelease( psonHashMap        * pHashMap,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
+   PSO_TRACE_EXIT( pContext );
    return true;
 }
 
@@ -894,6 +922,7 @@ void psonHashMapReleaseNoLock( psonHashMap        * pHashMap,
          psonHashTxResize( &pHashMap->hashObj, pContext );
       }
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -1006,9 +1035,11 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT( pContext );
       return false;
    }
 
+   PSO_TRACE_EXIT( pContext );
    return true;
 
 the_exit:
@@ -1022,6 +1053,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
+   PSO_TRACE_EXIT( pContext );
    return false;
 }
 
@@ -1079,6 +1111,7 @@ void psonHashMapRollbackAdd( psonHashMap        * pHashMap,
    else {
       psonTxStatusCommitRemove( txItemStatus, pContext );
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -1126,6 +1159,7 @@ void psonHashMapRollbackRemove( psonHashMap        * pHashMap,
          psonHashTxResize( &pHashMap->hashObj, pContext );
       }
    }
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -1152,25 +1186,28 @@ void psonHashMapStatus( psonHashMap        * pHashMap,
    pStatus->numDataItem = pHashMap->hashObj.numberOfItems;
    pStatus->maxDataLength = 0;
    pStatus->maxKeyLength  = 0;
-   if ( pStatus->numDataItem == 0 ) return;
+   if ( pStatus->numDataItem > 0 ) {
+   
+      found = psonHashTxGetFirst( &pHashMap->hashObj, 
+                                  &firstItemOffset,
+                                  pContext );
+      while ( found ) {
+         GET_PTR( pHashItem, firstItemOffset, psonHashTxItem );
+         if ( pHashItem->dataLength > pStatus->maxDataLength ) {
+            pStatus->maxDataLength = pHashItem->dataLength;
+         }
+         if ( pHashItem->keyLength > pStatus->maxKeyLength ) {
+            pStatus->maxKeyLength = pHashItem->keyLength;
+         }
 
-   found = psonHashTxGetFirst( &pHashMap->hashObj, 
-                               &firstItemOffset,
-                               pContext );
-   while ( found ) {
-      GET_PTR( pHashItem, firstItemOffset, psonHashTxItem );
-      if ( pHashItem->dataLength > pStatus->maxDataLength ) {
-         pStatus->maxDataLength = pHashItem->dataLength;
+         found = psonHashTxGetNext( &pHashMap->hashObj, 
+                                    firstItemOffset,
+                                    &firstItemOffset,
+                                    pContext );
       }
-      if ( pHashItem->keyLength > pStatus->maxKeyLength ) {
-         pStatus->maxKeyLength = pHashItem->keyLength;
-      }
-
-      found = psonHashTxGetNext( &pHashMap->hashObj, 
-                                 firstItemOffset,
-                                 &firstItemOffset,
-                                 pContext );
    }
+   
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

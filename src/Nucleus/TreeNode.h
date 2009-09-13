@@ -78,6 +78,8 @@ void psonTreeNodeInit( psonTreeNode       * pNode,
    pNode->txCounter      = 0;
    pNode->txStatusOffset = txStatusOffset;
    pNode->myParentOffset = parentOffset;
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -94,6 +96,8 @@ void psonTreeNodeFini( psonTreeNode       * pNode,
    pNode->txCounter      = 0;
    pNode->txStatusOffset = PSON_NULL_OFFSET;
    pNode->myParentOffset = PSON_NULL_OFFSET;
+
+   PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
