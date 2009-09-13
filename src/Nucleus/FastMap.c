@@ -646,6 +646,7 @@ void psonFastMapStatus( psonFastMap        * pHashMap,
    
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pStatus  != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_MAP );
    PSO_TRACE_ENTER( pContext );
    

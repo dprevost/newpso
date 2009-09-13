@@ -88,7 +88,7 @@ void teardown_test()
 void test_null_context( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonHashMapStatus( pHashMap, &status, &context ) );
+   expect_assert_failure( psonHashMapStatus( pHashMap, &status, NULL ) );
 #endif
    return;
 }

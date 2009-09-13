@@ -40,6 +40,7 @@ void psonQueueCommitAdd( psonQueue          * pQueue,
    psonTreeNode * pQueueNode = NULL;
    
    PSO_PRE_CONDITION( pQueue   != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
    PSO_TRACE_ENTER( pContext );
 
@@ -421,7 +422,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
 bool psonQueueInit( psonQueue           * pQueue,
                     ptrdiff_t             parentOffset,
                     size_t                numberOfBlocks,
-                    psonTreeNode      * pQueueNode,
+                    psonTreeNode        * pQueueNode,
                     psoObjectDefinition * pDefinition,
                     psonDataDefinition  * pDataDefinition,
                     psonSessionContext  * pContext )
@@ -923,7 +924,8 @@ void psonQueueRollbackRemove( psonQueue          * pQueue,
    psonQueueItem * pQueueItem;
    psonTreeNode * pQueueNode = NULL;
    
-   PSO_PRE_CONDITION( pQueue     != NULL );
+   PSO_PRE_CONDITION( pQueue   != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
    PSO_TRACE_ENTER( pContext );
 
@@ -953,8 +955,9 @@ void psonQueueStatus( psonQueue          * pQueue,
    bool okList;
    psonTreeNode * pQueueNode = NULL;
    
-   PSO_PRE_CONDITION( pQueue  != NULL );
-   PSO_PRE_CONDITION( pStatus != NULL );
+   PSO_PRE_CONDITION( pQueue   != NULL );
+   PSO_PRE_CONDITION( pStatus  != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
    
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );

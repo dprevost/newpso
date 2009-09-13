@@ -58,6 +58,7 @@ bool psonLockTx( psonTx             * pTx,
 {
    bool ok;
    
+   PSO_PRE_CONDITION( pTx      != NULL );
    PSO_PRE_CONDITION( pMemObj  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
@@ -92,6 +93,7 @@ void psonClearLocks( psonTx             * pTx,
    
    PSO_PRE_CONDITION( pTx      != NULL );
    PSO_PRE_CONDITION( pTx->signature == PSON_TX_SIGNATURE );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
    
    ok = txHashGetFirst( pTx, &rowNumber, &pMemObj );

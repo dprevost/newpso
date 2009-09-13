@@ -83,6 +83,7 @@ psonMemObjectInit( psonMemObject      * pMemObj,
    PSO_PRE_CONDITION( numBlocks > 0 );
    PSO_PRE_CONDITION( objType > PSON_IDENT_FIRST && 
                       objType < PSON_IDENT_LAST );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
 
    /* In case InitProcessLock fails */
@@ -571,6 +572,7 @@ void psonMemObjectStatus( psonMemObject      * pMemObj,
    
    PSO_PRE_CONDITION( pMemObj != NULL );
    PSO_PRE_CONDITION( pStatus != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
 
    pStatus->numBlocks = pMemObj->totalBlocks;

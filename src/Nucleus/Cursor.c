@@ -387,6 +387,7 @@ void psonCursorSize( psonCursor         * pCursor,
 {
    PSO_PRE_CONDITION( pCursor   != NULL );
    PSO_PRE_CONDITION( pNumItems != NULL );
+   PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pCursor->memObject.objType == PSON_IDENT_CURSOR );
    PSO_TRACE_ENTER( pContext );
 

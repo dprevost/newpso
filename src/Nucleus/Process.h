@@ -65,7 +65,7 @@ typedef struct psonProcess psonProcess;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonProcessAddSession( psonProcess        * pProcess,
+bool psonProcessAddSession( psonProcess        * process,
                             void               * pApiSession,
                             psonSession       ** pSession,
                             psonSessionContext * pContext );
@@ -74,38 +74,40 @@ bool psonProcessAddSession( psonProcess        * pProcess,
 void psonProcessDump( psonProcess * process, int indent );
 #endif
 
-void psonProcessFini( psonProcess        * pProcess,
+void psonProcessFini( psonProcess        * process,
                       psonSessionContext * pContext );
 
-bool psonProcessGetFirstSession( psonProcess        * pProcess,
+bool psonProcessGetFirstSession( psonProcess        * process,
                                  psonSession       ** ppSession,
                                  psonSessionContext * pContext );
 
-bool psonProcessGetNextSession( psonProcess        * pProcess,
+bool psonProcessGetNextSession( psonProcess        * process,
                                 psonSession        * pCurrent,
                                 psonSession       ** ppNext,
                                 psonSessionContext * pContext );
 
-bool psonProcessInit( psonProcess        * pProcess,
+bool psonProcessInit( psonProcess        * process,
                       pid_t                pid,
                       psonSessionContext * pContext );
    
 /*
  * Takes a lock on the current object. Not on the psonSession itself. 
  */
-bool psonProcessRemoveSession( psonProcess        * pProcess,
+bool psonProcessRemoveSession( psonProcess        * process,
                                psonSession        * pSession,
                                psonSessionContext * pContext );
 
 static inline
-void psonProcessNoMoreSessionAllowed( psonProcess        * pProcess,
+void psonProcessNoMoreSessionAllowed( psonProcess        * process,
                                       psonSessionContext * pContext )
 {
+   PSO_PRE_CONDITION( process  != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
 
-   if ( psonLock( &pProcess->memObject, pContext ) ) {
-      pProcess->processIsTerminating = true;
-      psonUnlock( &pProcess->memObject, pContext );
+   if ( psonLock( &process->memObject, pContext ) ) {
+      process->processIsTerminating = true;
+      psonUnlock( &process->memObject, pContext );
    }
 
    PSO_TRACE_EXIT( pContext );

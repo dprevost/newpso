@@ -88,6 +88,7 @@ void psonLinkNodeInit( psonLinkNode       * pNode,
                        psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pNode != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
    
    pNode->nextOffset     = PSON_NULL_OFFSET;
@@ -103,6 +104,7 @@ void psonLinkNodeFini( psonLinkNode       * pNode,
                        psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pNode != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
 
    pNode->nextOffset     = PSON_NULL_OFFSET;
@@ -122,6 +124,7 @@ bool psonLinkNodeTest( psonLinkNode       * pNode,
                        psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pNode != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
 
    if ( pNode->nextOffset     == PSON_NULL_OFFSET || 

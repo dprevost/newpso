@@ -27,7 +27,7 @@
 
 bool psonProcMgrAddProcess( psonProcMgr        * pManager,
                             pid_t                pid, 
-                            psonProcess       ** ppProcess,
+                            psonProcess       ** process,
                             psonSessionContext * pContext )
 {
    psonProcess* pCurrentBuffer;
@@ -35,7 +35,7 @@ bool psonProcMgrAddProcess( psonProcMgr        * pManager,
    
    PSO_PRE_CONDITION( pManager  != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
-   PSO_PRE_CONDITION( ppProcess != NULL );
+   PSO_PRE_CONDITION( process != NULL );
    PSO_PRE_CONDITION( pid > 0 );
    PSO_TRACE_ENTER( pContext );
 
@@ -51,7 +51,7 @@ bool psonProcMgrAddProcess( psonProcMgr        * pManager,
             psonLinkedListPutLast( &pManager->listOfProcesses, 
                                    &pCurrentBuffer->node,
                                    pContext );
-            *ppProcess = pCurrentBuffer;
+            *process = pCurrentBuffer;
          }
          else {
             psonFreeBlocks( pContext->pAllocator, 
@@ -99,7 +99,7 @@ void psonProcMgrDump( psonProcMgr * pManager, int indent )
 
 bool psonProcMgrFindProcess( psonProcMgr        * pManager,
                              pid_t                pid,
-                             psonProcess       ** ppProcess,
+                             psonProcess       ** process,
                              psonSessionContext * pContext )
 {
    psonProcess *pCurrent, *pNext;
@@ -109,11 +109,11 @@ bool psonProcMgrFindProcess( psonProcMgr        * pManager,
    
    PSO_PRE_CONDITION( pManager  != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
-   PSO_PRE_CONDITION( ppProcess != NULL );
+   PSO_PRE_CONDITION( process != NULL );
    PSO_PRE_CONDITION( pid > 0 );
    PSO_TRACE_ENTER( pContext );
    
-   *ppProcess = NULL;
+   *process = NULL;
    
    /* For recovery purposes, always lock before doing anything! */
    if ( psonLock( &pManager->memObject, pContext ) ) {
@@ -123,16 +123,16 @@ bool psonProcMgrFindProcess( psonProcMgr        * pManager,
       if ( ok ) {
          pCurrent = (psonProcess*)
             ((char*)pNodeCurrent - offsetof( psonProcess, node ));
-         if ( pCurrent->pid == pid ) *ppProcess = pCurrent;
+         if ( pCurrent->pid == pid ) *process = pCurrent;
       
-         while ( (*ppProcess == NULL) &&
+         while ( (*process == NULL) &&
                  psonLinkedListPeakNext( &pManager->listOfProcesses, 
                                          pNodeCurrent, 
                                          &pNodeNext,
                                          pContext ) ) {
             pNext = (psonProcess*)
                ((char*)pNodeNext - offsetof( psonProcess, node ));
-            if ( pNext->pid == pid ) *ppProcess = pNext;
+            if ( pNext->pid == pid ) *process = pNext;
             pNodeCurrent = pNodeNext;
          }
       }
@@ -147,7 +147,7 @@ bool psonProcMgrFindProcess( psonProcMgr        * pManager,
    }
    
    /* Is this possible ? */
-   if ( *ppProcess == NULL ) errcode = PSO_INTERNAL_ERROR;
+   if ( *process == NULL ) errcode = PSO_INTERNAL_ERROR;
 
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, 
@@ -194,21 +194,21 @@ bool psonProcMgrInit( psonProcMgr        * pManager,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 bool psonProcMgrRemoveProcess( psonProcMgr        * pManager,
-                               psonProcess        * pProcess,
+                               psonProcess        * process,
                                psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pManager != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_PRE_CONDITION( pProcess != NULL );
+   PSO_PRE_CONDITION( process != NULL );
    PSO_TRACE_ENTER( pContext );
    
    /* For recovery purposes, always lock before doing anything! */
    if ( psonLock( &pManager->memObject, pContext ) ) {
       psonLinkedListRemoveItem( &pManager->listOfProcesses, 
-                                &pProcess->node,
+                                &process->node,
                                 pContext );
    
-      psonProcessFini( pProcess, pContext );
+      psonProcessFini( process, pContext );
                       
       psonUnlock( &pManager->memObject, pContext );
    }

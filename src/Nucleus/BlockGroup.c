@@ -67,6 +67,7 @@ void psonBlockGroupFini( psonBlockGroup     * pGroup,
                          psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pGroup != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
 
    psonMemBitmapFini(  &pGroup->bitmap, pContext );
@@ -101,6 +102,7 @@ void psonBlockGroupInit( psonBlockGroup     * pGroup,
    PSO_PRE_CONDITION( firstBlockOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numBlocks > 0 );
    PSO_PRE_CONDITION( objType > PSON_IDENT_FIRST && objType < PSON_IDENT_LAST );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
 
    pGroup->numBlocks = numBlocks;

@@ -65,7 +65,7 @@ bool psonProcMgrInit( psonProcMgr        * pManager,
 
 bool psonProcMgrAddProcess( psonProcMgr        * pManager,
                             pid_t                pid, 
-                            psonProcess       ** ppCleanupProcess,
+                            psonProcess       ** process,
                             psonSessionContext * pContext );
 
 #if defined(PSO_USE_TRACE)
@@ -78,11 +78,11 @@ void psonProcMgrDump( psonProcMgr * pManager, int indent );
  */
 bool psonProcMgrFindProcess( psonProcMgr        * pManager,
                              pid_t                pid, 
-                             psonProcess       ** ppCleanupProcess,
+                             psonProcess       ** process,
                              psonSessionContext * pContext );
 
 bool psonProcMgrRemoveProcess( psonProcMgr        * pManager,
-                               psonProcess        * pCleanupProcess,
+                               psonProcess        * process,
                                psonSessionContext * pContext );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

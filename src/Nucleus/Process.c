@@ -24,7 +24,7 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonProcessAddSession( psonProcess        * pProcess,
+bool psonProcessAddSession( psonProcess        * process,
                             void               * pApiSession,
                             psonSession       ** ppSession,
                             psonSessionContext * pContext )
@@ -32,7 +32,7 @@ bool psonProcessAddSession( psonProcess        * pProcess,
    psonSession * pCurrentBuffer;
    bool ok = false;
    
-   PSO_PRE_CONDITION( pProcess    != NULL );
+   PSO_PRE_CONDITION( process    != NULL );
    PSO_PRE_CONDITION( pApiSession != NULL );
    PSO_PRE_CONDITION( ppSession   != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
@@ -40,7 +40,7 @@ bool psonProcessAddSession( psonProcess        * pProcess,
 
    *ppSession = NULL;
    /* For recovery purposes, always lock before doing anything! */
-   if ( psonLock( &pProcess->memObject, pContext ) ) {
+   if ( psonLock( &process->memObject, pContext ) ) {
       pCurrentBuffer = (psonSession*) 
           psonMallocBlocks( pContext->pAllocator, PSON_ALLOC_ANY, 1, pContext );
       if ( pCurrentBuffer != NULL ) {
@@ -48,7 +48,7 @@ bool psonProcessAddSession( psonProcess        * pProcess,
          PSO_PRE_CONDITION( ok == true || ok == false );
          if ( ok ) {
             psonLinkNodeInit( &pCurrentBuffer->node, pContext );
-            psonLinkedListPutLast( &pProcess->listOfSessions, 
+            psonLinkedListPutLast( &process->listOfSessions, 
                                    &pCurrentBuffer->node,
                                    pContext );
             *ppSession = pCurrentBuffer;
@@ -71,10 +71,10 @@ bool psonProcessAddSession( psonProcess        * pProcess,
        * add the previouslock otherwise... the unlock will fail (segv).
        */
       if ( pContext->lockOffsets != NULL ) {
-         pContext->lockOffsets[*pContext->numLocks] = SET_OFFSET(&pProcess->memObject);
+         pContext->lockOffsets[*pContext->numLocks] = SET_OFFSET(&process->memObject);
          (*pContext->numLocks)++;
       }
-      psonUnlock( &pProcess->memObject, pContext );
+      psonUnlock( &process->memObject, pContext );
    }
    else {
       psocSetError( &pContext->errorHandler, 
@@ -120,16 +120,16 @@ void psonProcessDump( psonProcess * process, int indent )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void psonProcessFini( psonProcess        * pProcess,
+void psonProcessFini( psonProcess        * process,
                       psonSessionContext * pContext )
 {
    psonSession  * pSession = NULL;
    psonLinkNode * pNode    = NULL;
    bool ok;
    
-   PSO_PRE_CONDITION( pProcess != NULL );
+   PSO_PRE_CONDITION( process != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_PRE_CONDITION( pProcess->memObject.objType == PSON_IDENT_PROCESS );
+   PSO_PRE_CONDITION( process->memObject.objType == PSON_IDENT_PROCESS );
    PSO_TRACE_ENTER( pContext );
 
    /*
@@ -138,13 +138,13 @@ void psonProcessFini( psonProcess        * pProcess,
     * last step. This might be reviewed eventually.
     */
 
-   while ( psonLinkedListPeakFirst( &pProcess->listOfSessions, 
+   while ( psonLinkedListPeakFirst( &process->listOfSessions, 
                                     &pNode,
                                     pContext ) ) {
       pSession = (psonSession*)
          ((char*)pNode - offsetof( psonSession, node ));
 
-      ok = psonProcessRemoveSession( pProcess, pSession, pContext );
+      ok = psonProcessRemoveSession( process, pSession, pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
    }
 
@@ -152,26 +152,26 @@ void psonProcessFini( psonProcess        * pProcess,
     * This will remove the blocks of allocated memory.
     * It must be the last operation on that piece of memory.
     */
-   psonMemObjectFini(  &pProcess->memObject, PSON_ALLOC_ANY, pContext );
+   psonMemObjectFini(  &process->memObject, PSON_ALLOC_ANY, pContext );
 
    PSO_TRACE_EXIT( pContext );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonProcessGetFirstSession( psonProcess        * pProcess,
+bool psonProcessGetFirstSession( psonProcess        * process,
                                  psonSession       ** ppSession,
                                  psonSessionContext * pContext )
 {
    psonLinkNode * pNode = NULL;
    bool ok;
    
-   PSO_PRE_CONDITION( pProcess  != NULL );
+   PSO_PRE_CONDITION( process  != NULL );
    PSO_PRE_CONDITION( ppSession != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_TRACE_ENTER( pContext );
 
-   ok = psonLinkedListPeakFirst( &pProcess->listOfSessions, &pNode, pContext );
+   ok = psonLinkedListPeakFirst( &process->listOfSessions, &pNode, pContext );
    if ( ok ) {
       *ppSession = (psonSession *)
          ((char*)pNode - offsetof( psonSession, node ));
@@ -183,7 +183,7 @@ bool psonProcessGetFirstSession( psonProcess        * pProcess,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonProcessGetNextSession( psonProcess        * pProcess,
+bool psonProcessGetNextSession( psonProcess        * process,
                                 psonSession        * pCurrent,
                                 psonSession       ** ppNext,
                                 psonSessionContext * pContext )
@@ -191,13 +191,13 @@ bool psonProcessGetNextSession( psonProcess        * pProcess,
    psonLinkNode * pNode = NULL;
    bool ok;
    
-   PSO_PRE_CONDITION( pProcess != NULL );
+   PSO_PRE_CONDITION( process != NULL );
    PSO_PRE_CONDITION( pCurrent != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( ppNext   != NULL );
    PSO_TRACE_ENTER( pContext );
 
-   ok = psonLinkedListPeakNext( &pProcess->listOfSessions,
+   ok = psonLinkedListPeakNext( &process->listOfSessions,
                                 &pCurrent->node,
                                 &pNode,
                                 pContext );
@@ -212,20 +212,20 @@ bool psonProcessGetNextSession( psonProcess        * pProcess,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonProcessInit( psonProcess        * pProcess,
+bool psonProcessInit( psonProcess        * process,
                       pid_t                pid,
                       psonSessionContext * pContext )
 {
    psoErrors errcode;
 
-   PSO_PRE_CONDITION( pProcess != NULL );
+   PSO_PRE_CONDITION( process != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pid > 0 );
    PSO_TRACE_ENTER( pContext );
 
-   errcode = psonMemObjectInit( &pProcess->memObject, 
+   errcode = psonMemObjectInit( &process->memObject, 
                                 PSON_IDENT_PROCESS,
-                                &pProcess->blockGroup,
+                                &process->blockGroup,
                                 1,
                                 pContext ); /* A single block */
    if ( errcode != PSO_OK ) {
@@ -236,10 +236,10 @@ bool psonProcessInit( psonProcess        * pProcess,
       return false;
    }
 
-   pProcess->pid = pid;
-   pProcess->processIsTerminating = false;
+   process->pid = pid;
+   process->processIsTerminating = false;
 
-   psonLinkedListInit( &pProcess->listOfSessions, pContext );
+   psonLinkedListInit( &process->listOfSessions, pContext );
 
    PSO_TRACE_EXIT( pContext );
    return true;
@@ -247,24 +247,24 @@ bool psonProcessInit( psonProcess        * pProcess,
    
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonProcessRemoveSession( psonProcess        * pProcess,
+bool psonProcessRemoveSession( psonProcess        * process,
                                psonSession        * pSession,
                                psonSessionContext * pContext )
 {
-   PSO_PRE_CONDITION( pProcess != NULL );
+   PSO_PRE_CONDITION( process != NULL );
    PSO_PRE_CONDITION( pSession != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
 
    /* For recovery purposes, always lock before doing anything! */
-   if ( psonLock( &pProcess->memObject, pContext ) ) {
-      psonLinkedListRemoveItem( &pProcess->listOfSessions, 
+   if ( psonLock( &process->memObject, pContext ) ) {
+      psonLinkedListRemoveItem( &process->listOfSessions, 
                                 &pSession->node,
                                 pContext );
       
       psonSessionFini( pSession, pContext );
 
-      psonUnlock( &pProcess->memObject, pContext );
+      psonUnlock( &process->memObject, pContext );
    }
    else {
       psocSetError( &pContext->errorHandler, 

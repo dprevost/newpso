@@ -531,8 +531,9 @@ void psonAPIFolderStatus( psonFolder         * pFolder,
    psonTxStatus  * txStatus;
    psonTreeNode * pFolderNode;
 
-   PSO_PRE_CONDITION( pFolder != NULL );
-   PSO_PRE_CONDITION( pStatus != NULL );
+   PSO_PRE_CONDITION( pFolder  != NULL );
+   PSO_PRE_CONDITION( pStatus  != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
    PSO_TRACE_ENTER( pContext );
 

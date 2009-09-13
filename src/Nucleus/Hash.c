@@ -556,6 +556,7 @@ void psonHashFini( psonHash           * pHash,
                    psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pHash != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_SIGNATURE );
    PSO_TRACE_ENTER( pContext );
    
@@ -615,6 +616,7 @@ bool psonHashGetFirst( psonHash            * pHash,
    
    PSO_PRE_CONDITION( pHash != NULL );
    PSO_PRE_CONDITION( ppItem != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
    
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_SIGNATURE );
@@ -664,6 +666,7 @@ bool psonHashGetNext( psonHash           * pHash,
    PSO_PRE_CONDITION( pHash        != NULL );
    PSO_PRE_CONDITION( previousItem != NULL );
    PSO_PRE_CONDITION( nextItem     != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_SIGNATURE );
    PSO_TRACE_ENTER( pContext );
    

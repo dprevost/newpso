@@ -80,7 +80,7 @@ typedef struct psoaProcess
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 PHOTON_API_EXPORT
-extern psoaProcess * g_pProcessInstance;
+extern psoaProcess * g_processInstance;
 
 /** 
  * This global mutex is needed for opening and closing sessions in 
@@ -92,7 +92,7 @@ extern psocThreadLock g_ProcessMutex;
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 PHOTON_API_EXPORT
-int psoaProcessInit( psoaProcess * pProcess,
+int psoaProcessInit( psoaProcess * process,
                      const char  * qsrAddress,
                      const char  * processName );
 

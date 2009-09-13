@@ -49,7 +49,7 @@ int main( int argc, char * argv[] )
       return 0;
    }
 
-   g_pProcessInstance = NULL;
+   g_processInstance = NULL;
    psoaProcessFini();
    
    ERROR_EXIT( expectedToPass, NULL, ; );

@@ -53,6 +53,7 @@ void psonLinkedListFini( psonLinkedList     * pList,
                          psonSessionContext * pContext )
 {   
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_TRACE_ENTER( pContext );
@@ -72,6 +73,7 @@ void psonLinkedListInit( psonLinkedList     * pList,
                          psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
    
    psonLinkNodeInit( &pList->head, pContext );
@@ -92,6 +94,7 @@ void psonLinkedListReset( psonLinkedList     * pList,
                           psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_TRACE_ENTER( pContext );
@@ -116,6 +119,7 @@ bool psonLinkedListIsValid( psonLinkedList     * pList,
    psonLinkNode* pItem;
 
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( pUnknown   != NULL );

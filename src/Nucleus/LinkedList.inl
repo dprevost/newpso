@@ -26,6 +26,7 @@ bool psonLinkedListGetFirst( psonLinkedList     * pList,
                              psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( ppItem != NULL );
@@ -63,6 +64,7 @@ bool psonLinkedListGetLast( psonLinkedList     * pList,
                             psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( ppItem     != NULL );
@@ -102,6 +104,7 @@ psonLinkedListPutLast( psonLinkedList     * pList,
    ptrdiff_t tmpOffset;
    
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( pNewItem   != NULL );
@@ -137,6 +140,7 @@ psonLinkedListPutFirst( psonLinkedList     * pList,
    ptrdiff_t tmpOffset;
    
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( pNewItem   != NULL );
@@ -171,6 +175,7 @@ psonLinkedListRemoveItem( psonLinkedList     * pList,
                           psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( pRemovedItem != NULL );
@@ -198,6 +203,7 @@ bool psonLinkedListPeakFirst( psonLinkedList     * pList,
                               psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( ppItem     != NULL );
@@ -225,6 +231,7 @@ bool psonLinkedListPeakLast( psonLinkedList     * pList,
                              psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( ppItem     != NULL );
@@ -255,6 +262,7 @@ bool psonLinkedListPeakNext( psonLinkedList     * pList,
    psonLinkNode* pNext;
 
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( pCurrent   != NULL );
@@ -288,6 +296,7 @@ bool psonLinkedListPeakPrevious( psonLinkedList     * pList,
    psonLinkNode* pPrevious;
 
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( pCurrent   != NULL );
@@ -325,6 +334,7 @@ psonLinkedListReplaceItem( psonLinkedList     * pList,
    ptrdiff_t tmpOffset;
 
    PSO_PRE_CONDITION( pList != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( pOldItem != NULL );

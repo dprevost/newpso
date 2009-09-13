@@ -427,7 +427,7 @@ int psoExitSession( PSO_HANDLE sessionHandle )
           * a deadlock) we cannot include this call in psoaCloseSession.
           */
          if ( errcode == 0 ) {
-            ok = psonProcessRemoveSession( g_pProcessInstance->pCleanup, 
+            ok = psonProcessRemoveSession( g_processInstance->pCleanup, 
                                            pCleanup, 
                                            &pSession->context );
             PSO_POST_CONDITION( ok == true || ok == false );
@@ -630,7 +630,7 @@ int psoGetInfo( PSO_HANDLE   sessionHandle,
    memset( pInfo, 0, sizeof(struct psoInfo) );
    
    if ( ! pSession->terminated ) {
-      pHead = g_pProcessInstance->pHeader;
+      pHead = g_processInstance->pHeader;
       GET_PTR( pAlloc, pSession->pHeader->allocatorOffset, psonMemAlloc )
       ok = psonMemAllocStats( pAlloc, pInfo, &pSession->context );
       PSO_POST_CONDITION( ok == true || ok == false );
@@ -807,7 +807,7 @@ int psoInitSession( PSO_HANDLE * sessionHandle )
    
    *sessionHandle = NULL;
 
-   if ( g_pProcessInstance == NULL ) return PSO_PROCESS_NOT_INITIALIZED;
+   if ( g_processInstance == NULL ) return PSO_PROCESS_NOT_INITIALIZED;
    
    pSession = (psoaSession*) malloc(sizeof(psoaSession));
    if ( pSession == NULL ) return PSO_NOT_ENOUGH_HEAP_MEMORY;
@@ -823,7 +823,7 @@ int psoInitSession( PSO_HANDLE * sessionHandle )
     * from errors;
     */
    
-   pSession->pHeader = g_pProcessInstance->pHeader;
+   pSession->pHeader = g_processInstance->pHeader;
    if ( pSession->pHeader == NULL ) {
       errcode = PSO_PROCESS_NOT_INITIALIZED;
       goto error_handler;
@@ -844,7 +844,7 @@ int psoInitSession( PSO_HANDLE * sessionHandle )
     * in the process (exiting, for example). After this point we 
     * will want to use the process mutex to remove it.
     */
-   ok = psonProcessAddSession( g_pProcessInstance->pCleanup, 
+   ok = psonProcessAddSession( g_processInstance->pCleanup, 
                                pSession, 
                                &pSession->pCleanup, 
                                &pSession->context );

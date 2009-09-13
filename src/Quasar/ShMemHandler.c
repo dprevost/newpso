@@ -250,7 +250,7 @@ bool qsrHandlerCreateSession( qsrHandler * pHandler )
    
 //   *sessionHandle = NULL;
 
-//   if ( g_pProcessInstance == NULL ) return PSO_PROCESS_NOT_INITIALIZED;
+//   if ( g_processInstance == NULL ) return PSO_PROCESS_NOT_INITIALIZED;
    
 //   pSession = (psoaSession*) malloc(sizeof(psoaSession));
 //   if ( pSession == NULL ) return PSO_NOT_ENOUGH_HEAP_MEMORY;
@@ -507,7 +507,7 @@ void qsrHandleCrash( qsrHandler * pHandler, pid_t pid )
    PSO_PRE_CONDITION( pHandler != NULL );
 
 #if 0   
-   psonProcess* pProcess = NULL;
+   psonProcess* process = NULL;
    psonSessionContext context;
    psonSession* pFirstSession = NULL;
    psonSession* pCurrSession  = NULL;
@@ -536,9 +536,9 @@ void qsrHandleCrash( qsrHandler * pHandler, pid_t pid )
    // (to be complete: the cleanup manager is itself a linked list made 
    // of all the process wide linked lists.)
    // 
-   errcode = pCleanupManager->FindProcess( pid, &pProcess, &context );
+   errcode = pCleanupManager->FindProcess( pid, &process, &context );
    
-   fprintf( stderr, "Abnormal %d %d %p %p\n", pid, errcode, pCleanupManager, pProcess );
+   fprintf( stderr, "Abnormal %d %d %p %p\n", pid, errcode, pCleanupManager, process );
 
    if ( errcode != 0 ) {
       // log it
@@ -549,18 +549,18 @@ void qsrHandleCrash( qsrHandler * pHandler, pid_t pid )
     * Loop on all sessions to clean them up. It is indeed possible to 
     * have no current session - a non-null errcode is not an error.
     */
-   errcode = pProcess->GetFirstSession( &pCurrSession, &context );
+   errcode = process->GetFirstSession( &pCurrSession, &context );
    fprintf( stderr, "Errcode %d %p \n", errcode, pCurrSession );
    if ( errcode == 0 ) {
       CleanSession( pCurrSession );
 
-      errcode = pProcess->GetNextSession( pCurrSession, 
+      errcode = process->GetNextSession( pCurrSession, 
                                           &pNextSession,
                                           &context );
       while ( errcode == 0 ) {
          CleanSession( pNextSession );
          pCurrSession = pNextSession;
-         errcode = pProcess->GetNextSession( pCurrSession, 
+         errcode = process->GetNextSession( pCurrSession, 
                                              &pNextSession,
                                              &context );
       }
@@ -570,7 +570,7 @@ void qsrHandleCrash( qsrHandler * pHandler, pid_t pid )
     * Remove the CleanupProcess object (it will iteratively remove all 
     * its "children").
     */
-   errcode = pCleanupManager->RemoveProcess( pProcess, &context );
+   errcode = pCleanupManager->RemoveProcess( process, &context );
    if ( errcode != 0 ) {
       // log it
    }

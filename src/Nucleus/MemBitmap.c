@@ -54,7 +54,8 @@ void psonMemBitmapFini( psonMemBitmap      * pBitmap,
                         psonSessionContext * pContext )
 {
    size_t len, i;
-   PSO_PRE_CONDITION( pBitmap != NULL );
+   PSO_PRE_CONDITION( pBitmap  != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
    
    len = ( (pBitmap->lengthInBits - 1 ) >> 3 ) + 1;
@@ -79,7 +80,8 @@ void psonMemBitmapInit( psonMemBitmap      * pBitmap,
 {
    size_t len, i;
    
-   PSO_PRE_CONDITION( pBitmap     != NULL );
+   PSO_PRE_CONDITION( pBitmap  != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( baseAddressOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( totalLength      > 0 );
    /* Testing that it is non-zero and a power of two */

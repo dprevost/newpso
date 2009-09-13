@@ -274,6 +274,8 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc       * pAlloc,
    psonLinkNode * currentNode = NULL;
    psonLinkNode * bestNode = NULL;
    bool ok;
+   PSO_PRE_CONDITION( pAlloc != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
 
    /* 

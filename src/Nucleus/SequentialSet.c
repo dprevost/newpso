@@ -444,7 +444,7 @@ bool psonSeqSetInit( psonSeqSet          * pSeqSet,
 {
    psoErrors errcode;
    
-   PSO_PRE_CONDITION( pSeqSet        != NULL );
+   PSO_PRE_CONDITION( pSeqSet         != NULL );
    PSO_PRE_CONDITION( pContext        != NULL );
    PSO_PRE_CONDITION( pTxStatus       != NULL );
    PSO_PRE_CONDITION( origName        != NULL );
@@ -551,7 +551,7 @@ void psonSeqSetRelease( psonSeqSet         * pSeqSet,
 {
    psonTxStatus * txSeqSetStatus;
    
-   PSO_PRE_CONDITION( pSeqSet  != NULL );
+   PSO_PRE_CONDITION( pSeqSet   != NULL );
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
@@ -635,8 +635,9 @@ void psonSeqSetStatus( psonSeqSet  * pSeqSet,
    psonTxStatus  * txStatus;
    bool found;
    
-   PSO_PRE_CONDITION( pSeqSet != NULL );
+   PSO_PRE_CONDITION( pSeqSet  != NULL );
    PSO_PRE_CONDITION( pStatus  != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
    PSO_TRACE_ENTER( pContext );
    

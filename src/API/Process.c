@@ -29,7 +29,7 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-psoaProcess     *g_pProcessInstance = NULL;
+psoaProcess     *g_processInstance = NULL;
 psocThreadLock   g_ProcessMutex;
    
 int psoaStandalone( const char       * address,
@@ -45,7 +45,7 @@ bool AreWeTerminated()
    
    psocAcquireThreadLock( &g_ProcessMutex );
 
-   if ( g_pProcessInstance->pHeader != NULL ) ret = false;
+   if ( g_processInstance->pHeader != NULL ) ret = false;
    
    psocReleaseThreadLock( &g_ProcessMutex );
 
@@ -127,7 +127,7 @@ int psoaProcessInit( psoaProcess * process,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ok ) {
       strcpy( process->logDirName, PSO_LOGDIR_NAME );
-      g_pProcessInstance = process;
+      g_processInstance = process;
    }
    else {
       errcode = psocGetLastError( &context.errorHandler );
@@ -152,7 +152,7 @@ void psoaProcessFini()
    psoaProcess * process;
    bool ok;
    
-   process = g_pProcessInstance;
+   process = g_processInstance;
    PSO_PRE_CONDITION( process != NULL );
 
    /* 

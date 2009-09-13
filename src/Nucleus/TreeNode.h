@@ -71,6 +71,7 @@ void psonTreeNodeInit( psonTreeNode       * pNode,
                        psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pNode != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
    
    pNode->offset         = myOffset;
@@ -89,6 +90,7 @@ void psonTreeNodeFini( psonTreeNode       * pNode,
                        psonSessionContext * pContext )
 {
    PSO_PRE_CONDITION( pNode != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
    
    pNode->offset         = PSON_NULL_OFFSET;

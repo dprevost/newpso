@@ -61,10 +61,10 @@ int psoInit( const char * qsrAddress, const char * processName )
 
 void psoExit()
 {
-   if ( g_pProcessInstance != NULL ) {
+   if ( g_processInstance != NULL ) {
       psoaProcessFini();
    }
-   g_pProcessInstance = NULL;
+   g_processInstance = NULL;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

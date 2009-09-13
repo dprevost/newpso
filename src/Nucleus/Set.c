@@ -508,9 +508,9 @@ void psonSetReleaseNoLock( psonSet            * pSet,
    size_t len;
    psonTreeNode * pSetNode = NULL;
    
-   PSO_PRE_CONDITION( pSet != NULL );
+   PSO_PRE_CONDITION( pSet     != NULL );
    PSO_PRE_CONDITION( pSetItem != NULL );
-   PSO_PRE_CONDITION( pContext   != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pSet->memObject.objType == PSON_IDENT_QUEUE );
    PSO_TRACE_ENTER( pContext );
 
@@ -551,8 +551,9 @@ void psonSetStatus( psonSet            * pSet,
    bool okList;
    psonTreeNode * pSetNode = NULL;
    
-   PSO_PRE_CONDITION( pSet  != NULL );
-   PSO_PRE_CONDITION( pStatus != NULL );
+   PSO_PRE_CONDITION( pSet     != NULL );
+   PSO_PRE_CONDITION( pStatus  != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
 
    GET_PTR( pSetNode, pSet->nodeOffset, psonTreeNode );
