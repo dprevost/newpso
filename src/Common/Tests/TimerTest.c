@@ -78,7 +78,7 @@ void test1( void ** state )
     * used anywhere. This seems to fix the problem (declaring dum
     * as volatile is likely a better solution).
     */
-   if (dum == 0 ) fprintf(stderr, "%d\n", dum );
+   if (dum == 0 ) fprintf( stderr, "%d\n", dum );
    
    assert_false( sec == 0 && nanoSec == 0 );
    sum = NS_PER_SEC*sec + nanoSec;
@@ -116,7 +116,7 @@ void test1( void ** state )
        * Newer version of gcc seem to strip the loop away since dum is not
        * used anywhere. This seems to fix the problem.
        */
-      if (dum == 0 ) fprintf(stderr, "%d\n", dum );
+      if (dum == 0 ) fprintf( stderr, "%d\n", dum );
 
       assert_false( sec == 0 && nanoSec == 0 );
       

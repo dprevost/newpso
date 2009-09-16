@@ -105,7 +105,7 @@ void psonQueueCommitRemove( psonQueue          * pQueue,
 void psonQueueDump( psonQueue * pQueue, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonQueue (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonQueue (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pQueue, SET_OFFSET(pQueue) );
    if ( pQueue == NULL ) return;
 
@@ -138,6 +138,9 @@ void psonQueueDump( psonQueue * pQueue, int indent )
       pQueue->numValidItems );
    
    psonBlockGroupDump( &pQueue->blockGroup, indent + 2 );
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonQueue END\n" );
 }
 #endif
 

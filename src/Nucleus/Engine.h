@@ -205,7 +205,7 @@ typedef enum psonAllocTypeEnum psonAllocTypeEnum;
 
 #if defined(PSO_USE_TRACE)
 #  define PSO_TRACE(CONTEXT,TRACES) \
-if ( CONTEXT->traceOn ) {\
+if ( CONTEXT->traceFlags & PSO_TRACE_DUMP ) {\
    TRACES\
 }
 #else
@@ -214,12 +214,16 @@ if ( CONTEXT->traceOn ) {\
 
 #if defined(PSO_USE_TRACE)
 #  define PSO_TRACE_ENTER(CONTEXT) \
-if ( CONTEXT->traceOn ) {\
-   fprintf( stderr, "Entering function %s\n", __func__ );\
+if ( CONTEXT->traceFlags & PSO_TRACE_FUNCTION ) {\
+   CONTEXT->indent += 2;\
+   DO_INDENT(CONTEXT->indent);\
+   fprintf( stderr, "Entering function %s()\n", __func__ );\
 }
 #  define PSO_TRACE_EXIT(CONTEXT) \
-if ( CONTEXT->traceOn ) {\
-   fprintf( stderr, "Exiting function %s\n", __func__ );\
+if ( CONTEXT->traceFlags & PSO_TRACE_FUNCTION ) {\
+   DO_INDENT(CONTEXT->indent);\
+   fprintf( stderr, "Exiting  function %s()\n", __func__ );\
+   CONTEXT->indent -= 2;\
 }
 #else
 #  define PSO_TRACE_ENTER(CONTEXT)

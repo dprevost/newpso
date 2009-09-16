@@ -30,7 +30,7 @@
 void psonCursorDump( psonCursor * pCursor, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonCursor (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonCursor (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pCursor, SET_OFFSET(pCursor) );
    if ( pCursor == NULL ) return;
 
@@ -39,6 +39,9 @@ void psonCursorDump( psonCursor * pCursor, int indent )
    psonLinkedListDump( &pCursor->listOfElements, indent + 2 );
 
    psonBlockGroupDump( &pCursor->blockGroup, indent + 2 );
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonCursor END\n" );
 }
 #endif
 

@@ -27,7 +27,7 @@
 void psonTxStatusDump( psonTxStatus * pStatus, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonTXStatus (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonTXStatus (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pStatus, SET_OFFSET(pStatus) );
    if ( pStatus == NULL ) return;
 
@@ -69,6 +69,9 @@ void psonTxStatusDump( psonTxStatus * pStatus, int indent )
 
    DO_INDENT( indent + 2 );
    fprintf( stderr, "parent counter %ud\n", pStatus->parentCounter );
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonTxStatus END\n" );
 }
 
 #endif

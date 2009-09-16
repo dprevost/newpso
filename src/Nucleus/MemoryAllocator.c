@@ -666,7 +666,7 @@ void psonMemAllocClose( psonMemAlloc       * pAlloc,
 void psonMemAllocDump( psonMemAlloc * pAlloc, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonMemAlloc (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonMemAlloc (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pAlloc, SET_OFFSET(pAlloc) );
    if ( pAlloc == NULL ) return;
 
@@ -703,6 +703,9 @@ void psonMemAllocDump( psonMemAlloc * pAlloc, int indent )
       pAlloc->bitmapOffset );
    
    psonBlockGroupDump( &pAlloc->blockGroup, indent + 2 );
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonMemAlloc END\n" );
 }
 #endif
 

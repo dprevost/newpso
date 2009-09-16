@@ -95,7 +95,7 @@ int psoaSessionOpenObj( psoaSession             * pSession,
 
 PHOTON_API_EXPORT
 void psoaSessionTrace( psoaSession * pSession,
-                       bool          traceOn );
+                       int           traceFlags );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

@@ -137,7 +137,7 @@ bool psonFastMapDelete( psonFastMap        * pHashMap,
 void psonFastMapDump( psonFastMap * pMap, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonFastMap (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonFastMap (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pMap, SET_OFFSET(pMap) );
    if ( pMap == NULL ) return;
 
@@ -165,6 +165,9 @@ void psonFastMapDump( psonFastMap * pMap, int indent )
       pMap->editVersion );
 
    psonBlockGroupDump( &pMap->blockGroup, indent + 2 );
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonFastMap END\n" );
 }
 #endif
 

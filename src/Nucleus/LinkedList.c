@@ -26,7 +26,7 @@
 void psonLinkedListDump( psonLinkedList * pList, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonLinkedList (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonLinkedList (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pList, SET_OFFSET(pList) );
    if ( pList == NULL ) return;
    
@@ -43,6 +43,9 @@ void psonLinkedListDump( psonLinkedList * pList, int indent )
       fprintf( stderr, "Signature is wrong - value is %d, exepted: %d\n",
          pList->initialized, PSON_LIST_SIGNATURE );
    }
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonLinkedList END\n" );
 }
 #endif
 

@@ -83,7 +83,7 @@ bool psonProcMgrAddProcess( psonProcMgr        * pManager,
 void psonProcMgrDump( psonProcMgr * pManager, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonProcMgr (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonProcMgr (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pManager, SET_OFFSET(pManager) );
    if ( pManager == NULL ) return;
 
@@ -92,6 +92,9 @@ void psonProcMgrDump( psonProcMgr * pManager, int indent )
    psonLinkedListDump( &pManager->listOfProcesses, indent + 2 );
 
    psonBlockGroupDump( &pManager->blockGroup, indent + 2 );
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonProcMgr END\n" );
 }
 #endif
 

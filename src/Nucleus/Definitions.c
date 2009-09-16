@@ -26,8 +26,9 @@
 void psonDataDefinitionDump( psonDataDefinition * pDataDefinition, int indent )
 {
    unsigned int i, j;
+
    DO_INDENT( indent );
-   fprintf(stderr, "psonDataDefinition (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonDataDefinition (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pDataDefinition, SET_OFFSET(pDataDefinition) );
    if ( pDataDefinition == NULL ) return;
 
@@ -88,6 +89,9 @@ void psonDataDefinitionDump( psonDataDefinition * pDataDefinition, int indent )
          if ( i != pDataDefinition->definitionLength-1 ) DO_INDENT( indent );
       }
    }
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonDataDefinition END\n" );
 }
 #endif
 
@@ -97,10 +101,12 @@ void psonDataDefinitionDump( psonDataDefinition * pDataDefinition, int indent )
 void psonKeyDefinitionDump( psonKeyDefinition * pKeyDefinition, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonKeyDefinition (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonKeyDefinition (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pKeyDefinition, SET_OFFSET(pKeyDefinition) );
    if ( pKeyDefinition == NULL ) return;
 
+   DO_INDENT( indent );
+   fprintf( stderr, "psonKeyDefinition END\n" );
 }
 #endif
 

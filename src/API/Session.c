@@ -1115,11 +1115,11 @@ int psoaSessionOpenObj( psoaSession             * pSession,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void psoaSessionTrace( psoaSession * pSession,
-                       bool          traceOn )
+                       int           traceFlags )
 {
    PSO_PRE_CONDITION( pSession   != NULL );
    
-   pSession->context.traceOn = traceOn;
+   pSession->context.traceFlags = traceFlags;
 #if !defined(PSO_USE_TRACE)
    if ( traceOn ) fprintf( stderr, "Warning: not built with trace enable\n" );
 #endif

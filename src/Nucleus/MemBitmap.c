@@ -26,7 +26,7 @@
 void psonMemBitmapDump( psonMemBitmap * pBitmap, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonMemBitmap (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonMemBitmap (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pBitmap, SET_OFFSET(pBitmap) );
    if ( pBitmap == NULL ) return;
 
@@ -45,6 +45,8 @@ void psonMemBitmapDump( psonMemBitmap * pBitmap, int indent )
 #if 0
    unsigned char bitmap[1];
 #endif
+   DO_INDENT( indent );
+   fprintf( stderr, "psonMemBitmap END\n" );
 }
 #endif
 

@@ -501,6 +501,9 @@ void psonHashDump( psonHash * pHash,
       fprintf( stderr, "Signature is wrong - value is %d, exepted: %d\n",
          pHash->initialized, PSON_HASH_SIGNATURE );
    }
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonHash END\n" );
 }
 #endif
 

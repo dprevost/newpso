@@ -32,6 +32,11 @@ BEGIN_C_DECLS
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#define PSO_TRACE_FUNCTION 0x00000001
+#define PSO_TRACE_DUMP     0x00000002
+#define PSO_TRACE_CONTENT  0x00000004
+#define PSO_TRACE_ALL      0xffffffff
+
 /**
  * This structure holds information that's either process wide specific
  * or session specific. Regrouping this information in this single
@@ -64,8 +69,9 @@ struct psonSessionContext
     */
    void *pAllocator;
    
-   bool traceOn;
+   int traceFlags;
    
+   int indent;
 };
 
 typedef struct psonSessionContext psonSessionContext;
@@ -83,8 +89,8 @@ void psonInitSessionContext( psonSessionContext * pContext )
    pContext->lockObject   = PSON_NULL_OFFSET;
    pContext->pTransaction = NULL;
    pContext->pAllocator   = NULL;
-//   pContext->pLogFile     = NULL;
-   pContext->traceOn      = false;
+   pContext->traceFlags   = 0;
+   pContext->indent = 0;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

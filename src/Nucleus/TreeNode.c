@@ -36,7 +36,7 @@ char * apiTypes[] = {
 void psonTreeNodeDump( psonTreeNode * pNode, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonTreeNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonTreeNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pNode, SET_OFFSET(pNode) );
    if ( pNode == NULL ) return;
 
@@ -60,6 +60,9 @@ void psonTreeNodeDump( psonTreeNode * pNode, int indent )
    DO_INDENT( indent + 2 );
    fprintf( stderr, "offset of the parent object: "PSO_PTRDIFF_T_FORMAT"\n",
       pNode->myParentOffset );
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonTreeNode END\n" );
 }
 
 #endif

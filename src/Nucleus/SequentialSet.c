@@ -135,7 +135,7 @@ bool psonSeqSetDelete( psonSeqSet         * pSeqSet,
 void psonSeqSetDump( psonSeqSet * pSeqSet, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonSeqSet (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonSeqSet (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pSeqSet, SET_OFFSET(pSeqSet) );
    if ( pSeqSet == NULL ) return;
 
@@ -168,6 +168,9 @@ void psonSeqSetDump( psonSeqSet * pSeqSet, int indent )
       pSeqSet->editVersion );
 
    psonBlockGroupDump( &pSeqSet->blockGroup, indent + 2 );
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonSeqSet END\n" );
 }
 #endif
 

@@ -26,7 +26,7 @@
 void psonBlockGroupDump( psonBlockGroup * pGroup, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonBlockGroup (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonBlockGroup (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pGroup, SET_OFFSET(pGroup) );
    if ( pGroup == NULL ) return;
 
@@ -58,6 +58,9 @@ void psonBlockGroupDump( psonBlockGroup * pGroup, int indent )
    }
 
    psonMemBitmapDump( &pGroup->bitmap, indent + 2 );
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonBlockGroup END\n" );
 }
 #endif
 

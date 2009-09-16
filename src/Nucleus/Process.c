@@ -92,7 +92,7 @@ bool psonProcessAddSession( psonProcess        * process,
 void psonProcessDump( psonProcess * process, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonProcess (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonProcess (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       process, SET_OFFSET(process) );
    if ( process == NULL ) return;
 
@@ -115,6 +115,9 @@ void psonProcessDump( psonProcess * process, int indent )
    }
 
    psonBlockGroupDump( &process->blockGroup, indent + 2 );
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonProcess END\n" );
 }
 #endif
 

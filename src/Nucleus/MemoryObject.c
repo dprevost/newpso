@@ -26,7 +26,7 @@
 void psonMemObjectDump( psonMemObject * pMemObj, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonMemObject (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonMemObject (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pMemObj, SET_OFFSET(pMemObj) );
    if ( pMemObj == NULL ) return;
    
@@ -43,6 +43,9 @@ void psonMemObjectDump( psonMemObject * pMemObj, int indent )
       pMemObj->totalBlocks );
    
    psonLinkedListDump( &pMemObj->listBlockGroup, indent + 2 );
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonMemObject END\n" );
 }
 #endif
 

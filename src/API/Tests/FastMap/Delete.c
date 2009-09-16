@@ -128,11 +128,13 @@ void test_pass( void ** state )
                            keyDefHandle );
    assert_true( errcode == PSO_OK );
 
+   psoaSessionTrace( sessionHandle1, PSO_TRACE_ALL );
    errcode = psoFastMapEdit( sessionHandle1,
                              "/api_fastmap_delete/test",
                              strlen("/api_fastmap_delete/test"),
                              &objHandle1 );
    assert_true( errcode == PSO_OK );
+   psoaSessionTrace( sessionHandle1, 0 );
 
    errcode = psoFastMapInsert( objHandle1,
                                key1,

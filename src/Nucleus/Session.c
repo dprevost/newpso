@@ -125,7 +125,7 @@ void psonSessionDump( psonSession * pSession, int indent )
    int i;
    
    DO_INDENT( indent );
-   fprintf(stderr, "psonSession (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonSession (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pSession, SET_OFFSET(pSession) );
    if ( pSession == NULL ) return;
 
@@ -156,6 +156,9 @@ void psonSessionDump( psonSession * pSession, int indent )
       pSession->numLocks );
    
    psonBlockGroupDump( &pSession->blockGroup, indent + 2 );
+
+   DO_INDENT( indent );
+   fprintf( stderr, "psonSession END\n" );
 }
 #endif
 

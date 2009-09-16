@@ -827,7 +827,7 @@ the_exit:
 void psonFolderDump( psonFolder * pFolder, int indent )
 {
    DO_INDENT( indent );
-   fprintf(stderr, "psonFolder (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   fprintf( stderr, "psonFolder (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pFolder, SET_OFFSET(pFolder) );
    if ( pFolder == NULL ) return;
 
@@ -849,6 +849,9 @@ void psonFolderDump( psonFolder * pFolder, int indent )
    }
 
    psonBlockGroupDump( &pFolder->blockGroup, indent + 2 );
+ 
+   DO_INDENT( indent );
+   fprintf( stderr, "psonFolder END\n" );
 }
 #endif
 
@@ -923,6 +926,11 @@ bool psonFolderEditObject( psonFolder         * pFolder,
       }
       GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
       GET_PTR( txFolderStatus, pFolderNode->txStatusOffset, psonTxStatus );
+
+      PSO_TRACE( pContext,
+         fprintf( stderr, "Object Name: %s\n", objectName );
+         psonFolderDump(pFolder, pContext->indent);
+         );
       /* 
        * If the transaction id of the object (to open) is equal to the 
        * current transaction id AND the object is marked as deleted... error.
