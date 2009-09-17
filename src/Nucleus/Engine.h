@@ -214,16 +214,16 @@ if ( CONTEXT->traceFlags & PSO_TRACE_DUMP ) {\
 
 #if defined(PSO_USE_TRACE)
 #  define PSO_TRACE_ENTER(CONTEXT) \
-if ( CONTEXT->traceFlags & PSO_TRACE_FUNCTION ) {\
-   CONTEXT->indent += 2;\
-   DO_INDENT(CONTEXT->indent);\
+if ( (CONTEXT)->traceFlags & PSO_TRACE_FUNCTION ) {\
+   (CONTEXT)->indent += 2;\
+   DO_INDENT( (CONTEXT)->indent );\
    fprintf( stderr, "Entering function %s()\n", __func__ );\
 }
 #  define PSO_TRACE_EXIT(CONTEXT) \
-if ( CONTEXT->traceFlags & PSO_TRACE_FUNCTION ) {\
-   DO_INDENT(CONTEXT->indent);\
+if ( (CONTEXT)->traceFlags & PSO_TRACE_FUNCTION ) {\
+   DO_INDENT( (CONTEXT)->indent );\
    fprintf( stderr, "Exiting  function %s()\n", __func__ );\
-   CONTEXT->indent -= 2;\
+   (CONTEXT)->indent -= 2;\
 }
 #else
 #  define PSO_TRACE_ENTER(CONTEXT)

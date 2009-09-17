@@ -46,7 +46,10 @@ int psoFastMapClose( PSO_HANDLE objectHandle )
    if ( pHashMap->object.type != PSOA_MAP ) {
       return PSO_WRONG_TYPE_HANDLE;
    }
-   
+
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
+
    if ( ! pHashMap->object.pSession->terminated ) {
 
       pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
@@ -94,6 +97,7 @@ int psoFastMapClose( PSO_HANDLE objectHandle )
                     g_psoErrorHandle, errcode );
    }
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -139,6 +143,9 @@ int psoFastMapDefinition( PSO_HANDLE   objectHandle,
       return PSO_NOT_ENOUGH_HEAP_MEMORY;
    }
 
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
+
    if ( ! pHashMap->object.pSession->terminated ) {
       pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
       
@@ -166,6 +173,7 @@ int psoFastMapDefinition( PSO_HANDLE   objectHandle,
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -202,6 +210,9 @@ int psoFastMapDelete( PSO_HANDLE   objectHandle,
                     g_psoErrorHandle, PSO_OBJECT_IS_READ_ONLY );
       return PSO_OBJECT_IS_READ_ONLY;
    }
+
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
    
    if ( ! pHashMap->object.pSession->terminated ) {
 
@@ -225,6 +236,7 @@ int psoFastMapDelete( PSO_HANDLE   objectHandle,
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -267,6 +279,9 @@ int psoFastMapEdit( PSO_HANDLE   sessionHandle,
    pHashMap->object.type = PSOA_MAP;
    pHashMap->object.pSession = pSession;
 
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
+
    if ( ! pHashMap->object.pSession->terminated ) {
 
       errcode = psoaCommonObjOpen( &pHashMap->object,
@@ -285,6 +300,7 @@ int psoFastMapEdit( PSO_HANDLE   sessionHandle,
       errcode = PSO_SESSION_IS_TERMINATED;
    }
 
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -315,6 +331,9 @@ int psoFastMapEmpty( PSO_HANDLE objectHandle )
       return PSO_OBJECT_IS_READ_ONLY;
    }
 
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
+
    pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
 
    /* Reinitialize the iterator, if needed */
@@ -331,6 +350,7 @@ int psoFastMapEmpty( PSO_HANDLE objectHandle )
 
    psonFastMapEmpty( pMemHashMap, &pHashMap->object.pSession->context );
 
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return PSO_OK;
 
 error_handler:
@@ -342,6 +362,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -364,6 +385,9 @@ int psoFastMapGet( PSO_HANDLE   objectHandle,
    if ( pHashMap == NULL ) return PSO_NULL_HANDLE;
    
    if ( pHashMap->object.type != PSOA_MAP ) return PSO_WRONG_TYPE_HANDLE;
+
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
 
    if ( key == NULL || buffer == NULL || returnedLength == NULL) {
       errcode = PSO_NULL_POINTER;
@@ -408,6 +432,7 @@ int psoFastMapGet( PSO_HANDLE   objectHandle,
    GET_PTR( ptr, pHashMap->iterator.pHashItem->dataOffset, void );
    memcpy( buffer, ptr, *returnedLength );
 
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return PSO_OK;
 
 error_handler:
@@ -419,6 +444,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -442,6 +468,9 @@ int psoFastMapGetFirst( PSO_HANDLE   objectHandle,
    if ( pHashMap == NULL ) return PSO_NULL_HANDLE;
    
    if ( pHashMap->object.type != PSOA_MAP ) return PSO_WRONG_TYPE_HANDLE;
+
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
 
    if ( buffer == NULL || retDataLength == NULL || retKeyLength == NULL ||
       key == NULL ) {
@@ -488,6 +517,7 @@ int psoFastMapGetFirst( PSO_HANDLE   objectHandle,
    *retKeyLength = pHashMap->iterator.pHashItem->keyLength;
    memcpy( key, pHashMap->iterator.pHashItem->key, *retKeyLength );
 
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return PSO_OK;
 
 error_handler:
@@ -499,6 +529,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -522,6 +553,9 @@ int psoFastMapGetNext( PSO_HANDLE   objectHandle,
    if ( pHashMap == NULL ) return PSO_NULL_HANDLE;
    
    if ( pHashMap->object.type != PSOA_MAP ) return PSO_WRONG_TYPE_HANDLE;
+
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
 
    if ( buffer == NULL || retDataLength == NULL || retKeyLength == NULL ||
       key == NULL ) {
@@ -561,6 +595,7 @@ int psoFastMapGetNext( PSO_HANDLE   objectHandle,
    *retKeyLength = pHashMap->iterator.pHashItem->keyLength;
    memcpy( key, pHashMap->iterator.pHashItem->key, *retKeyLength );
 
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return PSO_OK;
 
 error_handler:
@@ -572,6 +607,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -616,6 +652,9 @@ int psoFastMapInsert( PSO_HANDLE   objectHandle,
       return PSO_OBJECT_IS_READ_ONLY;
    }
 
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
+
    if ( ! pHashMap->object.pSession->terminated ) {
 
       pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
@@ -642,6 +681,7 @@ int psoFastMapInsert( PSO_HANDLE   objectHandle,
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -685,6 +725,9 @@ int psoFastMapOpen( PSO_HANDLE   sessionHandle,
    pHashMap->object.type = PSOA_MAP;
    pHashMap->object.pSession = pSession;
 
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
+
    if ( ! pHashMap->object.pSession->terminated ) {
 
       errcode = psoaCommonObjOpen( &pHashMap->object,
@@ -713,6 +756,7 @@ int psoFastMapOpen( PSO_HANDLE   sessionHandle,
       free(pHashMap);
    }
 
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -751,6 +795,9 @@ int psoFastMapReplace( PSO_HANDLE   objectHandle,
       return PSO_OBJECT_IS_READ_ONLY;
    }
 
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
+
    if ( ! pHashMap->object.pSession->terminated ) {
 
       pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
@@ -777,6 +824,7 @@ int psoFastMapReplace( PSO_HANDLE   objectHandle,
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -802,6 +850,9 @@ int psoFastMapStatus( PSO_HANDLE     objectHandle,
       return PSO_NULL_POINTER;
    }
 
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
+
    if ( ! pHashMap->object.pSession->terminated ) {
 
       pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
@@ -826,6 +877,7 @@ int psoFastMapStatus( PSO_HANDLE     objectHandle,
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -852,6 +904,9 @@ int psoaFastMapFirst( psoaFastMap    * pHashMap,
    PSO_PRE_CONDITION( pData       != NULL );
    PSO_PRE_CONDITION( pDataLength != NULL );
    PSO_PRE_CONDITION( pHashMap->object.type == PSOA_MAP );
+
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
    
    if ( pHashMap->object.pSession->terminated ) {
       errcode = PSO_SESSION_IS_TERMINATED;
@@ -885,6 +940,7 @@ int psoaFastMapFirst( psoaFastMap    * pHashMap,
    *pKeyLength = pHashMap->iterator.pHashItem->keyLength;
    *pKey = pHashMap->iterator.pHashItem->key;
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return PSO_OK;
 
 error_handler:
@@ -896,6 +952,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -918,6 +975,9 @@ int psoaFastMapNext( psoaFastMap    * pHashMap,
    PSO_PRE_CONDITION( pDataLength != NULL );
    PSO_PRE_CONDITION( pHashMap->object.type == PSOA_MAP );
    PSO_PRE_CONDITION( pHashMap->iterator.pHashItem != NULL );
+
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
    
    if ( pHashMap->object.pSession->terminated ) {
       errcode = PSO_SESSION_IS_TERMINATED;
@@ -939,6 +999,7 @@ int psoaFastMapNext( psoaFastMap    * pHashMap,
    *pKeyLength = pHashMap->iterator.pHashItem->keyLength;
    *pKey = pHashMap->iterator.pHashItem->key;
 
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return PSO_OK;
 
 error_handler:
@@ -951,6 +1012,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
@@ -970,6 +1032,9 @@ void psoaFastMapResetReader( void * map )
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pHashMap->object.type == PSOA_MAP );
 
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
+
    pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
    pHashItemLatest = GET_PTR_FAST( pMemHashMap->latestVersion, psonHashTxItem );
    pNode = GET_PTR_FAST( pHashItemLatest->dataOffset, 
@@ -984,6 +1049,7 @@ void psoaFastMapResetReader( void * map )
       }
       pHashMap->object.pMyMemObject = pMapLatest;
    }
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -1005,6 +1071,9 @@ int psoaFastMapRetrieve( psoaFastMap    * pHashMap,
    PSO_PRE_CONDITION( pLength  != NULL );
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_PRE_CONDITION( pHashMap->object.type == PSOA_MAP );
+
+   pHashMap->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
 
    if ( pHashMap->object.pSession->terminated ) {
       errcode = PSO_SESSION_IS_TERMINATED;
@@ -1036,6 +1105,7 @@ int psoaFastMapRetrieve( psoaFastMap    * pHashMap,
    GET_PTR( *pData, pHashItem->dataOffset, void );
    *pLength = pHashItem->dataLength;
 
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return PSO_OK;
 
 error_handler:
@@ -1048,6 +1118,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
    return errcode;
 }
 
