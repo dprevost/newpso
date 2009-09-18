@@ -49,6 +49,9 @@ int psoFolderClose( PSO_HANDLE objectHandle )
       return PSO_WRONG_TYPE_HANDLE;
    }
    
+   pFolder->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+
    if ( ! pFolder->object.pSession->terminated ) {
 
      pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
@@ -88,6 +91,7 @@ int psoFolderClose( PSO_HANDLE objectHandle )
          g_psoErrorHandle, errcode );
    }
    
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return errcode;
 }
 
@@ -121,6 +125,9 @@ int psoFolderCreateFolder( PSO_HANDLE   objectHandle,
       return PSO_INVALID_LENGTH;
    }
    
+   pFolder->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+
    if ( ! pSession->terminated ) {
       pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
 
@@ -142,6 +149,7 @@ int psoFolderCreateFolder( PSO_HANDLE   objectHandle,
       errcode = psocGetLastError( &pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return errcode;
 }
 
@@ -201,6 +209,9 @@ int psoFolderCreateQueue( PSO_HANDLE            objectHandle,
    }
    pMemDataDefinition = pDataDefinition->pMemDefinition;
 
+   pFolder->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+
    if ( ! pSession->terminated ) {
       pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
 
@@ -225,6 +236,7 @@ int psoFolderCreateQueue( PSO_HANDLE            objectHandle,
       errcode = psocGetLastError( &pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return errcode;
 }
 
@@ -297,6 +309,9 @@ int psoFolderCreateMap( PSO_HANDLE            objectHandle,
    }
    pMemDataDefinition = pDataDefinition->pMemDefinition;
 
+   pFolder->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+
    if ( ! pSession->terminated ) {
       pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
 
@@ -321,6 +336,7 @@ int psoFolderCreateMap( PSO_HANDLE            objectHandle,
       errcode = psocGetLastError( &pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return errcode;
 }
 
@@ -354,6 +370,9 @@ int psoFolderDestroyObject( PSO_HANDLE   objectHandle,
       return PSO_INVALID_LENGTH;
    }
    
+   pFolder->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+
    if ( ! pSession->terminated ) {
       pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
 
@@ -375,6 +394,7 @@ int psoFolderDestroyObject( PSO_HANDLE   objectHandle,
       errcode = psocGetLastError( &pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return errcode;
 }
     
@@ -423,6 +443,9 @@ int psoFolderGetDataDefinition( PSO_HANDLE   objectHandle,
       return PSO_NOT_ENOUGH_HEAP_MEMORY;
    }
 
+   pFolder->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+
    if ( ! pSession->terminated ) {
       pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
 
@@ -458,6 +481,7 @@ int psoFolderGetDataDefinition( PSO_HANDLE   objectHandle,
       if ( pDataDefinition ) free(pDataDefinition);
    }
    
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return errcode;
 }   
 
@@ -499,6 +523,9 @@ int psoFolderGetDefinition( PSO_HANDLE            objectHandle,
       return PSO_NULL_POINTER;
    }
    
+   pFolder->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+
    if ( ! pSession->terminated ) {
       pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
 
@@ -522,6 +549,7 @@ int psoFolderGetDefinition( PSO_HANDLE            objectHandle,
       errcode = psocGetLastError( &pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return errcode;
 }   
 
@@ -555,6 +583,9 @@ int psoFolderGetFirst( PSO_HANDLE       objectHandle,
    
    pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
 
+   pFolder->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+
    /* Reinitialize the iterator, if needed */
    if ( pFolder->iterator.pHashItem != NULL ) {
       ok = psonFolderRelease( pMemFolder,
@@ -585,6 +616,7 @@ int psoFolderGetFirst( PSO_HANDLE       objectHandle,
            pFolder->iterator.pHashItem->key,
            pFolder->iterator.pHashItem->keyLength );
 
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return PSO_OK;
 
 error_handler:
@@ -596,6 +628,7 @@ error_handler:
       errcode = psocGetLastError( &pFolder->object.pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return errcode;
 }
 
@@ -644,6 +677,9 @@ int psoFolderGetKeyDefinition( PSO_HANDLE   objectHandle,
       return PSO_NOT_ENOUGH_HEAP_MEMORY;
    }
 
+   pFolder->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+
    if ( ! pSession->terminated ) {
       pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
 
@@ -679,6 +715,7 @@ int psoFolderGetKeyDefinition( PSO_HANDLE   objectHandle,
       if ( pKeyDefinition) free(pKeyDefinition);
    }
    
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return errcode;
 }   
 
@@ -700,6 +737,9 @@ int psoFolderGetNext( PSO_HANDLE       objectHandle,
       return PSO_WRONG_TYPE_HANDLE;
    }
    
+   pFolder->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+
    if ( pEntry == NULL ) {
       errcode = PSO_NULL_POINTER;
       goto error_handler;
@@ -733,6 +773,7 @@ int psoFolderGetNext( PSO_HANDLE       objectHandle,
            pFolder->iterator.pHashItem->key,
            pFolder->iterator.pHashItem->keyLength );
 
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return PSO_OK;
 
 error_handler:
@@ -744,6 +785,7 @@ error_handler:
       errcode = psocGetLastError( &pFolder->object.pSession->context.errorHandler );
    }
    
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return errcode;
 }
 
@@ -788,6 +830,9 @@ int psoFolderOpen( PSO_HANDLE   sessionHandle,
    pFolder->object.type = PSOA_FOLDER;
    pFolder->object.pSession = pSession;
 
+   pFolder->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+
    if ( ! pFolder->object.pSession->terminated ) {
 
       errcode = psoaCommonObjOpen( &pFolder->object,
@@ -801,6 +846,7 @@ int psoFolderOpen( PSO_HANDLE   sessionHandle,
       errcode = PSO_SESSION_IS_TERMINATED;
    }
    
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return errcode;
 }
 
@@ -828,6 +874,9 @@ int psoFolderStatus( PSO_HANDLE     objectHandle,
       return PSO_NULL_POINTER;
    }
    
+   pFolder->object.pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+
    if ( ! pFolder->object.pSession->terminated ) {
 
       pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
@@ -853,6 +902,7 @@ int psoFolderStatus( PSO_HANDLE     objectHandle,
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
+   PSO_TRACE_EXIT( &pFolder->object.pSession->context );
    return errcode;
 }
 
