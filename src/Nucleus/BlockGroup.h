@@ -144,7 +144,7 @@ void psonEndBlockSet( ptrdiff_t            firstBlockOffset,
    endBlock->isInLimbo = limboStatus;
    endBlock->lastBlock = lastBlock;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

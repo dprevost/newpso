@@ -56,7 +56,7 @@ bool psonFastMapCopy( psonFastMap        * pOldMap,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
@@ -70,7 +70,7 @@ bool psonFastMapCopy( psonFastMap        * pOldMap,
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, 
                     errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
@@ -80,14 +80,14 @@ bool psonFastMapCopy( psonFastMap        * pOldMap,
    errcode = psonHashCopy( &pOldMap->hashObj, &pNewMap->hashObj, pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    pNewMap->latestVersion = pOldMap->latestVersion;
    pOldMap->editVersion = SET_OFFSET( pNewHashItem );
    pNewMap->editVersion = SET_OFFSET( pNewHashItem );
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -113,7 +113,7 @@ bool psonFastMapDelete( psonFastMap        * pHashMap,
                                pContext );
    if ( ! found ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NO_SUCH_ITEM );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
@@ -127,7 +127,7 @@ bool psonFastMapDelete( psonFastMap        * pHashMap,
       psonHashResize( &pHashMap->hashObj, pContext );
    }
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -192,7 +192,7 @@ void psonFastMapEmpty( psonFastMap        * pHashMap,
    if ( pHashMap->hashObj.enumResize != PSON_HASH_NO_RESIZE ) {
       psonHashResize( &pHashMap->hashObj, pContext );
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -213,7 +213,7 @@ void psonFastMapFini( psonFastMap        * pHashMap,
     */
    psonMemObjectFini(  &pHashMap->memObject, PSON_ALLOC_API_OBJ, pContext );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -277,7 +277,7 @@ bool psonFastMapGet( psonFastMap        * pHashMap,
    txHashMapStatus->usageCounter++;
    *ppHashItem = pHashItem;
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 
 the_exit:
@@ -290,7 +290,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -320,7 +320,7 @@ bool psonFastMapGetFirst( psonFastMap        * pHashMap,
       txHashMapStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_IS_DELETED );
 
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -329,7 +329,7 @@ bool psonFastMapGetFirst( psonFastMap        * pHashMap,
                              pContext );
    if ( ! found ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_IS_EMPTY );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -341,20 +341,20 @@ bool psonFastMapGetFirst( psonFastMap        * pHashMap,
    if ( bufferLength < pHashItem->dataLength ) {
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, PSO_INVALID_LENGTH );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    if ( keyLength < pHashItem->keyLength ) {
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, PSO_INVALID_LENGTH );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
    txHashMapStatus->usageCounter++;
    pItem->pHashItem = pHashItem;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
    
@@ -385,7 +385,7 @@ bool psonFastMapGetNext( psonFastMap        * pHashMap,
    if ( txHashMapStatus->status & PSON_TXS_DESTROYED || 
       txHashMapStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_IS_DELETED );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -405,7 +405,7 @@ bool psonFastMapGetNext( psonFastMap        * pHashMap,
       pItem->pHashItem = NULL;
       psonFastMapReleaseNoLock( pHashMap, previousHashItem, pContext );
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_REACHED_THE_END );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -422,7 +422,7 @@ bool psonFastMapGetNext( psonFastMap        * pHashMap,
    if ( keyLength < pHashItem->keyLength ) {
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, PSO_INVALID_LENGTH );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
@@ -430,7 +430,7 @@ bool psonFastMapGetNext( psonFastMap        * pHashMap,
    pItem->pHashItem = pHashItem;
    psonFastMapReleaseNoLock( pHashMap, previousHashItem, pContext );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -469,7 +469,7 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
@@ -483,7 +483,7 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -492,7 +492,7 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
    pHashMap->latestVersion = hashItemOffset;
    pHashMap->editVersion   = PSON_NULL_OFFSET;
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -526,17 +526,17 @@ bool psonFastMapInsert( psonFastMap        * pHashMap,
                              pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonFastMapRelease( psonFastMap        * pHashMap,
+void psonFastMapRelease( psonFastMap        * pHashMap,
                          psonHashItem       * pHashItem,
                          psonSessionContext * pContext )
 {
@@ -549,8 +549,7 @@ bool psonFastMapRelease( psonFastMap        * pHashMap,
    psonFastMapReleaseNoLock( pHashMap,
                              pHashItem,
                              pContext );
-   PSO_TRACE_EXIT( pContext );
-   return true;
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -595,7 +594,7 @@ void psonFastMapReleaseNoLock( psonFastMap        * pHashMap,
          psonHashResize( &pHashMap->hashObj, pContext );
       }
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -628,11 +627,11 @@ bool psonFastMapReplace( psonFastMap        * pHashMap,
                              pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -661,7 +660,7 @@ void psonFastMapStatus( psonFastMap        * pHashMap,
    pStatus->maxDataLength = 0;
    pStatus->maxKeyLength  = 0;
    if ( pStatus->numDataItem == 0 ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return;
    }
    
@@ -679,7 +678,7 @@ void psonFastMapStatus( psonFastMap        * pHashMap,
                                &pHashItem,
                                pContext );
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

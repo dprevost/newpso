@@ -49,8 +49,11 @@ bool psonTopFolderCloseObject( psonFolderItem     * pFolderItem,
    GET_PTR( pChildNode, pFolderItem->pHashItem->dataOffset, psonTreeNode );
    
    /* Special case, the top folder */
-   if ( pChildNode->myParentOffset == PSON_NULL_OFFSET ) return true;
-
+   if ( pChildNode->myParentOffset == PSON_NULL_OFFSET ) {
+      PSO_TRACE_EXIT( pContext, true );
+      return true;
+   }
+   
    GET_PTR( parentFolder, pChildNode->myParentOffset, psonFolder );
    GET_PTR( parentNode, parentFolder->nodeOffset, psonTreeNode );
    GET_PTR( txFolderStatus, parentNode->txStatusOffset, psonTxStatus );
@@ -78,13 +81,13 @@ bool psonTopFolderCloseObject( psonFolderItem     * pFolderItem,
       }
       psonUnlock( &parentFolder->memObject, pContext );
 
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return true;
    }
    
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_ENGINE_BUSY );
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -152,7 +155,7 @@ bool psonTopFolderCreateFolder( psonFolder          * pFolder,
       goto error_handler;
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 
 error_handler:
@@ -165,7 +168,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -239,7 +242,7 @@ bool psonTopFolderCreateObject( psonFolder          * pFolder,
       goto error_handler;
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 
 error_handler:
@@ -252,7 +255,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -314,7 +317,7 @@ bool psonTopFolderDestroyObject( psonFolder         * pFolder,
       goto error_handler;
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 
 error_handler:
@@ -327,7 +330,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -404,7 +407,7 @@ bool psonTopFolderEditObject( psonFolder         * pFolder,
       }
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 
 error_handler:
@@ -417,7 +420,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -502,7 +505,7 @@ bool psonTopFolderGetDef( psonFolder          * pFolder,
       }
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 
 error_handler:
@@ -515,7 +518,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -588,7 +591,7 @@ bool psonTopFolderGetDefLength( psonFolder          * pFolder,
       }
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 
 error_handler:
@@ -601,7 +604,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -680,7 +683,7 @@ bool psonTopFolderGetStatus( psonFolder         * pFolder,
       }
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 
 error_handler:
@@ -693,7 +696,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -770,7 +773,7 @@ bool psonTopFolderOpenObject( psonFolder         * pFolder,
       }
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 
 error_handler:
@@ -783,7 +786,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 

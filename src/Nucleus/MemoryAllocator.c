@@ -200,7 +200,7 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
                                 neededBlocks,
                                 pContext );
    if ( errcode != PSO_OK ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return errcode;
    }
    
@@ -248,7 +248,7 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
    
    psonEndBlockSet( SET_OFFSET(pNode), pNode->numBuffers, false, true, pContext );
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return PSO_OK;
 }
 
@@ -292,7 +292,7 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc       * pAlloc,
    numBlocks = ((psonFreeBufferNode*)oldNode)->numBuffers;
    if ( numBlocks == requestedBlocks ) {
       /* Special case - perfect match */
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return (void*) oldNode;
    }
    if ( numBlocks > requestedBlocks ) {
@@ -314,7 +314,7 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc       * pAlloc,
       numBlocks = ((psonFreeBufferNode*)currentNode)->numBuffers;
       if ( numBlocks == requestedBlocks ) {
          /* Special case - perfect match */
-         PSO_TRACE_EXIT( pContext );
+         PSO_TRACE_EXIT( pContext, true );
          return (void*) currentNode;
       }
       if ( numBlocks > requestedBlocks ) {
@@ -340,7 +340,7 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc       * pAlloc,
       oldNode = currentNode;
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return (psonFreeBufferNode*) bestNode;
    
  error_exit:
@@ -354,7 +354,7 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc       * pAlloc,
                  g_psoErrorHandle,
                  PSO_NOT_ENOUGH_PSO_MEMORY );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return NULL;
 }
                    
@@ -388,7 +388,7 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
    if ( ! ok ) {
 //BUG?      psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
 // engine busy vs not enough memory ... not the same thing!!!
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return NULL;
    }
    
@@ -445,7 +445,7 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
    }
    psocReleaseProcessLock( &pAlloc->memObj.lock );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return (unsigned char *)pNode;
 }
 
@@ -494,7 +494,7 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
       pFreeHeader->identifier = PSON_IDENT_LIMBO;
       endBlock->isInLimbo = true;
 
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return;
    }
 
@@ -639,7 +639,7 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
    
    psonUnlock( &pAlloc->memObj, pContext );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return;
 }
   
@@ -657,7 +657,7 @@ void psonMemAllocClose( psonMemAlloc       * pAlloc,
    pAlloc->numFreeCalls     = 0;
    pAlloc->totalLength      = 0;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -754,12 +754,12 @@ bool psonMemAllocStats( psonMemAlloc       * pAlloc,
       
       psonUnlock( &pAlloc->memObj, pContext );
 
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return true;
    }
 
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_ENGINE_BUSY );
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 

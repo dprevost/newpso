@@ -67,7 +67,7 @@ void psonLinkedListFini( psonLinkedList     * pList,
    pList->currentSize    = 0;
    pList->initialized    = 0;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -88,7 +88,7 @@ void psonLinkedListInit( psonLinkedList     * pList,
 
    pList->initialized = PSON_LIST_SIGNATURE;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -108,7 +108,7 @@ void psonLinkedListReset( psonLinkedList     * pList,
    pList->head.previousOffset = pList->head.nextOffset = 
       SET_OFFSET( &pList->head );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -140,7 +140,7 @@ bool psonLinkedListIsValid( psonLinkedList     * pList,
       GET_PTR( pItem, pItem->nextOffset, psonLinkNode );
    }
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, valid );
    return valid;
 }
 

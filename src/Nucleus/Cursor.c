@@ -83,7 +83,7 @@ void psonCursorEmpty( psonCursor         * pCursor,
                 sizeof(psonCursorItem),
                 pContext );
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -101,7 +101,7 @@ void psonCursorFini( psonCursor         * pCursor,
    psonLinkedListFini( &pCursor->listOfElements, pContext );
    psonMemObjectFini(  &pCursor->memObject, PSON_ALLOC_API_OBJ, pContext );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -126,7 +126,7 @@ bool psonCursorGetFirst( psonCursor         * pCursor,
       *ppItem = (psonCursorItem*) 
          ((char*)pNode - offsetof( psonCursorItem, node ));
 
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return true;
    }
    
@@ -140,7 +140,7 @@ bool psonCursorGetFirst( psonCursor         * pCursor,
    
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_IS_EMPTY );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -166,7 +166,7 @@ bool psonCursorGetLast( psonCursor         * pCursor,
       *ppItem = (psonCursorItem*) 
          ((char*)pNode - offsetof( psonCursorItem, node ));
 
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return true;
    }
    
@@ -180,7 +180,7 @@ bool psonCursorGetLast( psonCursor         * pCursor,
    
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_IS_EMPTY );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -209,7 +209,7 @@ bool psonCursorGetNext( psonCursor         * pCursor,
       *ppItem = (psonCursorItem*)
          ((char*)pNode - offsetof( psonCursorItem, node ));
       
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return true;
    }
    
@@ -223,7 +223,7 @@ bool psonCursorGetNext( psonCursor         * pCursor,
    
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_REACHED_THE_END );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -252,7 +252,7 @@ bool psonCursorGetPrevious( psonCursor         * pCursor,
       *ppItem = (psonCursorItem*)
          ((char*)pNode - offsetof( psonCursorItem, node ));
       
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return true;
    }
    
@@ -266,7 +266,7 @@ bool psonCursorGetPrevious( psonCursor         * pCursor,
    
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_REACHED_THE_END );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -294,13 +294,13 @@ bool psonCursorInit( psonCursor          * pCursor,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
    psonLinkedListInit( &pCursor->listOfElements, pContext );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -326,7 +326,7 @@ bool psonCursorInsertFirst( psonCursor         * pCursor,
    if ( pCursorItem == NULL ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, 
                     PSO_NOT_ENOUGH_PSO_MEMORY );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -339,7 +339,7 @@ bool psonCursorInsertFirst( psonCursor         * pCursor,
                            &pCursorItem->node,
                            pContext );
       
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -365,7 +365,7 @@ bool psonCursorInsertLast( psonCursor         * pCursor,
    if ( pCursorItem == NULL ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, 
                     PSO_NOT_ENOUGH_PSO_MEMORY );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -378,7 +378,7 @@ bool psonCursorInsertLast( psonCursor         * pCursor,
                           &pCursorItem->node,
                           pContext );
       
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -396,7 +396,7 @@ void psonCursorSize( psonCursor         * pCursor,
 
    *pNumItems = pCursor->listOfElements.currentSize;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

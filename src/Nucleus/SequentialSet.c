@@ -48,7 +48,7 @@ bool psonSeqSetCopy( psonSeqSet         * pOldSet,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
@@ -67,7 +67,7 @@ bool psonSeqSetCopy( psonSeqSet         * pOldSet,
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, 
                     errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
@@ -78,14 +78,14 @@ bool psonSeqSetCopy( psonSeqSet         * pOldSet,
    errcode = psonHashCopy( &pOldSet->hashObj, &pNewSet->hashObj, pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    pNewSet->latestVersion = pOldSet->latestVersion;
    pOldSet->editVersion = SET_OFFSET( pHashItem );
    pNewSet->editVersion = SET_OFFSET( pHashItem );
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -111,7 +111,7 @@ bool psonSeqSetDelete( psonSeqSet         * pSeqSet,
                                pContext );
    if ( ! found ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NO_SUCH_ITEM );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
@@ -125,7 +125,7 @@ bool psonSeqSetDelete( psonSeqSet         * pSeqSet,
       psonHashResize( &pSeqSet->hashObj, pContext );
    }
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -195,7 +195,7 @@ void psonSeqSetEmpty( psonSeqSet         * pSeqSet,
    if ( pSeqSet->hashObj.enumResize != PSON_HASH_NO_RESIZE ) {
       psonHashResize( &pSeqSet->hashObj, pContext );
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -217,7 +217,7 @@ void psonSeqSetFini( psonSeqSet         * pSeqSet,
     */
    psonMemObjectFini(  &pSeqSet->memObject, PSON_ALLOC_API_OBJ, pContext );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -279,7 +279,7 @@ bool psonSeqSetGet( psonSeqSet         * pSeqSet,
    txSeqSetStatus->usageCounter++;
    *ppHashItem = pHashItem;
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 
 the_exit:
@@ -292,7 +292,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -319,7 +319,7 @@ bool psonSeqSetGetFirst( psonSeqSet         * pSeqSet,
    if ( txSeqSetStatus->status & PSON_TXS_DESTROYED || 
       txSeqSetStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_IS_DELETED );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -327,7 +327,7 @@ bool psonSeqSetGetFirst( psonSeqSet         * pSeqSet,
                              &pHashItem );
    if ( ! found ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_IS_EMPTY );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -339,20 +339,20 @@ bool psonSeqSetGetFirst( psonSeqSet         * pSeqSet,
    if ( bufferLength < pHashItem->dataLength ) {
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, PSO_INVALID_LENGTH );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    if ( keyLength < pHashItem->keyLength ) {
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, PSO_INVALID_LENGTH );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
    txSeqSetStatus->usageCounter++;
    pItem->pHashItem = pHashItem;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
    
@@ -381,7 +381,7 @@ bool psonSeqSetGetNext( psonSeqSet         * pSeqSet,
    if ( txSeqSetStatus->status & PSON_TXS_DESTROYED || 
       txSeqSetStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_IS_DELETED );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -400,7 +400,7 @@ bool psonSeqSetGetNext( psonSeqSet         * pSeqSet,
       pItem->pHashItem = NULL;
       psonSeqSetReleaseNoLock( pSeqSet, previousHashItem, pContext );
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_REACHED_THE_END );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -412,13 +412,13 @@ bool psonSeqSetGetNext( psonSeqSet         * pSeqSet,
    if ( bufferLength < pHashItem->dataLength ) {
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, PSO_INVALID_LENGTH );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    if ( keyLength < pHashItem->keyLength ) {
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, PSO_INVALID_LENGTH );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
@@ -426,7 +426,7 @@ bool psonSeqSetGetNext( psonSeqSet         * pSeqSet,
    pItem->pHashItem = pHashItem;
    psonSeqSetReleaseNoLock( pSeqSet, previousHashItem, pContext );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -468,7 +468,7 @@ bool psonSeqSetInit( psonSeqSet          * pSeqSet,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
@@ -487,7 +487,7 @@ bool psonSeqSetInit( psonSeqSet          * pSeqSet,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -497,7 +497,7 @@ bool psonSeqSetInit( psonSeqSet          * pSeqSet,
    pSeqSet->editVersion   = PSON_NULL_OFFSET;
    pSeqSet->flags = pDefinition->flags;
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -532,7 +532,7 @@ bool psonSeqSetInsert( psonSeqSet         * pSeqSet,
                              pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    if ( pDefinition == NULL ) {
@@ -542,7 +542,7 @@ bool psonSeqSetInsert( psonSeqSet         * pSeqSet,
       pHashItem->dataDefOffset = SET_OFFSET(pDefinition);
    }
       
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -581,7 +581,7 @@ void psonSeqSetRelease( psonSeqSet         * pSeqSet,
          psonHashResize( &pSeqSet->hashObj, pContext );
       }
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -615,7 +615,7 @@ bool psonSeqSetReplace( psonSeqSet        * pSeqSet,
                              pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    if ( pDefinition == NULL ) {
@@ -625,7 +625,7 @@ bool psonSeqSetReplace( psonSeqSet        * pSeqSet,
       pHashItem->dataDefOffset = SET_OFFSET(pDefinition);
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -665,7 +665,7 @@ void psonSeqSetStatus( psonSeqSet  * pSeqSet,
                                pHashItem,
                                &pHashItem );
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

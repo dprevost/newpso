@@ -80,7 +80,7 @@ void psonTreeNodeInit( psonTreeNode       * pNode,
    pNode->txStatusOffset = txStatusOffset;
    pNode->myParentOffset = parentOffset;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -99,7 +99,7 @@ void psonTreeNodeFini( psonTreeNode       * pNode,
    pNode->txStatusOffset = PSON_NULL_OFFSET;
    pNode->myParentOffset = PSON_NULL_OFFSET;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

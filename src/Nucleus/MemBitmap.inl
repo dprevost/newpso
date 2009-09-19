@@ -32,18 +32,24 @@ bool psonIsBufferFree( psonMemBitmap      * pBitmap,
    size_t byte, bit;
    size_t inUnitsOfAllocation;
    ptrdiff_t localOffset;
-   
+   bool rc;
+
    PSO_PRE_CONDITION( pBitmap != NULL );
    PSO_PRE_CONDITION( offset  != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER( pContext );
 
    localOffset = offset - pBitmap->baseAddressOffset;
-   if ( localOffset < 0 ) return false;
-
+   if ( localOffset < 0 ) {
+      PSO_TRACE_EXIT( pContext, false );
+      return false;
+   }
+   
    inUnitsOfAllocation = localOffset / pBitmap->allocGranularity;
-   if ( inUnitsOfAllocation >= pBitmap->lengthInBits ) return false;
-
+   if ( inUnitsOfAllocation >= pBitmap->lengthInBits ) {
+      PSO_TRACE_EXIT( pContext, false );
+      return false;
+   }
    byte = inUnitsOfAllocation >> 3; /* Equivalent to divide by  8  */
 
    /*
@@ -52,8 +58,10 @@ bool psonIsBufferFree( psonMemBitmap      * pBitmap,
     */
    bit = 7 - (inUnitsOfAllocation & 7);
 
-   PSO_TRACE_EXIT( pContext );
-   return ( (pBitmap->bitmap[byte] & (unsigned char)(1 << bit)) == 0 );
+   rc = ( (pBitmap->bitmap[byte] & (unsigned char)(1 << bit)) == 0 );
+
+   PSO_TRACE_EXIT( pContext, rc );
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -95,7 +103,7 @@ void psonSetBufferAllocated( psonMemBitmap      * pBitmap,
       }
       bit--;
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -137,7 +145,7 @@ void psonSetBufferFree( psonMemBitmap      * pBitmap,
       }
       bit--;
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -157,7 +165,7 @@ size_t psonGetBitmapLengthBytes( size_t               length,
    /* We "align" it to a multiple of allocationUnit */
    length = ((length - 1) / allocationUnit + 1 ) * allocationUnit;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return ( (length/allocationUnit - 1) >> 3 ) + 1;
 }
 

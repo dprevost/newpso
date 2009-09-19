@@ -131,7 +131,7 @@ bool psonFastMapInsert( psonFastMap        * pHashMap,
                         uint32_t             itemLength,
                         psonSessionContext * pContext );
 
-bool psonFastMapRelease( psonFastMap        * pHashMap,
+void psonFastMapRelease( psonFastMap        * pHashMap,
                          psonHashItem       * pHashItem,
                          psonSessionContext * pContext );
 

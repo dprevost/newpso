@@ -119,10 +119,7 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    bool ok;
    
-   ok = psonFastMapRelease( pHashMap,
-                            pItem,
-                            &context );
-   assert_true( ok );
+   psonFastMapRelease( pHashMap, pItem, &context );
    assert_true( status.usageCounter == 0 );
    
 #endif

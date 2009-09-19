@@ -69,7 +69,7 @@ void psonMemBitmapFini( psonMemBitmap      * pBitmap,
    pBitmap->allocGranularity = 0;
    pBitmap->baseAddressOffset = PSON_NULL_OFFSET;
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -99,7 +99,7 @@ void psonMemBitmapInit( psonMemBitmap      * pBitmap,
    for ( i = 0; i < len; ++i ) {
       pBitmap->bitmap[i] = 0;
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

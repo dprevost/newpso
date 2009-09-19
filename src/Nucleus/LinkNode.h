@@ -94,7 +94,7 @@ void psonLinkNodeInit( psonLinkNode       * pNode,
    pNode->nextOffset     = PSON_NULL_OFFSET;
    pNode->previousOffset = PSON_NULL_OFFSET;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -110,7 +110,7 @@ void psonLinkNodeFini( psonLinkNode       * pNode,
    pNode->nextOffset     = PSON_NULL_OFFSET;
    pNode->previousOffset = PSON_NULL_OFFSET;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -129,10 +129,10 @@ bool psonLinkNodeTest( psonLinkNode       * pNode,
 
    if ( pNode->nextOffset     == PSON_NULL_OFFSET || 
         pNode->previousOffset == PSON_NULL_OFFSET ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 

@@ -34,7 +34,7 @@ bool psonLinkedListGetFirst( psonLinkedList     * pList,
 
    /* Check for empty queue. */
    if ( pList->currentSize == 0 ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -52,7 +52,7 @@ bool psonLinkedListGetFirst( psonLinkedList     * pList,
 
    PSO_POST_CONDITION( *ppItem != NULL );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -72,7 +72,7 @@ bool psonLinkedListGetLast( psonLinkedList     * pList,
 
    /* Check for empty list. */
    if ( pList->currentSize == 0 ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -90,7 +90,7 @@ bool psonLinkedListGetLast( psonLinkedList     * pList,
 
    PSO_POST_CONDITION( *ppItem != NULL );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -127,7 +127,7 @@ psonLinkedListPutLast( psonLinkedList     * pList,
    PSO_POST_CONDITION( pNewItem->previousOffset != PSON_NULL_OFFSET );
    PSO_POST_CONDITION( pNewItem->nextOffset     != PSON_NULL_OFFSET );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -164,7 +164,7 @@ psonLinkedListPutFirst( psonLinkedList     * pList,
    PSO_POST_CONDITION( pNewItem->previousOffset != PSON_NULL_OFFSET );
    PSO_POST_CONDITION( pNewItem->nextOffset     != PSON_NULL_OFFSET );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -192,7 +192,7 @@ psonLinkedListRemoveItem( psonLinkedList     * pList,
 
    --pList->currentSize;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -211,7 +211,7 @@ bool psonLinkedListPeakFirst( psonLinkedList     * pList,
 
    /* Check for empty list. */
    if ( pList->currentSize == 0 ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -219,7 +219,7 @@ bool psonLinkedListPeakFirst( psonLinkedList     * pList,
 
    PSO_POST_CONDITION( *ppItem != NULL );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -239,7 +239,7 @@ bool psonLinkedListPeakLast( psonLinkedList     * pList,
 
    /* Check for empty list. */
    if ( pList->currentSize == 0 ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -247,7 +247,7 @@ bool psonLinkedListPeakLast( psonLinkedList     * pList,
 
    PSO_POST_CONDITION( *ppItem != NULL );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -273,7 +273,7 @@ bool psonLinkedListPeakNext( psonLinkedList     * pList,
 
    pNext = GET_PTR_FAST( pCurrent->nextOffset, psonLinkNode );
    if ( pNext == &pList->head ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -281,7 +281,7 @@ bool psonLinkedListPeakNext( psonLinkedList     * pList,
    
    PSO_POST_CONDITION( *ppNext != NULL );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -307,7 +307,7 @@ bool psonLinkedListPeakPrevious( psonLinkedList     * pList,
 
    pPrevious = GET_PTR_FAST( pCurrent->previousOffset, psonLinkNode );
    if ( pPrevious == &pList->head ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -315,7 +315,7 @@ bool psonLinkedListPeakPrevious( psonLinkedList     * pList,
 
    PSO_POST_CONDITION( *ppPrevious != NULL );
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -356,7 +356,7 @@ psonLinkedListReplaceItem( psonLinkedList     * pList,
    GET_PTR_FAST( pOldItem->previousOffset, psonLinkNode )->nextOffset = 
       tmpOffset;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

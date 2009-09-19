@@ -119,7 +119,7 @@ bool psonLock( psonMemObject      * pMemObj,
       }
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, ok );
    return ok;
 }
 
@@ -139,7 +139,7 @@ void psonLockNoFailure( psonMemObject      * pMemObj,
    
    psocAcquireProcessLock ( &pMemObj->lock, pContext->pidLocker );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -164,7 +164,7 @@ void psonUnlock( psonMemObject      * pMemObj,
    
    psocReleaseProcessLock ( &pMemObj->lock );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -110,7 +110,7 @@ void psonProcessNoMoreSessionAllowed( psonProcess        * process,
       psonUnlock( &process->memObject, pContext );
    }
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

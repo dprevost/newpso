@@ -224,7 +224,7 @@ static bool findKey( psonHash            * pHash,
       if ( keyLength == pItem->keyLength ) {
          if ( memcmp( pKey, pItem->key, keyLength ) == 0 ) {
             *ppItem = pItem;
-            PSO_TRACE_EXIT( pContext );
+            PSO_TRACE_EXIT( pContext, true );
             return true;
          }
       }
@@ -237,7 +237,7 @@ static bool findKey( psonHash            * pHash,
    /* Nothing was found, return false */
    *ppItem = NULL;
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -287,7 +287,7 @@ enum psoErrors psonHashCopy( psonHash           * pOldHash,
                                                    itemLength, 
                                                    pContext );
             if ( pNewItem == NULL ) {
-               PSO_TRACE_EXIT( pContext );
+               PSO_TRACE_EXIT( pContext, false );
                return PSO_NOT_ENOUGH_PSO_MEMORY;
             }
             
@@ -325,7 +325,7 @@ enum psoErrors psonHashCopy( psonHash           * pOldHash,
                                                    itemLength, 
                                                    pContext );
             if ( pNewItem == NULL ) {
-               PSO_TRACE_EXIT( pContext );
+               PSO_TRACE_EXIT( pContext, false );
                return PSO_NOT_ENOUGH_PSO_MEMORY;
             }
             
@@ -365,7 +365,7 @@ enum psoErrors psonHashCopy( psonHash           * pOldHash,
    pNewHash->numberOfItems        = pOldHash->numberOfItems;
    pNewHash->enumResize           = pOldHash->enumResize;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return PSO_OK;
 }
 
@@ -427,11 +427,11 @@ bool psonHashDelWithKey( psonHash            * pHash,
       pHash->numberOfItems--;
       pHash->enumResize = isItTimeToResize( pHash );
 
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return true;
    }
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -550,7 +550,7 @@ void psonHashEmpty( psonHash           * pHash,
    pHash->totalDataSizeInBytes = 0;
    pHash->enumResize = isItTimeToResize( pHash );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -565,7 +565,7 @@ void psonHashFini( psonHash           * pHash,
    
    pHash->initialized = 0;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -598,7 +598,7 @@ bool psonHashGet( psonHash            * pHash,
 
    if ( keyFound ) *ppItem = pItem;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, keyFound );
    return keyFound;
 }
 
@@ -629,7 +629,7 @@ bool psonHashGetFirst( psonHash            * pHash,
 
    if ( pHash->numberOfItems == 0 ) {
       return false;
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
    }
    
    /* 
@@ -641,14 +641,14 @@ bool psonHashGetFirst( psonHash            * pHash,
       
       if (currentOffset != PSON_NULL_OFFSET ) {
          GET_PTR( *ppItem, currentOffset, psonHashItem );
-         PSO_TRACE_EXIT( pContext );
+         PSO_TRACE_EXIT( pContext, true );
          return true;
       }
    }
 
    PSO_POST_CONDITION( SHOULD_NOT_REACHED_THIS == false );
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false; /* Should never occur */
 }
 
@@ -679,7 +679,7 @@ bool psonHashGetNext( psonHash           * pHash,
    if ( previousItem->nextItem != PSON_NULL_OFFSET ) {
       /* We found the next one in the linked list. */
       GET_PTR( *nextItem, previousItem->nextItem, psonHashItem );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return true;
    }
    
@@ -692,12 +692,12 @@ bool psonHashGetNext( psonHash           * pHash,
       
       if (currentOffset != PSON_NULL_OFFSET ) {
          GET_PTR( *nextItem, currentOffset, psonHashItem );
-         PSO_TRACE_EXIT( pContext );
+         PSO_TRACE_EXIT( pContext, true );
          return true;
       }
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -755,11 +755,11 @@ enum psoErrors psonHashInit( psonHash           * pHash,
       pHash->initialized = PSON_HASH_SIGNATURE;
       pHash->memObjOffset = memObjOffset;
    
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return PSO_OK;
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return PSO_NOT_ENOUGH_PSO_MEMORY;
 }
 
@@ -797,8 +797,11 @@ enum psoErrors psonHashInsert( psonHash            * pHash,
    keyFound = findKey( pHash, pArray, pKey, keyLength, 
                        &pItem, &previousItem, &bucket, pContext );
 
-   if ( keyFound ) return PSO_ITEM_ALREADY_PRESENT;
-
+   if ( keyFound ) {
+      PSO_TRACE_EXIT( pContext, false );
+      return PSO_ITEM_ALREADY_PRESENT;
+   }
+   
    GET_PTR( pMemObject, pHash->memObjOffset, psonMemObject );
    
    /* The whole item is allocated in one step, header+data, to minimize */
@@ -806,7 +809,7 @@ enum psoErrors psonHashInsert( psonHash            * pHash,
    itemLength = calculateItemLength( keyLength, dataLength );
    pItem = (psonHashItem*) psonMalloc( pMemObject, itemLength, pContext );
    if ( pItem == NULL ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return PSO_NOT_ENOUGH_PSO_MEMORY;
    }
 
@@ -835,7 +838,7 @@ enum psoErrors psonHashInsert( psonHash            * pHash,
    
    *ppHashItem = pItem;
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return PSO_OK;
 }
 
@@ -861,7 +864,7 @@ enum psoErrors psonHashResize( psonHash           * pHash,
    PSO_INV_CONDITION( pArray != NULL );
 
    if ( pHash->enumResize == PSON_HASH_NO_RESIZE ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return PSO_OK;
    }
    
@@ -887,7 +890,7 @@ enum psoErrors psonHashResize( psonHash           * pHash,
    
    ptr = (ptrdiff_t*) psonMalloc( pMemObject, len, pContext );
    if ( ptr == NULL ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return PSO_NOT_ENOUGH_PSO_MEMORY;
    }
    
@@ -936,7 +939,7 @@ enum psoErrors psonHashResize( psonHash           * pHash,
    
    pHash->enumResize = PSON_HASH_NO_RESIZE;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return PSO_OK;   
 }
 
@@ -981,7 +984,7 @@ psonHashUpdate( psonHash            * pHash,
                        &pOldItem, &previousItem, &bucket, pContext );
 
    if ( ! keyFound ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return PSO_NO_SUCH_ITEM;
    }
    
@@ -1006,7 +1009,7 @@ psonHashUpdate( psonHash            * pHash,
                                              newItemLength,
                                              pContext );
       if ( pNewItem == NULL ) {
-         PSO_TRACE_EXIT( pContext );
+         PSO_TRACE_EXIT( pContext, false );
          return PSO_NOT_ENOUGH_PSO_MEMORY;
       }
       
@@ -1035,7 +1038,7 @@ psonHashUpdate( psonHash            * pHash,
       psonFree( pMemObject, (unsigned char*)pOldItem, oldItemLength, pContext );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return PSO_OK;
 }
 

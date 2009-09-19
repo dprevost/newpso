@@ -79,7 +79,7 @@ int psoHashMapClose( PSO_HANDLE objectHandle )
    pHashMap->object.type = 0; 
    free( pHashMap );
 
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -91,7 +91,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, false );
    return errcode;
 }
 
@@ -158,7 +158,7 @@ int psoHashMapDefinition( PSO_HANDLE   objectHandle,
             psonKeyDefinition );
    *keyDefHandle = (PSO_HANDLE) pKeyDefinition;
 
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -173,7 +173,7 @@ error_handler:
    if ( pDataDefinition ) free(pDataDefinition);
    if ( pKeyDefinition)   free(pKeyDefinition);
    
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, false );
    return errcode;
 }
 
@@ -225,7 +225,7 @@ int psoHashMapDelete( PSO_HANDLE   objectHandle,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -237,7 +237,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, false );
    return errcode;
 }
 
@@ -306,7 +306,7 @@ int psoHashMapGet( PSO_HANDLE   objectHandle,
    GET_PTR( ptr, pHashMap->iterator.pHashItem->dataOffset, void );
    memcpy( buffer, ptr, *returnedLength );
 
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -318,7 +318,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, false );
    return errcode;
 }
 
@@ -390,7 +390,7 @@ int psoHashMapGetFirst( PSO_HANDLE   objectHandle,
    *retKeyLength = pHashMap->iterator.pHashItem->keyLength;
    memcpy( key, pHashMap->iterator.pHashItem->key, *retKeyLength );
 
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -402,7 +402,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, false );
    return errcode;
 }
 
@@ -468,7 +468,7 @@ int psoHashMapGetNext( PSO_HANDLE   objectHandle,
    *retKeyLength = pHashMap->iterator.pHashItem->keyLength;
    memcpy( key, pHashMap->iterator.pHashItem->key, *retKeyLength );
 
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -480,7 +480,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, false );
    return errcode;
 }
 
@@ -539,7 +539,7 @@ int psoHashMapInsert( PSO_HANDLE   objectHandle,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -551,7 +551,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, false );
    return errcode;
 }
 
@@ -574,8 +574,8 @@ int psoHashMapOpen( PSO_HANDLE   sessionHandle,
    
    if ( pSession->type != PSOA_SESSION ) return PSO_WRONG_TYPE_HANDLE;
 
-   pHashMap->object.pSession->context.indent = 0;
-   PSO_TRACE_ENTER( &pHashMap->object.pSession->context );
+   pSession->context.indent = 0;
+   PSO_TRACE_ENTER( &pSession->context );
 
    if ( hashMapName == NULL ) {
       errcode = PSO_INVALID_OBJECT_NAME;
@@ -603,15 +603,15 @@ int psoHashMapOpen( PSO_HANDLE   sessionHandle,
    }
 
    errcode = psoaCommonObjOpen( &pHashMap->object,
-                                   PSO_HASH_MAP,
-                                   PSOA_READ_WRITE,
-                                   hashMapName,
-                                   nameLengthInBytes );
+                                PSO_HASH_MAP,
+                                PSOA_READ_WRITE,
+                                hashMapName,
+                                nameLengthInBytes );
    if ( errcode != PSO_OK ) goto error_handler;
 
    *objectHandle = (PSO_HANDLE) pHashMap;
 
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -620,7 +620,7 @@ error_handler:
    psocSetError( &pHashMap->object.pSession->context.errorHandler, 
                  g_psoErrorHandle, errcode );
 
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pSession->context, false );
    return errcode;
 }
 
@@ -674,7 +674,7 @@ int psoHashMapReplace( PSO_HANDLE   objectHandle,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -686,7 +686,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, false );
    return errcode;
 }
 
@@ -735,7 +735,7 @@ int psoHashMapStatus( PSO_HANDLE     objectHandle,
       goto error_handler;
    }
    
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -743,7 +743,7 @@ error_handler:
    psocSetError( &pHashMap->object.pSession->context.errorHandler, 
                  g_psoErrorHandle, errcode );
 
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, false );
    return errcode;
 }
 
@@ -805,7 +805,7 @@ int psoaHashMapFirst( psoaHashMap    * pHashMap,
    *pKeyLength = pHashMap->iterator.pHashItem->keyLength;
    *pKey = pHashMap->iterator.pHashItem->key;
    
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, true );
    return 0;
 
 error_handler:
@@ -817,7 +817,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, false );
    return errcode;
 }
 
@@ -864,7 +864,7 @@ int psoaHashMapNext( psoaHashMap    * pHashMap,
    *pKeyLength = pHashMap->iterator.pHashItem->keyLength;
    *pKey = pHashMap->iterator.pHashItem->key;
 
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -876,7 +876,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, false );
    return errcode;
 }
 
@@ -933,7 +933,7 @@ int psoaHashMapRetrieve( psoaHashMap    * pHashMap,
    GET_PTR( *pData, pHashItem->dataOffset, void );
    *pLength = pHashItem->dataLength;
 
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, true );
    return 0;
 
 error_handler:
@@ -945,7 +945,7 @@ error_handler:
       errcode = psocGetLastError( &pHashMap->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pHashMap->object.pSession->context );
+   PSO_TRACE_EXIT( &pHashMap->object.pSession->context, false );
    return errcode;
 }
 

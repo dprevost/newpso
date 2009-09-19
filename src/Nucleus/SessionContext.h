@@ -107,7 +107,7 @@ void psonSessionAddLock( psonSessionContext * pContext,
    pContext->lockOffsets[*pContext->numLocks] = memObjectOffset;
    (*pContext->numLocks)++;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -139,7 +139,7 @@ void psonSessionRemoveLock( psonSessionContext * pContext,
    
    /* Will fail if pMemObject was not in the array */
    PSO_POST_CONDITION( n == (*pContext->numLocks + 1) );
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

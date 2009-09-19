@@ -82,7 +82,7 @@ void psonBlockGroupFini( psonBlockGroup     * pGroup,
    pGroup->freeBytes = 0;
    pGroup->objType = PSON_IDENT_CLEAR;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -172,7 +172,7 @@ void psonBlockGroupInit( psonBlockGroup     * pGroup,
                            psonEndBlockOffset(firstBlockOffset, numBlocks), 
                            PSON_ALLOCATION_UNIT,
                            pContext );
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

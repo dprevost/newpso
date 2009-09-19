@@ -74,7 +74,7 @@ bool psonSessionAddObj( psonSession        * pSession,
                     PSO_ENGINE_BUSY );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, ok );
    return ok;
 }
 
@@ -109,11 +109,11 @@ bool psonSessionCloseCursor( psonSession        * pSession,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     PSO_ENGINE_BUSY );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -197,7 +197,7 @@ void psonSessionFini( psonSession        * pSession,
    /* This will remove the blocks of allocated memory */
    psonMemObjectFini(  &pSession->memObject, PSON_ALLOC_ANY, pContext );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -223,7 +223,7 @@ bool psonSessionGetFirst( psonSession        * pSession,
          ((char*)pNode - offsetof( psonObjectContext, node ));
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, ok );
    return ok;
 }
 
@@ -283,7 +283,7 @@ bool psonSessionInit( psonSession        * pSession,
       }
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, rc );
    return rc;
 }
 
@@ -356,7 +356,7 @@ bool psonSessionOpenCursor( psonSession        * pSession,
                     PSO_ENGINE_BUSY );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, ok );
    return ok;
 }
 
@@ -381,11 +381,11 @@ bool psonSessionRemoveFirst( psonSession        * pSession,
                 (unsigned char *)pObject, 
                 sizeof(psonObjectContext),
                 pContext );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return true;
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -416,11 +416,11 @@ bool psonSessionRemoveObj( psonSession        * pSession,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     PSO_ENGINE_BUSY );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 

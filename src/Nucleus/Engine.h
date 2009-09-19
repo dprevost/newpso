@@ -219,15 +219,20 @@ if ( (CONTEXT)->traceFlags & PSO_TRACE_FUNCTION ) {\
    DO_INDENT( (CONTEXT)->indent );\
    fprintf( stderr, "Entering function %s()\n", __func__ );\
 }
-#  define PSO_TRACE_EXIT(CONTEXT) \
+#  define PSO_TRACE_EXIT(CONTEXT,OK) \
 if ( (CONTEXT)->traceFlags & PSO_TRACE_FUNCTION ) {\
    DO_INDENT( (CONTEXT)->indent );\
-   fprintf( stderr, "Exiting  function %s()\n", __func__ );\
+   if ( OK ) {\
+      fprintf( stderr, "Exiting  function %s()\n", __func__ );\
+   }\
+   else {\
+      fprintf( stderr, "Exiting function %s() on error\n", __func__ );\
+   }\
    (CONTEXT)->indent -= 2;\
 }
 #else
 #  define PSO_TRACE_ENTER(CONTEXT)
-#  define PSO_TRACE_EXIT(CONTEXT)
+#  define PSO_TRACE_EXIT(CONTEXT,OK)
 #endif
 
 

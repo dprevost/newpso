@@ -54,7 +54,7 @@ void psonQueueCommitAdd( psonQueue          * pQueue,
    psonTxStatusClearTx( &pQueueItem->txStatus, pContext );
    pQueueNode->txCounter--;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -96,7 +96,7 @@ void psonQueueCommitRemove( psonQueue          * pQueue,
    else {
       psonTxStatusCommitRemove( &pQueueItem->txStatus, pContext );
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -157,7 +157,7 @@ void psonQueueFini( psonQueue          * pQueue,
    psonLinkedListFini( &pQueue->listOfElements, pContext );
    psonMemObjectFini(  &pQueue->memObject, PSON_ALLOC_API_OBJ, pContext );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -251,7 +251,7 @@ bool psonQueueGetFirst( psonQueue          * pQueue,
             
             psonUnlock( &pQueue->memObject, pContext );
 
-            PSO_TRACE_EXIT( pContext );
+            PSO_TRACE_EXIT( pContext, true );
             return true;
          }
          okList =  psonLinkedListPeakNext( &pQueue->listOfElements, 
@@ -262,7 +262,7 @@ bool psonQueueGetFirst( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -282,7 +282,7 @@ bool psonQueueGetFirst( psonQueue          * pQueue,
    psonUnlock( &pQueue->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -372,7 +372,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
                psocSetError( &pContext->errorHandler,
                              g_psoErrorHandle,
                              PSO_INVALID_LENGTH );
-               PSO_TRACE_EXIT( pContext );
+               PSO_TRACE_EXIT( pContext, false );
                return false;
             }
 
@@ -384,7 +384,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
             
             psonUnlock( &pQueue->memObject, pContext );
 
-            PSO_TRACE_EXIT( pContext );
+            PSO_TRACE_EXIT( pContext, true );
             return true;
          }
          okList =  psonLinkedListPeakNext( &pQueue->listOfElements, 
@@ -395,7 +395,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
@@ -416,7 +416,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
    psonUnlock( &pQueue->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -450,7 +450,7 @@ bool psonQueueInit( psonQueue           * pQueue,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
@@ -460,7 +460,7 @@ bool psonQueueInit( psonQueue           * pQueue,
 
    pQueue->dataDefOffset = SET_OFFSET(pDataDefinition);
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -550,11 +550,11 @@ bool psonQueueInsert( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 
 the_exit:
@@ -568,7 +568,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
     
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -637,11 +637,11 @@ bool psonQueueInsertNow( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 
 the_exit:
@@ -655,7 +655,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
     
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -680,11 +680,11 @@ bool psonQueueRelease( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
    return true;
 }
 
@@ -733,7 +733,7 @@ void psonQueueReleaseNoLock( psonQueue          * pQueue,
 
       pQueueNode->txCounter--;
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -828,7 +828,7 @@ bool psonQueueRemove( psonQueue          * pQueue,
 
             psonUnlock( &pQueue->memObject, pContext );
 
-            PSO_TRACE_EXIT( pContext );
+            PSO_TRACE_EXIT( pContext, true );
             return true;
          }
          /* We test the type of flag to return the proper error code (if needed) */
@@ -852,7 +852,7 @@ bool psonQueueRemove( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, false );
       return false;
    }
 
@@ -868,7 +868,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, false );
    return false;
 }
 
@@ -915,7 +915,7 @@ void psonQueueRollbackAdd( psonQueue          * pQueue,
    else {
       psonTxStatusCommitRemove( txStatus, pContext );
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -943,7 +943,7 @@ void psonQueueRollbackRemove( psonQueue          * pQueue,
 
    pQueueNode->txCounter--;
 
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -971,7 +971,7 @@ void psonQueueStatus( psonQueue          * pQueue,
    pStatus->maxDataLength = 0;
    pStatus->maxKeyLength  = 0;
    if ( pStatus->numDataItem == 0 ) {
-      PSO_TRACE_EXIT( pContext );
+      PSO_TRACE_EXIT( pContext, true );
       return;
    }
    
@@ -992,7 +992,7 @@ void psonQueueStatus( psonQueue          * pQueue,
                                         &pNode,
                                         pContext );
    }
-   PSO_TRACE_EXIT( pContext );
+   PSO_TRACE_EXIT( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
