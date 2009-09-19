@@ -23,29 +23,31 @@
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonLinkedListDump( psonLinkedList * pList, int indent )
+void psonLinkedListDump( psonLinkedList     * pList,
+                         int                  indent,
+                         psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonLinkedList (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonLinkedList (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pList, SET_OFFSET(pList) );
    if ( pList == NULL ) return;
    
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Current size of the list: "PSO_SIZE_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Current size of the list: "PSO_SIZE_T_FORMAT"\n",
       pList->currentSize );
 
    if ( pList->initialized == PSON_LIST_SIGNATURE ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Signature is ok.\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Signature is ok.\n" );
    }
    else {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Signature is wrong - value is %d, exepted: %d\n",
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Signature is wrong - value is %d, exepted: %d\n",
          pList->initialized, PSON_LIST_SIGNATURE );
    }
 
-   DO_INDENT( indent );
-   fprintf( stderr, "psonLinkedList END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonLinkedList END\n" );
 }
 #endif
 
@@ -59,7 +61,7 @@ void psonLinkedListFini( psonLinkedList     * pList,
    PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    /* We reset the node element to PSON_NULL_OFFSET. */
    psonLinkNodeInit( &pList->head, pContext );
@@ -67,7 +69,7 @@ void psonLinkedListFini( psonLinkedList     * pList,
    pList->currentSize    = 0;
    pList->initialized    = 0;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -77,7 +79,7 @@ void psonLinkedListInit( psonLinkedList     * pList,
 {
    PSO_PRE_CONDITION( pList != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    psonLinkNodeInit( &pList->head, pContext );
    pList->currentSize = 0;
@@ -88,7 +90,7 @@ void psonLinkedListInit( psonLinkedList     * pList,
 
    pList->initialized = PSON_LIST_SIGNATURE;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -100,7 +102,7 @@ void psonLinkedListReset( psonLinkedList     * pList,
    PSO_PRE_CONDITION( pContext != NULL );
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    pList->currentSize = 0;
 
@@ -108,7 +110,7 @@ void psonLinkedListReset( psonLinkedList     * pList,
    pList->head.previousOffset = pList->head.nextOffset = 
       SET_OFFSET( &pList->head );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -126,7 +128,7 @@ bool psonLinkedListIsValid( psonLinkedList     * pList,
    /* Test to see if the list is initialized */
    PSO_INV_CONDITION( pList->initialized == PSON_LIST_SIGNATURE );
    PSO_PRE_CONDITION( pUnknown   != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    pItem = &pList->head;
    
@@ -140,7 +142,7 @@ bool psonLinkedListIsValid( psonLinkedList     * pList,
       GET_PTR( pItem, pItem->nextOffset, psonLinkNode );
    }
 
-   PSO_TRACE_EXIT( pContext, valid );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, valid );
    return valid;
 }
 

@@ -71,7 +71,9 @@ bool psonProcessAddSession( psonProcess        * process,
                             psonSessionContext * pContext );
 
 #if defined(PSO_USE_TRACE)
-void psonProcessDump( psonProcess * process, int indent );
+void psonProcessDump( psonProcess        * process,
+                      int                  indent,
+                      psonSessionContext * pContext );
 #endif
 
 void psonProcessFini( psonProcess        * process,
@@ -103,14 +105,14 @@ void psonProcessNoMoreSessionAllowed( psonProcess        * process,
 {
    PSO_PRE_CONDITION( process  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    if ( psonLock( &process->memObject, pContext ) ) {
       process->processIsTerminating = true;
       psonUnlock( &process->memObject, pContext );
    }
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

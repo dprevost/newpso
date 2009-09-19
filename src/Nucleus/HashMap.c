@@ -45,7 +45,7 @@ void psonHashMapCommitAdd( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pHashItem, itemOffset, psonHashTxItem );
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
@@ -73,7 +73,7 @@ void psonHashMapCommitAdd( psonHashMap        * pHashMap,
          psonHashTxResize( &pHashMap->hashObj, pContext );
       }
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -90,7 +90,7 @@ void psonHashMapCommitRemove( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( pHashItem, itemOffset, psonHashTxItem );
@@ -129,7 +129,7 @@ void psonHashMapCommitRemove( psonHashMap        * pHashMap,
    else {
       txItemStatus->status = PSON_TXS_DESTROYED_COMMITTED;
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -151,7 +151,7 @@ bool psonHashMapDelete( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -215,11 +215,11 @@ bool psonHashMapDelete( psonHashMap        * pHashMap,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
    
 the_exit:
@@ -230,48 +230,50 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonHashMapDump( psonHashMap * pHashMap, int indent )
+void psonHashMapDump( psonHashMap        * pHashMap,
+                      int                  indent,
+                      psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonHashMap (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonHashMap (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pHashMap, SET_OFFSET(pHashMap) );
    if ( pHashMap == NULL ) return;
 
-   psonMemObjectDump( &pHashMap->memObject, indent + 2 );
+   psonMemObjectDump( &pHashMap->memObject, indent + 2, pContext );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Node offset: "PSO_PTRDIFF_T_FORMAT"\n", pHashMap->nodeOffset );
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Node offset: "PSO_PTRDIFF_T_FORMAT"\n", pHashMap->nodeOffset );
 
-   psonHashTxDump( &pHashMap->hashObj, indent + 2 );
+   psonHashTxDump( &pHashMap->hashObj, indent + 2, pContext );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Data definition offset: "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Data definition offset: "PSO_PTRDIFF_T_FORMAT"\n",
       pHashMap->dataDefOffset );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Key definition offset: "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Key definition offset: "PSO_PTRDIFF_T_FORMAT"\n",
       pHashMap->keyDefOffset );
 
    if ( pHashMap->isSystemObject ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "This folder is a system object\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "This folder is a system object\n" );
    }
    else {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "This folder is not a system object\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "This folder is not a system object\n" );
    }
 
-   psonBlockGroupDump( &pHashMap->blockGroup, indent + 2 );
+   psonBlockGroupDump( &pHashMap->blockGroup, indent + 2, pContext );
 
-   DO_INDENT( indent );
-   fprintf( stderr, "psonHashMap END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonHashMap END\n" );
 }
 #endif
 
@@ -283,7 +285,7 @@ void psonHashMapFini( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    psonHashTxFini( &pHashMap->hashObj, pContext );
    
@@ -293,7 +295,7 @@ void psonHashMapFini( psonHashMap        * pHashMap,
     */
    psonMemObjectFini(  &pHashMap->memObject, PSON_ALLOC_API_OBJ, pContext );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -318,7 +320,7 @@ bool psonHashMapGet( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -404,11 +406,11 @@ bool psonHashMapGet( psonHashMap        * pHashMap,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 the_exit:
@@ -422,7 +424,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -445,7 +447,7 @@ bool psonHashMapGetFirst( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pItem    != NULL )
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -494,14 +496,14 @@ bool psonHashMapGetFirst( psonHashMap        * pHashMap,
                psonUnlock( &pHashMap->memObject, pContext );
                psocSetError( &pContext->errorHandler, 
                              g_psoErrorHandle, PSO_INVALID_LENGTH );
-               PSO_TRACE_EXIT( pContext, false );
+               PSO_TRACE_EXIT_NUCLEUS( pContext, false );
                return false;
             }
             if ( keyLength < pHashItem->keyLength ) {
                psonUnlock( &pHashMap->memObject, pContext );
                psocSetError( &pContext->errorHandler, 
                              g_psoErrorHandle, PSO_INVALID_LENGTH );
-               PSO_TRACE_EXIT( pContext, false );
+               PSO_TRACE_EXIT_NUCLEUS( pContext, false );
                return false;
             }
 
@@ -512,7 +514,7 @@ bool psonHashMapGetFirst( psonHashMap        * pHashMap,
 
             psonUnlock( &pHashMap->memObject, pContext );
             
-            PSO_TRACE_EXIT( pContext, true );
+            PSO_TRACE_EXIT_NUCLEUS( pContext, true );
             return true;
          }
   
@@ -524,14 +526,14 @@ bool psonHashMapGetFirst( psonHashMap        * pHashMap,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
    psonUnlock( &pHashMap->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_IS_EMPTY );
 
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
    
@@ -557,7 +559,7 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
    PSO_PRE_CONDITION( pItem->pHashItem  != NULL );
    PSO_PRE_CONDITION( pItem->itemOffset != PSON_NULL_OFFSET );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -610,14 +612,14 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
                psonUnlock( &pHashMap->memObject, pContext );
                psocSetError( &pContext->errorHandler, 
                              g_psoErrorHandle, PSO_INVALID_LENGTH );
-               PSO_TRACE_EXIT( pContext, false );
+               PSO_TRACE_EXIT_NUCLEUS( pContext, false );
                return false;
             }
             if ( keyLength < pHashItem->keyLength ) {
                psonUnlock( &pHashMap->memObject, pContext );
                psocSetError( &pContext->errorHandler, 
                              g_psoErrorHandle, PSO_INVALID_LENGTH );
-               PSO_TRACE_EXIT( pContext, false );
+               PSO_TRACE_EXIT_NUCLEUS( pContext, false );
                return false;
             }
 
@@ -629,7 +631,7 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
 
             psonUnlock( &pHashMap->memObject, pContext );
             
-            PSO_TRACE_EXIT( pContext, true );
+            PSO_TRACE_EXIT_NUCLEUS( pContext, true );
             return true;
          }
   
@@ -641,7 +643,7 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
@@ -658,7 +660,7 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
    psonUnlock( &pHashMap->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_REACHED_THE_END );
 
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -684,7 +686,7 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
    PSO_PRE_CONDITION( pDataDefinition != NULL );
    PSO_PRE_CONDITION( parentOffset    != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    errcode = psonMemObjectInit( &pHashMap->memObject, 
                                 PSON_IDENT_HASH_MAP,
@@ -695,7 +697,7 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
@@ -709,7 +711,7 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, 
                     errcode );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
@@ -718,7 +720,7 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
 
    pHashMap->isSystemObject = false;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 
@@ -745,7 +747,7 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( keyLength  > 0 );
    PSO_PRE_CONDITION( itemLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -817,11 +819,11 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 the_exit:
@@ -835,7 +837,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -849,7 +851,7 @@ bool psonHashMapRelease( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
       psonHashMapReleaseNoLock( pHashMap,
@@ -862,11 +864,11 @@ bool psonHashMapRelease( psonHashMap        * pHashMap,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 
@@ -888,7 +890,7 @@ void psonHashMapReleaseNoLock( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -925,7 +927,7 @@ void psonHashMapReleaseNoLock( psonHashMap        * pHashMap,
          psonHashTxResize( &pHashMap->hashObj, pContext );
       }
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -951,7 +953,7 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( keyLength  > 0 );
    PSO_PRE_CONDITION( itemLength > 0 );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -1038,11 +1040,11 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 the_exit:
@@ -1056,7 +1058,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -1073,7 +1075,7 @@ void psonHashMapRollbackAdd( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( pHashItem, itemOffset, psonHashTxItem );
@@ -1114,7 +1116,7 @@ void psonHashMapRollbackAdd( psonHashMap        * pHashMap,
    else {
       psonTxStatusCommitRemove( txItemStatus, pContext );
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -1130,7 +1132,7 @@ void psonHashMapRollbackRemove( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( pHashItem, itemOffset, psonHashTxItem );
@@ -1162,7 +1164,7 @@ void psonHashMapRollbackRemove( psonHashMap        * pHashMap,
          psonHashTxResize( &pHashMap->hashObj, pContext );
       }
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -1181,7 +1183,7 @@ void psonHashMapStatus( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pStatus  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
    GET_PTR( txStatus, pMapNode->txStatusOffset, psonTxStatus );
@@ -1211,7 +1213,7 @@ void psonHashMapStatus( psonHashMap        * pHashMap,
       }
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

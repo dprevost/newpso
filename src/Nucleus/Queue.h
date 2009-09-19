@@ -109,7 +109,9 @@ void psonQueueCommitRemove( psonQueue          * pQueue,
                             psonSessionContext * pContext );
 
 #if defined(PSO_USE_TRACE)
-void psonQueueDump( psonQueue * pQueue, int indent );
+void psonQueueDump( psonQueue          * pQueue,
+                    int                  indent,
+                    psonSessionContext * pContext );
 #endif
 
 void psonQueueFini( psonQueue          * pQueue,

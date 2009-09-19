@@ -69,7 +69,9 @@ typedef struct psonMemObject psonMemObject;
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonMemObjectDump( psonMemObject * pMemObj, int indent );
+void psonMemObjectDump( psonMemObject      * pMemObj,
+                        int                  indent,
+                        psonSessionContext * pContext );
 #endif
 
 enum psoErrors 
@@ -103,7 +105,7 @@ bool psonLock( psonMemObject      * pMemObj,
 
    PSO_PRE_CONDITION( pMemObj  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    if ( pContext->lockOffsets != NULL ) {
       psonSessionAddLock( pContext, SET_OFFSET( pMemObj ) );
@@ -119,7 +121,7 @@ bool psonLock( psonMemObject      * pMemObj,
       }
    }
    
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
 }
 
@@ -131,7 +133,7 @@ void psonLockNoFailure( psonMemObject      * pMemObj,
 {
    PSO_PRE_CONDITION( pMemObj  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    if ( pContext->lockOffsets != NULL ) {
       psonSessionAddLock( pContext, SET_OFFSET( pMemObj ) );
@@ -139,7 +141,7 @@ void psonLockNoFailure( psonMemObject      * pMemObj,
    
    psocAcquireProcessLock ( &pMemObj->lock, pContext->pidLocker );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -156,7 +158,7 @@ void psonUnlock( psonMemObject      * pMemObj,
 {
    PSO_PRE_CONDITION( pMemObj  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    if ( pContext->lockOffsets != NULL ) {
       psonSessionRemoveLock( pContext, SET_OFFSET( pMemObj ) );
@@ -164,7 +166,7 @@ void psonUnlock( psonMemObject      * pMemObj,
    
    psocReleaseProcessLock ( &pMemObj->lock );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

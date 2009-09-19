@@ -72,7 +72,7 @@ void psonTreeNodeInit( psonTreeNode       * pNode,
 {
    PSO_PRE_CONDITION( pNode != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    pNode->offset         = myOffset;
    pNode->apiType        = apiType;
@@ -80,7 +80,7 @@ void psonTreeNodeInit( psonTreeNode       * pNode,
    pNode->txStatusOffset = txStatusOffset;
    pNode->myParentOffset = parentOffset;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -91,7 +91,7 @@ void psonTreeNodeFini( psonTreeNode       * pNode,
 {
    PSO_PRE_CONDITION( pNode != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    pNode->offset         = PSON_NULL_OFFSET;
    pNode->apiType        = 0;
@@ -99,13 +99,15 @@ void psonTreeNodeFini( psonTreeNode       * pNode,
    pNode->txStatusOffset = PSON_NULL_OFFSET;
    pNode->myParentOffset = PSON_NULL_OFFSET;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonTreeNodeDump( psonTreeNode * pNode, int indent );
+void psonTreeNodeDump( psonTreeNode       * pNode,
+                       int                  indent,
+                       psonSessionContext * pContext );
 #endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

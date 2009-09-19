@@ -19,48 +19,53 @@
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #include "Nucleus/LinkNode.h"
+#include "Nucleus/SessionContext.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonFreeBufferNodeDump( psonFreeBufferNode * pBuffer, int indent )
+void psonFreeBufferNodeDump( psonFreeBufferNode * pBuffer,
+                             int                  indent,
+                             psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonFreeBufferNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonFreeBufferNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pBuffer, SET_OFFSET(pBuffer) );
    if ( pBuffer == NULL ) return;
 
-   psonLinkNodeDump( &pBuffer->node, indent + 2 );
+   psonLinkNodeDump( &pBuffer->node, indent + 2, pContext );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Number of buffers: "PSO_SIZE_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Number of buffers: "PSO_SIZE_T_FORMAT"\n",
       pBuffer->numBuffers );
 
-   DO_INDENT( indent );
-   fprintf( stderr, "psonFreeBufferNode END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonFreeBufferNode END\n" );
 }
 #endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonLinkNodeDump( psonLinkNode * pNode, int indent )
+void psonLinkNodeDump( psonLinkNode       * pNode,
+                       int                  indent,
+                       psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonLinkNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonLinkNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pNode, SET_OFFSET(pNode) );
    if ( pNode == NULL ) return;
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Next offset: "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Next offset: "PSO_PTRDIFF_T_FORMAT"\n",
       pNode->nextOffset );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Previous offset: "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Previous offset: "PSO_PTRDIFF_T_FORMAT"\n",
       pNode->previousOffset );
 
-   DO_INDENT( indent );
-   fprintf( stderr, "psonLinkNode END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonLinkNode END\n" );
 }
 #endif
 

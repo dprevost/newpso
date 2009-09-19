@@ -66,7 +66,9 @@ typedef struct psonLinkedList psonLinkedList;
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonLinkedListDump( psonLinkedList * pList, int indent );
+void psonLinkedListDump( psonLinkedList     * pList,
+                         int                  indent,
+                         psonSessionContext * pContext );
 #endif
 
 /** Cleanup the list once we're done with it. */

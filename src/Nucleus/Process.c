@@ -36,7 +36,7 @@ bool psonProcessAddSession( psonProcess        * process,
    PSO_PRE_CONDITION( pApiSession != NULL );
    PSO_PRE_CONDITION( ppSession   != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    *ppSession = NULL;
    /* For recovery purposes, always lock before doing anything! */
@@ -82,42 +82,44 @@ bool psonProcessAddSession( psonProcess        * process,
                     PSO_ENGINE_BUSY );
    }
    
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonProcessDump( psonProcess * process, int indent )
+void psonProcessDump( psonProcess        * process,
+                      int                  indent,
+                      psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonProcess (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonProcess (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       process, SET_OFFSET(process) );
    if ( process == NULL ) return;
 
-   psonMemObjectDump( &process->memObject, indent + 2 );
+   psonMemObjectDump( &process->memObject, indent + 2, pContext );
 
-   psonLinkNodeDump( &process->node, indent + 2 );
+   psonLinkNodeDump( &process->node, indent + 2, pContext );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Process pid: %ud\n", process->pid );
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Process pid: %ud\n", process->pid );
 
-   psonLinkedListDump( &process->listOfSessions, indent + 2 );
+   psonLinkedListDump( &process->listOfSessions, indent + 2, pContext );
 
    if ( process->processIsTerminating ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "This process is ending\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "This process is ending\n" );
    }
    else {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "This process is not ending\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "This process is not ending\n" );
    }
 
-   psonBlockGroupDump( &process->blockGroup, indent + 2 );
+   psonBlockGroupDump( &process->blockGroup, indent + 2, pContext );
 
-   DO_INDENT( indent );
-   fprintf( stderr, "psonProcess END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonProcess END\n" );
 }
 #endif
 
@@ -133,7 +135,7 @@ void psonProcessFini( psonProcess        * process,
    PSO_PRE_CONDITION( process != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( process->memObject.objType == PSON_IDENT_PROCESS );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    /*
     * Eliminate all sessions in the list. This is probably not needed
@@ -157,7 +159,7 @@ void psonProcessFini( psonProcess        * process,
     */
    psonMemObjectFini(  &process->memObject, PSON_ALLOC_ANY, pContext );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -172,7 +174,7 @@ bool psonProcessGetFirstSession( psonProcess        * process,
    PSO_PRE_CONDITION( process  != NULL );
    PSO_PRE_CONDITION( ppSession != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    ok = psonLinkedListPeakFirst( &process->listOfSessions, &pNode, pContext );
    if ( ok ) {
@@ -180,7 +182,7 @@ bool psonProcessGetFirstSession( psonProcess        * process,
          ((char*)pNode - offsetof( psonSession, node ));
    }
    
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
 }
 
@@ -198,7 +200,7 @@ bool psonProcessGetNextSession( psonProcess        * process,
    PSO_PRE_CONDITION( pCurrent != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( ppNext   != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    ok = psonLinkedListPeakNext( &process->listOfSessions,
                                 &pCurrent->node,
@@ -209,7 +211,7 @@ bool psonProcessGetNextSession( psonProcess        * process,
          ((char*)pNode - offsetof( psonSession, node ));
    }
    
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
 }
 
@@ -224,7 +226,7 @@ bool psonProcessInit( psonProcess        * process,
    PSO_PRE_CONDITION( process != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pid > 0 );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    errcode = psonMemObjectInit( &process->memObject, 
                                 PSON_IDENT_PROCESS,
@@ -235,7 +237,7 @@ bool psonProcessInit( psonProcess        * process,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
@@ -244,7 +246,7 @@ bool psonProcessInit( psonProcess        * process,
 
    psonLinkedListInit( &process->listOfSessions, pContext );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
    
@@ -257,7 +259,7 @@ bool psonProcessRemoveSession( psonProcess        * process,
    PSO_PRE_CONDITION( process != NULL );
    PSO_PRE_CONDITION( pSession != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    /* For recovery purposes, always lock before doing anything! */
    if ( psonLock( &process->memObject, pContext ) ) {
@@ -273,11 +275,11 @@ bool psonProcessRemoveSession( psonProcess        * process,
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, 
                     PSO_ENGINE_BUSY );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 

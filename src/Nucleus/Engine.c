@@ -19,91 +19,94 @@
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #include "Nucleus/Engine.h"
+#include "Nucleus/SessionContext.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonMemObjIdentifierDump( psonMemObjIdent identifier, int indent )
+void psonMemObjIdentifierDump( psonMemObjIdent      identifier,
+                               int                  indent,
+                               psonSessionContext * pContext )
 {
    switch( identifier ) {
    case PSON_IDENT_CLEAR:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: \"Clear!!!\" likely an error\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: \"Clear!!!\" likely an error\n" );
       break;
       
    case PSON_IDENT_LIMBO:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: \"Limbo!!!\" possibly an error\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: \"Limbo!!!\" possibly an error\n" );
       break;
       
    case PSON_IDENT_ALLOCATED:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: \"Allocated!!!\" likely an error\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: \"Allocated!!!\" likely an error\n" );
       break;
       
    case PSON_IDENT_FIRST:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: \"First!!!\" likely an error\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: \"First!!!\" likely an error\n" );
       break;
       
    case PSON_IDENT_ALLOCATOR:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: Main memory allocator\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: Main memory allocator\n" );
       break;
       
    case PSON_IDENT_FOLDER:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: Folder\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: Folder\n" );
       break;
       
    case PSON_IDENT_HASH_MAP:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: Hash Map\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: Hash Map\n" );
       break;
       
    case PSON_IDENT_PROCESS:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: Process\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: Process\n" );
       break;
       
    case PSON_IDENT_PROCESS_MGR:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: Process Manager\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: Process Manager\n" );
       break;
       
    case PSON_IDENT_QUEUE:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: Queue\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: Queue\n" );
       break;
       
    case PSON_IDENT_SESSION:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: Session\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: Session\n" );
       break;
       
    case PSON_IDENT_TRANSACTION:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: Transaction\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: Transaction\n" );
       break;
       
    case PSON_IDENT_MAP:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: Fast Map\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: Fast Map\n" );
       break;
       
    case PSON_IDENT_CURSOR:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: Cursor\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: Cursor\n" );
       break;
       
    case PSON_IDENT_LAST:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: \"Last!!!\" likely an error\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: \"Last!!!\" likely an error\n" );
       break;
       
    default:
-      DO_INDENT( indent );
-      fprintf( stderr, "Object type: Unknown, likely an error\n" );
+      DO_INDENT( pContext, indent );
+      fprintf( pContext->tracefp, "Object type: Unknown, likely an error\n" );
       break;
    }
 }

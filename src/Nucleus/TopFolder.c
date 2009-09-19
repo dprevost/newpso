@@ -44,13 +44,13 @@ bool psonTopFolderCloseObject( psonFolderItem     * pFolderItem,
    
    PSO_PRE_CONDITION( pFolderItem != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pChildNode, pFolderItem->pHashItem->dataOffset, psonTreeNode );
    
    /* Special case, the top folder */
    if ( pChildNode->myParentOffset == PSON_NULL_OFFSET ) {
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
    
@@ -81,13 +81,13 @@ bool psonTopFolderCloseObject( psonFolderItem     * pFolderItem,
       }
       psonUnlock( &parentFolder->memObject, pContext );
 
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
    
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_ENGINE_BUSY );
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -108,7 +108,7 @@ bool psonTopFolderCreateFolder( psonFolder          * pFolder,
    PSO_PRE_CONDITION( pFolder     != NULL );
    PSO_PRE_CONDITION( objectName  != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    strLength = nameLengthInBytes;
 
@@ -155,7 +155,7 @@ bool psonTopFolderCreateFolder( psonFolder          * pFolder,
       goto error_handler;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 error_handler:
@@ -168,7 +168,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -195,7 +195,7 @@ bool psonTopFolderCreateObject( psonFolder          * pFolder,
    PSO_PRE_CONDITION( pDefinition->type > PSO_FOLDER && 
                       pDefinition->type < PSO_LAST_OBJECT_TYPE );
    PSO_PRE_CONDITION( pDataDefinition != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    strLength = nameLengthInBytes;
 
@@ -242,7 +242,7 @@ bool psonTopFolderCreateObject( psonFolder          * pFolder,
       goto error_handler;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 error_handler:
@@ -255,7 +255,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -275,7 +275,7 @@ bool psonTopFolderDestroyObject( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pFolder    != NULL );
    PSO_PRE_CONDITION( objectName != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    strLength = nameLengthInBytes;
    
@@ -317,7 +317,7 @@ bool psonTopFolderDestroyObject( psonFolder         * pFolder,
       goto error_handler;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 error_handler:
@@ -330,7 +330,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -354,7 +354,7 @@ bool psonTopFolderEditObject( psonFolder         * pFolder,
    PSO_PRE_CONDITION( objectName  != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
    PSO_PRE_CONDITION( objectType > 0 && objectType < PSO_LAST_OBJECT_TYPE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    strLength = nameLengthInBytes;
    if ( strLength > PSO_MAX_FULL_NAME_LENGTH ) {
@@ -407,7 +407,7 @@ bool psonTopFolderEditObject( psonFolder         * pFolder,
       }
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 error_handler:
@@ -420,7 +420,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -447,7 +447,7 @@ bool psonTopFolderGetDef( psonFolder          * pFolder,
    PSO_PRE_CONDITION( ppKeyDefinition  != NULL );
    PSO_PRE_CONDITION( ppDataDefinition != NULL );
    PSO_PRE_CONDITION( pContext         != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    *ppDataDefinition = NULL;
    *ppKeyDefinition = NULL;
@@ -505,7 +505,7 @@ bool psonTopFolderGetDef( psonFolder          * pFolder,
       }
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 error_handler:
@@ -518,7 +518,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -543,7 +543,7 @@ bool psonTopFolderGetDefLength( psonFolder          * pFolder,
    PSO_PRE_CONDITION( pKeyDefLength  != NULL );
    PSO_PRE_CONDITION( pDataDefLength != NULL );
    PSO_PRE_CONDITION( pContext       != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    strLength = nameLengthInBytes;
    
@@ -591,7 +591,7 @@ bool psonTopFolderGetDefLength( psonFolder          * pFolder,
       }
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 error_handler:
@@ -604,7 +604,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -627,7 +627,7 @@ bool psonTopFolderGetStatus( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pStatus    != NULL );
    PSO_PRE_CONDITION( objectName != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    strLength = nameLengthInBytes;
    
@@ -683,7 +683,7 @@ bool psonTopFolderGetStatus( psonFolder         * pFolder,
       }
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 error_handler:
@@ -696,7 +696,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -720,7 +720,7 @@ bool psonTopFolderOpenObject( psonFolder         * pFolder,
    PSO_PRE_CONDITION( objectName  != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
    PSO_PRE_CONDITION( objectType > 0 && objectType < PSO_LAST_OBJECT_TYPE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    strLength = nameLengthInBytes;
    if ( strLength > PSO_MAX_FULL_NAME_LENGTH ) {
@@ -773,7 +773,7 @@ bool psonTopFolderOpenObject( psonFolder         * pFolder,
       }
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 error_handler:
@@ -786,7 +786,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 

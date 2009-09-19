@@ -23,14 +23,16 @@
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonMemObjectDump( psonMemObject * pMemObj, int indent )
+void psonMemObjectDump( psonMemObject      * pMemObj,
+                        int                  indent,
+                        psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonMemObject (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonMemObject (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pMemObj, SET_OFFSET(pMemObj) );
    if ( pMemObj == NULL ) return;
    
-   psonMemObjIdentifierDump( pMemObj->objType, indent + 2 );
+   psonMemObjIdentifierDump( pMemObj->objType, indent + 2, pContext );
    
 #if 0   
    /** The lock... obviously */
@@ -38,14 +40,14 @@ void psonMemObjectDump( psonMemObject * pMemObj, int indent )
 #endif
 
    /** Total number of blocks for the current object */
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Total number of blocks: "PSO_SIZE_T_FORMAT"\n", 
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Total number of blocks: "PSO_SIZE_T_FORMAT"\n", 
       pMemObj->totalBlocks );
    
-   psonLinkedListDump( &pMemObj->listBlockGroup, indent + 2 );
+   psonLinkedListDump( &pMemObj->listBlockGroup, indent + 2, pContext );
 
-   DO_INDENT( indent );
-   fprintf( stderr, "psonMemObject END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonMemObject END\n" );
 }
 #endif
 
@@ -87,7 +89,7 @@ psonMemObjectInit( psonMemObject      * pMemObj,
    PSO_PRE_CONDITION( objType > PSON_IDENT_FIRST && 
                       objType < PSON_IDENT_LAST );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    /* In case InitProcessLock fails */
    pMemObj->objType = PSON_IDENT_CLEAR;
@@ -99,7 +101,7 @@ psonMemObjectInit( psonMemObject      * pMemObj,
     * i.e. when the number of semaphores is greater than SEM_VALUE_MAX.
     */
    if ( ! ok ) {
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return PSO_NOT_ENOUGH_RESOURCES;
    }
     
@@ -120,7 +122,7 @@ psonMemObjectInit( psonMemObject      * pMemObj,
                            
    pMemObj->totalBlocks = numBlocks;
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return PSO_OK;
 }
 
@@ -153,7 +155,7 @@ psonMemObjectFini( psonMemObject      * pMemObj,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pMemObj->objType > PSON_IDENT_FIRST && 
                       pMemObj->objType < PSON_IDENT_LAST );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    /*
     * We retrieve the first node - and leave it alone.
@@ -179,7 +181,7 @@ psonMemObjectFini( psonMemObject      * pMemObj,
    psonLinkedListFini( &pMemObj->listBlockGroup, pContext );
 
    if ( ! psocFiniProcessLock( &pMemObj->lock ) ) {
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return PSO_SEM_DESTROY_ERROR;
    }
    
@@ -195,7 +197,7 @@ psonMemObjectFini( psonMemObject      * pMemObj,
                    pGroup->numBlocks,
                    pContext );
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return PSO_OK;
 }
 
@@ -216,7 +218,7 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
    PSO_PRE_CONDITION( pMemObj  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( numBytes > 0 );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    requestedChunks = (numBytes-1)/PSON_ALLOCATION_UNIT + 1;
    
@@ -286,7 +288,7 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
                                        requestedChunks*PSON_ALLOCATION_UNIT,
                                        pContext );
                               
-               PSO_TRACE_EXIT( pContext, true );
+               PSO_TRACE_EXIT_NUCLEUS( pContext, true );
                return (unsigned char*) currentNode;
             } /* end if of numChunks >= requestedChunks */
    
@@ -398,7 +400,7 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
                                  requestedChunks*PSON_ALLOCATION_UNIT,
                                  pContext );
                               
-         PSO_TRACE_EXIT( pContext, true );
+         PSO_TRACE_EXIT_NUCLEUS( pContext, true );
          return (unsigned char*) currentNode;
       }
    }
@@ -412,7 +414,7 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
                  g_psoErrorHandle, 
                  PSO_NOT_ENOUGH_PSO_MEMORY );
 
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return NULL;
 }
 
@@ -436,7 +438,7 @@ void psonFree( psonMemObject*      pMemObj,
    PSO_PRE_CONDITION( pMemObj  != NULL );
    PSO_PRE_CONDITION( ptr      != NULL );
    PSO_PRE_CONDITION( numBytes > 0 );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    /*
     * Ajust numBytes so that it is a multiple of PSON_ALLOCATION_UNIT,
@@ -560,7 +562,7 @@ void psonFree( psonMemObject*      pMemObj,
           *((ptrdiff_t *)ptr) = SET_OFFSET(p);
       }
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -576,7 +578,7 @@ void psonMemObjectStatus( psonMemObject      * pMemObj,
    PSO_PRE_CONDITION( pMemObj != NULL );
    PSO_PRE_CONDITION( pStatus != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    pStatus->numBlocks = pMemObj->totalBlocks;
    pStatus->numBlockGroup = pMemObj->listBlockGroup.currentSize;
@@ -600,7 +602,7 @@ void psonMemObjectStatus( psonMemObject      * pMemObj,
                                    &dummy,
                                    pContext );
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

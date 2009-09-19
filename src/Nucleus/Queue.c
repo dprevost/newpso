@@ -42,7 +42,7 @@ void psonQueueCommitAdd( psonQueue          * pQueue,
    PSO_PRE_CONDITION( pQueue   != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
    GET_PTR( pQueueItem, itemOffset, psonQueueItem );
@@ -54,7 +54,7 @@ void psonQueueCommitAdd( psonQueue          * pQueue,
    psonTxStatusClearTx( &pQueueItem->txStatus, pContext );
    pQueueNode->txCounter--;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -70,7 +70,7 @@ void psonQueueCommitRemove( psonQueue          * pQueue,
    PSO_PRE_CONDITION( pQueue   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pQueueItem, itemOffset, psonQueueItem );
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
@@ -96,51 +96,53 @@ void psonQueueCommitRemove( psonQueue          * pQueue,
    else {
       psonTxStatusCommitRemove( &pQueueItem->txStatus, pContext );
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonQueueDump( psonQueue * pQueue, int indent )
+void psonQueueDump( psonQueue          * pQueue,
+                    int                  indent,
+                    psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonQueue (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonQueue (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pQueue, SET_OFFSET(pQueue) );
    if ( pQueue == NULL ) return;
 
-   psonMemObjectDump( &pQueue->memObject, indent + 2 );
+   psonMemObjectDump( &pQueue->memObject, indent + 2, pContext );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Node offset: "PSO_PTRDIFF_T_FORMAT"\n", pQueue->nodeOffset );
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Node offset: "PSO_PTRDIFF_T_FORMAT"\n", pQueue->nodeOffset );
 
    if ( pQueue->queueType == PSO_LIFO ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Queue type: Last In First out\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Queue type: Last In First out\n" );
    }
    else if ( pQueue->queueType == PSO_QUEUE ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Queue type: First In First Out\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Queue type: First In First Out\n" );
    }
    else {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Unknown queue type\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Unknown queue type\n" );
    }
 
-   psonLinkedListDump( &pQueue->listOfElements, indent + 2 );
+   psonLinkedListDump( &pQueue->listOfElements, indent + 2, pContext );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Data definition offset: "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Data definition offset: "PSO_PTRDIFF_T_FORMAT"\n",
       pQueue->dataDefOffset );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Number of valid data items: "PSO_SIZE_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Number of valid data items: "PSO_SIZE_T_FORMAT"\n",
       pQueue->numValidItems );
    
-   psonBlockGroupDump( &pQueue->blockGroup, indent + 2 );
+   psonBlockGroupDump( &pQueue->blockGroup, indent + 2, pContext );
 
-   DO_INDENT( indent );
-   fprintf( stderr, "psonQueue END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonQueue END\n" );
 }
 #endif
 
@@ -152,12 +154,12 @@ void psonQueueFini( psonQueue          * pQueue,
    PSO_PRE_CONDITION( pQueue   != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    psonLinkedListFini( &pQueue->listOfElements, pContext );
    psonMemObjectFini(  &pQueue->memObject, PSON_ALLOC_API_OBJ, pContext );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -179,7 +181,7 @@ bool psonQueueGetFirst( psonQueue          * pQueue,
    PSO_PRE_CONDITION( ppIterator != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
    GET_PTR( txQueueStatus, pQueueNode->txStatusOffset, psonTxStatus );
@@ -251,7 +253,7 @@ bool psonQueueGetFirst( psonQueue          * pQueue,
             
             psonUnlock( &pQueue->memObject, pContext );
 
-            PSO_TRACE_EXIT( pContext, true );
+            PSO_TRACE_EXIT_NUCLEUS( pContext, true );
             return true;
          }
          okList =  psonLinkedListPeakNext( &pQueue->listOfElements, 
@@ -262,7 +264,7 @@ bool psonQueueGetFirst( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
@@ -282,7 +284,7 @@ bool psonQueueGetFirst( psonQueue          * pQueue,
    psonUnlock( &pQueue->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
 
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -306,7 +308,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
    PSO_PRE_CONDITION( ppIterator != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
    GET_PTR( txQueueStatus, pQueueNode->txStatusOffset, psonTxStatus );
@@ -372,7 +374,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
                psocSetError( &pContext->errorHandler,
                              g_psoErrorHandle,
                              PSO_INVALID_LENGTH );
-               PSO_TRACE_EXIT( pContext, false );
+               PSO_TRACE_EXIT_NUCLEUS( pContext, false );
                return false;
             }
 
@@ -384,7 +386,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
             
             psonUnlock( &pQueue->memObject, pContext );
 
-            PSO_TRACE_EXIT( pContext, true );
+            PSO_TRACE_EXIT_NUCLEUS( pContext, true );
             return true;
          }
          okList =  psonLinkedListPeakNext( &pQueue->listOfElements, 
@@ -395,7 +397,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
@@ -416,7 +418,7 @@ bool psonQueueGetNext( psonQueue          * pQueue,
    psonUnlock( &pQueue->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
 
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -439,7 +441,7 @@ bool psonQueueInit( psonQueue           * pQueue,
    PSO_PRE_CONDITION( pDataDefinition != NULL );
    PSO_PRE_CONDITION( parentOffset    != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    errcode = psonMemObjectInit( &pQueue->memObject, 
                                 PSON_IDENT_QUEUE,
@@ -450,7 +452,7 @@ bool psonQueueInit( psonQueue           * pQueue,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
@@ -460,7 +462,7 @@ bool psonQueueInit( psonQueue           * pQueue,
 
    pQueue->dataDefOffset = SET_OFFSET(pDataDefinition);
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 
@@ -486,7 +488,7 @@ bool psonQueueInsert( psonQueue          * pQueue,
    PSO_PRE_CONDITION( firstOrLast == PSON_QUEUE_FIRST || 
       firstOrLast == PSON_QUEUE_LAST );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
    GET_PTR( txQueueStatus, pQueueNode->txStatusOffset, psonTxStatus );
@@ -550,11 +552,11 @@ bool psonQueueInsert( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 the_exit:
@@ -568,7 +570,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
     
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -593,7 +595,7 @@ bool psonQueueInsertNow( psonQueue          * pQueue,
    PSO_PRE_CONDITION( firstOrLast == PSON_QUEUE_FIRST || 
       firstOrLast == PSON_QUEUE_LAST );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
    GET_PTR( txQueueStatus, pQueueNode->txStatusOffset, psonTxStatus );
@@ -637,11 +639,11 @@ bool psonQueueInsertNow( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 the_exit:
@@ -655,7 +657,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
     
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -669,7 +671,7 @@ bool psonQueueRelease( psonQueue          * pQueue,
    PSO_PRE_CONDITION( pQueueItem != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    if ( psonLock( &pQueue->memObject, pContext ) ) {
       psonQueueReleaseNoLock( pQueue,
@@ -680,11 +682,11 @@ bool psonQueueRelease( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 
@@ -708,7 +710,7 @@ void psonQueueReleaseNoLock( psonQueue          * pQueue,
    PSO_PRE_CONDITION( pQueueItem != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    txItemStatus = &pQueueItem->txStatus;
    
@@ -733,7 +735,7 @@ void psonQueueReleaseNoLock( psonQueue          * pQueue,
 
       pQueueNode->txCounter--;
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -758,7 +760,7 @@ bool psonQueueRemove( psonQueue          * pQueue,
    PSO_PRE_CONDITION( firstOrLast == PSON_QUEUE_FIRST || 
       firstOrLast == PSON_QUEUE_LAST );
    PSO_PRE_CONDITION( pQueue->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
 
@@ -828,7 +830,7 @@ bool psonQueueRemove( psonQueue          * pQueue,
 
             psonUnlock( &pQueue->memObject, pContext );
 
-            PSO_TRACE_EXIT( pContext, true );
+            PSO_TRACE_EXIT_NUCLEUS( pContext, true );
             return true;
          }
          /* We test the type of flag to return the proper error code (if needed) */
@@ -852,7 +854,7 @@ bool psonQueueRemove( psonQueue          * pQueue,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
@@ -868,7 +870,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -886,7 +888,7 @@ void psonQueueRollbackAdd( psonQueue          * pQueue,
    PSO_PRE_CONDITION( pQueue   != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
 
@@ -915,7 +917,7 @@ void psonQueueRollbackAdd( psonQueue          * pQueue,
    else {
       psonTxStatusCommitRemove( txStatus, pContext );
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -930,7 +932,7 @@ void psonQueueRollbackRemove( psonQueue          * pQueue,
    PSO_PRE_CONDITION( pQueue   != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pQueueItem, itemOffset, psonQueueItem );
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
@@ -943,7 +945,7 @@ void psonQueueRollbackRemove( psonQueue          * pQueue,
 
    pQueueNode->txCounter--;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -961,7 +963,7 @@ void psonQueueStatus( psonQueue          * pQueue,
    PSO_PRE_CONDITION( pQueue   != NULL );
    PSO_PRE_CONDITION( pStatus  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( pQueueNode, pQueue->nodeOffset, psonTreeNode );
    GET_PTR( txStatus, pQueueNode->txStatusOffset, psonTxStatus );
@@ -971,7 +973,7 @@ void psonQueueStatus( psonQueue          * pQueue,
    pStatus->maxDataLength = 0;
    pStatus->maxKeyLength  = 0;
    if ( pStatus->numDataItem == 0 ) {
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return;
    }
    
@@ -992,7 +994,7 @@ void psonQueueStatus( psonQueue          * pQueue,
                                         &pNode,
                                         pContext );
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

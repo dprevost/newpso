@@ -98,7 +98,9 @@ bool psonHashMapDelete( psonHashMap        * pHashMap,
                         psonSessionContext * pContext );
 
 #if defined(PSO_USE_TRACE)
-void psonHashMapDump( psonHashMap * pHashMap, int indent );
+void psonHashMapDump( psonHashMap        * pHashMap,
+                      int                  indent,
+                      psonSessionContext * pContext );
 #endif
 
 void psonHashMapFini( psonHashMap        * pHashMap,

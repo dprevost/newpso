@@ -37,17 +37,17 @@ bool psonIsBufferFree( psonMemBitmap      * pBitmap,
    PSO_PRE_CONDITION( pBitmap != NULL );
    PSO_PRE_CONDITION( offset  != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    localOffset = offset - pBitmap->baseAddressOffset;
    if ( localOffset < 0 ) {
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
    inUnitsOfAllocation = localOffset / pBitmap->allocGranularity;
    if ( inUnitsOfAllocation >= pBitmap->lengthInBits ) {
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    byte = inUnitsOfAllocation >> 3; /* Equivalent to divide by  8  */
@@ -60,7 +60,7 @@ bool psonIsBufferFree( psonMemBitmap      * pBitmap,
 
    rc = ( (pBitmap->bitmap[byte] & (unsigned char)(1 << bit)) == 0 );
 
-   PSO_TRACE_EXIT( pContext, rc );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, rc );
    return rc;
 }
 
@@ -80,7 +80,7 @@ void psonSetBufferAllocated( psonMemBitmap      * pBitmap,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( offset  != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( length > 0 );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    localOffset = offset - pBitmap->baseAddressOffset;
 
@@ -103,7 +103,7 @@ void psonSetBufferAllocated( psonMemBitmap      * pBitmap,
       }
       bit--;
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -122,7 +122,7 @@ void psonSetBufferFree( psonMemBitmap      * pBitmap,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( offset  != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( length > 0 );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    localOffset = offset - pBitmap->baseAddressOffset;
    
@@ -145,7 +145,7 @@ void psonSetBufferFree( psonMemBitmap      * pBitmap,
       }
       bit--;
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -160,12 +160,12 @@ size_t psonGetBitmapLengthBytes( size_t               length,
                       ! (allocationUnit & (allocationUnit-1)) );
    PSO_PRE_CONDITION( length > 0 );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    /* We "align" it to a multiple of allocationUnit */
    length = ((length - 1) / allocationUnit + 1 ) * allocationUnit;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return ( (length/allocationUnit - 1) >> 3 ) + 1;
 }
 

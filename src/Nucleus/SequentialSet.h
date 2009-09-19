@@ -93,7 +93,9 @@ bool psonSeqSetDelete( psonSeqSet         * pSeqSet,
                        psonSessionContext * pContext );
 
 #if defined(PSO_USE_TRACE)
-void psonSeqSetDump( psonSeqSet * pSeqSet, int indent );
+void psonSeqSetDump( psonSeqSet         * pSeqSet,
+                     int                  indent,
+                     psonSessionContext * pContext );
 #endif
 
 void psonSeqSetEmpty( psonSeqSet         * pSeqSet,

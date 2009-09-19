@@ -24,54 +24,56 @@
 
 #if defined(PSO_USE_TRACE)
 
-void psonTxStatusDump( psonTxStatus * pStatus, int indent )
+void psonTxStatusDump( psonTxStatus       * pStatus,
+                       int                  indent,
+                       psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonTXStatus (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonTXStatus (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pStatus, SET_OFFSET(pStatus) );
    if ( pStatus == NULL ) return;
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "offset of the current transaction object: "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "offset of the current transaction object: "PSO_PTRDIFF_T_FORMAT"\n",
       pStatus->txOffset );
 
    if ( pStatus->status == 0 ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Status is ok (no running transaction)\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Status is ok (no running transaction)\n" );
    }
    if ( pStatus->status & PSON_TXS_DESTROYED ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Object is marked as destroyed\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Object is marked as destroyed\n" );
    }
    if ( pStatus->status & PSON_TXS_ADDED ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Object is marked as added\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Object is marked as added\n" );
    }
    if ( pStatus->status & PSON_TXS_EDIT ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Object is marked as being edited\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Object is marked as being edited\n" );
    }
    if ( pStatus->status & PSON_TXS_REPLACED ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Object is marked as being replaced\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Object is marked as being replaced\n" );
    }
    if ( pStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Destruction of object is committed\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Destruction of object is committed\n" );
    }
    if ( pStatus->status & PSON_TXS_EDIT_COMMITTED ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Edition of object is committed\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Edition of object is committed\n" );
    }
    
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "usage counter: %ud\n", pStatus->usageCounter );
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "usage counter: %ud\n", pStatus->usageCounter );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "parent counter %ud\n", pStatus->parentCounter );
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "parent counter %ud\n", pStatus->parentCounter );
 
-   DO_INDENT( indent );
-   fprintf( stderr, "psonTxStatus END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonTxStatus END\n" );
 }
 
 #endif

@@ -50,7 +50,7 @@ int psoFolderClose( PSO_HANDLE objectHandle )
    }
    
    pFolder->object.pSession->context.indent = 0;
-   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+   PSO_TRACE_ENTER_API( &pFolder->object.pSession->context );
 
    if ( pFolder->object.pSession->terminated ) {
       errcode = PSO_SESSION_IS_TERMINATED;
@@ -81,7 +81,7 @@ int psoFolderClose( PSO_HANDLE objectHandle )
    pFolder->object.type = 0; 
    free( pFolder );
 
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, true );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
    return errcode;
 
 error_handler:
@@ -89,7 +89,7 @@ error_handler:
    psocSetError( &pFolder->object.pSession->context.errorHandler, 
       g_psoErrorHandle, errcode );
 
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, false );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }
 
@@ -112,7 +112,7 @@ int psoFolderCreateFolder( PSO_HANDLE   objectHandle,
    }
 
    pFolder->object.pSession->context.indent = 0;
-   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+   PSO_TRACE_ENTER_API( &pFolder->object.pSession->context );
 
    if ( objectName == NULL ) {
       errcode = PSO_INVALID_OBJECT_NAME;
@@ -138,7 +138,7 @@ int psoFolderCreateFolder( PSO_HANDLE   objectHandle,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, true );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -151,7 +151,7 @@ error_handler:
       errcode = psocGetLastError( &pFolder->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, false );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }
 
@@ -178,7 +178,7 @@ int psoFolderCreateQueue( PSO_HANDLE            objectHandle,
    }
 
    pFolder->object.pSession->context.indent = 0;
-   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+   PSO_TRACE_ENTER_API( &pFolder->object.pSession->context );
 
    if ( objectName == NULL ) {
       errcode = PSO_INVALID_OBJECT_NAME;
@@ -229,7 +229,7 @@ int psoFolderCreateQueue( PSO_HANDLE            objectHandle,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, true );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -242,7 +242,7 @@ error_handler:
       errcode = psocGetLastError( &pFolder->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, false );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }
 
@@ -272,7 +272,7 @@ int psoFolderCreateMap( PSO_HANDLE            objectHandle,
    }
 
    pFolder->object.pSession->context.indent = 0;
-   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+   PSO_TRACE_ENTER_API( &pFolder->object.pSession->context );
 
    if ( objectName == NULL ) {
       errcode = PSO_INVALID_OBJECT_NAME;
@@ -333,7 +333,7 @@ int psoFolderCreateMap( PSO_HANDLE            objectHandle,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, true );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -346,7 +346,7 @@ error_handler:
       errcode = psocGetLastError( &pFolder->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, false );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }
 
@@ -369,7 +369,7 @@ int psoFolderDestroyObject( PSO_HANDLE   objectHandle,
    }
 
    pFolder->object.pSession->context.indent = 0;
-   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+   PSO_TRACE_ENTER_API( &pFolder->object.pSession->context );
 
    if ( objectName == NULL ) {
       errcode = PSO_INVALID_OBJECT_NAME;
@@ -395,7 +395,7 @@ int psoFolderDestroyObject( PSO_HANDLE   objectHandle,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, true );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -408,7 +408,7 @@ error_handler:
       errcode = psocGetLastError( &pFolder->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, false );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }
     
@@ -435,7 +435,7 @@ int psoFolderGetDataDefinition( PSO_HANDLE   objectHandle,
    }
 
    pFolder->object.pSession->context.indent = 0;
-   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+   PSO_TRACE_ENTER_API( &pFolder->object.pSession->context );
 
    if ( objectName == NULL ) {
       errcode = PSO_INVALID_OBJECT_NAME;
@@ -482,7 +482,7 @@ int psoFolderGetDataDefinition( PSO_HANDLE   objectHandle,
    
    *dataDefHandle = (PSO_HANDLE) pDataDefinition;
    
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, true );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -498,7 +498,7 @@ error_handler:
       errcode = psocGetLastError( &pFolder->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, false );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }   
 
@@ -524,7 +524,7 @@ int psoFolderGetDefinition( PSO_HANDLE            objectHandle,
    }
 
    pFolder->object.pSession->context.indent = 0;
-   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+   PSO_TRACE_ENTER_API( &pFolder->object.pSession->context );
 
    if ( objectName == NULL ) {
       errcode = PSO_INVALID_OBJECT_NAME;
@@ -558,7 +558,7 @@ int psoFolderGetDefinition( PSO_HANDLE            objectHandle,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, true );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -571,7 +571,7 @@ error_handler:
       errcode = psocGetLastError( &pFolder->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, false );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }   
 
@@ -594,7 +594,7 @@ int psoFolderGetFirst( PSO_HANDLE       objectHandle,
    }
    
    pFolder->object.pSession->context.indent = 0;
-   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+   PSO_TRACE_ENTER_API( &pFolder->object.pSession->context );
 
    if ( pEntry == NULL ) {
       errcode = PSO_NULL_POINTER;
@@ -635,7 +635,7 @@ int psoFolderGetFirst( PSO_HANDLE       objectHandle,
            pFolder->iterator.pHashItem->key,
            pFolder->iterator.pHashItem->keyLength );
 
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, true );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -647,7 +647,7 @@ error_handler:
       errcode = psocGetLastError( &pFolder->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, false );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }
 
@@ -674,7 +674,7 @@ int psoFolderGetKeyDefinition( PSO_HANDLE   objectHandle,
    }
 
    pFolder->object.pSession->context.indent = 0;
-   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+   PSO_TRACE_ENTER_API( &pFolder->object.pSession->context );
 
    if ( objectName == NULL ) {
       errcode = PSO_INVALID_OBJECT_NAME;
@@ -721,7 +721,7 @@ int psoFolderGetKeyDefinition( PSO_HANDLE   objectHandle,
 
    *keyDefHandle = (PSO_HANDLE) pKeyDefinition;
 
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, true );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -736,7 +736,7 @@ error_handler:
       errcode = psocGetLastError( &pFolder->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, false );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }
 
@@ -759,7 +759,7 @@ int psoFolderGetNext( PSO_HANDLE       objectHandle,
    }
    
    pFolder->object.pSession->context.indent = 0;
-   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+   PSO_TRACE_ENTER_API( &pFolder->object.pSession->context );
 
    if ( pEntry == NULL ) {
       errcode = PSO_NULL_POINTER;
@@ -793,7 +793,7 @@ int psoFolderGetNext( PSO_HANDLE       objectHandle,
            pFolder->iterator.pHashItem->key,
            pFolder->iterator.pHashItem->keyLength );
 
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, true );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -805,7 +805,7 @@ error_handler:
       errcode = psocGetLastError( &pFolder->object.pSession->context.errorHandler );
    }
    
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, false );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }
 
@@ -831,7 +831,7 @@ int psoFolderOpen( PSO_HANDLE   sessionHandle,
    }
    
    pSession->context.indent = 0;
-   PSO_TRACE_ENTER( &pSession->context );
+   PSO_TRACE_ENTER_API( &pSession->context );
 
    if ( folderName == NULL ) {
       errcode = PSO_INVALID_OBJECT_NAME;
@@ -867,7 +867,7 @@ int psoFolderOpen( PSO_HANDLE   sessionHandle,
 
    *objectHandle = (PSO_HANDLE) pFolder;
    
-   PSO_TRACE_EXIT( &pSession->context, true );
+   PSO_TRACE_EXIT_API( &pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -875,7 +875,7 @@ error_handler:
    psocSetError( &pFolder->object.pSession->context.errorHandler, 
          g_psoErrorHandle, errcode );
    
-   PSO_TRACE_EXIT( &pSession->context, false );
+   PSO_TRACE_EXIT_API( &pSession->context, false );
    return errcode;
 }
 
@@ -896,7 +896,7 @@ int psoFolderStatus( PSO_HANDLE     objectHandle,
    }
    
    pFolder->object.pSession->context.indent = 0;
-   PSO_TRACE_ENTER( &pFolder->object.pSession->context );
+   PSO_TRACE_ENTER_API( &pFolder->object.pSession->context );
 
    if ( pStatus == NULL ) {
       errcode = PSO_NULL_POINTER;
@@ -928,7 +928,7 @@ int psoFolderStatus( PSO_HANDLE     objectHandle,
       goto error_handler;
    }
 
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, true );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
    return PSO_OK;
 
 error_handler:
@@ -936,7 +936,7 @@ error_handler:
    psocSetError( &pFolder->object.pSession->context.errorHandler, 
       g_psoErrorHandle, errcode );
 
-   PSO_TRACE_EXIT( &pFolder->object.pSession->context, false );
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }
 

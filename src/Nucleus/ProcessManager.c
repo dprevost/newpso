@@ -37,7 +37,7 @@ bool psonProcMgrAddProcess( psonProcMgr        * pManager,
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( process != NULL );
    PSO_PRE_CONDITION( pid > 0 );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    /* For recovery purposes, always lock before doing anything! */
    if ( psonLock( &pManager->memObject, pContext ) ) {
@@ -73,28 +73,30 @@ bool psonProcMgrAddProcess( psonProcMgr        * pManager,
                     PSO_ENGINE_BUSY );
    }
    
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonProcMgrDump( psonProcMgr * pManager, int indent )
+void psonProcMgrDump( psonProcMgr        * pManager,
+                      int                  indent,
+                      psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonProcMgr (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonProcMgr (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pManager, SET_OFFSET(pManager) );
    if ( pManager == NULL ) return;
 
-   psonMemObjectDump( &pManager->memObject, indent + 2 );
+   psonMemObjectDump( &pManager->memObject, indent + 2, pContext );
 
-   psonLinkedListDump( &pManager->listOfProcesses, indent + 2 );
+   psonLinkedListDump( &pManager->listOfProcesses, indent + 2, pContext );
 
-   psonBlockGroupDump( &pManager->blockGroup, indent + 2 );
+   psonBlockGroupDump( &pManager->blockGroup, indent + 2, pContext );
 
-   DO_INDENT( indent );
-   fprintf( stderr, "psonProcMgr END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonProcMgr END\n" );
 }
 #endif
 
@@ -114,7 +116,7 @@ bool psonProcMgrFindProcess( psonProcMgr        * pManager,
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( process != NULL );
    PSO_PRE_CONDITION( pid > 0 );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    *process = NULL;
    
@@ -156,11 +158,11 @@ bool psonProcMgrFindProcess( psonProcMgr        * pManager,
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, 
                     errcode );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 
@@ -173,7 +175,7 @@ bool psonProcMgrInit( psonProcMgr        * pManager,
 
    PSO_PRE_CONDITION( pManager != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    errcode = psonMemObjectInit( &pManager->memObject, 
                                 PSON_IDENT_PROCESS_MGR,
@@ -184,13 +186,13 @@ bool psonProcMgrInit( psonProcMgr        * pManager,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
    psonLinkedListInit( &pManager->listOfProcesses, pContext );
       
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 
@@ -203,7 +205,7 @@ bool psonProcMgrRemoveProcess( psonProcMgr        * pManager,
    PSO_PRE_CONDITION( pManager != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( process != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    /* For recovery purposes, always lock before doing anything! */
    if ( psonLock( &pManager->memObject, pContext ) ) {
@@ -219,11 +221,11 @@ bool psonProcMgrRemoveProcess( psonProcMgr        * pManager,
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, 
                     PSO_ENGINE_BUSY );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 

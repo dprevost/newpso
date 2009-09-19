@@ -66,11 +66,17 @@ typedef struct psonKeyDefinition psonKeyDefinition;
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonDataDefinitionDump( psonDataDefinition * pDataDefinition, int indent );
-#endif
 
-#if defined(PSO_USE_TRACE)
-void psonKeyDefinitionDump( psonKeyDefinition * pKeyDefinition, int indent );
+struct psonSessionContext;
+
+void psonDataDefinitionDump( psonDataDefinition        * pDataDefinition,
+                             int                         indent,
+                             struct psonSessionContext * pContext );
+
+void psonKeyDefinitionDump( psonKeyDefinition         * pKeyDefinition,
+                            int                         indent,
+                            struct psonSessionContext * pContext );
+
 #endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

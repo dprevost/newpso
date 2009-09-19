@@ -73,11 +73,15 @@ typedef struct psonFreeBufferNode psonFreeBufferNode;
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonFreeBufferNodeDump( psonFreeBufferNode * pBuffer, int indent );
+void psonFreeBufferNodeDump( psonFreeBufferNode * pBuffer,
+                             int                  indent,
+                             psonSessionContext * pContext );
 #endif
 
 #if defined(PSO_USE_TRACE)
-void psonLinkNodeDump( psonLinkNode * pNode, int indent );
+void psonLinkNodeDump( psonLinkNode       * pNode,
+                       int                  indent,
+                       psonSessionContext * pContext );
 #endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -89,12 +93,12 @@ void psonLinkNodeInit( psonLinkNode       * pNode,
 {
    PSO_PRE_CONDITION( pNode != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    pNode->nextOffset     = PSON_NULL_OFFSET;
    pNode->previousOffset = PSON_NULL_OFFSET;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -105,12 +109,12 @@ void psonLinkNodeFini( psonLinkNode       * pNode,
 {
    PSO_PRE_CONDITION( pNode != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    pNode->nextOffset     = PSON_NULL_OFFSET;
    pNode->previousOffset = PSON_NULL_OFFSET;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -125,14 +129,14 @@ bool psonLinkNodeTest( psonLinkNode       * pNode,
 {
    PSO_PRE_CONDITION( pNode != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    if ( pNode->nextOffset     == PSON_NULL_OFFSET || 
         pNode->previousOffset == PSON_NULL_OFFSET ) {
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 

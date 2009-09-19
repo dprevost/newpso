@@ -35,6 +35,8 @@ BEGIN_C_DECLS
 #define PSO_TRACE_FUNCTION 0x00000001
 #define PSO_TRACE_DUMP     0x00000002
 #define PSO_TRACE_CONTENT  0x00000004
+#define PSO_TRACE_API      0x00100000
+#define PSO_TRACE_NUCLEUS  0x00200000
 #define PSO_TRACE_ALL      0xffffffff
 
 /**
@@ -72,6 +74,8 @@ struct psonSessionContext
    int traceFlags;
    
    int indent;
+   
+   FILE * tracefp;
 };
 
 typedef struct psonSessionContext psonSessionContext;
@@ -90,7 +94,8 @@ void psonInitSessionContext( psonSessionContext * pContext )
    pContext->pTransaction = NULL;
    pContext->pAllocator   = NULL;
    pContext->traceFlags   = 0;
-   pContext->indent = 0;
+   pContext->indent       = 0;
+   pContext->tracefp      = stderr;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -102,12 +107,12 @@ void psonSessionAddLock( psonSessionContext * pContext,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( *pContext->numLocks < PSON_MAX_LOCK_DEPTH );
    PSO_PRE_CONDITION( memObjectOffset != PSON_NULL_OFFSET );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    pContext->lockOffsets[*pContext->numLocks] = memObjectOffset;
    (*pContext->numLocks)++;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -121,7 +126,7 @@ void psonSessionRemoveLock( psonSessionContext * pContext,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( *pContext->numLocks > 0 );
    PSO_PRE_CONDITION( memObjectOffset != PSON_NULL_OFFSET );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    n = *pContext->numLocks;
 
@@ -139,7 +144,7 @@ void psonSessionRemoveLock( psonSessionContext * pContext,
    
    /* Will fail if pMemObject was not in the array */
    PSO_POST_CONDITION( n == (*pContext->numLocks + 1) );
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

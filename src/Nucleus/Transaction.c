@@ -36,7 +36,7 @@ bool psonAddLockTx( psonTx             * pTx,
    PSO_PRE_CONDITION( pTx      != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pMemObj  != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    ok = txHashInsert( pTx, pMemObj, pContext );
    if ( !ok ) {
@@ -45,7 +45,7 @@ bool psonAddLockTx( psonTx             * pTx,
                     PSO_NOT_ENOUGH_PSO_MEMORY );
    }
 
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
 }
 
@@ -61,7 +61,7 @@ bool psonLockTx( psonTx             * pTx,
    PSO_PRE_CONDITION( pTx      != NULL );
    PSO_PRE_CONDITION( pMemObj  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    ok = psocTestLockPidValue( &pMemObj->lock, pContext->pidLocker );
    PSO_POST_CONDITION( ok == true || ok == false );
@@ -77,7 +77,7 @@ bool psonLockTx( psonTx             * pTx,
       }
    }
    
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
 }
 
@@ -94,7 +94,7 @@ void psonClearLocks( psonTx             * pTx,
    PSO_PRE_CONDITION( pTx      != NULL );
    PSO_PRE_CONDITION( pTx->signature == PSON_TX_SIGNATURE );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    ok = txHashGetFirst( pTx, &rowNumber, &pMemObj );
    while ( ok ) {
@@ -105,7 +105,7 @@ void psonClearLocks( psonTx             * pTx,
    
    txHashEmpty( pTx );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -120,7 +120,7 @@ bool psonTxInit( psonTx             * pTx,
    PSO_PRE_CONDITION( pTx      != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( numberOfBlocks  > 0 );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    errcode = psonMemObjectInit( &pTx->memObject, 
                                 PSON_IDENT_TRANSACTION,
@@ -129,20 +129,20 @@ bool psonTxInit( psonTx             * pTx,
                                 pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
    psonLinkedListInit( &pTx->listOfOps, pContext );
    ok = txHashInit( pTx, 100, pContext );
    if ( !ok ) {
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
    pTx->signature = PSON_TX_SIGNATURE;
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 
@@ -155,7 +155,7 @@ void psonTxFini( psonTx             * pTx,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pTx->listOfOps.currentSize == 0 );
    PSO_PRE_CONDITION( pTx->signature == PSON_TX_SIGNATURE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    /* Synch the shared memory */
 #if 0
@@ -168,7 +168,7 @@ void psonTxFini( psonTx             * pTx,
    /* This will remove the blocks of allocated memory */
    psonMemObjectFini(  &pTx->memObject, PSON_ALLOC_ANY, pContext );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -188,7 +188,7 @@ bool psonTxAddOps( psonTx             * pTx,
    PSO_PRE_CONDITION( parentOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( childOffset  != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( pTx->signature == PSON_TX_SIGNATURE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    pOps = (psonTxOps *) psonMalloc( &pTx->memObject,
                                     sizeof(psonTxOps), 
@@ -203,7 +203,7 @@ bool psonTxAddOps( psonTx             * pTx,
       psonLinkNodeInit(  &pOps->node, pContext );
       psonLinkedListPutLast( &pTx->listOfOps, &pOps->node, pContext );
 
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
 
@@ -211,7 +211,7 @@ bool psonTxAddOps( psonTx             * pTx,
                  g_psoErrorHandle, 
                  PSO_NOT_ENOUGH_PSO_MEMORY );
 
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -227,7 +227,7 @@ void psonTxRemoveLastOps( psonTx             * pTx,
    PSO_PRE_CONDITION( pTx != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pTx->signature == PSON_TX_SIGNATURE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    ok = psonLinkedListGetLast( &pTx->listOfOps, &pDummy, pContext );
 
@@ -239,7 +239,7 @@ void psonTxRemoveLastOps( psonTx             * pTx,
              (unsigned char *) pOps,
              sizeof(psonTxOps), 
              pContext );
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -264,7 +264,7 @@ bool psonTxCommit( psonTx             * pTx,
    PSO_PRE_CONDITION( pTx      != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pTx->signature == PSON_TX_SIGNATURE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
       
    /* Synch the shared memory  (commented out - too slow) */
 #if 0
@@ -275,7 +275,7 @@ bool psonTxCommit( psonTx             * pTx,
 
    if ( pTx->listOfOps.currentSize == 0 ) {
       /* All is well - nothing to commit */
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
    
@@ -296,7 +296,7 @@ bool psonTxCommit( psonTx             * pTx,
       PSO_POST_CONDITION( okLock == true || okLock == false );
       if ( ! okLock ) {
          psonClearLocks( pTx, pContext );
-         PSO_TRACE_EXIT( pContext, false );
+         PSO_TRACE_EXIT_NUCLEUS( pContext, false );
          return false;
       }
       /* We only lock the child for these two ops */
@@ -311,7 +311,7 @@ bool psonTxCommit( psonTx             * pTx,
          PSO_POST_CONDITION( okLock == true || okLock == false );
          if ( ! okLock ) {
             psonClearLocks( pTx, pContext );
-            PSO_TRACE_EXIT( pContext, false );
+            PSO_TRACE_EXIT_NUCLEUS( pContext, false );
             return false;
          }
       }
@@ -490,7 +490,7 @@ bool psonTxCommit( psonTx             * pTx,
                 pContext );
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 
@@ -516,7 +516,7 @@ bool psonTxRollback( psonTx             * pTx,
    PSO_PRE_CONDITION( pTx      != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pTx->signature == PSON_TX_SIGNATURE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
 #if 0
    /* Synch the shared memory */
@@ -525,7 +525,7 @@ bool psonTxRollback( psonTx             * pTx,
 
    if ( pTx->listOfOps.currentSize == 0 ) {
       /* All is well - nothing to rollback */
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
    
@@ -546,7 +546,7 @@ bool psonTxRollback( psonTx             * pTx,
       PSO_POST_CONDITION( okLock == true || okLock == false );
       if ( ! okLock ) {
          psonClearLocks( pTx, pContext );
-         PSO_TRACE_EXIT( pContext, false );
+         PSO_TRACE_EXIT_NUCLEUS( pContext, false );
          return false;
       }
       /* We only lock the child for these two ops */
@@ -561,7 +561,7 @@ bool psonTxRollback( psonTx             * pTx,
          PSO_POST_CONDITION( okLock == true || okLock == false );
          if ( ! okLock ) {
             psonClearLocks( pTx, pContext );
-            PSO_TRACE_EXIT( pContext, false );
+            PSO_TRACE_EXIT_NUCLEUS( pContext, false );
             return false;
          }
       }
@@ -735,7 +735,7 @@ bool psonTxRollback( psonTx             * pTx,
                 pContext );
    }
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 

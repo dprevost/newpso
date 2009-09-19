@@ -94,7 +94,9 @@ typedef struct psonEndBlockGroup psonEndBlockGroup;
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonBlockGroupDump( psonBlockGroup * pGroup, int indent );
+void psonBlockGroupDump( psonBlockGroup     * pGroup,
+                         int                  indent,
+                         psonSessionContext * pContext );
 #endif
 
 void psonBlockGroupFini( psonBlockGroup     * pGroup,
@@ -132,7 +134,7 @@ void psonEndBlockSet( ptrdiff_t            firstBlockOffset,
                       psonSessionContext * pContext )
 {
    psonEndBlockGroup* endBlock;
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( endBlock, 
             firstBlockOffset + (numBlocks <<  PSON_BLOCK_SHIFT) -
@@ -144,7 +146,7 @@ void psonEndBlockSet( ptrdiff_t            firstBlockOffset,
    endBlock->isInLimbo = limboStatus;
    endBlock->lastBlock = lastBlock;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

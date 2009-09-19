@@ -167,7 +167,9 @@ bool psonFolderDeleteObject( psonFolder         * pFolder,
                              psonSessionContext * pContext );
 
 #if defined(PSO_USE_TRACE)
-void psonFolderDump( psonFolder * pFolder, int indent );
+void psonFolderDump( psonFolder         * pFolder,
+                     int                  indent,
+                     psonSessionContext * pContext );
 #endif
 
 bool psonFolderEditObject( psonFolder         * pFolder,

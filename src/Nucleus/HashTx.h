@@ -117,7 +117,9 @@ void psonHashTxDelete( psonHashTx         * pHash,
                        psonSessionContext * pContext );
 
 #if defined(PSO_USE_TRACE)
-void psonHashTxDump( psonHashTx * pHashTx, int indent );
+void psonHashTxDump( psonHashTx         * pHashTx,
+                     int                  indent,
+                     psonSessionContext * pContext );
 #endif
 
 void psonHashTxFini( psonHashTx         * pHash,

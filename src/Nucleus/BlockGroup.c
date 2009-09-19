@@ -23,44 +23,47 @@
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonBlockGroupDump( psonBlockGroup * pGroup, int indent )
+void psonBlockGroupDump( psonBlockGroup     * pGroup,
+                         int                  indent,
+                         psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonBlockGroup (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, 
+      "psonBlockGroup (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pGroup, SET_OFFSET(pGroup) );
    if ( pGroup == NULL ) return;
 
-   psonMemObjIdentifierDump( pGroup->objType, indent + 2 );
+   psonMemObjIdentifierDump( pGroup->objType, indent + 2, pContext );
 
-   psonLinkNodeDump( &pGroup->node, indent + 2 );
+   psonLinkNodeDump( &pGroup->node, indent + 2, pContext );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Number of blocks: "PSO_SIZE_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Number of blocks: "PSO_SIZE_T_FORMAT"\n",
       pGroup->numBlocks );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Maximum available memory: "PSO_SIZE_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Maximum available memory: "PSO_SIZE_T_FORMAT"\n",
       pGroup->maxFreeBytes );
    
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Current amount of free memory: "PSO_SIZE_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Current amount of free memory: "PSO_SIZE_T_FORMAT"\n",
       pGroup->freeBytes );
    
-   psonLinkedListDump( &pGroup->freeList, indent + 2 );
+   psonLinkedListDump( &pGroup->freeList, indent + 2, pContext );
    
    if ( pGroup->isDeletable ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "This group of blocks can be deleted\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "This group of blocks can be deleted\n" );
    }
    else {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "This group of blocks cannot be deleted (first group)\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "This group of blocks cannot be deleted (first group)\n" );
    }
 
-   psonMemBitmapDump( &pGroup->bitmap, indent + 2 );
+   psonMemBitmapDump( &pGroup->bitmap, indent + 2, pContext );
 
-   DO_INDENT( indent );
-   fprintf( stderr, "psonBlockGroup END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonBlockGroup END\n" );
 }
 #endif
 
@@ -71,7 +74,7 @@ void psonBlockGroupFini( psonBlockGroup     * pGroup,
 {
    PSO_PRE_CONDITION( pGroup != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    psonMemBitmapFini(  &pGroup->bitmap, pContext );
    psonLinkedListFini( &pGroup->freeList, pContext );
@@ -82,7 +85,7 @@ void psonBlockGroupFini( psonBlockGroup     * pGroup,
    pGroup->freeBytes = 0;
    pGroup->objType = PSON_IDENT_CLEAR;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -106,7 +109,7 @@ void psonBlockGroupInit( psonBlockGroup     * pGroup,
    PSO_PRE_CONDITION( numBlocks > 0 );
    PSO_PRE_CONDITION( objType > PSON_IDENT_FIRST && objType < PSON_IDENT_LAST );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    pGroup->numBlocks = numBlocks;
    pGroup->objType = PSON_IDENT_PAGE_GROUP & objType;
@@ -172,7 +175,7 @@ void psonBlockGroupInit( psonBlockGroup     * pGroup,
                            psonEndBlockOffset(firstBlockOffset, numBlocks), 
                            PSON_ALLOCATION_UNIT,
                            pContext );
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

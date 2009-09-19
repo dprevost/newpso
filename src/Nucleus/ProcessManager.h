@@ -69,7 +69,9 @@ bool psonProcMgrAddProcess( psonProcMgr        * pManager,
                             psonSessionContext * pContext );
 
 #if defined(PSO_USE_TRACE)
-void psonProcMgrDump( psonProcMgr * pManager, int indent );
+void psonProcMgrDump( psonProcMgr        * pManager,
+                      int                  indent,
+                      psonSessionContext * pContext );
 #endif
 
 /*

@@ -96,7 +96,7 @@ static bool findKey( psonHashTx          * pHash,
    ptrdiff_t currentOffset, nextOffset;
    psonHashTxItem* pItem;
 
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    *pBucket = hash_it( pKey, keyLength ) % g_psonArrayLengths[pHash->lengthIndex];
    currentOffset = pArray[*pBucket];
@@ -110,7 +110,7 @@ static bool findKey( psonHashTx          * pHash,
       if ( keyLength == pItem->keyLength ) {
          if ( memcmp( pKey, pItem->key, keyLength ) == 0 ) {
             *ppItem = pItem;
-            PSO_TRACE_EXIT( pContext, true );
+            PSO_TRACE_EXIT_NUCLEUS( pContext, true );
             return true;
          }
       }
@@ -123,7 +123,7 @@ static bool findKey( psonHashTx          * pHash,
    /* Nothing was found, return false */
    *ppItem = NULL;
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -147,7 +147,7 @@ void psonHashTxDelete( psonHashTx         * pHash,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pItem    != NULL );
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
@@ -183,78 +183,79 @@ void psonHashTxDelete( psonHashTx         * pHash,
 
    pHash->enumResize = isItTimeToResize( pHash );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonHashTxDump( psonHashTx * pHash,
-                     int          indent )
+void psonHashTxDump( psonHashTx         * pHash,
+                     int                  indent,
+                     psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonHashTx (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonHashTx (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pHash, SET_OFFSET(pHash) );
    if ( pHash == NULL ) return;
    
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Offset of the memory object we belong to: "
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Offset of the memory object we belong to: "
       PSO_PTRDIFF_T_FORMAT"\n", pHash->memObjOffset );
    
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Offset to our array "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Offset to our array "PSO_PTRDIFF_T_FORMAT"\n",
       pHash->arrayOffset ); 
    
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Number of items: "PSO_SIZE_T_FORMAT"\n", 
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Number of items: "PSO_SIZE_T_FORMAT"\n", 
       pHash->numberOfItems );
    
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Total amount of bytes of data: "PSO_SIZE_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Total amount of bytes of data: "PSO_SIZE_T_FORMAT"\n",
       pHash->totalDataSizeInBytes );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Index into the array of lengths : %d\n", 
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Index into the array of lengths : %d\n", 
       pHash->lengthIndex );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Mimimum index value: %d\n", pHash->lengthIndexMinimum );
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Mimimum index value: %d\n", pHash->lengthIndexMinimum );
 
    switch( pHash->enumResize ) {
    case PSON_HASH_NO_RESIZE:
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "No need to resize the array\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "No need to resize the array\n" );
       break;
       
    case PSON_HASH_TIME_TO_GROW:
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "The array needs to grow\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "The array needs to grow\n" );
       break;
       
    case PSON_HASH_TIME_TO_SHRINK:
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "The array needs to shrink\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "The array needs to shrink\n" );
       break;
       
    default:
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Unknown value for enumResize - value: %d\n",
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Unknown value for enumResize - value: %d\n",
          pHash->enumResize );
       break;
    }
    
    if ( pHash->initialized == PSON_HASH_TX_SIGNATURE ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Signature is ok.\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Signature is ok.\n" );
    }
    else {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "Signature is wrong - value is %d, exepted: %d\n",
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "Signature is wrong - value is %d, exepted: %d\n",
          pHash->initialized, PSON_HASH_TX_SIGNATURE );
    }
 
-   DO_INDENT( indent );
-   fprintf( stderr, "psonHashTx END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonHashTx END\n" );
 }
 #endif
 
@@ -266,11 +267,11 @@ void psonHashTxFini( psonHashTx         * pHash,
    PSO_PRE_CONDITION( pHash != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    pHash->initialized = 0;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -293,7 +294,7 @@ bool psonHashTxGet( psonHashTx          * pHash,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( keyLength > 0 );
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
@@ -303,7 +304,7 @@ bool psonHashTxGet( psonHashTx          * pHash,
 
    if ( keyFound ) *ppItem = pItem;
 
-   PSO_TRACE_EXIT( pContext, keyFound );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, keyFound );
    return keyFound;
 }
 
@@ -325,7 +326,7 @@ bool psonHashTxGetFirst( psonHashTx         * pHash,
    PSO_PRE_CONDITION( pHash != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pFirstItemOffset != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
    
@@ -333,7 +334,7 @@ bool psonHashTxGetFirst( psonHashTx         * pHash,
    PSO_INV_CONDITION( pArray != NULL );
 
    if ( pHash->numberOfItems == 0 ) {
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    /* 
@@ -345,14 +346,14 @@ bool psonHashTxGetFirst( psonHashTx         * pHash,
       
       if (currentOffset != PSON_NULL_OFFSET ) {
          *pFirstItemOffset = currentOffset;
-         PSO_TRACE_EXIT( pContext, true );
+         PSO_TRACE_EXIT_NUCLEUS( pContext, true );
          return true;
       }
    }
 
    PSO_POST_CONDITION( SHOULD_NOT_REACHED_THIS == false );
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false; /* Should never occur */
 }
 
@@ -376,7 +377,7 @@ bool psonHashTxGetNext( psonHashTx         * pHash,
    PSO_PRE_CONDITION( pNextItemOffset != NULL );
    PSO_PRE_CONDITION( previousOffset != PSON_NULL_OFFSET );
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
@@ -385,7 +386,7 @@ bool psonHashTxGetNext( psonHashTx         * pHash,
    if ( pItem->nextItem != PSON_NULL_OFFSET ) {
       /* We found the next one in the linked list. */
       *pNextItemOffset = pItem->nextItem;
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
    
@@ -398,12 +399,12 @@ bool psonHashTxGetNext( psonHashTx         * pHash,
       
       if (currentOffset != PSON_NULL_OFFSET ) {
          *pNextItemOffset = currentOffset;
-         PSO_TRACE_EXIT( pContext, true );
+         PSO_TRACE_EXIT_NUCLEUS( pContext, true );
          return true;
       }
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -421,7 +422,7 @@ enum psoErrors psonHashTxInit( psonHashTx         * pHash,
    
    PSO_PRE_CONDITION( pHash != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    pHash->numberOfItems = 0;
    pHash->totalDataSizeInBytes = 0;
@@ -461,11 +462,11 @@ enum psoErrors psonHashTxInit( psonHashTx         * pHash,
       pHash->initialized = PSON_HASH_TX_SIGNATURE;
       pHash->memObjOffset = memObjOffset;
    
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return PSO_OK;
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return PSO_NOT_ENOUGH_PSO_MEMORY;
 }
 
@@ -494,7 +495,7 @@ enum psoErrors psonHashTxInsert( psonHashTx          * pHash,
    PSO_PRE_CONDITION( keyLength  > 0 );
    PSO_PRE_CONDITION( dataLength > 0 );
    PSO_PRE_CONDITION( bucket < g_psonArrayLengths[pHash->lengthIndex] );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
    
@@ -515,7 +516,7 @@ enum psoErrors psonHashTxInsert( psonHashTx          * pHash,
    itemLength = calculateItemLength( keyLength, dataLength );
    pItem = (psonHashTxItem*) psonMalloc( pMemObject, itemLength, pContext );
    if ( pItem == NULL ) {
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return PSO_NOT_ENOUGH_PSO_MEMORY;
    }
    
@@ -544,7 +545,7 @@ enum psoErrors psonHashTxInsert( psonHashTx          * pHash,
    
    *ppNewItem = pItem;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return PSO_OK;
 }
 
@@ -563,13 +564,13 @@ enum psoErrors psonHashTxResize( psonHashTx         * pHash,
    PSO_PRE_CONDITION( pHash != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_TX_SIGNATURE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
 
    if ( pHash->enumResize == PSON_HASH_NO_RESIZE ) {
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return PSO_OK;
    }
    
@@ -586,7 +587,7 @@ enum psoErrors psonHashTxResize( psonHashTx         * pHash,
    
    ptr = (ptrdiff_t*) psonMalloc( pMemObject, len, pContext );
    if ( ptr == NULL ) {
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return PSO_NOT_ENOUGH_PSO_MEMORY;
    }
    
@@ -635,7 +636,7 @@ enum psoErrors psonHashTxResize( psonHashTx         * pHash,
    
    pHash->enumResize = PSON_HASH_NO_RESIZE;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return PSO_OK;   
 }
 

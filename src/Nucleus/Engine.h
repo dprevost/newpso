@@ -157,9 +157,13 @@ typedef enum psonMemObjIdentifier psonMemObjIdent;
 
 #define PSON_IDENT_PAGE_GROUP   0x80000000
 
-
 #if defined(PSO_USE_TRACE)
-void psonMemObjIdentifierDump( psonMemObjIdent identifier, int indent );
+
+struct psonSessionContext;
+
+void psonMemObjIdentifierDump( psonMemObjIdent             identifier,
+                               int                         indent,
+                               struct psonSessionContext * pContext );
 #endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -195,51 +199,81 @@ typedef enum psonAllocTypeEnum psonAllocTypeEnum;
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-#  define DO_INDENT(LOOP) {\
-   int ijk_loop_kji;\
-   for( ijk_loop_kji = 0; ijk_loop_kji < (LOOP); ijk_loop_kji++ ) {\
-      fprintf( stderr, " " );\
-   }\
-}
-#endif
 
-#if defined(PSO_USE_TRACE)
-#  define PSO_TRACE(CONTEXT,TRACES) \
-if ( CONTEXT->traceFlags & PSO_TRACE_DUMP ) {\
-   TRACES\
+#  define DO_INDENT(CONTEXT,LOOP) {                                 \
+   int ijk_loop_kji;                                                \
+   for( ijk_loop_kji = 0; ijk_loop_kji < (LOOP); ijk_loop_kji++ ) { \
+      fprintf( (CONTEXT)->tracefp, " " );                           \
+   }                                                                \
 }
+
+#  define PSO_TRACE_DUMP_API(CONTEXT,TRACES)        \
+if ( ( (CONTEXT)->traceFlags & PSO_TRACE_DUMP ) &&  \
+     ( (CONTEXT)->traceFlags & PSO_TRACE_API  ) ) { \
+   TRACES                                           \
+}
+
+#  define PSO_TRACE_DUMP_NUCLEUS(CONTEXT,TRACES)       \
+if ( ( (CONTEXT)->traceFlags & PSO_TRACE_DUMP ) &&     \
+     ( (CONTEXT)->traceFlags & PSO_TRACE_NUCLEUS ) ) { \
+   TRACES                                              \
+}
+
+#  define PSO_TRACE_ENTER_API(CONTEXT)                                  \
+if ( ( (CONTEXT)->traceFlags & PSO_TRACE_FUNCTION ) &&                  \
+     ( (CONTEXT)->traceFlags & PSO_TRACE_API ) ) {                      \
+   (CONTEXT)->indent += 2;                                              \
+   DO_INDENT( (CONTEXT), (CONTEXT)->indent );                           \
+   fprintf( (CONTEXT)->tracefp, "Entering function %s()\n", __func__ ); \
+}
+
+#  define PSO_TRACE_ENTER_NUCLEUS(CONTEXT)                              \
+if ( ( (CONTEXT)->traceFlags & PSO_TRACE_FUNCTION ) &&                  \
+     ( (CONTEXT)->traceFlags & PSO_TRACE_NUCLEUS ) ) {                  \
+   (CONTEXT)->indent += 2;                                              \
+   DO_INDENT( (CONTEXT), (CONTEXT)->indent );                           \
+   fprintf( (CONTEXT)->tracefp, "Entering function %s()\n", __func__ ); \
+}
+
+#  define PSO_TRACE_EXIT_API(CONTEXT,OK)                                   \
+if ( ( (CONTEXT)->traceFlags & PSO_TRACE_FUNCTION ) &&                     \
+     ( (CONTEXT)->traceFlags & PSO_TRACE_API ) ) {                         \
+   DO_INDENT( (CONTEXT), (CONTEXT)->indent );                              \
+   if ( OK ) {                                                             \
+      fprintf( (CONTEXT)->tracefp, "Exiting  function %s()\n", __func__ ); \
+   }                                                                       \
+   else {                                                                  \
+      fprintf( (CONTEXT)->tracefp, "Exiting function %s() on error\n",     \
+         __func__ );                                                       \
+   }                                                                       \
+   (CONTEXT)->indent -= 2;                                                 \
+}
+
+#  define PSO_TRACE_EXIT_NUCLEUS(CONTEXT,OK)                               \
+if ( ( (CONTEXT)->traceFlags & PSO_TRACE_FUNCTION ) &&                     \
+     ( (CONTEXT)->traceFlags & PSO_TRACE_NUCLEUS ) ) {                     \
+   DO_INDENT( (CONTEXT), (CONTEXT)->indent );                              \
+   if ( OK ) {                                                             \
+      fprintf( (CONTEXT)->tracefp, "Exiting  function %s()\n", __func__ ); \
+   }                                                                       \
+   else {                                                                  \
+      fprintf( (CONTEXT)->tracefp, "Exiting function %s() on error\n",     \
+         __func__ );                                                       \
+   }                                                                       \
+   (CONTEXT)->indent -= 2;                                                 \
+}
+
 #else
-#  define PSO_TRACE(CONTEXT,TRACES)
+
+#  define DO_INDENT(CONTEXT,LOOP)
+#  define PSO_TRACE_DUMP_API(CONTEXT,TRACES)
+#  define PSO_TRACE_DUMP_NUCLEUS(CONTEXT,TRACES)
+#  define PSO_TRACE_ENTER_API(CONTEXT)
+#  define PSO_TRACE_ENTER_NUCLEUS(CONTEXT)
+#  define PSO_TRACE_EXIT_API(CONTEXT,OK)
+#  define PSO_TRACE_EXIT_NUCLEUS(CONTEXT,OK)
+
 #endif
-
-#if defined(PSO_USE_TRACE)
-#  define PSO_TRACE_ENTER(CONTEXT) \
-if ( (CONTEXT)->traceFlags & PSO_TRACE_FUNCTION ) {\
-   (CONTEXT)->indent += 2;\
-   DO_INDENT( (CONTEXT)->indent );\
-   fprintf( stderr, "Entering function %s()\n", __func__ );\
-}
-#  define PSO_TRACE_EXIT(CONTEXT,OK) \
-if ( (CONTEXT)->traceFlags & PSO_TRACE_FUNCTION ) {\
-   DO_INDENT( (CONTEXT)->indent );\
-   if ( OK ) {\
-      fprintf( stderr, "Exiting  function %s()\n", __func__ );\
-   }\
-   else {\
-      fprintf( stderr, "Exiting function %s() on error\n", __func__ );\
-   }\
-   (CONTEXT)->indent -= 2;\
-}
-#else
-#  define PSO_TRACE_ENTER(CONTEXT)
-#  define PSO_TRACE_EXIT(CONTEXT,OK)
-#endif
-
-
-//
-//#  if defined(PSO_USE_TRACE)
-
-#define PSO_END_TRACE 
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
    

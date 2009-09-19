@@ -125,7 +125,9 @@ bool psonTxAddOps( psonTx             * pTx,
                    psonSessionContext * pContext );
 
 #if defined(PSO_USE_TRACE)
-void psonTxDump( psonTx * pTx, int indent );
+void psonTxDump( psonTx             * pTx,
+                 int                  indent,
+                 psonSessionContext * pContext );
 #endif
 
 void psonTxRemoveLastOps( psonTx * pTx, psonSessionContext * pContext );

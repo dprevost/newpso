@@ -151,7 +151,7 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
    PSO_PRE_CONDITION( pBaseAddress != NULL );
    PSO_PRE_CONDITION( length >= (3 << PSON_BLOCK_SHIFT) );
    PSO_INV_CONDITION( g_pBaseAddr != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    pContext->pAllocator = (void *) pAlloc;
    /*
@@ -200,7 +200,7 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
                                 neededBlocks,
                                 pContext );
    if ( errcode != PSO_OK ) {
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return errcode;
    }
    
@@ -248,7 +248,7 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
    
    psonEndBlockSet( SET_OFFSET(pNode), pNode->numBuffers, false, true, pContext );
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return PSO_OK;
 }
 
@@ -276,7 +276,7 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc       * pAlloc,
    bool ok;
    PSO_PRE_CONDITION( pAlloc != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    /* 
     * A bit tricky. To avoid fragmentation, we search for the best fitted
@@ -292,7 +292,7 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc       * pAlloc,
    numBlocks = ((psonFreeBufferNode*)oldNode)->numBuffers;
    if ( numBlocks == requestedBlocks ) {
       /* Special case - perfect match */
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return (void*) oldNode;
    }
    if ( numBlocks > requestedBlocks ) {
@@ -314,7 +314,7 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc       * pAlloc,
       numBlocks = ((psonFreeBufferNode*)currentNode)->numBuffers;
       if ( numBlocks == requestedBlocks ) {
          /* Special case - perfect match */
-         PSO_TRACE_EXIT( pContext, true );
+         PSO_TRACE_EXIT_NUCLEUS( pContext, true );
          return (void*) currentNode;
       }
       if ( numBlocks > requestedBlocks ) {
@@ -340,7 +340,7 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc       * pAlloc,
       oldNode = currentNode;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return (psonFreeBufferNode*) bestNode;
    
  error_exit:
@@ -354,7 +354,7 @@ psonFreeBufferNode * FindBuffer( psonMemAlloc       * pAlloc,
                  g_psoErrorHandle,
                  PSO_NOT_ENOUGH_PSO_MEMORY );
 
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return NULL;
 }
                    
@@ -379,7 +379,7 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
    PSO_PRE_CONDITION( pAlloc   != NULL );
    PSO_PRE_CONDITION( requestedBlocks > 0 );
    PSO_INV_CONDITION( g_pBaseAddr != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    ok = psocTryAcquireProcessLock( &pAlloc->memObj.lock, 
                                    getpid(),
@@ -388,7 +388,7 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
    if ( ! ok ) {
 //BUG?      psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
 // engine busy vs not enough memory ... not the same thing!!!
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return NULL;
    }
    
@@ -445,7 +445,7 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
    }
    psocReleaseProcessLock( &pAlloc->memObj.lock );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return (unsigned char *)pNode;
 }
 
@@ -471,7 +471,7 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
    PSO_PRE_CONDITION( pAlloc   != NULL );
    PSO_PRE_CONDITION( ptr      != NULL );
    PSO_PRE_CONDITION( numBlocks > 0 );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    if ( ! psonLock( &pAlloc->memObj, pContext ) ) {
       /* 
@@ -494,7 +494,7 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
       pFreeHeader->identifier = PSON_IDENT_LIMBO;
       endBlock->isInLimbo = true;
 
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return;
    }
 
@@ -639,7 +639,7 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
    
    psonUnlock( &pAlloc->memObj, pContext );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return;
 }
   
@@ -650,62 +650,64 @@ void psonMemAllocClose( psonMemAlloc       * pAlloc,
 {
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pAlloc   != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    pAlloc->totalAllocBlocks = 0;
    pAlloc->numMallocCalls   = 0;
    pAlloc->numFreeCalls     = 0;
    pAlloc->totalLength      = 0;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonMemAllocDump( psonMemAlloc * pAlloc, int indent )
+void psonMemAllocDump( psonMemAlloc       * pAlloc,
+                       int                  indent,
+                       psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonMemAlloc (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonMemAlloc (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pAlloc, SET_OFFSET(pAlloc) );
    if ( pAlloc == NULL ) return;
 
-   psonMemObjectDump( &pAlloc->memObj, indent + 2 );
+   psonMemObjectDump( &pAlloc->memObj, indent + 2, pContext );
    
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Total space currently allocated: "PSO_SIZE_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Total space currently allocated: "PSO_SIZE_T_FORMAT"\n",
       pAlloc->totalAllocBlocks );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Number of malloc calls: "PSO_SIZE_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Number of malloc calls: "PSO_SIZE_T_FORMAT"\n",
       pAlloc->numMallocCalls );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Number of free calls: "PSO_SIZE_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Number of free calls: "PSO_SIZE_T_FORMAT"\n",
       pAlloc->numFreeCalls );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Number of API objects: "PSO_SIZE_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Number of API objects: "PSO_SIZE_T_FORMAT"\n",
       pAlloc->numApiObjects );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Number of groups of blocks: "PSO_SIZE_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Number of groups of blocks: "PSO_SIZE_T_FORMAT"\n",
       pAlloc->numGroups );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Total size of the shared memory: "PSO_SIZE_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Total size of the shared memory: "PSO_SIZE_T_FORMAT"\n",
       pAlloc->totalLength );
 
-   psonLinkedListDump( &pAlloc->freeList, indent + 2 );
+   psonLinkedListDump( &pAlloc->freeList, indent + 2, pContext );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Bitmap offset: "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Bitmap offset: "PSO_PTRDIFF_T_FORMAT"\n",
       pAlloc->bitmapOffset );
    
-   psonBlockGroupDump( &pAlloc->blockGroup, indent + 2 );
+   psonBlockGroupDump( &pAlloc->blockGroup, indent + 2, pContext );
 
-   DO_INDENT( indent );
-   fprintf( stderr, "psonMemAlloc END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonMemAlloc END\n" );
 }
 #endif
 
@@ -723,7 +725,7 @@ bool psonMemAllocStats( psonMemAlloc       * pAlloc,
    PSO_PRE_CONDITION( pAlloc   != NULL );
    PSO_PRE_CONDITION( pInfo    != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    if ( psonLock( &pAlloc->memObj, pContext ) ) {
 
@@ -754,12 +756,12 @@ bool psonMemAllocStats( psonMemAlloc       * pAlloc,
       
       psonUnlock( &pAlloc->memObj, pContext );
 
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
 
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_ENGINE_BUSY );
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 

@@ -38,12 +38,12 @@ void psonSetFini( psonSet            * pSet,
    PSO_PRE_CONDITION( pSet   != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pSet->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    psonLinkedListFini( &pSet->listOfElements, pContext );
    psonMemObjectFini(  &pSet->memObject, PSON_ALLOC_API_OBJ, pContext );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -65,7 +65,7 @@ bool psonSetGetFirst( psonSet            * pSet,
    PSO_PRE_CONDITION( ppIterator != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pSet->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( pSetNode, pSet->nodeOffset, psonTreeNode );
    GET_PTR( txSetStatus, pSetNode->txStatusOffset, psonTxStatus );
@@ -129,7 +129,7 @@ bool psonSetGetFirst( psonSet            * pSet,
                psocSetError( &pContext->errorHandler,
                              g_psoErrorHandle,
                              PSO_INVALID_LENGTH );
-                PSO_TRACE_EXIT( pContext, false );
+                PSO_TRACE_EXIT_NUCLEUS( pContext, false );
                 return false;
             }
 
@@ -139,7 +139,7 @@ bool psonSetGetFirst( psonSet            * pSet,
             
             psonUnlock( &pSet->memObject, pContext );
 
-            PSO_TRACE_EXIT( pContext, true );
+            PSO_TRACE_EXIT_NUCLEUS( pContext, true );
             return true;
          }
          okList =  psonLinkedListPeakNext( &pSet->listOfElements, 
@@ -150,7 +150,7 @@ bool psonSetGetFirst( psonSet            * pSet,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
@@ -170,7 +170,7 @@ bool psonSetGetFirst( psonSet            * pSet,
    psonUnlock( &pSet->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
 
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -194,7 +194,7 @@ bool psonSetGetNext( psonSet            * pSet,
    PSO_PRE_CONDITION( ppIterator != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pSet->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    GET_PTR( pSetNode, pSet->nodeOffset, psonTreeNode );
    GET_PTR( txSetStatus, pSetNode->txStatusOffset, psonTxStatus );
@@ -261,7 +261,7 @@ bool psonSetGetNext( psonSet            * pSet,
                psocSetError( &pContext->errorHandler,
                              g_psoErrorHandle,
                              PSO_INVALID_LENGTH );
-                PSO_TRACE_EXIT( pContext, false );
+                PSO_TRACE_EXIT_NUCLEUS( pContext, false );
                 return false;
             }
 
@@ -272,7 +272,7 @@ bool psonSetGetNext( psonSet            * pSet,
             
             psonUnlock( &pSet->memObject, pContext );
 
-            PSO_TRACE_EXIT( pContext, true );
+            PSO_TRACE_EXIT_NUCLEUS( pContext, true );
             return true;
          }
          okList =  psonLinkedListPeakNext( &pSet->listOfElements, 
@@ -283,7 +283,7 @@ bool psonSetGetNext( psonSet            * pSet,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
@@ -304,7 +304,7 @@ bool psonSetGetNext( psonSet            * pSet,
    psonUnlock( &pSet->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
 
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -333,7 +333,7 @@ bool psonSetInit( psonSet             * pSet,
    PSO_PRE_CONDITION( parentOffset   != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
    PSO_PRE_CONDITION( origNameLength > 0 );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    errcode = psonMemObjectInit( &pSet->memObject, 
                                 PSON_IDENT_QUEUE,
@@ -344,7 +344,7 @@ bool psonSetInit( psonSet             * pSet,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
@@ -354,7 +354,7 @@ bool psonSetInit( psonSet             * pSet,
 
    pSet->dataDefOffset = SET_OFFSET(pDataDefinition);
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 
@@ -378,7 +378,7 @@ bool psonSetInsert( psonSet            * pSet,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( length  > 0 );
    PSO_PRE_CONDITION( pSet->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pSetNode, pSet->nodeOffset, psonTreeNode );
    GET_PTR( txSetStatus, pSetNode->txStatusOffset, psonTxStatus );
@@ -441,11 +441,11 @@ bool psonSetInsert( psonSet            * pSet,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 the_exit:
@@ -459,7 +459,7 @@ the_exit:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
     
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -473,7 +473,7 @@ bool psonSetRelease( psonSet            * pSet,
    PSO_PRE_CONDITION( pSetItem != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( pSet->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    if ( psonLock( &pSet->memObject, pContext ) ) {
       psonSetReleaseNoLock( pSet,
@@ -484,11 +484,11 @@ bool psonSetRelease( psonSet            * pSet,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 
@@ -512,7 +512,7 @@ void psonSetReleaseNoLock( psonSet            * pSet,
    PSO_PRE_CONDITION( pSetItem != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pSet->memObject.objType == PSON_IDENT_QUEUE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pSetNode, pSet->nodeOffset, psonTreeNode );
    txItemStatus = &pSetItem->txStatus;
@@ -536,7 +536,7 @@ void psonSetReleaseNoLock( psonSet            * pSet,
 
       pSetNode->txCounter--;
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -554,7 +554,7 @@ void psonSetStatus( psonSet            * pSet,
    PSO_PRE_CONDITION( pSet     != NULL );
    PSO_PRE_CONDITION( pStatus  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pSetNode, pSet->nodeOffset, psonTreeNode );
    GET_PTR( txStatus, pSetNode->txStatusOffset, psonTxStatus );
@@ -583,7 +583,7 @@ void psonSetStatus( psonSet            * pSet,
                                            pContext );
       }
    }
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

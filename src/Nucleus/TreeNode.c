@@ -33,36 +33,38 @@ char * apiTypes[] = {
    "Fast Map"
 };
 
-void psonTreeNodeDump( psonTreeNode * pNode, int indent )
+void psonTreeNodeDump( psonTreeNode       * pNode,
+                       int                  indent,
+                       psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonTreeNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonTreeNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pNode, SET_OFFSET(pNode) );
    if ( pNode == NULL ) return;
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "offset of the object: "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "offset of the object: "PSO_PTRDIFF_T_FORMAT"\n",
       pNode->offset );
    if ( pNode->apiType < PSO_FOLDER || pNode->apiType >= PSO_LAST_OBJECT_TYPE ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "object api type: unknown (value: %d)\n", pNode->apiType );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "object api type: unknown (value: %d)\n", pNode->apiType );
    }
    else {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "object api type: %s\n", apiTypes[pNode->apiType-1] );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "object api type: %s\n", apiTypes[pNode->apiType-1] );
    }
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "tx counter: %d\n", pNode->txCounter );
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "tx counter: %d\n", pNode->txCounter );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "offset of the tx status object: "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "offset of the tx status object: "PSO_PTRDIFF_T_FORMAT"\n",
       pNode->txStatusOffset );
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "offset of the parent object: "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "offset of the parent object: "PSO_PTRDIFF_T_FORMAT"\n",
       pNode->myParentOffset );
 
-   DO_INDENT( indent );
-   fprintf( stderr, "psonTreeNode END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonTreeNode END\n" );
 }
 
 #endif

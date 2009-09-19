@@ -62,7 +62,7 @@ bool psonAPIFolderCreateFolder( psonFolder          * pFolder,
    PSO_PRE_CONDITION( pFolder     != NULL );
    PSO_PRE_CONDITION( objectName  != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    strLength = nameLengthInBytes;
 
@@ -107,7 +107,7 @@ bool psonAPIFolderCreateFolder( psonFolder          * pFolder,
       goto error_handler;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 error_handler:
@@ -120,7 +120,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -152,7 +152,7 @@ bool psonAPIFolderCreateObject( psonFolder          * pFolder,
    if ( pDefinition->type != PSO_FOLDER ) {
       PSO_PRE_CONDITION( pDataDefinition  != NULL );
    }
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    strLength = nameLengthInBytes;
 
@@ -197,7 +197,7 @@ bool psonAPIFolderCreateObject( psonFolder          * pFolder,
       goto error_handler;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 error_handler:
@@ -210,7 +210,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -230,7 +230,7 @@ bool psonAPIFolderDestroyObject( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pFolder    != NULL );
    PSO_PRE_CONDITION( objectName != NULL );
    PSO_PRE_CONDITION( pContext   != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    strLength = nameLengthInBytes;
    
@@ -270,7 +270,7 @@ bool psonAPIFolderDestroyObject( psonFolder         * pFolder,
       goto error_handler;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 error_handler:
@@ -283,7 +283,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -309,7 +309,7 @@ bool psonAPIFolderGetDefinition( psonFolder          * pFolder,
    PSO_PRE_CONDITION( pContext         != NULL );
    PSO_PRE_CONDITION( strLength > 0 );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    if ( strLength > PSO_MAX_NAME_LENGTH ) {
       errcode = PSO_OBJECT_NAME_TOO_LONG;
@@ -350,7 +350,7 @@ bool psonAPIFolderGetDefinition( psonFolder          * pFolder,
       goto error_handler;
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 
 error_handler:
@@ -363,7 +363,7 @@ error_handler:
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -384,7 +384,7 @@ bool psonAPIFolderGetFirst( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pItem    != NULL )
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
    GET_PTR( txFolderStatus, pFolderNode->txStatusOffset, psonTxStatus );
@@ -411,7 +411,7 @@ bool psonAPIFolderGetFirst( psonFolder         * pFolder,
             
             psonUnlock( &pFolder->memObject, pContext );
             
-            PSO_TRACE_EXIT( pContext, true );
+            PSO_TRACE_EXIT_NUCLEUS( pContext, true );
             return true;
          }
   
@@ -424,13 +424,13 @@ bool psonAPIFolderGetFirst( psonFolder         * pFolder,
       psonUnlock( &pFolder->memObject, pContext );
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_IS_EMPTY );
 
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
 
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
    
@@ -454,7 +454,7 @@ bool psonAPIFolderGetNext( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
    PSO_PRE_CONDITION( pItem->pHashItem  != NULL );
    PSO_PRE_CONDITION( pItem->itemOffset != PSON_NULL_OFFSET );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
    GET_PTR( txFolderStatus, pFolderNode->txStatusOffset, psonTxStatus );
@@ -489,7 +489,7 @@ bool psonAPIFolderGetNext( psonFolder         * pFolder,
 
             psonUnlock( &pFolder->memObject, pContext );
             
-            PSO_TRACE_EXIT( pContext, true );
+            PSO_TRACE_EXIT_NUCLEUS( pContext, true );
             return true;
          }
   
@@ -501,7 +501,7 @@ bool psonAPIFolderGetNext( psonFolder         * pFolder,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
@@ -518,7 +518,7 @@ bool psonAPIFolderGetNext( psonFolder         * pFolder,
    psonUnlock( &pFolder->memObject, pContext );
    psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_REACHED_THE_END );
 
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -535,7 +535,7 @@ void psonAPIFolderStatus( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pStatus  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
    GET_PTR( txStatus, pFolderNode->txStatusOffset, psonTxStatus );
@@ -545,7 +545,7 @@ void psonAPIFolderStatus( psonFolder         * pFolder,
    pStatus->maxDataLength = 0;
    pStatus->maxKeyLength  = 0;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* End of psonAPIFolder functions */
@@ -569,7 +569,7 @@ void psonFolderCommitEdit( psonFolder         * pFolder,
    PSO_PRE_CONDITION( ppOldMemObj != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
    PSO_PRE_CONDITION( objectType == PSON_IDENT_MAP );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pNodeEdit, pHashItem->dataOffset, psonTreeNode );
 
@@ -605,7 +605,7 @@ void psonFolderCommitEdit( psonFolder         * pFolder,
                             pContext );
    if ( isRemoved ) *ppOldMemObj = &pMapLatest->memObject; /* The old copy */
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -618,11 +618,11 @@ bool psonFolderDeletable( psonFolder         * pFolder,
    psonHashTxItem * pItem;
    ptrdiff_t txOffset = SET_OFFSET( pContext->pTransaction );
    bool found;
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    /* The easy case */
    if ( pFolder->hashObj.numberOfItems == 0 ) {
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
    /*
@@ -636,11 +636,11 @@ bool psonFolderDeletable( psonFolder         * pFolder,
    while ( found ) {
       GET_PTR( pItem, offset, psonHashTxItem );
       if ( pItem->txStatus.txOffset != txOffset ) {
-         PSO_TRACE_EXIT( pContext, false );
+         PSO_TRACE_EXIT_NUCLEUS( pContext, false );
          return false;
       }
       if ( ! psonTxStatusIsMarkedAsDestroyed( &pItem->txStatus, pContext ) ) {
-         PSO_TRACE_EXIT( pContext, false );
+         PSO_TRACE_EXIT_NUCLEUS( pContext, false );
          return false;
       }
       
@@ -652,7 +652,7 @@ bool psonFolderDeletable( psonFolder         * pFolder,
                                  pContext );
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 
@@ -679,7 +679,7 @@ bool psonFolderDeleteObject( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( strLength > 0 );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    errcode = psonValidateString( objectName, 
                                  strLength, 
@@ -766,7 +766,7 @@ bool psonFolderDeleteObject( psonFolder         * pFolder,
       
       psonUnlock( &pFolder->memObject, pContext );
 
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
 
@@ -810,7 +810,7 @@ bool psonFolderDeleteObject( psonFolder         * pFolder,
                                 strLength - partialLength - 1,
                                 pContext );
    PSO_POST_CONDITION( ok == true || ok == false );
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
    
 the_exit:
@@ -822,41 +822,43 @@ the_exit:
    
    psonUnlock( &pFolder->memObject, pContext );
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(PSO_USE_TRACE)
-void psonFolderDump( psonFolder * pFolder, int indent )
+void psonFolderDump( psonFolder         * pFolder,
+                     int                  indent,
+                     psonSessionContext * pContext )
 {
-   DO_INDENT( indent );
-   fprintf( stderr, "psonFolder (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonFolder (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
       pFolder, SET_OFFSET(pFolder) );
    if ( pFolder == NULL ) return;
 
-   psonMemObjectDump( &pFolder->memObject, indent + 2 );
+   psonMemObjectDump( &pFolder->memObject, indent + 2, pContext );
 
-   DO_INDENT( indent + 2 );
-   fprintf( stderr, "Node offset: "PSO_PTRDIFF_T_FORMAT"\n", 
+   DO_INDENT( pContext, indent + 2 );
+   fprintf( pContext->tracefp, "Node offset: "PSO_PTRDIFF_T_FORMAT"\n", 
       pFolder->nodeOffset );
 
-   psonHashTxDump( &pFolder->hashObj, indent + 2 );
+   psonHashTxDump( &pFolder->hashObj, indent + 2, pContext );
    
    if ( pFolder->isSystemObject ) {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "This folder is a system object\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "This folder is a system object\n" );
    }
    else {
-      DO_INDENT( indent + 2 );
-      fprintf( stderr, "This folder is not a system object\n" );
+      DO_INDENT( pContext, indent + 2 );
+      fprintf( pContext->tracefp, "This folder is not a system object\n" );
    }
 
-   psonBlockGroupDump( &pFolder->blockGroup, indent + 2 );
+   psonBlockGroupDump( &pFolder->blockGroup, indent + 2, pContext );
  
-   DO_INDENT( indent );
-   fprintf( stderr, "psonFolder END\n" );
+   DO_INDENT( pContext, indent );
+   fprintf( pContext->tracefp, "psonFolder END\n" );
 }
 #endif
 
@@ -892,7 +894,7 @@ bool psonFolderEditObject( psonFolder         * pFolder,
    PSO_PRE_CONDITION( strLength > 0 );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
    PSO_PRE_CONDITION( objectType > 0 && objectType < PSO_LAST_OBJECT_TYPE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    errcode = psonValidateString( objectName, 
                                  strLength, 
@@ -932,8 +934,8 @@ bool psonFolderEditObject( psonFolder         * pFolder,
       GET_PTR( pFolderNode, pFolder->nodeOffset, psonTreeNode );
       GET_PTR( txFolderStatus, pFolderNode->txStatusOffset, psonTxStatus );
 
-      PSO_TRACE( pContext, 
-         psonFolderDump(pFolder, pContext->indent);
+      PSO_TRACE_DUMP_NUCLEUS( pContext, 
+         psonFolderDump(pFolder, pContext->indent, pContext);
          );
       /* 
        * If the transaction id of the object (to open) is equal to the 
@@ -1088,7 +1090,7 @@ bool psonFolderEditObject( psonFolder         * pFolder,
 
       psonUnlock( &pFolder->memObject, pContext );
 
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
    
@@ -1121,7 +1123,7 @@ bool psonFolderEditObject( psonFolder         * pFolder,
                               pContext );
    PSO_POST_CONDITION( ok == true || ok == false );
    
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
 
 the_exit:
@@ -1136,7 +1138,7 @@ the_exit:
    
    psonUnlock( &pFolder->memObject, pContext );
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -1148,14 +1150,14 @@ void psonFolderFini( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pFolder  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    psonHashTxFini( &pFolder->hashObj, pContext );
    
    /* This call must be last - put a barrier here ? */ 
    psonMemObjectFini(  &pFolder->memObject, PSON_ALLOC_API_OBJ, pContext );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -1182,7 +1184,7 @@ bool psonFolderFindObject( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pContext    != NULL );
    PSO_PRE_CONDITION( strLength > 0 );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    errcode = psonValidateString( objectName, 
                                  strLength, 
@@ -1218,7 +1220,7 @@ bool psonFolderFindObject( psonFolder         * pFolder,
 
       *ppFoundItem = pHashItem;      
 
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
 
@@ -1265,7 +1267,7 @@ bool psonFolderFindObject( psonFolder         * pFolder,
                                ppFoundItem,
                                pContext );
    PSO_POST_CONDITION( ok == true || ok == false );
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
    
 the_exit:
@@ -1277,7 +1279,7 @@ the_exit:
    
    psonUnlock( &pFolder->memObject, pContext );
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -1313,7 +1315,7 @@ bool psonFolderGetDefinition( psonFolder          * pFolder,
    PSO_PRE_CONDITION( pContext         != NULL );
    PSO_PRE_CONDITION( strLength > 0 );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    errcode = psonValidateString( objectName, 
                                  strLength, 
@@ -1398,7 +1400,7 @@ bool psonFolderGetDefinition( psonFolder          * pFolder,
       
       psonUnlock( &pFolder->memObject, pContext );
 
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
    
@@ -1432,7 +1434,7 @@ bool psonFolderGetDefinition( psonFolder          * pFolder,
                                  pContext );
    PSO_POST_CONDITION( ok == true || ok == false );
 
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
 
 the_exit:
@@ -1447,7 +1449,7 @@ the_exit:
    
    psonUnlock( &pFolder->memObject, pContext );
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -1481,7 +1483,7 @@ bool psonFolderGetDefLength( psonFolder          * pFolder,
    PSO_PRE_CONDITION( pContext       != NULL );
    PSO_PRE_CONDITION( strLength > 0 );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    errcode = psonValidateString( objectName, 
                                  strLength, 
@@ -1564,7 +1566,7 @@ bool psonFolderGetDefLength( psonFolder          * pFolder,
       
       psonUnlock( &pFolder->memObject, pContext );
 
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
    
@@ -1597,7 +1599,7 @@ bool psonFolderGetDefLength( psonFolder          * pFolder,
                                 pContext );
    PSO_POST_CONDITION( ok == true || ok == false );
 
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
 
 the_exit:
@@ -1612,7 +1614,7 @@ the_exit:
    
    psonUnlock( &pFolder->memObject, pContext );
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -1643,7 +1645,7 @@ bool psonFolderGetObject( psonFolder         * pFolder,
    PSO_PRE_CONDITION( strLength > 0 );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
    PSO_PRE_CONDITION( objectType > 0 && objectType < PSO_LAST_OBJECT_TYPE );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    errcode = psonValidateString( objectName, 
                                  strLength, 
@@ -1695,7 +1697,7 @@ bool psonFolderGetObject( psonFolder         * pFolder,
 
       psonUnlock( &pFolder->memObject, pContext );
 
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
    
@@ -1728,7 +1730,7 @@ bool psonFolderGetObject( psonFolder         * pFolder,
                              pContext );
    PSO_POST_CONDITION( ok == true || ok == false );
    
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
 
 the_exit:
@@ -1743,7 +1745,7 @@ the_exit:
    
    psonUnlock( &pFolder->memObject, pContext );
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -1775,7 +1777,7 @@ bool psonFolderGetStatus( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pContext   != NULL );
    PSO_PRE_CONDITION( strLength > 0 );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    errcode = psonValidateString( objectName, 
                                  strLength, 
@@ -1855,7 +1857,7 @@ bool psonFolderGetStatus( psonFolder         * pFolder,
       
       psonUnlock( &pFolder->memObject, pContext );
 
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
    
@@ -1887,7 +1889,7 @@ bool psonFolderGetStatus( psonFolder         * pFolder,
                              pContext );
    PSO_POST_CONDITION( ok == true || ok == false );
    
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
 
 the_exit:
@@ -1902,7 +1904,7 @@ the_exit:
    
    psonUnlock( &pFolder->memObject, pContext );
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -1922,7 +1924,7 @@ bool psonFolderInit( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pNode     != NULL );
    PSO_PRE_CONDITION( parentOffset   != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks  > 0 );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    errcode = psonMemObjectInit( &pFolder->memObject, 
                                 PSON_IDENT_FOLDER,
@@ -1933,7 +1935,7 @@ bool psonFolderInit( psonFolder         * pFolder,
       psocSetError( &pContext->errorHandler,
                     g_psoErrorHandle,
                     errcode );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
@@ -1947,13 +1949,13 @@ bool psonFolderInit( psonFolder         * pFolder,
       psocSetError( &pContext->errorHandler, 
                     g_psoErrorHandle, 
                     errcode );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
    
    pFolder->isSystemObject = false;
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 
@@ -1994,11 +1996,11 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
    }
    PSO_PRE_CONDITION( strLength > 0 );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   PSO_TRACE( pContext,
-      fprintf( stderr, "Object Name: %s\n", objectName );
-      psonFolderDump(pFolder, 0);
+   PSO_TRACE_DUMP_NUCLEUS( pContext,
+      fprintf( pContext->tracefp, "Object Name: %s\n", objectName, pContext );
+      psonFolderDump(pFolder, pContext->indent, pContext);
       );
 
    errcode = psonValidateString( objectName, 
@@ -2029,9 +2031,9 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
        * once we have many types of objects
        */
 
-      PSO_TRACE( pContext,
-                 fprintf( stderr, "Object Name: %s\n", objectName );
-                 psonFolderDump(pFolder, 0);
+      PSO_TRACE_DUMP_NUCLEUS( pContext,
+                 fprintf( pContext->tracefp, "Object Name: %s\n", objectName );
+                 psonFolderDump(pFolder, pContext->indent, pContext);
                  );
 
       found = psonHashTxGet( &pFolder->hashObj, 
@@ -2193,7 +2195,7 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
       }
       psonUnlock( &pFolder->memObject, pContext );
 
-      PSO_TRACE_EXIT( pContext, true );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
    
@@ -2246,7 +2248,7 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
                                 pContext );
    PSO_POST_CONDITION( ok == true || ok == false );
 
-   PSO_TRACE_EXIT( pContext, ok );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, ok );
    return ok;
    
 the_exit:
@@ -2261,7 +2263,7 @@ the_exit:
    
    psonUnlock( &pFolder->memObject, pContext );
    
-   PSO_TRACE_EXIT( pContext, false );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
 
@@ -2278,7 +2280,7 @@ bool psonFolderRelease( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pFolderItem != NULL );
    PSO_PRE_CONDITION( pContext    != NULL );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    txItemStatus = &pFolderItem->pHashItem->txStatus;
    GET_PTR( pNode, pFolder->nodeOffset, psonTreeNode );
@@ -2294,11 +2296,11 @@ bool psonFolderRelease( psonFolder         * pFolder,
    }
    else {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
 }
 
@@ -2317,7 +2319,7 @@ void psonFolderReleaseNoLock( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    txItemStatus = &pHashItem->txStatus;
    GET_PTR( pNode, pFolder->nodeOffset, psonTreeNode );
@@ -2344,7 +2346,7 @@ void psonFolderReleaseNoLock( psonFolder         * pFolder,
       }
    }
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -2366,7 +2368,7 @@ void psonFolderRemoveObject( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pNode, pHashItem->dataOffset, psonTreeNode );
    GET_PTR( ptrObject, pNode->offset, void );
@@ -2418,7 +2420,7 @@ void psonFolderRemoveObject( psonFolder         * pFolder,
       ;
    }        
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -2431,7 +2433,7 @@ void psonFolderResize( psonFolder         * pFolder,
 
    PSO_PRE_CONDITION( pFolder  != NULL );
    PSO_PRE_CONDITION( pContext != NULL );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    /*
     * Do we need to resize? We need both conditions here:
@@ -2449,7 +2451,7 @@ void psonFolderResize( psonFolder         * pFolder,
          psonHashTxResize( &pFolder->hashObj, pContext );
    }
    
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -2469,7 +2471,7 @@ void psonFolderRollbackEdit( psonFolder         * pFolder,
    PSO_PRE_CONDITION( pHashItem != NULL );
    PSO_PRE_CONDITION( pContext  != NULL );
    PSO_PRE_CONDITION( objectType == PSON_IDENT_MAP );
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    GET_PTR( pNode, pHashItem->dataOffset, psonTreeNode );
 
@@ -2504,7 +2506,7 @@ void psonFolderRollbackEdit( psonFolder         * pFolder,
                             isRemoved,
                             pContext );
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -2517,11 +2519,11 @@ psoErrors psonValidateString( const char         * objectName,
 {
    uint32_t i;
    bool last = true;
-   PSO_TRACE_ENTER( pContext );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    /* The first char is always special - it cannot be '/' */
    if ( ! isalpha( (int) objectName[0] )  ) {
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return PSO_INVALID_OBJECT_NAME;
    }
    
@@ -2535,19 +2537,19 @@ psoErrors psonValidateString( const char         * objectName,
          break;
       }
       if ( !( isalnum((int) objectName[i]) || (objectName[i] == '_') ) ) {
-         PSO_TRACE_EXIT( pContext, false );
+         PSO_TRACE_EXIT_NUCLEUS( pContext, false );
          return PSO_INVALID_OBJECT_NAME;
       }
    }
    if ( i > PSO_MAX_NAME_LENGTH ) {
-      PSO_TRACE_EXIT( pContext, false );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return PSO_OBJECT_NAME_TOO_LONG;
    }
    
    *pPartialLength = i;
    *pLastIteration = last;
 
-   PSO_TRACE_EXIT( pContext, true );
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return PSO_OK;
 }
 
