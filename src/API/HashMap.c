@@ -617,7 +617,7 @@ int psoHashMapOpen( PSO_HANDLE   sessionHandle,
 error_handler:
 
    free(pHashMap);
-   psocSetError( &pHashMap->object.pSession->context.errorHandler, 
+   psocSetError( &pSession->context.errorHandler, 
                  g_psoErrorHandle, errcode );
 
    PSO_TRACE_EXIT_API( &pSession->context, false );

@@ -127,6 +127,8 @@ def build(bld):
    print bld.env['MORE_TESTS']
    print sys.platform, ' ', os.name
 
+   print bld.env['WX_FLAGS']
+   
 def check(context):
    print 'ok check'
    # Unit tests are run when "check" target is used

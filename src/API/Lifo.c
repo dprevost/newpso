@@ -311,8 +311,7 @@ int psoLifoOpen( PSO_HANDLE   sessionHandle,
    }
 
    if ( errcode != PSO_OK ) {
-      psocSetError( &pLifo->object.pSession->context.errorHandler, 
-         g_psoErrorHandle, errcode );
+      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, errcode );
       free(pLifo);
    }
    else {

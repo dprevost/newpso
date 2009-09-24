@@ -311,7 +311,7 @@ int psoQueueOpen( PSO_HANDLE   sessionHandle,
    }
 
    if ( errcode != PSO_OK ) {
-      psocSetError( &pQueue->object.pSession->context.errorHandler, 
+      psocSetError( &pSession->context.errorHandler, 
          g_psoErrorHandle, errcode );
       free(pQueue);
    }

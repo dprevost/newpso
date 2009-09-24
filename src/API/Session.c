@@ -815,8 +815,9 @@ int psoInitSession( PSO_HANDLE * sessionHandle )
    memset( pSession, 0, sizeof(psoaSession) );
    pSession->type = PSOA_SESSION;
 
-   pSession->context.pidLocker = getpid();
-   psocInitErrorHandler( &pSession->context.errorHandler );
+//   pSession->context.pidLocker = getpid();
+//   psocInitErrorHandler( &pSession->context.errorHandler );
+   psonInitSessionContext( &pSession->context );
 
    /*
     * From this point we can use "goto error_handler" to recover
@@ -1121,7 +1122,7 @@ void psoaSessionTrace( psoaSession * pSession,
    
    pSession->context.traceFlags = traceFlags;
 #if !defined(PSO_USE_TRACE)
-   if ( traceOn ) fprintf( stderr, "Warning: not built with trace enable\n" );
+   if ( traceFlags ) fprintf( stderr, "Warning: not built with trace enable\n" );
 #endif
 
 }

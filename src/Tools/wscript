@@ -13,8 +13,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 subdirs_list = [
-        'Common', 'Nucleus', 'Quasar', 'API', 'Tools']
+        'Debugger']
 
 def build(bld):
    bld.add_subdirs( subdirs_list )
-

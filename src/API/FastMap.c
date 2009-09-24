@@ -297,7 +297,7 @@ int psoFastMapEdit( PSO_HANDLE   sessionHandle,
 error_handler:
 
    if ( pHashMap ) free(pHashMap);
-   psocSetError( &pHashMap->object.pSession->context.errorHandler, 
+   psocSetError( &pSession->context.errorHandler, 
       g_psoErrorHandle, errcode );
    
    PSO_TRACE_EXIT_API( &pSession->context, false );
@@ -737,7 +737,7 @@ int psoFastMapOpen( PSO_HANDLE   sessionHandle,
 error_handler:
 
    if ( pHashMap ) free(pHashMap);
-   psocSetError( &pHashMap->object.pSession->context.errorHandler, 
+   psocSetError( &pSession->context.errorHandler, 
       g_psoErrorHandle, errcode );
    
    PSO_TRACE_EXIT_API( &pSession->context, false );

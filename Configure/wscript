@@ -15,6 +15,7 @@
 import Utils, platform
 import sys
 import Options
+import subprocess
 
 srcdir = '..'
 blddir = '../build'
@@ -412,9 +413,23 @@ return 0; }
    
    conf.define('BUILD_CPU', platform.machine() )
    
-   #print conf.env["CC"]
+   # ------------------------------------------
    
-   #print 'zz' + conf.env["COMPILER_NAME"]
+   try:
+      outlibs = subprocess.Popen(["wx-config", "--libs", "--version=2.8"],
+         stdout=subprocess.PIPE).communicate()[0]
+      outflags = subprocess.Popen(["wx-config", "--cxxflags", "--version=2.8"],
+         stdout=subprocess.PIPE).communicate()[0]
+         
+   except:
+      print 'wxWidgets is not installed on this system or has the wrong version'
+      raise conf.fatal('Please install it, if you can')
+   
+   conf.env['CXXFLAGS_WX']  = outflags.split()
+   conf.env['LINKFLAGS_WX'] = outlibs.split()
+        
+   # ------------------------------------------
+   
    
    conf.sub_config('inline')
    conf.sub_config('access')

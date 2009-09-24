@@ -58,6 +58,12 @@ BEGIN_C_DECLS
 psocErrorHandler g_errorHandle;
 pid_t g_spawnPid = 0;
 
+#define ASSERT_END_CLEAN(TEST)                                 \
+   if ( ! (TEST) ) {                                           \
+      fprintf(stderr, "Failed \"clean assert\" at %d in %s\n", \
+         __LINE__, __FILE__ );                                 \
+   }
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 bool testQuasar()

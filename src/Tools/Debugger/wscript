@@ -12,9 +12,19 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-subdirs_list = [
-        'Common', 'Nucleus', 'Quasar', 'API', 'Tools']
+debugger_list = [
+        'app.cpp',
+        'generated.cpp']
 
 def build(bld):
-   bld.add_subdirs( subdirs_list )
+
+   debugger_exe = bld.new_task_gen(
+      features     = 'cxx cprogram',
+      source       = debugger_list,
+      includes     = '../.. ../../include',
+      uselib_local = 'Common Nucleus',
+      uselib       = 'WX',
+      target       = 'psodbg')
+
+   debugger_exe_release = debugger_exe.clone('release')
 
