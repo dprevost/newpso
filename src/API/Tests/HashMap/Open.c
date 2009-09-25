@@ -20,14 +20,26 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/HashMap.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE objHandle,  sessionHandle;
    PSO_HANDLE objHandle2, sessionHandle2;
@@ -43,12 +55,7 @@ int main( int argc, char * argv[] )
    
    memset( junk, 0, 12 );
    
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", "Open" );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -112,7 +119,7 @@ int main( int argc, char * argv[] )
                              "/api_hashmap_open/test",
                              0,
                              &objHandle );
-   assert_true( errcode == INVALID_LENGTH );
+   assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoHashMapOpen( sessionHandle,
                              "/api_hashmap_open/test",
@@ -133,17 +140,6 @@ int main( int argc, char * argv[] )
                              &objHandle2 );
    assert_true( errcode == PSO_OBJECT_IS_IN_USE );
 
-   errcode = psoHashMapInsert( objHandle, 
-                               data1, 
-                               strlen(data1), 
-                               data1,
-                               strlen(data1),
-                               dataDefHandle );
-   if ( errcode != PSO_DATA_DEF_UNSUPPORTED ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-
    errcode = psoHashMapOpen( sessionHandle,
                              "/api_hashmap_open/test",
                              strlen("/api_hashmap_open/test"),
@@ -153,46 +149,23 @@ int main( int argc, char * argv[] )
    psoHashMapClose( objHandle );
    psoRollback( sessionHandle );
 
-   errcode = psoCreateFolder( sessionHandle,
-                              "/api_hashmap_open",
-                              strlen("/api_hashmap_open") );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoDataDefCreate( sessionHandle,
-                               "Definition2",
-                               strlen("Definition2"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-   
-   mapDef.flags = PSO_MULTIPLE_DATA_DEFINITIONS;
-   errcode = psoCreateMap( sessionHandle,
-                           "/api_hashmap_open/test",
-                           strlen("/api_hashmap_open/test"),
-                           &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoHashMapOpen( sessionHandle,
-                             "/api_hashmap_open/test",
-                             strlen("/api_hashmap_open/test"),
-                             &objHandle );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoHashMapInsert( objHandle, 
-                               data1, 
-                               strlen(data1), 
-                               data1,
-                               strlen(data1),
-                               dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    psoExit();
+}
 
-   return 0;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

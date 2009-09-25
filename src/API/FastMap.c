@@ -123,6 +123,12 @@ int psoFastMapDefinition( PSO_HANDLE   objectHandle,
       goto error_handler;
    }
 
+   if ( pHashMap->object.pSession->terminated ) {
+      errcode = PSO_SESSION_IS_TERMINATED;
+      return errcode;
+//      goto error_handler;
+   }
+
    pDataDefinition = malloc( sizeof(psoaDataDefinition) );
    if ( pDataDefinition == NULL ) {
       errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
@@ -131,11 +137,6 @@ int psoFastMapDefinition( PSO_HANDLE   objectHandle,
    pKeyDefinition = malloc( sizeof(psoaKeyDefinition) );
    if ( pKeyDefinition == NULL ) {
       errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-
-   if ( pHashMap->object.pSession->terminated ) {
-      errcode = PSO_SESSION_IS_TERMINATED;
       goto error_handler;
    }
    

@@ -125,7 +125,7 @@ void test_pass( void ** state )
    /* Test of the data definition with inserts . */
    errcode = psoFastMapInsert( objHandle, key, strlen(key), data1, lenData );
    assert_true( errcode == PSO_OK );
-
+fprintf(stderr, "ok 1 \n" );
    /* Invalid arguments to tested function. */
 
    errcode = psoFastMapDefinition( NULL, 
@@ -143,6 +143,7 @@ void test_pass( void ** state )
                                    NULL );
    assert_true( errcode == PSO_NULL_POINTER );
 
+fprintf(stderr, "ok 2 \n" );
    /* End of invalid args. This call should succeed. */
    errcode = psoFastMapDefinition( objHandle, 
                                    &retKeyDefHandle,
@@ -165,14 +166,17 @@ void test_pass( void ** state )
 
    /* Close the session and try to act on the object */
 
+fprintf(stderr, "ok 3 \n" );
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
+fprintf(stderr, "ok 5 \n" );
 
    errcode = psoFastMapDefinition( objHandle,
                                    &retKeyDefHandle,
                                    &retDataDefHandle );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
+fprintf(stderr, "ok 4 \n" );
    psoExit();
    
 #endif

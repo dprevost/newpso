@@ -49,7 +49,7 @@ int psoHashMapClose( PSO_HANDLE objectHandle )
    pHashMap->object.pSession->context.indent = 0;
    PSO_TRACE_ENTER_API( &pHashMap->object.pSession->context );
 
-   if ( ! pHashMap->object.pSession->terminated ) {
+   if ( pHashMap->object.pSession->terminated ) {
       errcode = PSO_SESSION_IS_TERMINATED;
       goto error_handler;
    }
@@ -137,7 +137,7 @@ int psoHashMapDefinition( PSO_HANDLE   objectHandle,
       goto error_handler;
    }
    
-   if ( ! pHashMap->object.pSession->terminated ) {
+   if ( pHashMap->object.pSession->terminated ) {
       errcode = PSO_SESSION_IS_TERMINATED;
       goto error_handler;
    }
@@ -519,7 +519,7 @@ int psoHashMapInsert( PSO_HANDLE   objectHandle,
       goto error_handler;
    }
 
-   if ( ! pHashMap->object.pSession->terminated ) {
+   if ( pHashMap->object.pSession->terminated ) {
       errcode = PSO_SESSION_IS_TERMINATED;
       goto error_handler;
    }
@@ -597,7 +597,7 @@ int psoHashMapOpen( PSO_HANDLE   sessionHandle,
    pHashMap->object.type = PSOA_HASH_MAP;
    pHashMap->object.pSession = pSession;
 
-   if ( ! pHashMap->object.pSession->terminated ) {
+   if ( pHashMap->object.pSession->terminated ) {
       errcode = PSO_SESSION_IS_TERMINATED;
       goto error_handler;
    }
@@ -654,7 +654,7 @@ int psoHashMapReplace( PSO_HANDLE   objectHandle,
       goto error_handler;
    }
 
-   if ( ! pHashMap->object.pSession->terminated ) {
+   if ( pHashMap->object.pSession->terminated ) {
       errcode = PSO_SESSION_IS_TERMINATED;
       goto error_handler;
    }
@@ -715,7 +715,7 @@ int psoHashMapStatus( PSO_HANDLE     objectHandle,
       goto error_handler;
    }
 
-   if ( ! pHashMap->object.pSession->terminated ) {
+   if ( pHashMap->object.pSession->terminated ) {
       errcode = PSO_SESSION_IS_TERMINATED;
       goto error_handler;
    }

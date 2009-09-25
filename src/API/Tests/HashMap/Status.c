@@ -20,14 +20,26 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/HashMap.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE objHandle, sessionHandle;
    int errcode;
@@ -43,12 +55,7 @@ int main( int argc, char * argv[] )
    };
    PSO_HANDLE keyDefHandle, dataDefHandle;
 
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", "Status" );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -95,22 +102,19 @@ int main( int argc, char * argv[] )
                                key1,
                                7,
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
    errcode = psoHashMapInsert( objHandle,
                                key2,
                                7,
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
    errcode = psoHashMapInsert( objHandle,
                                key3,
                                7,
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
@@ -125,22 +129,28 @@ int main( int argc, char * argv[] )
    errcode = psoHashMapStatus( objHandle, &status );
    assert_true( errcode == PSO_OK );
 
-   if ( status.numDataItem != 3 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( status.numBlocks != 1 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( status.numBlockGroup != 1 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( status.freeBytes == 0 || status.freeBytes >=PSON_BLOCK_SIZE ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( status.numDataItem == 3 );
+   assert_true( status.numBlocks == 1 );
+   assert_true( status.numBlockGroup == 1 );
+   assert_false( status.freeBytes == 0 || status.freeBytes >=PSON_BLOCK_SIZE );
    
    psoExit();
+}
 
-   return 0;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

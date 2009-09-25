@@ -19,7 +19,8 @@ subdirs_list = [
         'CommonObject',
         'Connector',
         'DataDefinition',
-        'FastMap' ]
+        'Folder',
+        'HashMap' ]
 
 def build(bld):
    
