@@ -20,14 +20,100 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/HashMap.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_data( void ** state )
+{
+   PSO_HANDLE objHandle, sessionHandle;
+   int errcode;
+   const char * key  = "My Key";
+   const char * data = "My Data";
+   psoObjectDefinition mapDef = { PSO_HASH_MAP, 0, 0 };
+   psoKeyFieldDefinition keyDef = { "MyKey", PSO_KEY_VARCHAR, 10 };
+   psoFieldDefinition fields[1] = {
+      { "Field_1", PSO_VARCHAR, {10} }
+   };
+   PSO_HANDLE keyDefHandle, dataDefHandle;
+   unsigned char * keyBuffer;
+   unsigned int keyLength, bufferLength;
+
+   errcode = psoInit( "10701", NULL );
+   assert_true( errcode == PSO_OK );
+   
+   errcode = psoInitSession( &sessionHandle );
+   assert_true( errcode == PSO_OK );
+
+   errcode = psoCreateFolder( sessionHandle,
+                              "/api_hashmap_first_null_data",
+                              strlen("/api_hashmap_first_null_data") );
+   assert_true( errcode == PSO_OK );
+
+   errcode = psoKeyDefCreate( sessionHandle,
+                              "API_Hashmap_FirstNullData",
+                              strlen("API_Hashmap_FirstNullData"),
+                              PSO_DEF_PHOTON_ODBC_SIMPLE,
+                              (unsigned char *)&keyDef,
+                              sizeof(psoKeyFieldDefinition),
+                              &keyDefHandle );
+   assert_true( errcode == PSO_OK );
+   
+   errcode = psoDataDefCreate( sessionHandle,
+                               "API_Hashmap_FirstNullData",
+                               strlen("API_Hashmap_FirstNullData"),
+                               PSO_DEF_PHOTON_ODBC_SIMPLE,
+                               (unsigned char *)fields,
+                               sizeof(psoFieldDefinition),
+                               &dataDefHandle );
+   assert_true( errcode == PSO_OK );
+
+   errcode = psoCreateMap( sessionHandle,
+                           "/api_hashmap_first_null_data/test",
+                           strlen("/api_hashmap_first_null_data/test"),
+                           &mapDef,
+                           dataDefHandle,
+                           keyDefHandle );
+   assert_true( errcode == PSO_OK );
+
+   errcode = psoHashMapOpen( sessionHandle,
+                             "/api_hashmap_first_null_data/test",
+                             strlen("/api_hashmap_first_null_data/test"),
+                             &objHandle );
+   assert_true( errcode == PSO_OK );
+
+   errcode = psoHashMapInsert( objHandle,
+                               key,
+                               6,
+                               data,
+                               7 );
+   assert_true( errcode == PSO_OK );
+
+   expect_assert_failure( psoaHashMapFirst( objHandle,
+                                            &keyBuffer,
+                                            &keyLength, 
+                                            NULL,
+                                            &bufferLength ) );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE objHandle, sessionHandle;
    int errcode;
@@ -42,12 +128,7 @@ int main( int argc, char * argv[] )
    unsigned char * keyBuffer, * buffer;
    unsigned int keyLength, bufferLength;
 
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", "First" );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -94,20 +175,32 @@ int main( int argc, char * argv[] )
                                key,
                                6,
                                data,
-                               7,
-                               NULL );
+                               7 );
    assert_true( errcode == PSO_OK );
 
    errcode = psoaHashMapFirst( objHandle, &keyBuffer, &keyLength, 
                                &buffer, &bufferLength );
    assert_true( errcode == PSO_OK );
-   if ( memcmp( buffer, data, 7 ) != 0 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( memcmp( buffer, data, 7 ) == 0 );
    
    psoExit();
+}
 
-   return 0;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_null_data, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,      setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
