@@ -18,19 +18,28 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include <wx/wx.h>
+#include "Tools/Debugger/tree.h"
+#include "Tools/Debugger/app.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-class MyApp : public wxApp
+BEGIN_EVENT_TABLE(MyTree, wxTreeCtrl)
+  EVT_TREE_ITEM_EXPANDING( MY_TREE_ID, MyTree::OnExpanding)
+END_EVENT_TABLE()
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+MyTree::MyTree( wxWindow * parent, wxWindowID id )
+   : wxTreeCtrl( parent, id, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE )
 {
-public:
-   virtual bool OnInit();
-};
+}
+
+//t wxSize& size = wxDefaultSize, long style = wxTR_HAS_BUTTONS, const wxValidator& validator = wxDefaultValidator, const wxString& name = "treeCtrl")
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-enum {
-   MY_TREE_ID = (wxID_HIGHEST + 1)
-};
+void MyTree::OnExpanding( wxTreeEvent & event )
+{
+}
 
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

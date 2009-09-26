@@ -27,11 +27,16 @@ IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
 {
-    MyFrame3 *frame = new MyFrame3( NULL, wxID_ANY, wxT("PSO Debugger") );
-//		MyFrame1( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+    MyFrame3 *frame = new MyFrame3( NULL,
+                                    wxID_ANY,
+                                    wxT("PSO Debugger"),
+                                    wxDefaultPosition,
+                                    wxSize( 800,300 ),
+                                    wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
     frame->Show(true);
 
     return true;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+

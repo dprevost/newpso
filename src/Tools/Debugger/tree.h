@@ -18,19 +18,26 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include <wx/wx.h>
+#ifndef PSO_DBG_TREE_H
+#define PSO_DBG_TREE_H
+
+#include <wx/treectrl.h>
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-class MyApp : public wxApp
+class MyTree : public wxTreeCtrl
 {
 public:
-   virtual bool OnInit();
+   MyTree( wxWindow * parent, wxWindowID id );
+private:
+
+   void OnExpanding( wxTreeEvent & event );
+
+   DECLARE_EVENT_TABLE()
 };
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-enum {
-   MY_TREE_ID = (wxID_HIGHEST + 1)
-};
+#endif // PSO_DBG_TREE_H
 
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

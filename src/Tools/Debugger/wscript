@@ -14,7 +14,8 @@
 
 debugger_list = [
         'app.cpp',
-        'generated.cpp']
+        'frame.cpp',
+        'tree.cpp' ]
 
 def build(bld):
 
