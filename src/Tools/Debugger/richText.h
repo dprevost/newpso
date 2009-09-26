@@ -1,3 +1,4 @@
+/* :mode=c++:  - For jedit, previous line for emacs */
 /*
  * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
@@ -18,25 +19,34 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include "app.h"
-#include "frame.h"
+#ifndef PSO_DBG_RICHTEXT_H
+#define PSO_DBG_RICHTEXT_H
+
+#include <wx/string.h>
+#include <wx/richtext/richtextctrl.h>
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-IMPLEMENT_APP(MyApp)
+class MyRichText : public wxRichTextCtrl
+{   
+public:
 
-bool MyApp::OnInit()
-{
-    MyFrame *frame = new MyFrame( NULL,
-                                  wxID_ANY,
-                                  wxT("PSO Debugger"),
-                                  wxDefaultPosition,
-                                  wxSize( 800,500 ),
-                                  wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
-    frame->Show(true);
+   MyRichText( wxWindow   * parent,
+               wxWindowID   id = wxID_ANY );
 
-    return true;
-}
+   ~MyRichText();
+
+
+protected:
+
+//   void OnOpen( wxCommandEvent & event );
+
+   DECLARE_EVENT_TABLE()
+};
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+#endif // PSO_DBG_RICHTEXT_H
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

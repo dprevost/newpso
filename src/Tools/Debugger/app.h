@@ -1,3 +1,4 @@
+/* :mode=c++:  - For jedit, previous line for emacs */
 /*
  * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
@@ -31,6 +32,7 @@ public:
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 enum {
-   MY_TREE_ID = (wxID_HIGHEST + 1)
+   MY_TREE_ID = (wxID_HIGHEST + 1),
+   MY_SPLITTER_ID
 };
 

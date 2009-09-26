@@ -1,3 +1,4 @@
+/* :mode=c++:  - For jedit, previous line for emacs */
 /*
  * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
  *

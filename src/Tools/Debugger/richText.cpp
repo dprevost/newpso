@@ -18,25 +18,40 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include "app.h"
-#include "frame.h"
+#include "Tools/Debugger/richText.h"
+#include "Tools/Debugger/app.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-IMPLEMENT_APP(MyApp)
+BEGIN_EVENT_TABLE(MyRichText, wxRichTextCtrl)
+//   EVT_SPLITTER_DCLICK( MY_SPLITTER_ID, MyFrame::OnSplitterDclick )
+//   EVT_SPLITTER_UNSPLIT( MY_SPLITTER_ID, MyFrame::OnUnsplit )
+END_EVENT_TABLE()
+//
 
-bool MyApp::OnInit()
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+MyRichText::MyRichText( wxWindow   * parent,
+                        wxWindowID   id )
+   : wxRichTextCtrl( parent, 
+                     id,
+                     wxEmptyString,
+                     wxDefaultPosition,
+                     wxDefaultSize,
+                     wxHSCROLL|wxNO_BORDER|wxVSCROLL )
 {
-    MyFrame *frame = new MyFrame( NULL,
-                                  wxID_ANY,
-                                  wxT("PSO Debugger"),
-                                  wxDefaultPosition,
-                                  wxSize( 800,500 ),
-                                  wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
-    frame->Show(true);
-
-    return true;
 }
+
+MyRichText::~MyRichText()
+{
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+//void MyFrame::OnOpen( wxCommandEvent & event )
+//{
+//   wxBell();
+//}
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
