@@ -1,3 +1,4 @@
+/* :mode=c++:  - For jedit, previous line for emacs */
 /*
  * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
@@ -44,38 +45,38 @@ class MyTree;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-class MyFrame3 : public wxFrame 
-{
-	private:
-	
-	protected:
-		wxMenuBar* m_menubar1;
-		wxMenu* m_menu1;
-		wxMenu* m_menu2;
-		wxMenu* m_menu3;
-		wxSplitterWindow* m_splitter2;
-		wxPanel* m_panel1;
-		MyTree * m_treeCtrl5;
-		wxPanel* m_panel2;
-		wxRichTextCtrl* m_richText2;
-		
-		// Virtual event handlers, overide them in your derived class
-		virtual void Veto( wxTreeEvent& event ){ event.Skip(); }
-		virtual void NodeActivated( wxTreeEvent& event ){ event.Skip(); }
-		virtual void NodeExpanded( wxTreeEvent& event ){ event.Skip(); }
-		virtual void NodeChanged( wxTreeEvent& event ){ event.Skip(); }
-		
-	
-	public:
-		MyFrame3( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
-		~MyFrame3();
-		void m_splitter2OnIdle( wxIdleEvent& )
-		{
-		m_splitter2->SetSashPosition( 658 );
-		m_splitter2->Disconnect( wxEVT_IDLE, wxIdleEventHandler( MyFrame3::m_splitter2OnIdle ), NULL, this );
-		}
-		
-	
+class MyFrame : public wxFrame 
+{   
+public:
+
+   MyFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+
+   ~MyFrame();
+
+   void m_splitter2OnIdle( wxIdleEvent& )
+   {
+      m_splitter2->SetSashPosition( 250 );
+      m_splitter2->Disconnect( wxEVT_IDLE, wxIdleEventHandler( MyFrame::m_splitter2OnIdle ), NULL, this );
+   }
+
+protected:
+
+   void OnOpen( wxCommandEvent & event );
+   void OnQuit( wxCommandEvent & event );
+   void OnSplitterDclick( wxSplitterEvent & event ) { event.Veto(); }
+   void OnUnsplit( wxSplitterEvent & event );
+
+   wxMenuBar* m_menubar1;
+   wxMenu* m_menu1;
+   wxMenu* m_menu2;
+   wxMenu* m_menu3;
+   wxSplitterWindow* m_splitter2;
+   wxPanel* m_panel1;
+   MyTree * m_treeCtrl5;
+   wxPanel* m_panel2;
+   wxRichTextCtrl* m_richText2;
+
+   DECLARE_EVENT_TABLE()
 };
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

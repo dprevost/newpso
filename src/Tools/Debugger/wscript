@@ -15,6 +15,8 @@
 debugger_list = [
         'app.cpp',
         'frame.cpp',
+        'pso.cpp',
+        'richText.cpp',
         'tree.cpp' ]
 
 def build(bld):
