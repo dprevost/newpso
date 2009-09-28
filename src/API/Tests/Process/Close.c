@@ -19,6 +19,8 @@
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #include "API/Process.h"
+#include "API/Tests/quasar-run.h"
+
 /*
  * On Windows, we either must include Connector.c or... we must export 
  * the function. Exporting the function for a single test? Not worth it.
@@ -31,7 +33,64 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_context( void ** state )
+{
+   psoaProcess process;
+   int errcode;
+   bool ok;
+   
+   ok = psocInitThreadLock( &g_ProcessMutex );
+   assert_true( ok );
+   
+   memset( &process, 0, sizeof(psoaProcess) );
+
+   errcode = psoaProcessInit( &process, "10701", NULL );
+   assert_true( errcode == PSO_OK );
+
+   expect_assert_failure( psoaCloseMemory( &process, NULL ) );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_process( void ** state )
+{
+   psoaProcess process;
+   int errcode;
+   bool ok;
+   psonSessionContext context;
+   
+   ok = psocInitThreadLock( &g_ProcessMutex );
+   assert_true( ok );
+   
+   memset( &process, 0, sizeof(psoaProcess) );
+
+   errcode = psoaProcessInit( &process, "10701", NULL );
+   assert_true( errcode == PSO_OK );
+
+   memset( &context, 0, sizeof context );
+   context.pidLocker= getpid();
+   psocInitErrorHandler( &context.errorHandler );
+
+   expect_assert_failure( psoaCloseMemory( NULL, &context ) );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    psoaProcess process;
    int errcode;
@@ -39,21 +98,11 @@ int main( int argc, char * argv[] )
    bool ok;
    
    ok = psocInitThreadLock( &g_ProcessMutex );
-   if ( ! ok ) {
-      return -1;
-   }
+   assert_true( ok );
    
    memset( &process, 0, sizeof(psoaProcess) );
-   if ( argc > 1 ) {
-      errcode = psoaProcessInit( &process, argv[1], argv[0] );
-   }
-   else {
-      errcode = psoaProcessInit( &process, "10701", argv[0] );
-   }
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      return -1;
-   }
+   errcode = psoaProcessInit( &process, "10701", NULL );
+   assert_true( errcode == PSO_OK );
 
    memset( &context, 0, sizeof context );
    context.pidLocker= getpid();
@@ -63,8 +112,25 @@ int main( int argc, char * argv[] )
 
    /* Cannot call psoaProcessFini since it calls CloseMemory()  */
    psoaDisconnect( &process.connector, &context.errorHandler );
-
-   return 0;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_process, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+

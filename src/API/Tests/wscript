@@ -20,7 +20,11 @@ subdirs_list = [
         'Connector',
         'DataDefinition',
         'Folder',
-        'HashMap' ]
+        'HashMap',
+        'KeyDefinition',
+        'Lifo',
+        'ListReaders',
+        'Process' ]
 
 def build(bld):
    
