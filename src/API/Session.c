@@ -422,7 +422,7 @@ int psoExitSession( PSO_HANDLE sessionHandle )
          
          /*
           * psoaCloseSession can be called by the api process object while
-          * it holds the lock to the vdesProcess object. And the next
+          * it holds the lock to the psonProcess object. And the next
           * call locks it as well. To avoid a recursive lock (leading to 
           * a deadlock) we cannot include this call in psoaCloseSession.
           */

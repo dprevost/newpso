@@ -38,6 +38,40 @@ void teardown_test()
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+void test_open_objs( void ** state )
+{
+   PSO_HANDLE sessionHandle, objHandle;
+   int errcode;
+   
+   errcode = psoInit( "10701", NULL );
+   assert_true( errcode == PSO_OK );
+   
+   errcode = psoInitSession( &sessionHandle );
+   assert_true( errcode == PSO_OK );
+   
+   errcode = psoCreateFolder( sessionHandle, "test1", 5 );
+   assert_true( errcode == PSO_OK );
+   errcode = psoFolderOpen( sessionHandle, "test1", 5, &objHandle );
+   assert_true( errcode == PSO_OK );
+
+   errcode = psoExitSession( sessionHandle );
+   assert_true( errcode == PSO_OK );
+
+   errcode = psoInitSession( &sessionHandle );
+   assert_true( errcode == PSO_OK );
+
+   /* */
+   errcode = psoCreateFolder( sessionHandle, "test1", 5 );
+   assert_true( errcode == PSO_OK );
+   
+   errcode = psoExitSession( sessionHandle );
+   assert_true( errcode == PSO_OK );
+   
+   psoExit();
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle;
@@ -64,9 +98,6 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_OK );
 
    psoExit();
-   
-   errcode = psoExitSession( sessionHandle );
-   assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -76,7 +107,8 @@ int main()
    int rc = 0;
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
-      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_open_objs, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,      setup_test, teardown_test ),
    };
 
    rc = run_tests(tests);

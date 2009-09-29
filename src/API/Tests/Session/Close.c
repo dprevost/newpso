@@ -22,6 +22,7 @@
 #include <photon/photon.h>
 #include "API/Session.h"
 #include "API/Tests/quasar-run.h"
+#include "Nucleus/Session.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -59,15 +60,31 @@ void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle;
    int errcode;
+   psoaSession * pSession;
+   bool ok;
+   psonSession * pCleanup;
    
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
    assert_true( errcode == PSO_OK );
-   
-   errcode = psoaCloseSession( (psoaSession *) sessionHandle );
+
+   pSession = (psoaSession*) sessionHandle;
+
+   pCleanup = pSession->pCleanup;
+
+   errcode = psoaCloseSession( pSession );
    assert_true( errcode == PSO_OK );
+
+   /*
+    * We need to do this otherwise psoExit will crash when trying to
+    * cleanup its sessions (not all is cleaned when bypassing psoExitSession).
+    */
+   ok = psonProcessRemoveSession( g_processInstance->pCleanup, 
+                                  pCleanup, 
+                                  &pSession->context );
+   assert_true( ok );
    
    psoExit();
 }
