@@ -20,12 +20,25 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE handle, sessionHandle;
    int errcode;
@@ -33,12 +46,7 @@ int main( int argc, char * argv[] )
    size_t allocSpace;
    int xyz = 12345;
    
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -68,21 +76,11 @@ int main( int argc, char * argv[] )
    
    errcode = psoGetInfo( sessionHandle, &info2 );
    assert_true( errcode == PSO_OK );
-   if ( info.allocatedSizeInBytes >= info2.allocatedSizeInBytes ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( info.numObjects+1 != info2.numObjects ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( info.numGroups+1 != info2.numGroups ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( info.numMallocs+1 != info2.numMallocs ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( info.numFrees != info2.numFrees ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_false( info.allocatedSizeInBytes >= info2.allocatedSizeInBytes );
+   assert_true( info.numObjects+1 == info2.numObjects );
+   assert_true( info.numGroups+1 == info2.numGroups );
+   assert_true( info.numMallocs+1 == info2.numMallocs );
+   assert_true( info.numFrees == info2.numFrees );
    
    errcode = psoCommit( sessionHandle );
    assert_true( errcode == PSO_OK );
@@ -93,40 +91,20 @@ int main( int argc, char * argv[] )
    assert_true( errcode == PSO_OK );
    errcode = psoGetInfo( sessionHandle, &info );
    assert_true( errcode == PSO_OK );
-   if ( info.allocatedSizeInBytes < info2.allocatedSizeInBytes ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( info.numObjects != info2.numObjects ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( info.numGroups != info2.numGroups ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( info.numMallocs != info2.numMallocs ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( info.numFrees != info2.numFrees ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_false( info.allocatedSizeInBytes < info2.allocatedSizeInBytes );
+   assert_true( info.numObjects == info2.numObjects );
+   assert_true( info.numGroups == info2.numGroups );
+   assert_true( info.numMallocs == info2.numMallocs );
+   assert_true( info.numFrees == info2.numFrees );
    
    psoCommit( sessionHandle );
    errcode = psoGetInfo( sessionHandle, &info2 );
    assert_true( errcode == PSO_OK );
-   if ( info2.allocatedSizeInBytes != allocSpace ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( info.numObjects != info2.numObjects+1 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( info.numGroups != info2.numGroups+1 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( info.numMallocs != info2.numMallocs ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( info.numFrees+1 != info2.numFrees ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( info2.allocatedSizeInBytes == allocSpace );
+   assert_true( info.numObjects == info2.numObjects+1 );
+   assert_true( info.numGroups == info2.numGroups+1 );
+   assert_true( info.numMallocs == info2.numMallocs );
+   assert_true( info.numFrees+1 == info2.numFrees );
    
    /* Close the process and try to act on the session */
 
@@ -134,8 +112,22 @@ int main( int argc, char * argv[] )
    
    errcode = psoGetInfo( sessionHandle, &info );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
+}
 
-   return 0;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
