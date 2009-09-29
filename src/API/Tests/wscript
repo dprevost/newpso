@@ -24,7 +24,9 @@ subdirs_list = [
         'KeyDefinition',
         'Lifo',
         'ListReaders',
-        'Process' ]
+        'Process',
+        'Queue',
+        'Session' ]
 
 def build(bld):
    

@@ -20,14 +20,26 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/Queue.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
@@ -41,12 +53,7 @@ int main( int argc, char * argv[] )
    };
    PSO_HANDLE dataDefHandle;
 
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -79,11 +86,11 @@ int main( int argc, char * argv[] )
                            &objHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoQueuePush( objHandle, data1, strlen(data1), NULL );
+   errcode = psoQueuePush( objHandle, data1, strlen(data1) );
    assert_true( errcode == PSO_OK );
-   errcode = psoQueuePush( objHandle, data2, strlen(data2), NULL );
+   errcode = psoQueuePush( objHandle, data2, strlen(data2) );
    assert_true( errcode == PSO_OK );
-   errcode = psoQueuePush( objHandle, data3, strlen(data3), NULL );
+   errcode = psoQueuePush( objHandle, data3, strlen(data3) );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
@@ -98,18 +105,10 @@ int main( int argc, char * argv[] )
    errcode = psoQueueStatus( objHandle, &status );
    assert_true( errcode == PSO_OK );
 
-   if ( status.numDataItem != 3 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( status.numBlocks != 1 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( status.numBlockGroup != 1 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( status.freeBytes == 0 || status.freeBytes >=PSON_BLOCK_SIZE ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( status.numDataItem == 3 );
+   assert_true( status.numBlocks == 1 );
+   assert_true( status.numBlockGroup == 1 );
+   assert_false( status.freeBytes == 0 || status.freeBytes >=PSON_BLOCK_SIZE );
    
    /* Close the session and try to act on the object */
 
@@ -120,8 +119,22 @@ int main( int argc, char * argv[] )
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
    
-   return 0;
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

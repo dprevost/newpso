@@ -20,7 +20,6 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/CommonObject.h"
 
 const bool expectedToPass = true;
@@ -67,7 +66,7 @@ int main( int argc, char * argv[] )
                            "/api_session_status_pass",
                            0,
                            &status );
-   assert_true( errcode == INVALID_LENGTH );
+   assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoGetStatus( sessionHandle,
                            "/api_session_status_pass",

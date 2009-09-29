@@ -20,7 +20,6 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 
 const bool expectedToPass = true;
 

@@ -20,7 +20,6 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 
 const bool expectedToPass = true;
 
@@ -70,7 +69,7 @@ int main( int argc, char * argv[] )
    errcode = psoCreateFolder( sessionHandle,
                               "/api_session_create_folder",
                               0 );
-   assert_true( errcode == INVALID_LENGTH );
+   assert_true( errcode == PSO_INVALID_LENGTH );
 
    /* End of invalid args. This call should succeed. */
    errcode = psoCreateFolder( sessionHandle,
