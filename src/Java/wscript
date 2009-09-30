@@ -12,9 +12,16 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-subdirs_list = [
-        'Common', 'Nucleus', 'Quasar', 'API', 'Tools', 'Java']
 
 def build(bld):
-   bld.add_subdirs( subdirs_list )
+   bld.new_task_gen( features    = 'javac seq',
+                     source_root = 'org/photon' )
+
+   '''bld.new_task_gen( features = 'jar seq',
+                     basedir  = 'java_src',
+                     destfile = 'foo.jar')
+   '''
+   #jaropts = '-C default/src/ .', # can be used to give files
+   #classpath = '..:.', # can be used to set a custom classpath
+   #)
 

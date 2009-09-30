@@ -42,6 +42,7 @@ def set_options(opt):
       help='disable trace.')
    opt.tool_options('gcc')
    opt.tool_options('g++')
+   opt.tool_options('javaw')
 
 def configure(conf):
 
@@ -54,6 +55,8 @@ def configure(conf):
 
    conf.check_tool('python')
    conf.check_python_version((2,6,0))
+   conf.check_tool('java')
+   conf.check_jni_headers()
 
    conf.check_tool('UnitTest')
    conf.check_tool('misc')
