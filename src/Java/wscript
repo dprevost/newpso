@@ -14,9 +14,12 @@
 
 
 def build(bld):
-   '''
+   
    bld.new_task_gen( features    = 'javac seq',
-                     source_root = 'org/photon' )
+                     source_root = 'java_src' )
+   ''',
+                     sourcepath  = ['java_src/photon', 'java_src/serializer'] )
+   #'org/photon' )
    '''
    '''bld.new_task_gen( features = 'jar seq',
                      basedir  = 'java_src',
@@ -33,3 +36,8 @@ def build(bld):
 
    jni_lib_release = jni_lib.clone('release')
 
+   '''
+   javah org.photon.FieldType
+   
+   javadoc -sourcepath java_src -d doc org.photon org.photon.serializer
+   '''
