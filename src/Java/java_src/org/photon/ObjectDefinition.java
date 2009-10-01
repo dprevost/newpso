@@ -23,8 +23,6 @@ public class ObjectDefinition {
    /** Type of the object */
    private int type;
    
-   private int flags;
-   
    /**
     * Optimization feature - not implemented yet.
     *
@@ -59,11 +57,9 @@ public class ObjectDefinition {
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    public ObjectDefinition( ObjectType type,
-                            int        flags,
                             long       minNumOfDataRecords,
                             long       minNumBlocks ) {
       this.type = type.getType();
-      this.flags = flags;
       this.minNumOfDataRecords = minNumOfDataRecords;
       this.minNumBlocks = minNumBlocks;
    }
@@ -76,10 +72,6 @@ public class ObjectDefinition {
 
    public ObjectType getType() { return ObjectType.getEnum(type); }
 
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   public int getFlags() { return flags; }
-   
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    public long getMinNumOfDataRecords() { return minNumOfDataRecords; }

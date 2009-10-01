@@ -19,7 +19,10 @@
 package org.photon.Tests;
 
 import org.photon.*;
+import org.photon.serializer.*;
 
+/*
+This could be used to implement a "home-made" serializer ??? 
    class myStruct {
       Integer i;
       String  str;
@@ -40,29 +43,54 @@ import org.photon.*;
    
       public Object unpackObject( byte[] buffer ) { return buffer; }
    }
+*/
 
 public class QueueTest {
 
-   
-   public static void test1( org.photon.Session session ) throws PhotonException {
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   public static void prepareTests( org.photon.Session session ) throws Exception {
+
+      byte[] q = new byte[1];
       
-//      org.photon.Folder folder = new org.photon.Folder();
-//      Queue<myStruct> queue = new Queue<myStruct>( session, "myQueue" );
-      myStruct s = new myStruct( 123, "45678" );
+      ObjectDefinition definition = new ObjectDefinition( ObjectType.FOLDER, 0, 0 );
+      DataDefinition   dataDef = new DataDefinition( session,
+         "QueueTest1", DefinitionType.USER_DEFINED, q );
       
-//      queue.push( s.i, s.str );
-//      queue.push( s.a );
-//      queue.push( 234, "012345" );
+      session.createQueue( "/JavaTestQueue1", definition, dataDef );
       
-//      folder.open( session, "/" );
-//      folder.close();
    }
+   
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   public static void test1( org.photon.Session session ) throws Exception {
+      
+      Queue<DummyJava, JavaSerializer<DummyJava>> queue = 
+         new Queue<DummyJava, JavaSerializer<DummyJava>>();
+      
+      DummyJava dummy1 = new DummyJava( 123, "A little test", 99.56, "And another string to end it" );
+
+      try {
+         queue.push( dummy1 );
+      } catch ( PhotonException e ) {
+         System.out.println( e.getMessage() );
+         if ( e.getErrorCode() != PhotonErrors.NULL_HANDLE ) {
+            throw e;
+         }
+      }
+      
+   }
+
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    public static void test2( org.photon.Session session ) throws PhotonException {
       
+//      JavaSerializer
       org.photon.Folder folder = new org.photon.Folder( session, "/" );
    }
    
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
    public static void createFolders( org.photon.Session session ) throws PhotonException {
 
       org.photon.Folder folder = new org.photon.Folder( session, "/" );

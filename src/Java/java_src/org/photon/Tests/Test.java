@@ -43,10 +43,12 @@ public class Test {
          FolderTest.test2( session );
          FolderTest.createFolders( session );
          
+         QueueTest.prepareTests( session );
+         
          /* The GC might not call finalize() - safer to cleanup ourselves */
          Photon.exit();
 
-      } catch ( PhotonException e ) {
+      } catch ( Exception e ) {
          e.printStackTrace();
          Photon.exit();
 //         System.exit(1);

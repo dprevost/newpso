@@ -28,11 +28,12 @@ def build(bld):
    #jaropts = '-C default/src/ .', # can be used to give files
    #classpath = '..:.', # can be used to set a custom classpath
    #)
-   jni_lib = bld.new_task_gen( features = 'cc cshlib',
-                               includes = 'include .. ../include',
-                               target   = 'photon_jni',
+   jni_lib = bld.new_task_gen( features     = 'cc cshlib',
+                               includes     = 'include .. ../include',
+                               target       = 'photon_jni',
                                uselib_local = 'photon Common Nucleus',
-                               uselib   = 'JAVA' )
+                               uselib       = 'JAVA',
+                               lib          = bld.env['CMOCKERY'] )
    jni_lib.find_sources_in_dirs('jni')
 
    jni_lib_release = jni_lib.clone('release')
