@@ -31,6 +31,7 @@ def build(bld):
    jni_lib = bld.new_task_gen( features = 'cc cshlib',
                                includes = 'include .. ../include',
                                target   = 'photon_jni',
+                               uselib_local = 'photon Common Nucleus',
                                uselib   = 'JAVA' )
    jni_lib.find_sources_in_dirs('jni')
 

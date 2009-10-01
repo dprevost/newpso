@@ -88,8 +88,6 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();
-
-   return 0;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

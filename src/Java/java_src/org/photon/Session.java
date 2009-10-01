@@ -148,10 +148,7 @@ public class Session {
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    /**
-    * Create a new object in shared memory.
-    * <p>
-    * This overloaded method should be used for objects not requiring
-    * a key definition (queues, etc.).
+    * Create a new queue (LIFO, FIFO) in shared memory.
     * <p>
     * The creation of the object only becomes permanent after a call to 
     * Session.commit.
@@ -160,24 +157,24 @@ public class Session {
     * created object. You must use org.photon.Queue.open and similar to 
     * access the newly created object.
     *
-    * @param objectName The fully qualified name of the object.
+    * @param objectName The fully qualified name of the queue.
     * @param definition The object definition (its type, etc.).
     * @param dataDef    The definition of the data fields.
     * @exception PhotonException On an error with the Photon library.
     */
-   public void createObject( String           objectName,
-                             ObjectDefinition definition, 
-                             DataDefinition   dataDef ) throws PhotonException {
+   public void createQueue( String           objectName,
+                            ObjectDefinition definition, 
+                            DataDefinition   dataDef ) throws PhotonException {
       int errcode;
       
       if ( handle == 0 ) {
          throw new PhotonException( PhotonErrors.NULL_HANDLE );
       }
 
-      errcode = psoCreateObject( handle, 
-                                 objectName, 
-                                 definition,
-                                 dataDef.handle );
+      errcode = psoCreateQueue( handle, 
+                                objectName, 
+                                definition,
+                                dataDef.handle );
       if ( errcode != 0 ) {
          throw new PhotonException( PhotonErrors.getEnum(errcode) );
       }
@@ -214,10 +211,10 @@ public class Session {
          throw new PhotonException( PhotonErrors.NULL_HANDLE );
       }
 
-      errcode = psoCreateObjectEx( handle, 
-                                   objectName, 
-                                   definition,
-                                   dataDefName );
+      errcode = psoCreateQueueEx( handle, 
+                                  objectName, 
+                                  definition,
+                                  dataDefName );
       if ( errcode != 0 ) {
          throw new PhotonException( PhotonErrors.getEnum(errcode) );
       }
@@ -522,29 +519,34 @@ public class Session {
 
    private native int psoCommit( long handle );
 
-   private native int psoCreateFolder( long handle, String objectName );
+   private native int psoCreateFolder(
+      long handle, String objectName );
 
-   private native int psoCreateObject( long             handle,
-                                       String           objectName,
-                                       ObjectDefinition definition, 
-                                       long             dataDefHandle );
+   private native int psoCreateQueue(
+      long             handle,
+      String           objectName,
+      ObjectDefinition definition, 
+      long             dataDefHandle );
 
-   private native int psoCreateObjectEx( long             handle,
-                                         String           objectName,
-                                         ObjectDefinition definition, 
-                                         String           dataDefName );
+   private native int psoCreateQueueEx(
+      long             handle,
+      String           objectName,
+      ObjectDefinition definition, 
+      String           dataDefName );
 
-   private native int psoCreateKeyedObject( long             handle,
-                                            String           objectName,
-                                            ObjectDefinition definition, 
-                                            long             keyDefHandle,
-                                            long             dataDefHandle );
+   private native int psoCreateKeyedObject(
+      long             handle,
+      String           objectName,
+      ObjectDefinition definition, 
+      long             keyDefHandle,
+      long             dataDefHandle );
 
-   private native int psoCreateKeyedObjectEx( long             handle,
-                                              String           objectName,
-                                              ObjectDefinition definition, 
-                                              String           keyDefName,
-                                              String           dataDefName );
+   private native int psoCreateKeyedObjectEx(
+      long             handle,
+      String           objectName,
+      ObjectDefinition definition, 
+      String           keyDefName,
+      String           dataDefName );
 
    private native int psoDestroyObject( long handle, String objectName );
 

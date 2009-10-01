@@ -120,7 +120,6 @@ Java_org_photon_Session_psoCreateObject( JNIEnv * env,
    psoObjectDefinition definition;
    
    definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
-//   definition.flags = (*env)->GetIntField( env, jdefinition, g_idObjDefFlags );
    definition.minNumOfDataRecords = (size_t) (*env)->GetLongField( env,
       jdefinition, g_idObjDefMinNumOfDataRecords );
    definition.minNumBlocks = (size_t) (*env)->GetLongField( env,
@@ -149,12 +148,12 @@ Java_org_photon_Session_psoCreateObject( JNIEnv * env,
  * Signature: (JLjava/lang/String;Lorg/photon/ObjectDefinition;Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL
-Java_org_photon_Session_psoCreateObjectEx( JNIEnv * env,
-                                           jobject  jobj,
-                                           jlong    jhandle,
-                                           jstring  jname,
-                                           jobject  jdefinition,
-                                           jstring  jdataDefName )
+Java_org_photon_Session_psoCreateQueueEx( JNIEnv * env,
+                                          jobject  jobj,
+                                          jlong    jhandle,
+                                          jstring  jname,
+                                          jobject  jdefinition,
+                                          jstring  jdataDefName )
 {
    int errcode;
 
@@ -166,7 +165,6 @@ Java_org_photon_Session_psoCreateObjectEx( JNIEnv * env,
    const char * dataDefName;
    
    definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
-//   definition.flags = (*env)->GetIntField( env, jdefinition, g_idObjDefFlags );
    definition.minNumOfDataRecords = (size_t) (*env)->GetLongField( env,
       jdefinition, g_idObjDefMinNumOfDataRecords );
    definition.minNumBlocks = (size_t) (*env)->GetLongField( env,
@@ -229,7 +227,6 @@ Java_org_photon_Session_psoCreateKeyedObject( JNIEnv * env,
    psoObjectDefinition definition;
    
    definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
-//   definition.flags = (*env)->GetIntField( env, jdefinition, g_idObjDefFlags );
    definition.minNumOfDataRecords = (size_t) (*env)->GetLongField( env,
       jdefinition, g_idObjDefMinNumOfDataRecords );
    definition.minNumBlocks = (size_t) (*env)->GetLongField( env,
@@ -278,7 +275,6 @@ Java_org_photon_Session_psoCreateKeyedObjectEx( JNIEnv * env,
    const char * dataDefName, * keyDefName;
    
    definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
-//   definition.flags = (*env)->GetIntField( env, jdefinition, g_idObjDefFlags );
    definition.minNumOfDataRecords = (size_t) (*env)->GetLongField( env,
       jdefinition, g_idObjDefMinNumOfDataRecords );
    definition.minNumBlocks = (size_t) (*env)->GetLongField( env,
