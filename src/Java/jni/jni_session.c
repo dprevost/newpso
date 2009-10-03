@@ -104,12 +104,12 @@ Java_org_photon_Session_psoCreateFolder( JNIEnv * env,
  * Signature: (JLjava/lang/String;Lorg/photon/ObjectDefinition;J)I
  */
 JNIEXPORT jint JNICALL
-Java_org_photon_Session_psoCreateObject( JNIEnv * env,
-                                         jobject  jobj,
-                                         jlong    jhandle,
-                                         jstring  jname,
-                                         jobject  jdefinition,
-                                         jlong    jdataDefHandle )
+Java_org_photon_Session_psoCreateQueue( JNIEnv * env,
+                                        jobject  jobj,
+                                        jlong    jhandle,
+                                        jstring  jname,
+                                        jobject  jdefinition,
+                                        jlong    jdataDefHandle )
 {
    int errcode;
 
@@ -209,13 +209,13 @@ Java_org_photon_Session_psoCreateQueueEx( JNIEnv * env,
  * Signature: (JLjava/lang/String;Lorg/photon/ObjectDefinition;JJ)I
  */
 JNIEXPORT jint JNICALL
-Java_org_photon_Session_psoCreateKeyedObject( JNIEnv * env,
-                                              jobject  jobj,
-                                              jlong    jhandle,
-                                              jstring  jname,
-                                              jobject  jdefinition,
-                                              jlong    jdataDefHandle,
-                                              jlong    jkeyDefHandle )
+Java_org_photon_Session_psoCreateMap( JNIEnv * env,
+                                      jobject  jobj,
+                                      jlong    jhandle,
+                                      jstring  jname,
+                                      jobject  jdefinition,
+                                      jlong    jdataDefHandle,
+                                      jlong    jkeyDefHandle )
 {
    int errcode;
 
@@ -257,13 +257,13 @@ Java_org_photon_Session_psoCreateKeyedObject( JNIEnv * env,
  * Signature: (JLjava/lang/String;Lorg/photon/ObjectDefinition;Ljava/lang/String;Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL
-Java_org_photon_Session_psoCreateKeyedObjectEx( JNIEnv * env,
-                                                jobject  jobj,
-                                                jlong    jhandle,
-                                                jstring  jname,
-                                                jobject  jdefinition,
-                                                jstring  jkeyDefName,
-                                                jstring  jdataDefName )
+Java_org_photon_Session_psoCreateMapEx( JNIEnv * env,
+                                        jobject  jobj,
+                                        jlong    jhandle,
+                                        jstring  jname,
+                                        jobject  jdefinition,
+                                        jstring  jkeyDefName,
+                                        jstring  jdataDefName )
 {
    int errcode;
 
@@ -494,8 +494,6 @@ Java_org_photon_Session_psoGetDefinition( JNIEnv * env,
    if ( errcode == 0 ) {
       (*env)->SetIntField( env, jdefinition,  g_idObjDefType,
          objDefinition.type );
-//      (*env)->SetIntField( env, jdefinition,  g_idObjDefFlags,
-//         objDefinition.flags );
       (*env)->SetLongField( env, jdefinition, g_idObjDefMinNumOfDataRecords,
          objDefinition.minNumOfDataRecords );
       (*env)->SetLongField( env, jdefinition, g_idObjDefMinNumBlocks,

@@ -315,7 +315,9 @@ Java_org_photon_BaseQueue_psoOpen( JNIEnv  * env,
                            &handle );
    (*env)->ReleaseStringUTFChars( env, jname, queueName );
 
-   if ( errcode != PSO_OK ) return errcode;
+   if ( errcode == PSO_OK ) {
+      (*env)->SetLongField( env, jobj, g_idQueueHandle, (size_t) handle );
+   }
 
    return errcode;
 }

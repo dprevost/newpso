@@ -53,7 +53,7 @@ public class QueueTest {
 
       byte[] q = new byte[1];
       
-      ObjectDefinition definition = new ObjectDefinition( ObjectType.FOLDER, 0, 0 );
+      ObjectDefinition definition = new ObjectDefinition( ObjectType.QUEUE, 0, 0 );
       DataDefinition   dataDef = new DataDefinition( session,
          "QueueTest1", DefinitionType.USER_DEFINED, q );
       
@@ -83,10 +83,25 @@ public class QueueTest {
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-   public static void test2( org.photon.Session session ) throws PhotonException {
+   public static void test2( org.photon.Session session ) throws Exception {
       
-//      JavaSerializer
-      org.photon.Folder folder = new org.photon.Folder( session, "/" );
+      JavaSerializer<DummyJava> s = new JavaSerializer<DummyJava>();
+      
+      Queue<DummyJava, JavaSerializer<DummyJava>> queue = 
+         new Queue<DummyJava, JavaSerializer<DummyJava>>( session, 
+                                                          "/JavaTestQueue1",
+                                                          s );
+      
+      DummyJava dummy1 = new DummyJava( 123, "A little test", 99.56, "And another string to end it" );
+
+//      try {
+         queue.push( dummy1 );
+//      } catch ( PhotonException e ) {
+  //       System.out.println( e.getMessage() );
+    //     if ( e.getErrorCode() != PhotonErrors.NULL_HANDLE ) {
+      //      throw e;
+        // }
+      //}
    }
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--

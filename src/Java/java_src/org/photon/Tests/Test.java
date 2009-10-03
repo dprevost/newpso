@@ -45,10 +45,14 @@ public class Test {
          
          QueueTest.prepareTests( session );
          
+         QueueTest.test1( session );
+         QueueTest.test2( session );
+         
          /* The GC might not call finalize() - safer to cleanup ourselves */
          Photon.exit();
 
       } catch ( Exception e ) {
+         System.out.println("Test failed!");
          e.printStackTrace();
          Photon.exit();
 //         System.exit(1);

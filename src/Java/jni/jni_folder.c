@@ -119,7 +119,6 @@ Java_org_photon_Folder_psoCreateObject( JNIEnv   * env,
    size_t dataDefHandle = 0;
    
    definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
-//   definition.flags = (*env)->GetIntField( env, jdefinition, g_idObjDefFlags );
    
    definition.minNumOfDataRecords = 
       (*env)->GetIntField( env, jdefinition, g_idObjDefMinNumOfDataRecords );
@@ -171,7 +170,6 @@ Java_org_photon_Folder_psoCreateObjectEx( JNIEnv * env,
    const char * dataDefName;
    
    definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
-//   definition.flags = (*env)->GetIntField( env, jdefinition, g_idObjDefFlags );
    definition.minNumOfDataRecords = (size_t) (*env)->GetLongField( env,
       jdefinition, g_idObjDefMinNumOfDataRecords );
    definition.minNumBlocks = (size_t) (*env)->GetLongField( env,
@@ -233,7 +231,6 @@ Java_org_photon_Folder_psoCreateKeyedObject( JNIEnv     * env,
    size_t dataDefHandle = 0, keyDefHandle = 0;
    
    definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
-//   definition.flags = (*env)->GetIntField( env, jdefinition, g_idObjDefFlags );
    
    definition.minNumOfDataRecords = 
       (*env)->GetIntField( env, jdefinition, g_idObjDefMinNumOfDataRecords );
@@ -288,7 +285,6 @@ Java_org_photon_Folder_psoCreateKeyedObjectEx( JNIEnv * env,
    const char * dataDefName, * keyDefName;
    
    definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
-//   definition.flags = (*env)->GetIntField( env, jdefinition, g_idObjDefFlags );
    definition.minNumOfDataRecords = (size_t) (*env)->GetLongField( env,
       jdefinition, g_idObjDefMinNumOfDataRecords );
    definition.minNumBlocks = (size_t) (*env)->GetLongField( env,
@@ -457,8 +453,6 @@ Java_org_photon_Folder_psoDefinition( JNIEnv * env,
    if ( errcode == 0 ) {
       (*env)->SetIntField( env, jdefinition,  g_idObjDefType,
          objDefinition.type );
-//      (*env)->SetIntField( env, jdefinition,  g_idObjDefFlags,
-//         objDefinition.flags );
       (*env)->SetLongField( env, jdefinition, g_idObjDefMinNumOfDataRecords,
          objDefinition.minNumOfDataRecords );
       (*env)->SetLongField( env, jdefinition, g_idObjDefMinNumBlocks,

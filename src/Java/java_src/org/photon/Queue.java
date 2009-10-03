@@ -41,11 +41,15 @@ public class Queue<O, S extends PSOSerialize<O>> extends BaseQueue implements It
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-   public Queue( Session session, String name ) throws PhotonException {
+   public Queue( Session session, 
+                 String name,
+                 S serializer ) throws PhotonException {
       
       super (session, name );
 
-// need a factory to - validate serializer versus - queue definition type
+      this.serializer = serializer;
+      
+// need a test to validate serializer versus - queue definition type
 //                     create the proper type of serializer and initialize it
    }
 
@@ -156,6 +160,8 @@ public class Queue<O, S extends PSOSerialize<O>> extends BaseQueue implements It
       errcode = psoPush( handle, data );
       if ( errcode == 0 ) return;
 
+      System.out.println("In push: errcode = " + errcode );
+      
       throw new PhotonException( PhotonErrors.getEnum(errcode) );
    }
    

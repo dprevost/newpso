@@ -30,7 +30,7 @@ public class ObjectDefinition {
     * to avoid shrinking the internal "holder" of the data beyond what is
     * needed to hold this minimum number of data records.
     */
-   private long minNumOfDataRecords;
+   private long minNumOfDataRecords = 0;
    
    /**
     * Optimization feature - not implemented yet
@@ -46,7 +46,7 @@ public class ObjectDefinition {
     * You might want to retrieve the status of the object and evaluate
     * the minimum number of blocks needed from it..
     */
-   private long minNumBlocks;
+   private long minNumBlocks = 0;
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 

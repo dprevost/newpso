@@ -47,10 +47,10 @@ Java_org_photon_DataDefinition_initIDs( JNIEnv * env,
    if ( g_idDataDefHandle == NULL ) return;
    g_idDataDefDataDef = (*env)->GetFieldID( env, classDefinition, "dataDef", "[B" );
    if ( g_idDataDefDataDef == NULL ) return;
-   g_idDataDefType = (*env)->GetFieldID( env, classDefinition, "type", "J" );
+   g_idDataDefType = (*env)->GetFieldID( env, classDefinition, "type", "I" );
    if ( g_idDataDefType == NULL ) return;
    g_idDataDefCurrentLength = (*env)->GetFieldID( env, classDefinition, 
-      "currentLength", "J" );
+      "currentLength", "I" );
    if ( g_idDataDefCurrentLength == NULL ) return;
    g_idDataDefName = (*env)->GetFieldID( env, classDefinition, 
       "name", "Ljava/lang/String;" );

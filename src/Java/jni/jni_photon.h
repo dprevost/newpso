@@ -73,7 +73,6 @@ extern jfieldID g_idKeyDefName;
 /* The ObjectDefinition class */
 
 extern jfieldID g_idObjDefType;
-extern jfieldID g_idObjDefFlags;
 extern jfieldID g_idObjDefMinNumOfDataRecords;
 extern jfieldID g_idObjDefMinNumBlocks;
 

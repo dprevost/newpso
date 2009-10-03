@@ -33,17 +33,17 @@ public enum ObjectType {
    FOLDER(1) {
       public String getText() { return "Folder"; } },
 
-   HASH_MAP(2) {
-      public String getText() { return "Hash Map"; } },
-
-   LIFO(3) {
+   LIFO(2) {
       public String getText() { return "LIFO Queue"; } },
 
-   FAST_MAP(4) {
-      public String getText() { return "Read-only Hash Map"; } },
+   QUEUE(3) {
+      public String getText() { return "FIFO Queue"; } },
 
-   QUEUE(5) {
-      public String getText() { return "FIFO Queue"; } };
+   HASH_MAP(4) {
+      public String getText() { return "Hash Map"; } },
+
+   FAST_MAP(5) {
+      public String getText() { return "Read-only Hash Map"; } };
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
@@ -53,7 +53,9 @@ public enum ObjectType {
       this.type = type;
    }
 
-   public int getType() { return type; }
+   public int getType() { 
+      return type; 
+   }
 
    public abstract String getText();
 

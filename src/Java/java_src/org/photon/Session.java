@@ -251,11 +251,11 @@ public class Session {
          throw new PhotonException( PhotonErrors.NULL_HANDLE );
       }
 
-      errcode = psoCreateKeyedObject( handle, 
-                                      objectName, 
-                                      definition,
-                                      keyDef.handle,
-                                      dataDef.handle );
+      errcode = psoCreateMap( handle, 
+                              objectName, 
+                              definition,
+                              keyDef.handle,
+                              dataDef.handle );
       if ( errcode != 0 ) {
          throw new PhotonException( PhotonErrors.getEnum(errcode) );
       }
@@ -294,11 +294,11 @@ public class Session {
          throw new PhotonException( PhotonErrors.NULL_HANDLE );
       }
 
-      errcode = psoCreateKeyedObjectEx( handle, 
-                                        objectName, 
-                                        definition,
-                                        keyDefName,
-                                        dataDefName );
+      errcode = psoCreateMapEx( handle, 
+                                objectName, 
+                                definition,
+                                keyDefName,
+                                dataDefName );
       if ( errcode != 0 ) {
          throw new PhotonException( PhotonErrors.getEnum(errcode) );
       }
@@ -534,14 +534,14 @@ public class Session {
       ObjectDefinition definition, 
       String           dataDefName );
 
-   private native int psoCreateKeyedObject(
+   private native int psoCreateMap(
       long             handle,
       String           objectName,
       ObjectDefinition definition, 
       long             keyDefHandle,
       long             dataDefHandle );
 
-   private native int psoCreateKeyedObjectEx(
+   private native int psoCreateMapEx(
       long             handle,
       String           objectName,
       ObjectDefinition definition, 
