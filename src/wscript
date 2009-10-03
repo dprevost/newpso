@@ -18,3 +18,26 @@ subdirs_list = [
 def build(bld):
    bld.add_subdirs( subdirs_list )
 
+   top_bld_debug = bld.srcnode.abspath(bld.env)
+   top_bld_release = bld.srcnode.abspath(bld.env_of_name('release'))
+   top_src = bld.srcnode.abspath()
+
+   obj1_debug = bld.new_task_gen('subst')
+   obj1_debug.source = 'LaunchQuasar.sh.in'
+   obj1_debug.target = 'LaunchQuasar.sh'
+   obj1_debug.dict   = {'BUILD_DIR': top_bld_debug, 'SRC_DIR': top_src}
+   obj1_debug.chmod  = 0755
+   
+   obj1_release = obj1_debug.clone('release')
+   obj1_release.dict   = {'BUILD_DIR': top_bld_release, 'SRC_DIR': top_src}
+
+   obj2_debug = bld.new_task_gen('subst')
+   obj2_debug.source = 'LaunchQuasarKeep.sh.in'
+   obj2_debug.target = 'LaunchQuasarKeep.sh'
+   obj2_debug.dict   = {'BUILD_DIR': top_bld_debug, 'SRC_DIR': top_src}
+   obj2_debug.chmod  = 0755
+   
+   obj2_release = obj2_debug.clone('release')
+   obj2_release.dict   = {'BUILD_DIR': top_bld_release, 'SRC_DIR': top_src}
+
+
