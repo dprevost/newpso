@@ -167,6 +167,53 @@ error_handler:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+PHOTON_API_EXPORT
+int psoKeyDefDestroy( PSO_HANDLE   sessionHandle,
+                      const char * definitionName,
+                      psoUint32    nameLengthInBytes )
+{
+   int errcode = PSO_OK;
+   psoaSession* pSession;
+   bool ok = true;
+
+   pSession = (psoaSession*) sessionHandle;
+   if ( pSession == NULL ) return PSO_NULL_HANDLE;
+
+   if ( pSession->type != PSOA_SESSION ) return PSO_WRONG_TYPE_HANDLE;
+
+   if ( definitionName == NULL ) {
+      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_NULL_POINTER );
+      return PSO_NULL_POINTER;
+   }
+   if ( nameLengthInBytes == 0 ) {
+      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_INVALID_LENGTH );
+      return PSO_INVALID_LENGTH;
+   }
+
+   if ( ! pSession->terminated ) {
+      ok = psonHashMapDelete( pSession->pKeyDefMap,
+                              definitionName,
+                              nameLengthInBytes,
+                              &pSession->context );
+      PSO_POST_CONDITION( ok == true || ok == false );
+   }
+   else {
+      errcode = PSO_SESSION_IS_TERMINATED;
+   }
+
+   if ( errcode != 0 ) {
+      psocSetError( &pSession->context.errorHandler, 
+         g_psoErrorHandle, errcode );
+   }
+   if ( ! ok ) {
+      errcode = psocGetLastError( &pSession->context.errorHandler );
+   }
+
+   return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 int psoKeyDefGet( PSO_HANDLE               definitionHandle,
                    enum psoDefinitionType * type,
                    unsigned char          * dataDef,
@@ -293,60 +340,6 @@ error_handler:
 
    free( pDefinition );
    
-   if ( errcode != 0 ) {
-      psocSetError( &pSession->context.errorHandler, 
-         g_psoErrorHandle, errcode );
-   }
-   if ( ! ok ) {
-      errcode = psocGetLastError( &pSession->context.errorHandler );
-   }
-
-   return errcode;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-/*
- * This function is not included in the published API.
- *
- * This function can be dangerous. Handles to key definition are 
- * not counted for performance reasons -> this might destroy a
- * definition which is used by someone else...
- */
-PHOTON_API_EXPORT
-int psoaKeyDefDestroy( PSO_HANDLE   sessionHandle,
-                       const char * definitionName,
-                       psoUint32    nameLengthInBytes )
-{
-   int errcode = PSO_OK;
-   psoaSession* pSession;
-   bool ok = true;
-
-   pSession = (psoaSession*) sessionHandle;
-   if ( pSession == NULL ) return PSO_NULL_HANDLE;
-
-   if ( pSession->type != PSOA_SESSION ) return PSO_WRONG_TYPE_HANDLE;
-
-   if ( definitionName == NULL ) {
-      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_NULL_POINTER );
-      return PSO_NULL_POINTER;
-   }
-   if ( nameLengthInBytes == 0 ) {
-      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_INVALID_LENGTH );
-      return PSO_INVALID_LENGTH;
-   }
-
-   if ( ! pSession->terminated ) {
-      ok = psonHashMapDelete( pSession->pKeyDefMap,
-                              definitionName,
-                              nameLengthInBytes,
-                              &pSession->context );
-      PSO_POST_CONDITION( ok == true || ok == false );
-   }
-   else {
-      errcode = PSO_SESSION_IS_TERMINATED;
-   }
-
    if ( errcode != 0 ) {
       psocSetError( &pSession->context.errorHandler, 
          g_psoErrorHandle, errcode );

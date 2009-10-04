@@ -80,6 +80,25 @@ int psoKeyDefCreate( PSO_HANDLE               sessionHandle,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /**
+ * \brief Destroy an existing key definition.
+ *
+ * This function will not complete successfully if the key definition
+ * is still used to define the key of an object.
+ *
+ * \param[in]  sessionHandle The handle to the current session.
+ * \param[in]  definitionName The name of the key definition. 
+ * \param[in]  nameLengthInBytes The length of \em definitionName (in bytes).
+ *
+ * \return 0 on success or a ::psoErrors on error.
+ */
+PHOTON_EXPORT
+int psoKeyDefDestroy( PSO_HANDLE   sessionHandle,
+                      const char * definitionName,
+                      psoUint32    nameLengthInBytes );
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+/**
  * \brief Retrieves a key definition.
  * 
  * You can call the function ::psoKeyDefGetLength to retrieve the 

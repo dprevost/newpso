@@ -67,25 +67,25 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_OK );
    
    /* Invalid arguments to tested function. */
-   errcode = psoaKeyDefDestroy( NULL,
-                                "api_key_definition_destroy",
-                                strlen("api_key_definition_destroy") );
+   errcode = psoKeyDefDestroy( NULL,
+                               "api_key_definition_destroy",
+                               strlen("api_key_definition_destroy") );
    assert_true( errcode == PSO_NULL_HANDLE );
 
-   errcode = psoaKeyDefDestroy( sessionHandle,
-                                NULL,
-                                strlen("api_key_definition_destroy") );
+   errcode = psoKeyDefDestroy( sessionHandle,
+                               NULL,
+                               strlen("api_key_definition_destroy") );
    assert_true( errcode == PSO_NULL_POINTER );
 
-   errcode = psoaKeyDefDestroy( sessionHandle,
-                                "api_key_definition_destroy",
-                                0 );
+   errcode = psoKeyDefDestroy( sessionHandle,
+                               "api_key_definition_destroy",
+                               0 );
    assert_true( errcode == PSO_INVALID_LENGTH );
 
    /* End of invalid args. This call should succeed. */
-   errcode = psoaKeyDefDestroy( sessionHandle,
-                                "api_key_definition_destroy",
-                                strlen("api_key_definition_destroy") );
+   errcode = psoKeyDefDestroy( sessionHandle,
+                               "api_key_definition_destroy",
+                               strlen("api_key_definition_destroy") );
    assert_true( errcode == PSO_OK );
    errcode = psoCommit( sessionHandle );
    assert_true( errcode == PSO_OK );
@@ -108,9 +108,9 @@ void test_pass( void ** state )
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoaKeyDefDestroy( sessionHandle,
-                                "api_key_definition_destroy",
-                                strlen("api_key_definition_destroy") );
+   errcode = psoKeyDefDestroy( sessionHandle,
+                               "api_key_definition_destroy",
+                               strlen("api_key_definition_destroy") );
    assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    psoExit();

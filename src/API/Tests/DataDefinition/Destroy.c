@@ -70,25 +70,25 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_OK );
    
    /* Invalid arguments to tested function. */
-   errcode = psoaDataDefDestroy( NULL,
-                                 "api_data_definition_destroy",
-                                 strlen("api_data_definition_destroy") );
+   errcode = psoDataDefDestroy( NULL,
+                                "api_data_definition_destroy",
+                                strlen("api_data_definition_destroy") );
    assert_true( errcode == PSO_NULL_HANDLE );
 
-   errcode = psoaDataDefDestroy( sessionHandle,
-                                 NULL,
-                                 strlen("api_data_definition_destroy") );
+   errcode = psoDataDefDestroy( sessionHandle,
+                                NULL,
+                                strlen("api_data_definition_destroy") );
    assert_true( errcode == PSO_NULL_POINTER );
 
-   errcode = psoaDataDefDestroy( sessionHandle,
-                                 "api_data_definition_destroy",
-                                 0 );
+   errcode = psoDataDefDestroy( sessionHandle,
+                                "api_data_definition_destroy",
+                                0 );
    assert_true( errcode == PSO_INVALID_LENGTH );
 
    /* End of invalid args. This call should succeed. */
-   errcode = psoaDataDefDestroy( sessionHandle,
-                                 "api_data_definition_destroy",
-                                 strlen("api_data_definition_destroy") );
+   errcode = psoDataDefDestroy( sessionHandle,
+                                "api_data_definition_destroy",
+                                strlen("api_data_definition_destroy") );
    assert_true( errcode == PSO_OK );
    errcode = psoCommit( sessionHandle );
    assert_true( errcode == PSO_OK );
@@ -111,17 +111,17 @@ void test_pass( void ** state )
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoaDataDefDestroy( sessionHandle,
-                                 "api_data_definition_destroy",
-                                 strlen("api_data_definition_destroy") );
+   errcode = psoDataDefDestroy( sessionHandle,
+                                "api_data_definition_destroy",
+                                strlen("api_data_definition_destroy") );
    assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    /* cleanup */
    errcode = psoInitSession( &sessionHandle );
    assert_true( errcode == PSO_OK );
-   errcode = psoaDataDefDestroy( sessionHandle,
-                                 "api_data_definition_destroy",
-                                 strlen("api_data_definition_destroy") );
+   errcode = psoDataDefDestroy( sessionHandle,
+                                "api_data_definition_destroy",
+                                strlen("api_data_definition_destroy") );
    assert_true( errcode == PSO_OK );
    errcode = psoCommit( sessionHandle );
    assert_true( errcode == PSO_OK );
