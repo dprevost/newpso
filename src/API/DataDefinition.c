@@ -38,12 +38,22 @@ int psoDataDefClose( PSO_HANDLE definitionHandle )
 
    if ( ! pDefinition->pSession->terminated ) {
 
+      if ( ! psonHashMapRelease( pDefinition->pSession->pDataDefMap,
+                                 pDefinition->pHashItem,
+                                 &pDefinition->pSession->context ) ) {
+         errcode = PSO_OBJECT_CANNOT_GET_LOCK;
+         psocSetError( &pDefinition->pSession->context.errorHandler, 
+                       g_psoErrorHandle, errcode );
+         return errcode;
+      }
+
       /*
        * Memory might still be around even after it is released, so we 
        * make sure future access with the handle fails by setting the 
        * type wrong.
        */
       pDefinition->definitionType = 0; 
+      pDefinition->pHashItem = NULL;
       free( pDefinition );
    }
    else {
@@ -69,7 +79,6 @@ int psoDataDefCreate( PSO_HANDLE               sessionHandle,
    psonDataDefinition * pMemDefinition = NULL;
    uint32_t recLength;
    psoaDataDefinition * pDefinition = NULL;
-   psonHashTxItem * pHashItem = NULL;
 
    pSession = (psoaSession*) sessionHandle;
    if ( pSession == NULL ) return PSO_NULL_HANDLE;
@@ -133,7 +142,7 @@ int psoDataDefCreate( PSO_HANDLE               sessionHandle,
          ok = psonHashMapGet( pSession->pDataDefMap,
                               definitionName,
                               nameLengthInBytes,
-                              &pHashItem,
+                              &pDefinition->pHashItem,
                               (uint32_t) -1,
                               &pSession->context );
          PSO_POST_CONDITION( ok == true || ok == false );
@@ -148,10 +157,8 @@ int psoDataDefCreate( PSO_HANDLE               sessionHandle,
    free( pMemDefinition );
    pDefinition->pSession = pSession;
    pDefinition->definitionType = PSOA_DEF_DATA;
-   GET_PTR( pMemDefinition, pHashItem->dataOffset, psonDataDefinition );
+   GET_PTR( pMemDefinition, pDefinition->pHashItem->dataOffset, psonDataDefinition );
    pDefinition->pMemDefinition = pMemDefinition;
-   pDefinition->name = (char *)pHashItem->key;
-   pDefinition->nameLength = pHashItem->keyLength;
    
    *definitionHandle = (PSO_HANDLE) pDefinition;
 
@@ -201,10 +208,10 @@ int psoDataDefDestroy( PSO_HANDLE   sessionHandle,
    }
 
    if ( ! pSession->terminated ) {
-      ok = psonHashMapDelete( pSession->pDataDefMap,
-                              definitionName,
-                              nameLengthInBytes,
-                              &pSession->context );
+      ok = psonHashMapDeleteZero( pSession->pDataDefMap,
+                                  definitionName,
+                                  nameLengthInBytes,
+                                  &pSession->context );
       PSO_POST_CONDITION( ok == true || ok == false );
    }
    else {
@@ -292,7 +299,6 @@ int psoDataDefOpen( PSO_HANDLE   sessionHandle,
    bool ok = true;
    psonDataDefinition * pMemDefinition = NULL;
    psoaDataDefinition * pDefinition = NULL;
-   psonHashTxItem * pHashItem;
 
    pSession = (psoaSession*) sessionHandle;
    if ( pSession == NULL ) return PSO_NULL_HANDLE;
@@ -324,7 +330,7 @@ int psoDataDefOpen( PSO_HANDLE   sessionHandle,
       ok = psonHashMapGet( pSession->pDataDefMap,
                            definitionName,
                            nameLengthInBytes,
-                           &pHashItem,
+                           &pDefinition->pHashItem,
                            (uint32_t) -1,
                            &pSession->context );
       PSO_POST_CONDITION( ok == true || ok == false );
@@ -337,10 +343,8 @@ int psoDataDefOpen( PSO_HANDLE   sessionHandle,
 
    pDefinition->pSession = pSession;
    pDefinition->definitionType = PSOA_DEF_DATA;
-   GET_PTR( pMemDefinition, pHashItem->dataOffset, psonDataDefinition );
+   GET_PTR( pMemDefinition, pDefinition->pHashItem->dataOffset, psonDataDefinition );
    pDefinition->pMemDefinition = pMemDefinition;
-   pDefinition->name = (char *)pHashItem->key;
-   pDefinition->nameLength = pHashItem->keyLength;
 
    *definitionHandle = (PSO_HANDLE) pDefinition;
 
@@ -560,8 +564,8 @@ int psoaDataDefGetDef( PSO_HANDLE                definitionHandle,
    *type = pDefinition->pMemDefinition->type;
    *dataDef = pDefinition->pMemDefinition->definition,
    *dataDefLength = pDefinition->pMemDefinition->definitionLength;
-   *name = pDefinition->name;
-   *nameLength = pDefinition->nameLength;
+   *name = (char *)pDefinition->pHashItem->key;
+   *nameLength = pDefinition->pHashItem->keyLength;
    
    return PSO_OK;
 }

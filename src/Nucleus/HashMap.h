@@ -92,10 +92,23 @@ void psonHashMapCommitRemove( psonHashMap        * pHashMap,
                               ptrdiff_t            itemOffset,
                               psonSessionContext * pContext );
 
+bool psonHashMapDecrement( psonHashMap        * pHashMap,
+                           psonHashTxItem     * pHashItem,
+                           psonSessionContext * pContext );
+
 bool psonHashMapDelete( psonHashMap        * pHashMap,
                         const void         * key,
                         uint32_t             keyLength, 
                         psonSessionContext * pContext );
+
+/*
+ * Only delete if there is zero access to the item. This is used for the
+ * data definitions and key definitions.
+ */
+bool psonHashMapDeleteZero( psonHashMap        * pHashMap,
+                            const void         * key,
+                            uint32_t             keyLength, 
+                            psonSessionContext * pContext );
 
 #if defined(PSO_USE_TRACE)
 void psonHashMapDump( psonHashMap        * pHashMap,
@@ -125,6 +138,10 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
                          uint32_t             bufferLength,
                          psonSessionContext * pContext );
 
+bool psonHashMapIncrement( psonHashMap        * pHashMap,
+                           psonHashTxItem     * pHashItem,
+                           psonSessionContext * pContext );
+
 bool psonHashMapInit( psonHashMap         * pHashMap,
                       ptrdiff_t             parentOffset,
                       size_t                numberOfBlocks,
@@ -143,7 +160,7 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
                         psonSessionContext * pContext );
 
 bool psonHashMapRelease( psonHashMap        * pHashMap,
-                         psonHashTxItem       * pHashItem,
+                         psonHashTxItem     * pHashItem,
                          psonSessionContext * pContext );
 
 bool psonHashMapReplace( psonHashMap        * pHashMap,

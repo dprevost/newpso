@@ -28,6 +28,7 @@
 #include <photon/psoPhotonODBC.h>
 #include "Nucleus/Definitions.h"
 #include "API/Session.h"
+#include "Nucleus/HashMap.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -44,9 +45,7 @@ struct psoaKeyDefinition
    
    psonKeyDefinition * pMemDefinition;
 
-   char * name;
-   
-   uint32_t nameLength;
+   psonHashTxItem * pHashItem;
 
 };
 
