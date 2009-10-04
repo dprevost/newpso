@@ -24,14 +24,8 @@ public class Test {
 
    public static void main( String args[] ) {
       
-      System.out.println("Total Memory "+Runtime.getRuntime().totalMemory());    
-      System.out.println("Free Memory "+Runtime.getRuntime().freeMemory());
-       
       Session session;
 
-      System.gc();
-      System.out.println("Free Memory "+Runtime.getRuntime().freeMemory());
-      
       try {
          Photon.init( "10701", "Test-Java" );
 
@@ -47,23 +41,20 @@ public class Test {
          
          QueueTest.test1( session );
          QueueTest.test2( session );
-         
-         /* The GC might not call finalize() - safer to cleanup ourselves */
-         Photon.exit();
+
+         try {
+            QueueTest.cleanupTests( session );
+         } catch( Exception e ) {
+            System.out.println("QueueTest.cleanupTests threw an exception!");
+         }
 
       } catch ( Exception e ) {
          System.out.println("Test failed!");
          e.printStackTrace();
-         Photon.exit();
-//         System.exit(1);
       }
-      System.out.println("Free Memory "+Runtime.getRuntime().freeMemory());
-      System.gc();
-      System.out.println("Free Memory "+Runtime.getRuntime().freeMemory());
-//      System.runFinalization();
-//      System.gc();
-      System.out.println("Free Memory "+Runtime.getRuntime().freeMemory());
-      
+
+      /* The GC might not call finalize() - safer to cleanup ourselves */
+      Photon.exit();
    }
 }
 

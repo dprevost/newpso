@@ -74,10 +74,10 @@ JNIEXPORT jint JNICALL Java_org_photon_BaseQueue_psoOpen
 /*
  * Class:     org_photon_BaseQueue
  * Method:    psoPop
- * Signature: (J[B)I
+ * Signature: (J)[B
  */
-JNIEXPORT jint JNICALL Java_org_photon_BaseQueue_psoPop
-  (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL Java_org_photon_BaseQueue_psoPop
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     org_photon_BaseQueue

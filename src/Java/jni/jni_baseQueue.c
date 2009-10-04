@@ -27,6 +27,7 @@
 #include "API/Queue.h"
 
 jfieldID g_idQueueHandle;
+jfieldID g_idQueueErrcode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -40,6 +41,8 @@ Java_org_photon_BaseQueue_initIDs( JNIEnv * env, jclass queueClass )
 {
    g_idQueueHandle = (*env)->GetFieldID( env, queueClass, "handle", "J" );
    if ( g_idQueueHandle == NULL ) return;
+   g_idQueueErrcode = (*env)->GetFieldID( env, queueClass, "myerrcode", "I" );
+   if ( g_idQueueErrcode == NULL ) return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -329,24 +332,27 @@ Java_org_photon_BaseQueue_psoOpen( JNIEnv  * env,
  * Method:    psoPop
  * Signature: (J[B)I
  */
-JNIEXPORT jint JNICALL
+JNIEXPORT jbyteArray JNICALL
 Java_org_photon_BaseQueue_psoPop( JNIEnv   * env,
                                   jobject    jobj,
-                                  jlong      jhandle,
-                                  jbyteArray jbuffer )
+                                  jlong      jhandle )
 {
    int errcode;
    size_t handle = (size_t) jhandle;
    unsigned char * data;
    unsigned int length;
+   jbyteArray jbuffer = NULL;
    
    errcode = psoaQueueRemove( (psoaQueue *) handle, &data, &length );
    if ( errcode == 0 ) {
       jbuffer = (*env)->NewByteArray( env, length );
       (*env)->SetByteArrayRegion( env, jbuffer, 0, length, (jbyte*)data );
    }
+   else {
+      (*env)->SetIntField( env, jobj, g_idQueueErrcode, errcode );
+   }
    
-   return errcode;
+   return jbuffer;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -22,10 +22,10 @@ import java.io.Serializable;
 
 public class DummyJava implements Serializable {
 
-   Integer dummy_i;
-   String  dummy_str1;
-   Double  dummy_d;
-   String  dummy_str2;
+   int    dummy_i;
+   String dummy_str1;
+   double dummy_d;
+   String dummy_str2;
    
    public DummyJava( int i, String str1, double d, String str2){
       

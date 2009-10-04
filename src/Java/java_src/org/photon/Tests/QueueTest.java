@@ -60,6 +60,14 @@ public class QueueTest {
       session.createQueue( "/JavaTestQueue1", definition, dataDef );
       
    }
+
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   public static void cleanupTests( org.photon.Session session ) throws Exception {
+
+      session.destroyObject( "/JavaTestQueue1" );
+      session.commit();
+   }
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
@@ -93,39 +101,34 @@ public class QueueTest {
                                                           s );
       
       DummyJava dummy1 = new DummyJava( 123, "A little test", 99.56, "And another string to end it" );
+      DummyJava dummy2;
+      
+      queue.push( dummy1 );
 
-//      try {
-         queue.push( dummy1 );
-//      } catch ( PhotonException e ) {
-  //       System.out.println( e.getMessage() );
-    //     if ( e.getErrorCode() != PhotonErrors.NULL_HANDLE ) {
-      //      throw e;
-        // }
-      //}
+      try {
+         dummy2 = queue.pop();
+      } catch ( PhotonException e ) {
+         //System.out.println( e.getMessage() + " errcode = " + e.getErrorCode() );
+         if ( e.getErrorCode() != PhotonErrors.ITEM_IS_IN_USE ) {
+            throw e;
+         }
+      }
+      
+      session.commit();
+      
+      dummy2 = queue.pop();
+      
+      if ( dummy1.dummy_i != dummy2.dummy_i || 
+         dummy1.dummy_d != dummy2.dummy_d ||
+         dummy1.dummy_str1.compareTo(dummy2.dummy_str1) != 0 ||
+         dummy1.dummy_str2.compareTo(dummy2.dummy_str2) != 0 ) {
+         System.out.println( "objects are not equal! " );
+         throw new PhotonException( PhotonErrors.INTERNAL_ERROR );
+      }
+
+
    }
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   public static void createFolders( org.photon.Session session ) throws PhotonException {
-
-      org.photon.Folder folder = new org.photon.Folder( session, "/" );
-      
-//      folder.createObject( "java1",
-//                           new ObjectDefinition(ObjectType.FOLDER, 0),
-//                           null,
-//                           null );
-//      folder.createObject( "java2",
-//                           new ObjectDefinition(ObjectType.FOLDER, 0),
-//                           null,
-//                           null );
-//      folder.createObject( "java3",
-//                           new ObjectDefinition(ObjectType.FOLDER, 0),
-//                           null,
-//                           null );
-      for (FolderEntry entry : folder) {
-         System.out.println( "Name: " + entry.getName() + ", Type: " 
-            + entry.getType() + " or " + entry.getType().getText() );
-      }
-   }
 
 }

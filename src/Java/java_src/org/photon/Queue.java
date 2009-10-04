@@ -128,7 +128,6 @@ public class Queue<O, S extends PSOSerialize<O>> extends BaseQueue implements It
 
    public O pop() throws PhotonException, Exception {
       
-      int errcode;
       byte [] buffer = null;
       O obj;
       
@@ -136,13 +135,14 @@ public class Queue<O, S extends PSOSerialize<O>> extends BaseQueue implements It
          throw new PhotonException( PhotonErrors.NULL_HANDLE );
       }
 
-      errcode = psoPop( handle, buffer );
+      myerrcode = 0;
+      buffer = psoPop( handle );
       
-      obj = serializer.unpackObject( buffer );
-      
-      if ( errcode == 0 ) return obj;
-
-      throw new PhotonException( PhotonErrors.getEnum(errcode) );
+      if ( myerrcode == 0 ) {
+         obj = serializer.unpackObject( buffer );
+         return obj;
+      }
+      throw new PhotonException( PhotonErrors.getEnum(myerrcode) );
    }
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--

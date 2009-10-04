@@ -48,6 +48,8 @@ public class FolderTest {
          System.out.println( "Name: " + entry.getName() + ", Type: " 
             + entry.getType() + " or " + entry.getType().getText() );
       }
+      
+      session.rollback();
    }
 
 }

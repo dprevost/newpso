@@ -41,6 +41,8 @@ public class BaseQueue {
    
    private String name;
    
+   protected int myerrcode = 0;
+   
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    static {
@@ -317,17 +319,16 @@ public static Class<?> forName(String className)
 
    public byte [] popRaw() throws PhotonException {
       
-      int errcode;
       byte [] buffer = null;
       
       if ( handle == 0 ) {
          throw new PhotonException( PhotonErrors.NULL_HANDLE );
       }
 
-      errcode = psoPop( handle, buffer );
-      if ( errcode == 0 ) return buffer;
+      buffer = psoPop( handle );
+      if ( myerrcode == 0 ) return buffer;
 
-      throw new PhotonException( PhotonErrors.getEnum(errcode) );
+      throw new PhotonException( PhotonErrors.getEnum(myerrcode) );
    }
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
@@ -384,7 +385,7 @@ public static Class<?> forName(String className)
 
    private native int psoOpen( Session session, String  name );
 
-   protected native int psoPop( long handle, byte[] data );
+   protected native byte[] psoPop( long handle );
 
    protected native int psoPush( long handle, byte[] data );
 
