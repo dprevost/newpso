@@ -38,7 +38,7 @@ void test_pass( void ** state )
    char * data2 = "My data2";
    char * data3 = "My data3";
    psonQueueItem * pQueueItem;
-   psoObjectDefinition def = { PSO_QUEUE, 0, 0 };
+   psoObjectDefinition def = { PSO_QUEUE, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
    psonDataDefinition fields;
    psonTreeNode folderNode;
 

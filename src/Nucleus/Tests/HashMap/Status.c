@@ -35,8 +35,8 @@ void setup_test()
    char * key2  = "my key2";
    char * key3  = "my key3";
    char * data  = "my data";
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
-   psoKeyDefinition keyDef;
+   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
    psonDataDefinition fields;
 
    pHashMap = initHashMapTest( &context );

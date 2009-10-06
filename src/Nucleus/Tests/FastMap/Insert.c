@@ -30,8 +30,8 @@ void setup_test()
 {
    bool ok;
    psonTxStatus status;
-   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0 };
-   psoKeyDefinition keyDef;
+   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
    psonDataDefinition fields;
    
    pHashMap = initHashMapTest( &context );
@@ -153,8 +153,8 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    bool ok;
    psonTxStatus status;
-   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0 };
-   psoKeyDefinition keyDef;
+   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
    psonDataDefinition fields;
    
    ok = psonFastMapInsert( pHashMap,

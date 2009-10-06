@@ -41,7 +41,7 @@ psonTreeNode queueNode;
 void setup_test()
 {
    bool ok;
-   psoObjectDefinition def = { PSO_QUEUE, 0, 0 };
+   psoObjectDefinition def = { PSO_QUEUE, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
    psonDataDefinition fields;
    char * data = "My Data";
    

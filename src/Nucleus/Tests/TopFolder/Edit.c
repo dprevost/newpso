@@ -30,9 +30,8 @@ void setup_test()
 {
    bool ok;
    
-   psoObjectDefinition mapDef = { PSO_FAST_MAP, 0, 0 };
-   psonKeyDefinition key;
-   psonDataDefinition fields;
+   psoObjectDefinition mapDef = { PSO_FAST_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoKeyDefinition key = { PSO_DEF_USER_DEFINED, 0, '\0' };
 
    pTopFolder = initTopFolderTest( &context );
 
@@ -42,13 +41,12 @@ void setup_test()
                                    &context );
    assert( ok );
    
-   ok = psonTopFolderCreateObject( pTopFolder,
-                                   "Test1/Test2",
-                                   strlen("Test1/Test2"),
-                                   &mapDef,
-                                   &fields,
-                                   &key,
-                                   &context );
+   ok = psonTopFolderCreateMap( pTopFolder,
+                                "Test1/Test2",
+                                strlen("Test1/Test2"),
+                                &mapDef,
+                                &key,
+                                &context );
    assert( ok );
 }
 

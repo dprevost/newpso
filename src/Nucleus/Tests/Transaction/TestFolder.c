@@ -31,11 +31,10 @@ void test_pass( void ** state )
    bool ok;
    psonFolderItem item;
    psonTxStatus status;
-   psoObjectDefinition mapDef = { PSO_HASH_MAP, 0, 0 };
-   psonKeyDefinition key;
    psoObjectDefinition folderDef = { PSO_FOLDER, 0, 0 };
-   psonDataDefinition fields;
    psonTreeNode node;
+   psoObjectDefinition mapDef = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoKeyDefinition key = { PSO_DEF_USER_DEFINED, 0, '\0' };
 
    pFolder = initFolderTest( &context );
    pTx = context.pTransaction;
@@ -59,15 +58,14 @@ void test_pass( void ** state )
                                 &context );
    assert_true( ok );
    
-   ok = psonFolderInsertObject( pFolder,
-                                "test3",
-                                5,
-                                &mapDef,
-                                &fields,
-                                &key,
-                                1,
-                                0,
-                                &context );
+   ok = psonFolderInsertMap( pFolder,
+                             "test3",
+                             5,
+                             &mapDef,
+                             &key,
+                             1,
+                             0,
+                             &context );
    assert_true( ok );
    assert_true( node.txCounter == 2 );
    assert_true( pFolder->hashObj.numberOfItems == 2 );
@@ -92,15 +90,14 @@ void test_pass( void ** state )
                                 &context );
    assert_true( ok );
    
-   ok = psonFolderInsertObject( pFolder,
-                                "test3",
-                                5,
-                                &mapDef,
-                                &fields,
-                                &key,
-                                1,
-                                0,
-                                &context );
+   ok = psonFolderInsertMap( pFolder,
+                             "test3",
+                             5,
+                             &mapDef,
+                             &key,
+                             1,
+                             0,
+                             &context );
    assert_true( ok );
    assert_true( node.txCounter == 2 );
    assert_true( pFolder->hashObj.numberOfItems == 2 );
@@ -157,15 +154,14 @@ void test_pass( void ** state )
                                 &context );
    assert_true( ok );
    
-   ok = psonFolderInsertObject( pFolder,
-                                "test3",
-                                5,
-                                &mapDef,
-                                &fields,
-                                &key,
-                                1,
-                                0,
-                                &context );
+   ok = psonFolderInsertMap( pFolder,
+                             "test3",
+                             5,
+                             &mapDef,
+                             &key,
+                             1,
+                             0,
+                             &context );
    assert_true( ok );
    
    ok = psonFolderGetObject( pFolder,
@@ -197,15 +193,14 @@ void test_pass( void ** state )
                                 &context );
    assert_true( ok );
    
-   ok = psonFolderInsertObject( pFolder,
-                                "test3",
-                                5,
-                                &mapDef,
-                                &fields,
-                                &key,
-                                1,
-                                0,
-                                &context );
+   ok = psonFolderInsertMap( pFolder,
+                             "test3",
+                             5,
+                             &mapDef,
+                             &key,
+                             1,
+                             0,
+                             &context );
    assert_true( ok );
    
    ok = psonFolderGetObject( pFolder,

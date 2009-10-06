@@ -461,6 +461,9 @@ bool psonQueueInit( psonQueue           * pQueue,
    psonLinkedListInit( &pQueue->listOfElements, pContext );
 
    len = offsetof( psoObjectDefinition, dataDef ) + pDefinition->dataDefLength;
+   if ( pDefinition->dataDefLength == 0 ) {
+      len = sizeof( psoObjectDefinition );
+   }
    ptr = psonMalloc( &pQueue->memObject, len, pContext );
    if ( ptr == NULL ) {
       psocSetError( &pContext->errorHandler,

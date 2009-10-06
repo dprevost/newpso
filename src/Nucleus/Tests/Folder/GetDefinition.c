@@ -33,8 +33,8 @@ psonTreeNode node;
 void setup_test()
 {
    bool ok;
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
-   psoKeyDefinition keyDef;
+   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
    psonDataDefinition fieldDef;
    
    pFolder = initFolderTest( &context );

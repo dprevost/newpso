@@ -888,6 +888,9 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
    }
    
    len = offsetof( psoObjectDefinition, dataDef ) + pDefinition->dataDefLength;
+   if ( pDefinition->dataDefLength == 0 ) {
+      len = sizeof( psoObjectDefinition );
+   }
    ptr = psonMalloc( &pHashMap->memObject, len, pContext );
    if ( ptr == NULL ) {
       psocSetError( &pContext->errorHandler,
@@ -899,8 +902,10 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
    memcpy( ptr, pDefinition, len );
    pHashMap->dataDefOffset = SET_OFFSET(ptr);
    
-   
    len = offsetof( psoKeyDefinition, definition ) + pKeyDefinition->definitionLength;
+   if ( pKeyDefinition->definitionLength == 0 ) {
+      len = sizeof( psoKeyDefinition );
+   }
    ptr = psonMalloc( &pHashMap->memObject, len, pContext );
    if ( ptr == NULL ) {
       psocSetError( &pContext->errorHandler,

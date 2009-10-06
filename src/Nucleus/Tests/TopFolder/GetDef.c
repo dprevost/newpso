@@ -26,9 +26,11 @@ psonSessionContext context;
 psonKeyDefinition * retKeyDef = NULL;
 psonDataDefinition * retDataDef = NULL;
 psoObjectDefinition retDef;
-psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
-psonKeyDefinition keyDef;
 psonDataDefinition fieldDef;
+
+psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+
+psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -38,13 +40,12 @@ void setup_test()
    
    pTopFolder = initTopFolderTest( &context );
 
-   ok = psonTopFolderCreateObject( pTopFolder,
-                                   "Test1",
-                                   strlen("Test1"),
-                                   &def,
-                                   &fieldDef,
-                                   &keyDef,
-                                   &context );
+   ok = psonTopFolderCreateMap( pTopFolder,
+                                "Test1",
+                                strlen("Test1"),
+                                &def,
+                                &keyDef,
+                                &context );
    assert( ok );
 }
 
