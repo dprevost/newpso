@@ -80,8 +80,7 @@ int main( int argc, char * argv[] )
                            "/api_fast_map_first_wrong_handle/test",
                            strlen("/api_fast_map_first_wrong_handle/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapEdit( sessionHandle,

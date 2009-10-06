@@ -174,6 +174,90 @@ error_handler:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+bool psonTopFolderCreateMap( psonFolder          * pFolder,
+                             const char          * objectName,
+                             uint32_t              nameLengthInBytes,
+                             psoObjectDefinition * pDefinition,
+                             psoKeyDefinition    * pKeyDefinition,
+                             psonSessionContext  * pContext )
+{
+   psoErrors errcode = PSO_OK;
+   uint32_t strLength;
+   bool ok;
+   uint32_t first = 0;
+   const char * name = objectName;
+
+   PSO_PRE_CONDITION( pFolder     != NULL );
+   PSO_PRE_CONDITION( objectName  != NULL );
+   PSO_PRE_CONDITION( pContext    != NULL );
+   PSO_PRE_CONDITION( pDefinition != NULL );
+   PSO_PRE_CONDITION( pDefinition->type > PSO_FOLDER && 
+                      pDefinition->type < PSO_LAST_OBJECT_TYPE );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
+   
+   strLength = nameLengthInBytes;
+
+   if ( strLength > PSO_MAX_FULL_NAME_LENGTH ) {
+      errcode = PSO_OBJECT_NAME_TOO_LONG;
+      goto error_handler;
+   }
+   if ( strLength == 0 ) {
+      errcode = PSO_INVALID_OBJECT_NAME;
+      goto error_handler;
+   }
+
+   /* strip the first char if a separator */
+   if ( name[0] == '/' || name[0] == '\\' ) {
+      first = 1;
+      --strLength;
+      if ( strLength == 0 ) {
+         errcode = PSO_INVALID_OBJECT_NAME;
+         goto error_handler;
+      }
+   }
+
+   /*
+    * There is no psonUnlock here - the recursive nature of the 
+    * function psonFolderInsertObject() means that it will release 
+    * the lock as soon as it can, after locking the
+    * next folder in the chain if needed. 
+    */
+   if ( psonLock( &pFolder->memObject, pContext ) ) {
+      ok = psonFolderInsertMap( pFolder,
+                                &(name[first]),
+                                strLength, 
+                                pDefinition,
+                                pKeyDefinition,
+                                1, /* numBlocks, */
+                                0, /* expectedNumOfChilds, */
+                                pContext );
+      PSO_POST_CONDITION( ok == true || ok == false );
+      if ( ! ok ) goto error_handler;
+   }
+   else {
+      errcode = PSO_ENGINE_BUSY;
+      goto error_handler;
+   }
+   
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
+   return true;
+
+error_handler:
+
+   /*
+    * On failure, errcode would be non-zero, unless the failure occurs in
+    * some other function which already called psocSetError. 
+    */
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+   }
+   
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+   return false;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 bool psonTopFolderCreateObject( psonFolder          * pFolder,
                                 const char          * objectName,
                                 uint32_t              nameLengthInBytes,
@@ -234,6 +318,88 @@ bool psonTopFolderCreateObject( psonFolder          * pFolder,
                                    1, /* numBlocks, */
                                    0, /* expectedNumOfChilds, */
                                    pContext );
+      PSO_POST_CONDITION( ok == true || ok == false );
+      if ( ! ok ) goto error_handler;
+   }
+   else {
+      errcode = PSO_ENGINE_BUSY;
+      goto error_handler;
+   }
+   
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
+   return true;
+
+error_handler:
+
+   /*
+    * On failure, errcode would be non-zero, unless the failure occurs in
+    * some other function which already called psocSetError. 
+    */
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+   }
+   
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+   return false;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+bool psonTopFolderCreateQueue( psonFolder          * pFolder,
+                               const char          * objectName,
+                               uint32_t              nameLengthInBytes,
+                               psoObjectDefinition * pDefinition,
+                               psonSessionContext  * pContext )
+{
+   psoErrors errcode = PSO_OK;
+   uint32_t strLength;
+   bool ok;
+   uint32_t first = 0;
+   const char * name = objectName;
+
+   PSO_PRE_CONDITION( pFolder     != NULL );
+   PSO_PRE_CONDITION( objectName  != NULL );
+   PSO_PRE_CONDITION( pContext    != NULL );
+   PSO_PRE_CONDITION( pDefinition != NULL );
+   PSO_PRE_CONDITION( pDefinition->type > PSO_FOLDER && 
+                      pDefinition->type < PSO_LAST_OBJECT_TYPE );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
+   
+   strLength = nameLengthInBytes;
+
+   if ( strLength > PSO_MAX_FULL_NAME_LENGTH ) {
+      errcode = PSO_OBJECT_NAME_TOO_LONG;
+      goto error_handler;
+   }
+   if ( strLength == 0 ) {
+      errcode = PSO_INVALID_OBJECT_NAME;
+      goto error_handler;
+   }
+
+   /* strip the first char if a separator */
+   if ( name[0] == '/' || name[0] == '\\' ) {
+      first = 1;
+      --strLength;
+      if ( strLength == 0 ) {
+         errcode = PSO_INVALID_OBJECT_NAME;
+         goto error_handler;
+      }
+   }
+
+   /*
+    * There is no psonUnlock here - the recursive nature of the 
+    * function psonFolderInsertObject() means that it will release 
+    * the lock as soon as it can, after locking the
+    * next folder in the chain if needed. 
+    */
+   if ( psonLock( &pFolder->memObject, pContext ) ) {
+      ok = psonFolderInsertQueue( pFolder,
+                                  &(name[first]),
+                                  strLength, 
+                                  pDefinition,
+                                  1, /* numBlocks, */
+                                  0, /* expectedNumOfChilds, */
+                                  pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
       if ( ! ok ) goto error_handler;
    }

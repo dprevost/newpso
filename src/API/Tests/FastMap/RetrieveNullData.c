@@ -79,8 +79,7 @@ int main( int argc, char * argv[] )
                            "/api_fast_map_retrieve_null_data/test",
                            strlen("/api_fast_map_retrieve_null_data/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapEdit( sessionHandle,

@@ -74,8 +74,7 @@ void test_null_data( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_first_null_data/test",
                              strlen("/api_queue_first_null_data/test"),
-                             &defQueue,
-                             dataDefHandle );
+                             &defQueue );
    assert_true( errcode == PSO_OK );
 
    errcode = psoQueueOpen( sessionHandle,
@@ -128,8 +127,7 @@ void test_null_handle( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_first_null_handle/test",
                              strlen("/api_queue_first_null_handle/test"),
-                             &defQueue,
-                             dataDefHandle );
+                             &defQueue );
    assert_true( errcode == PSO_OK );
 
    errcode = psoQueueOpen( sessionHandle,
@@ -181,8 +179,7 @@ void test_null_length( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_first_null_length/test",
                              strlen("/api_queue_first_null_length/test"),
-                             &defQueue,
-                             dataDefHandle );
+                             &defQueue );
    assert_true( errcode == PSO_OK );
 
    errcode = psoQueueOpen( sessionHandle,
@@ -235,8 +232,7 @@ void test_wrong_handle( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_first_wrong_handle/test",
                              strlen("/api_queue_first_wrong_handle/test"),
-                             &defQueue,
-                             dataDefHandle );
+                             &defQueue );
    assert_true( errcode == PSO_OK );
 
    errcode = psoQueueOpen( sessionHandle,
@@ -289,8 +285,7 @@ void test_pass( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_first_pass/test",
                              strlen("/api_queue_first_pass/test"),
-                             &defQueue,
-                             dataDefHandle );
+                             &defQueue );
    assert_true( errcode == PSO_OK );
 
    errcode = psoQueueOpen( sessionHandle,

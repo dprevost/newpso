@@ -72,8 +72,7 @@ void test_pass( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_open_no_session/test",
                              strlen("/api_queue_open_no_session/test"),
-                             &defQueue,
-                             dataDefHandle );
+                             &defQueue );
    assert_true( errcode == PSO_OK );
 
    /* Close the session and try to act on the object */

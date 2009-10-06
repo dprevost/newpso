@@ -36,7 +36,7 @@ void setup_test()
    char * key1  = "my key1";
    char * key2  = "my key2";
    psoObjectDefinition def = { PSO_FAST_MAP, 0, 0 };
-   psonKeyDefinition keyDef;
+   psoKeyDefinition keyDef;
    psonDataDefinition fields;
    
    pHashMap = initHashMapTest( &context );
@@ -48,7 +48,7 @@ void setup_test()
    
    ok = psonFastMapInit( pHashMap, 0, 1, 0, &mapNode,
                          SET_OFFSET(pHashMap), &def, &keyDef, 
-                         &fields, &context );
+                         &context );
    assert( ok );
    
    ok = psonFastMapInsert( pHashMap,

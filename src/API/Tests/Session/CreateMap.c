@@ -22,10 +22,22 @@
 #include <photon/photon.h>
 #include "API/Tests/quasar-run.h"
 
+psoKeyDefinition * pKeyDefinition;
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
+   psoKeyFieldDefinition keyDef = { "MyKey", PSO_KEY_VARCHAR, 10 };
+
+   pKeyDefinition = malloc( offsetof( psoKeyDefinition, definition) +
+                           sizeof(psoKeyFieldDefinition) );
+   assert( pKeyDefinition != NULL );
+
+   pKeyDefinition->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   pKeyDefinition->definitionLength = sizeof(psoKeyFieldDefinition);
+   memcpy( pKeyDefinition->definition, &keyDef, sizeof(psoKeyFieldDefinition) );
+
    assert( startQuasar() );
 }
 
@@ -33,6 +45,8 @@ void setup_test()
 
 void teardown_test()
 {
+   if ( pKeyDefinition ) free( pKeyDefinition );
+   pKeyDefinition = NULL;
    assert( stopQuasar() );
 }
 
@@ -48,7 +62,16 @@ void test_pass( void ** state )
    };
    psoKeyFieldDefinition keyDef = { "Key1", PSO_KEY_VARCHAR, 100 };
    PSO_HANDLE dataDefHandle, keyDefHandle;
+   psoKeyDefinition * pKeyDefinition;
    
+   pKeyDefinition = malloc( offsetof( psoKeyDefinition, definition) +
+                           sizeof(psoKeyFieldDefinition) );
+   assert_false( pKeyDefinition == NULL );
+
+   pKeyDefinition->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   pKeyDefinition->definitionLength = sizeof(psoKeyFieldDefinition);
+   memcpy( pKeyDefinition->definition, &keyDef, sizeof(psoKeyFieldDefinition) );
+
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
@@ -78,32 +101,28 @@ void test_pass( void ** state )
                            "/api_session_create_keyed_object",
                            strlen("/api_session_create_keyed_object"),
                            &def,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoCreateMap( sessionHandle,
                            NULL,
                            strlen("/api_session_create_keyed_object"),
                            &def,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    errcode = psoCreateMap( sessionHandle,
                            "/api_session_create_keyed_object",
                            0,
                            &def,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoCreateMap( sessionHandle,
                            "/api_session_create_keyed_object",
                            strlen("/api_session_create_keyed_object"),
                            NULL,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_NULL_POINTER );
 
    def.type = PSO_QUEUE;
@@ -111,33 +130,22 @@ void test_pass( void ** state )
                            "/api_session_create_keyed_object",
                            strlen("/api_session_create_keyed_object"),
                            &def,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_WRONG_OBJECT_TYPE );
-
    def.type = PSO_HASH_MAP;
-   errcode = psoCreateMap( sessionHandle,
-                           "/api_session_create_keyed_object",
-                           strlen("/api_session_create_keyed_object"),
-                           &def,
-                           NULL,
-                           keyDefHandle );
-   assert_true( errcode == PSO_NULL_HANDLE );
-   
-   errcode = psoCreateMap( sessionHandle,
-                           "/api_session_create_keyed_object",
-                           strlen("/api_session_create_keyed_object"),
-                           &def,
-                           dataDefHandle,
-                           NULL );
-   assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoCreateMap( sessionHandle,
                            "/api_session_create_keyed_object",
                            strlen("/api_session_create_keyed_object"),
                            &def,
-                           keyDefHandle,
-                           dataDefHandle );
+                           NULL );
+   assert_true( errcode == PSO_NULL_POINTER );
+
+   errcode = psoCreateMap( sessionHandle,
+                           "/api_session_create_keyed_object",
+                           strlen("/api_session_create_keyed_object"),
+                           &def,
+                           pKeyDefinition );
    assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    /* End of invalid args. This call should succeed. */
@@ -145,8 +153,7 @@ void test_pass( void ** state )
                            "/api_session_create_keyed_object",
                            strlen("/api_session_create_keyed_object"),
                            &def,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    /* Close the process and try to act on the session */
@@ -157,8 +164,7 @@ void test_pass( void ** state )
                            "/api_session_create_keyed_object",
                            strlen("/api_session_create_keyed_object"),
                            &def,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 }
 

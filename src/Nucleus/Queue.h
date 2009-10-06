@@ -132,7 +132,6 @@ bool psonQueueInit( psonQueue           * pQueue,
                     size_t                numberOfBlocks,
                     psonTreeNode        * pNode,
                     psoObjectDefinition * pDefinition,
-                    psonDataDefinition  * pDataDefinition,
                     psonSessionContext  * pContext );
 
 bool psonQueueInsert( psonQueue          * pQueue,

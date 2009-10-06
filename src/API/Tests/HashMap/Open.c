@@ -52,6 +52,15 @@ void test_pass( void ** state )
    };
    PSO_HANDLE keyDefHandle, dataDefHandle;
    const char * data1 = "My Data1";
+   psoKeyDefinition * pKeyDefinition;
+   
+   pKeyDefinition = malloc( offsetof( psoKeyDefinition, definition) +
+                           sizeof(psoKeyFieldDefinition) );
+   assert_false( pKeyDefinition == NULL );
+
+   pKeyDefinition->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   pKeyDefinition->definitionLength = sizeof(psoKeyFieldDefinition);
+   memcpy( pKeyDefinition->definition, &keyDef, sizeof(psoKeyFieldDefinition) );
    
    memset( junk, 0, 12 );
    
@@ -90,8 +99,7 @@ void test_pass( void ** state )
                            "/api_hashmap_open/test",
                            strlen("/api_hashmap_open/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */

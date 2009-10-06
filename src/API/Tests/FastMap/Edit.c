@@ -90,8 +90,7 @@ void test_pass( void ** state )
                            "/api_map_edit/test",
                            strlen("/api_map_edit/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCommit( sessionHandle );
@@ -176,8 +175,7 @@ void test_pass( void ** state )
                            "/api_map_edit2/test",
                            strlen("/api_map_edit2/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapEdit( sessionHandle,

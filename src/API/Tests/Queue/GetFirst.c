@@ -75,8 +75,7 @@ void test_pass( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_get_first/test",
                              strlen("/api_queue_get_first/test"),
-                             &defQueue,
-                             dataDefHandle );
+                             &defQueue );
    assert_true( errcode == PSO_OK );
 
    errcode = psoQueueOpen( sessionHandle,

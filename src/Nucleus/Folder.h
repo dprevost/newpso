@@ -223,6 +223,15 @@ bool psonFolderInit( psonFolder         * pFolder,
                      psonTreeNode       * pNode,
                      psonSessionContext * pContext );
 
+bool psonFolderInsertMap( psonFolder          * pFolder,
+                          const char          * objectName,
+                          uint32_t              strLength,
+                          psoObjectDefinition * pDefinition,
+                          psoKeyDefinition    * pKeyDefinition,
+                          size_t                numBlocks,
+                          size_t                expectedNumOfChilds,
+                          psonSessionContext  * pContext );
+
 bool psonFolderInsertObject( psonFolder          * pFolder,
                              const char          * objectName,
                              uint32_t              strLength,
@@ -232,6 +241,14 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
                              size_t                numBlocks,
                              size_t                expectedNumOfChilds,
                              psonSessionContext  * pContext );
+
+bool psonFolderInsertQueue( psonFolder          * pFolder,
+                            const char          * objectName,
+                            uint32_t              strLength,
+                            psoObjectDefinition * pDefinition,
+                            size_t                numBlocks,
+                            size_t                expectedNumOfChilds,
+                            psonSessionContext  * pContext );
 
 bool psonFolderRelease( psonFolder         * pFolder,
                         psonFolderItem     * pItem,
@@ -272,6 +289,19 @@ bool psonTopFolderCreateFolder( psonFolder         * pFolder,
                                 const char         * objectName,
                                 uint32_t             nameLengthInBytes,
                                 psonSessionContext * pContext );
+
+bool psonTopFolderCreateQueue( psonFolder          * pFolder,
+                               const char          * objectName,
+                               uint32_t              nameLengthInBytes,
+                               psoObjectDefinition * pDefinition,
+                               psonSessionContext  * pContext );
+
+bool psonTopFolderCreateMap( psonFolder          * pFolder,
+                             const char          * objectName,
+                             uint32_t              nameLengthInBytes,
+                             psoObjectDefinition * pDefinition,
+                             psoKeyDefinition    * pKeyDefinition,
+                             psonSessionContext  * pContext );
 
 bool psonTopFolderCreateObject( psonFolder          * pFolder,
                                 const char          * objectName,

@@ -78,8 +78,7 @@ void test_pass( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_pushnow/test",
                              strlen("/api_queue_pushnow/test"),
-                             &defQueue,
-                             dataDefHandle );
+                             &defQueue );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCommit( sessionHandle );

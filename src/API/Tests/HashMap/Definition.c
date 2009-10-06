@@ -71,6 +71,15 @@ void test_pass( void ** state )
    psoKeyFieldDefinition retKeyDef;
    PSO_HANDLE keyDefHandle, dataDefHandle;
    PSO_HANDLE retKeyDefHandle = NULL, retDataDefHandle = NULL;
+   psoKeyDefinition * pKeyDefinition;
+   
+   pKeyDefinition = malloc( offsetof( psoKeyDefinition, definition) +
+                           sizeof(psoKeyFieldDefinition) );
+   assert_false( pKeyDefinition == NULL );
+
+   pKeyDefinition->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   pKeyDefinition->definitionLength = sizeof(psoKeyFieldDefinition);
+   memcpy( pKeyDefinition->definition, &keyDef, sizeof(psoKeyFieldDefinition) );
 
    memset( &retDef, 0, sizeof(psoObjectDefinition) );
    memset( &retFields, 0, 5*sizeof(psoFieldDefinition) );
@@ -112,8 +121,7 @@ void test_pass( void ** state )
                            "/api_hashmap_definition/test",
                            strlen("/api_hashmap_definition/test"),
                            &hashMapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoHashMapOpen( sessionHandle,

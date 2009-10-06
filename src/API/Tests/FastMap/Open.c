@@ -89,8 +89,7 @@ void test_pass( void ** state )
                            "/api_fast_map_open/test",
                            strlen("/api_fast_map_open/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */

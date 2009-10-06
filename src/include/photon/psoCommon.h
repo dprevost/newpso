@@ -198,9 +198,46 @@ struct psoObjectDefinition
     * the minimum number of blocks needed from it..
     */
    size_t minNumBlocks;
+   
+   /**
+    * Type of definition of the data fields.
+    */
+   enum psoDefinitionType dataDefType;
+
+   /**
+    * Length of the data definition (dataDef). 
+    *
+    * Set it to zero if dataDef is NULL.
+    */
+   psoUint32 dataDefLength;
+    
+   /**
+    * Definition of the data fields.
+    *
+    * This definition can be used as a comment to describe the content
+    * of the object. It can also be used to pack and unpack the items
+    * (serialized objects) contain in the object container.
+    * 
+    * It can be NULL if not needed.
+    */
+   unsigned char * dataDef;
+
 };
 
 typedef struct psoObjectDefinition psoObjectDefinition;
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+struct psoKeyDefinition
+{
+   enum psoDefinitionType type;
+   
+   uint32_t definitionLength;
+   
+   unsigned char definition[1];
+};
+
+typedef struct psoKeyDefinition psoKeyDefinition;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

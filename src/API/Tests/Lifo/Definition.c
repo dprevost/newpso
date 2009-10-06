@@ -97,8 +97,7 @@ void test_pass( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_lifo_definition/test",
                              strlen("/api_lifo_definition/test"),
-                             &lifoDef,
-                             dataDefHandle );
+                             &lifoDef );
    assert_true( errcode == PSO_OK );
 
    errcode = psoLifoOpen( sessionHandle,

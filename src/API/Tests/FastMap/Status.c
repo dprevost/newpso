@@ -88,8 +88,7 @@ void test_pass( void ** state )
                            "/api_fast_map_status/test",
                            strlen("/api_fast_map_status/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapEdit( sessionHandle,

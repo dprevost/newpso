@@ -36,7 +36,7 @@ void setup_test()
 {
    bool ok;
    psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
-   psonKeyDefinition keyDef;
+   psoKeyDefinition keyDef;
    psonDataDefinition fields;
 
    pHashMap = initHashMapTest( &context );
@@ -47,7 +47,7 @@ void setup_test()
    
    ok = psonHashMapInit( pHashMap, 0, 1, 0, &mapNode,
                          &def, &keyDef,
-                         &fields, &context );
+                         &context );
    assert( ok );
    
    ok = psonHashMapInsert( pHashMap,

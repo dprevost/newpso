@@ -133,8 +133,8 @@ Java_org_photon_Session_psoCreateQueue( JNIEnv * env,
    errcode = psoCreateQueue( (PSO_HANDLE) handle,
                              name,
                              strlen(name),
-                             &definition,
-                             (PSO_HANDLE)dataDefHandle );
+                             &definition );
+   //                          (PSO_HANDLE)dataDefHandle );
    
    (*env)->ReleaseStringUTFChars( env, jname, name );
 
@@ -191,8 +191,8 @@ Java_org_photon_Session_psoCreateQueueEx( JNIEnv * env,
       errcode = psoCreateQueue( (PSO_HANDLE) handle,
                                 name,
                                 strlen(name),
-                                &definition,
-                                (PSO_HANDLE)dataDefHandle );
+                                &definition );
+//                                (PSO_HANDLE)dataDefHandle );
    
       (*env)->ReleaseStringUTFChars( env, jname, name );
       psoDataDefClose( dataDefHandle );
@@ -237,13 +237,14 @@ Java_org_photon_Session_psoCreateMap( JNIEnv * env,
       return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
    }
 
+#if 0
    errcode = psoCreateMap( (PSO_HANDLE) handle,
                            name,
                            strlen(name),
                            &definition,
                            (PSO_HANDLE)dataDefHandle,
                            (PSO_HANDLE)keyDefHandle );
-   
+#endif
    (*env)->ReleaseStringUTFChars( env, jname, name );
 
    return errcode;
@@ -315,13 +316,14 @@ Java_org_photon_Session_psoCreateMapEx( JNIEnv * env,
       return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
    }
 
+#if 0
    errcode = psoCreateMap( (PSO_HANDLE) handle,
                            name,
                            strlen(name),
                            &definition,
-                           dataDefHandle,
-                           keyDefHandle );
-   
+                           pKeyDefinition );
+#endif
+
    (*env)->ReleaseStringUTFChars( env, jname, name );
    psoDataDefClose( dataDefHandle );
    psoKeyDefClose( keyDefHandle );

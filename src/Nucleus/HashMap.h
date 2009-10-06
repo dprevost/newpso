@@ -148,8 +148,7 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
                       size_t                expectedNumOfChilds,
                       psonTreeNode        * pNode,
                       psoObjectDefinition * pDefinition,
-                      psonKeyDefinition   * pKeyDefinition,
-                      psonDataDefinition  * pDataDefinition,
+                      psoKeyDefinition    * pKeyDefinition,
                       psonSessionContext  * pContext );
 
 bool psonHashMapInsert( psonHashMap        * pHashMap,

@@ -74,8 +74,7 @@ void test_NullData( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_lifo_remove_null_data/test",
                              strlen("/api_lifo_remove_null_data/test"),
-                             &defLifo,
-                             dataDefHandle );
+                             &defLifo );
    assert_true( errcode == PSO_OK );
 
    errcode = psoLifoOpen( sessionHandle,
@@ -131,8 +130,7 @@ void test_NullHandle( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_lifo_remove_null_handle/test",
                              strlen("/api_lifo_remove_null_handle/test"),
-                             &defLifo,
-                             dataDefHandle );
+                             &defLifo );
    assert_true( errcode == PSO_OK );
 
    errcode = psoLifoOpen( sessionHandle,
@@ -187,8 +185,7 @@ void test_NullLength( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_lifo_remove_null_length/test",
                              strlen("/api_lifo_remove_null_length/test"),
-                             &defLifo,
-                             dataDefHandle );
+                             &defLifo );
    assert_true( errcode == PSO_OK );
 
    errcode = psoLifoOpen( sessionHandle,
@@ -244,8 +241,7 @@ void test_WrongHandle( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_lifo_remove_wrong_handle/test",
                              strlen("/api_lifo_remove_wrong_handle/test"),
-                             &defLifo,
-                             dataDefHandle );
+                             &defLifo );
    assert_true( errcode == PSO_OK );
 
    errcode = psoLifoOpen( sessionHandle,
@@ -304,8 +300,7 @@ void test_pass( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_lifo_remove_pass/test",
                              strlen("/api_lifo_remove_pass/test"),
-                             &defLifo,
-                             dataDefHandle );
+                             &defLifo );
    assert_true( errcode == PSO_OK );
 
    errcode = psoLifoOpen( sessionHandle,

@@ -79,8 +79,7 @@ void test_pass( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_open_pass/test",
                              strlen("/api_queue_open_pass/test"),
-                             &defQueue,
-                             dataDefHandle );
+                             &defQueue );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */

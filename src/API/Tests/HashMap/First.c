@@ -23,10 +23,22 @@
 #include "API/HashMap.h"
 #include "API/Tests/quasar-run.h"
 
+psoKeyDefinition * pKeyDefinition;
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
+   psoKeyFieldDefinition keyDef = { "MyKey", PSO_KEY_VARCHAR, 10 };
+
+   pKeyDefinition = malloc( offsetof( psoKeyDefinition, definition) +
+                           sizeof(psoKeyFieldDefinition) );
+   assert( pKeyDefinition != NULL );
+
+   pKeyDefinition->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   pKeyDefinition->definitionLength = sizeof(psoKeyFieldDefinition);
+   memcpy( pKeyDefinition->definition, &keyDef, sizeof(psoKeyFieldDefinition) );
+
    assert( startQuasar() );
 }
 
@@ -34,6 +46,8 @@ void setup_test()
 
 void teardown_test()
 {
+   if ( pKeyDefinition ) free( pKeyDefinition );
+   pKeyDefinition = NULL;
    assert( stopQuasar() );
 }
 
@@ -87,8 +101,7 @@ void test_null_data( void ** state )
                            "/api_hashmap_first_null_data/test",
                            strlen("/api_hashmap_first_null_data/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoHashMapOpen( sessionHandle,
@@ -161,8 +174,7 @@ void test_null_datalength( void ** state )
                            "/api_hashmap_first_null_data_length/test",
                            strlen("/api_hashmap_first_null_data_length/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoHashMapOpen( sessionHandle,
@@ -235,8 +247,7 @@ void test_null_handle( void ** state )
                            "/api_hashmap_first_null_handle/test",
                            strlen("/api_hashmap_first_null_handle/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoHashMapOpen( sessionHandle,
@@ -309,8 +320,7 @@ void test_null_key( void ** state )
                            "/api_hashmap_first_null_key/test",
                            strlen("/api_hashmap_first_null_key/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoHashMapOpen( sessionHandle,
@@ -383,8 +393,7 @@ void test_null_keylength( void ** state )
                            "/api_hashmap_first_null_key_length/test",
                            strlen("/api_hashmap_first_null_key_length/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoHashMapOpen( sessionHandle,
@@ -457,8 +466,7 @@ void test_wrong_handle( void ** state )
                            "/api_hashmap_first_wrong_handle/test",
                            strlen("/api_hashmap_first_wrong_handle/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoHashMapOpen( sessionHandle,
@@ -531,8 +539,7 @@ void test_pass( void ** state )
                            "/api_hashmap_first_pass/test",
                            strlen("/api_hashmap_first_pass/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoHashMapOpen( sessionHandle,

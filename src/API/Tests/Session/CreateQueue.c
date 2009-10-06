@@ -68,51 +68,38 @@ void test_pass( void ** state )
    errcode = psoCreateQueue( NULL,
                              "/api_session_create_object",
                              strlen("/api_session_create_object"),
-                             &def,
-                             NULL );
+                             &def );
    assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoCreateQueue( sessionHandle,
                              NULL,
                              strlen("/api_session_create_object"),
-                             &def,
-                             NULL );
+                             &def );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    errcode = psoCreateQueue( sessionHandle,
                              "/api_session_create_object",
                              0,
-                             &def,
-                             NULL );
+                             &def );
    assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoCreateQueue( sessionHandle,
                              "/api_session_create_object",
                              strlen("/api_session_create_object"),
-                             NULL,
-                             dataDefHandle );
-   assert_true( errcode == PSO_NULL_POINTER );
-
-   errcode = psoCreateQueue( sessionHandle,
-                             "/api_session_create_object",
-                             strlen("/api_session_create_object"),
-                             &def,
                              NULL );
-   assert_true( errcode == PSO_NULL_HANDLE );
+   assert_true( errcode == PSO_NULL_POINTER );
 
    def.type = PSO_FOLDER;
    errcode = psoCreateQueue( sessionHandle,
                              "/api_session_create_object",
                              strlen("/api_session_create_object"),
-                             &def,
-                             dataDefHandle );
+                             &def );
    assert_true( errcode == PSO_WRONG_OBJECT_TYPE );
    def.type = PSO_HASH_MAP;
    errcode = psoCreateQueue( sessionHandle,
                              "/api_session_create_object",
                              strlen("/api_session_create_object"),
-                             &def,
-                             dataDefHandle );
+                             &def );
    assert_true( errcode == PSO_WRONG_OBJECT_TYPE );
    def.type = PSO_QUEUE;
 
@@ -120,8 +107,7 @@ void test_pass( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_session_create_object",
                              strlen("/api_session_create_object"),
-                             &def,
-                             dataDefHandle );
+                             &def );
    assert_true( errcode == PSO_OK );
 
    /* Close the process and try to act on the session */
@@ -131,8 +117,7 @@ void test_pass( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_session_create_object",
                              strlen("/api_session_create_object"),
-                             &def,
-                             dataDefHandle );
+                             &def );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 }
 

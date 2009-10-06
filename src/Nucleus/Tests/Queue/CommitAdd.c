@@ -43,7 +43,7 @@ void setup_test()
 
    ok = psonQueueInit( pQueue, 
                        0, 1, &queueNode,
-                       &def, &fields, &context );
+                       &def, &context );
    assert( ok );
 
    ok = psonQueueInsert( pQueue,

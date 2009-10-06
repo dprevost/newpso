@@ -75,8 +75,7 @@ int main( int argc, char * argv[] )
                            "/api_fast_map_open_nosession/test",
                            strlen("/api_fast_map_open_nosession/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    /* Close the session and try to act on the object */

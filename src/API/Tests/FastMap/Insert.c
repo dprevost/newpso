@@ -90,8 +90,7 @@ void test_pass( void ** state )
                            "/api_fast_map_insert/test",
                            strlen("/api_fast_map_insert/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCommit( sessionHandle );

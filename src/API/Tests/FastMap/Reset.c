@@ -85,8 +85,7 @@ void test_pass( void ** state )
                            "/api_fastmap_reset_pass/test",
                            strlen("/api_fastmap_reset_pass/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapEdit( sessionHandle,

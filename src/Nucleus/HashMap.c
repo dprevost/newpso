@@ -844,18 +844,18 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
                       size_t                expectedNumOfItems,
                       psonTreeNode        * pNode,
                       psoObjectDefinition * pDefinition,
-                      psonKeyDefinition   * pKeyDefinition,
-                      psonDataDefinition  * pDataDefinition,
+                      psoKeyDefinition    * pKeyDefinition,
                       psonSessionContext  * pContext )
 {
    psoErrors errcode;
+   size_t len;
+   void * ptr;
    
    PSO_PRE_CONDITION( pHashMap        != NULL );
    PSO_PRE_CONDITION( pContext        != NULL );
    PSO_PRE_CONDITION( pNode           != NULL );
    PSO_PRE_CONDITION( pDefinition     != NULL );
    PSO_PRE_CONDITION( pKeyDefinition  != NULL );
-   PSO_PRE_CONDITION( pDataDefinition != NULL );
    PSO_PRE_CONDITION( parentOffset    != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
@@ -887,8 +887,30 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
       return false;
    }
    
-   pHashMap->dataDefOffset = SET_OFFSET(pDataDefinition);
-   pHashMap->keyDefOffset  = SET_OFFSET(pKeyDefinition);
+   len = offsetof( psoObjectDefinition, dataDef ) + pDefinition->dataDefLength;
+   ptr = psonMalloc( &pHashMap->memObject, len, pContext );
+   if ( ptr == NULL ) {
+      psocSetError( &pContext->errorHandler,
+                    g_psoErrorHandle,
+                    PSO_NOT_ENOUGH_PSO_MEMORY );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+      return false;
+   }
+   memcpy( ptr, pDefinition, len );
+   pHashMap->dataDefOffset = SET_OFFSET(ptr);
+   
+   
+   len = offsetof( psoKeyDefinition, definition ) + pKeyDefinition->definitionLength;
+   ptr = psonMalloc( &pHashMap->memObject, len, pContext );
+   if ( ptr == NULL ) {
+      psocSetError( &pContext->errorHandler,
+                    g_psoErrorHandle,
+                    PSO_NOT_ENOUGH_PSO_MEMORY );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+      return false;
+   }
+   memcpy( ptr, pKeyDefinition, len );
+   pHashMap->keyDefOffset  = SET_OFFSET(ptr);
 
    pHashMap->isSystemObject = false;
 

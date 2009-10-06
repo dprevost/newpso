@@ -122,8 +122,7 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
                       psonTreeNode        * pNode,
                       ptrdiff_t             hashItemOffset,
                       psoObjectDefinition * pDefinition,
-                      psonKeyDefinition   * pKeyDefinition,
-                      psonDataDefinition  * pDataDefinition,
+                      psoKeyDefinition    * pKeyDefinition,
                       psonSessionContext  * pContext );
 
 bool psonFastMapInsert( psonFastMap        * pHashMap,

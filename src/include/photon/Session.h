@@ -171,9 +171,8 @@ int psoCreateFolder( PSO_HANDLE   sessionHandle,
  * \param[in] nameLengthInBytes The length of \em objectName (in bytes) not
  *            counting the null terminator.
  * \param[in] definition The basic information needed to create the object:
- *            the type of object to create, etc.
- * \param[in] dataDefHandle Handle to the definition of the data fields.
- *            It can be set to NULL when creating a Folder.
+ *            the type of object to create, the optional definition of the 
+ *            fields, etc.
  *
  * \return 0 on success or a ::psoErrors on error.
  */
@@ -181,8 +180,7 @@ PHOTON_EXPORT
 int psoCreateQueue( PSO_HANDLE            sessionHandle,
                     const char          * objectName,
                     psoUint32             nameLengthInBytes,
-                    psoObjectDefinition * definition,
-                    PSO_HANDLE            dataDefHandle );
+                    psoObjectDefinition * definition );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -203,9 +201,9 @@ int psoCreateQueue( PSO_HANDLE            sessionHandle,
  * \param[in] nameLengthInBytes The length of \em objectName (in bytes) not
  *            counting the null terminator.
  * \param[in] definition The basic information needed to create the object:
- *            the type of object to create, etc.
- * \param[in] dataDefHandle Handle to the definition of the data fields.
- * \param[in] keyDefHandle Handle to the definition of the key.
+ *            the type of object to create, the optional definition of the 
+ *            fields, etc.
+ * \param[in] keyDefinition Definition of the key.
  *
  * \return 0 on success or a ::psoErrors on error.
  */
@@ -214,8 +212,7 @@ int psoCreateMap( PSO_HANDLE            sessionHandle,
                   const char          * objectName,
                   psoUint32             nameLengthInBytes,
                   psoObjectDefinition * definition,
-                  PSO_HANDLE            dataDefHandle,
-                  PSO_HANDLE            keyDefHandle );
+                  psoKeyDefinition    * keyDefinition );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

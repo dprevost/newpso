@@ -48,6 +48,15 @@ void test_pass( void ** state )
    };
    psoKeyFieldDefinition keyDef = { "Key1", PSO_KEY_VARCHAR, 100 };
    PSO_HANDLE dataDefHandle, keyDefHandle, returnedDef;
+   psoKeyDefinition * pKeyDefinition;
+   
+   pKeyDefinition = malloc( offsetof( psoKeyDefinition, definition) +
+                           sizeof(psoKeyFieldDefinition) );
+   assert_false( pKeyDefinition == NULL );
+
+   pKeyDefinition->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   pKeyDefinition->definitionLength = sizeof(psoKeyFieldDefinition);
+   memcpy( pKeyDefinition->definition, &keyDef, sizeof(psoKeyFieldDefinition) );
    
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
@@ -76,8 +85,7 @@ void test_pass( void ** state )
                            "/api_session_key_definition",
                            strlen("/api_session_key_definition"),
                            &def,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */

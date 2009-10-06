@@ -429,16 +429,16 @@ bool psonQueueInit( psonQueue           * pQueue,
                     size_t                numberOfBlocks,
                     psonTreeNode        * pQueueNode,
                     psoObjectDefinition * pDefinition,
-                    psonDataDefinition  * pDataDefinition,
                     psonSessionContext  * pContext )
 {
    psoErrors errcode;
+   size_t len;
+   void * ptr;
    
    PSO_PRE_CONDITION( pQueue          != NULL );
    PSO_PRE_CONDITION( pContext        != NULL );
    PSO_PRE_CONDITION( pQueueNode      != NULL );
    PSO_PRE_CONDITION( pDefinition     != NULL );
-   PSO_PRE_CONDITION( pDataDefinition != NULL );
    PSO_PRE_CONDITION( parentOffset    != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
@@ -460,7 +460,17 @@ bool psonQueueInit( psonQueue           * pQueue,
 
    psonLinkedListInit( &pQueue->listOfElements, pContext );
 
-   pQueue->dataDefOffset = SET_OFFSET(pDataDefinition);
+   len = offsetof( psoObjectDefinition, dataDef ) + pDefinition->dataDefLength;
+   ptr = psonMalloc( &pQueue->memObject, len, pContext );
+   if ( ptr == NULL ) {
+      psocSetError( &pContext->errorHandler,
+                    g_psoErrorHandle,
+                    PSO_NOT_ENOUGH_PSO_MEMORY );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+      return false;
+   }
+   memcpy( ptr, pDefinition, len );
+   pQueue->dataDefOffset = SET_OFFSET(ptr);
    
    PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;

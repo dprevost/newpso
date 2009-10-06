@@ -104,8 +104,7 @@ void test_pass( void ** state )
                            "/api_map_tests/test",
                            strlen("/api_map_tests/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCommit( sessionHandleEdit );

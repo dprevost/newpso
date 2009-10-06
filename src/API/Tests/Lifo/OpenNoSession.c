@@ -72,8 +72,7 @@ void test_pass( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_lifo_open_no_session/test",
                              strlen("/api_lifo_open_no_session/test"),
-                             &defLifo,
-                             dataDefHandle );
+                             &defLifo );
    assert_true( errcode == PSO_OK );
 
    /* Close the session and try to act on the object */

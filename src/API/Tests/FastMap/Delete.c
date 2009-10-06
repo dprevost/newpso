@@ -124,8 +124,7 @@ void test_pass( void ** state )
                            "/api_fastmap_delete/test",
                            strlen("/api_fastmap_delete/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    psoaSessionTrace( sessionHandle1, PSO_TRACE_ALL );

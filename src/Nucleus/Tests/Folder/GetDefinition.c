@@ -34,7 +34,7 @@ void setup_test()
 {
    bool ok;
    psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
-   psonKeyDefinition keyDef;
+   psoKeyDefinition keyDef;
    psonDataDefinition fieldDef;
    
    pFolder = initFolderTest( &context );
@@ -46,15 +46,14 @@ void setup_test()
    ok = psonFolderInit( pFolder, 0, 1, 0, &node, &context );
    assert( ok );
    
-   ok = psonFolderInsertObject( pFolder,
-                                "test2",
-                                5,
-                                &def,
-                                &fieldDef,
-                                &keyDef,
-                                1,
-                                0,
-                                &context );
+   ok = psonFolderInsertMap( pFolder,
+                             "test2",
+                             5,
+                             &def,
+                             &keyDef,
+                             1,
+                             0,
+                             &context );
    assert( ok );
 }
 

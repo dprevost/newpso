@@ -147,15 +147,14 @@ int psoCreateFolder( PSO_HANDLE   sessionHandle,
 int psoCreateQueue( PSO_HANDLE            sessionHandle,
                     const char          * objectName,
                     uint32_t              nameLengthInBytes,
-                    psoObjectDefinition * pDefinition,
-                    PSO_HANDLE            dataDefHandle )
+                    psoObjectDefinition * pDefinition )
 {
    psoaSession* pSession;
    int errcode = PSO_OK;
    psonFolder * pTree;
    bool ok = true;
-   psonDataDefinition * pMemDataDefinition = NULL;
-   psoaDataDefinition * pDataDefinition;
+   //psonDataDefinition * pMemDataDefinition = NULL;
+   //psoaDataDefinition * pDataDefinition;
    
    pSession = (psoaSession*) sessionHandle;
    if ( pSession == NULL ) return PSO_NULL_HANDLE;
@@ -182,27 +181,13 @@ int psoCreateQueue( PSO_HANDLE            sessionHandle,
       return PSO_WRONG_OBJECT_TYPE;
    }
    
-   if ( dataDefHandle == NULL ) {
-      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_NULL_HANDLE );
-      return PSO_NULL_HANDLE;
-   }
-   
-   pDataDefinition = (psoaDataDefinition *)dataDefHandle;
-   if ( pDataDefinition->definitionType != PSOA_DEF_DATA ) {
-      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_WRONG_TYPE_HANDLE );
-      return PSO_WRONG_TYPE_HANDLE;
-   }
-   pMemDataDefinition = pDataDefinition->pMemDefinition;
-   
    if ( ! pSession->terminated ) {
       GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
-      ok = psonTopFolderCreateObject( pTree,
-                                      objectName,
-                                      nameLengthInBytes,
-                                      pDefinition,
-                                      pMemDataDefinition,
-                                      NULL,
-                                      &pSession->context );
+      ok = psonTopFolderCreateQueue( pTree,
+                                     objectName,
+                                     nameLengthInBytes,
+                                     pDefinition,
+                                     &pSession->context );
       PSO_POST_CONDITION( ok == true || ok == false );
    }
    else {
@@ -226,17 +211,16 @@ int psoCreateMap( PSO_HANDLE            sessionHandle,
                   const char          * objectName,
                   uint32_t              nameLengthInBytes,
                   psoObjectDefinition * pDefinition,
-                  PSO_HANDLE            dataDefHandle,
-                  PSO_HANDLE            keyDefHandle )
+                  psoKeyDefinition    * pKeyDefinition )
 {
    psoaSession* pSession;
    int errcode = PSO_OK;
    psonFolder * pTree;
    bool ok = true;
-   psonDataDefinition * pMemDataDefinition = NULL;
-   psonKeyDefinition  * pMemKeyDefinition = NULL;
-   psoaDataDefinition * pDataDefinition;
-   psoaKeyDefinition  * pKeyDefinition;
+   //psonDataDefinition * pMemDataDefinition = NULL;
+   //psonKeyDefinition  * pMemKeyDefinition = NULL;
+   //psoaDataDefinition * pDataDefinition;
+   //psoaKeyDefinition  * pKeyDefinition;
    
    pSession = (psoaSession*) sessionHandle;
    if ( pSession == NULL ) return PSO_NULL_HANDLE;
@@ -263,37 +247,37 @@ int psoCreateMap( PSO_HANDLE            sessionHandle,
       return PSO_WRONG_OBJECT_TYPE;
    }
    
-   if ( keyDefHandle == NULL ) {
+   if ( pKeyDefinition == NULL ) {
       psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_NULL_HANDLE );
-      return PSO_NULL_HANDLE;
+      return PSO_NULL_POINTER;
    }
-   pKeyDefinition = (psoaKeyDefinition *)keyDefHandle;
-   if ( pKeyDefinition->definitionType != PSOA_DEF_KEY ) {
-      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_WRONG_TYPE_HANDLE );
-      return PSO_WRONG_TYPE_HANDLE;
-   }
-   pMemKeyDefinition = pKeyDefinition->pMemDefinition;
    
-   if ( dataDefHandle == NULL ) {
-      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_NULL_HANDLE );
-      return PSO_NULL_HANDLE;
-   }
-   pDataDefinition = (psoaDataDefinition *)dataDefHandle;
-   if ( pDataDefinition->definitionType != PSOA_DEF_DATA ) {
-      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_WRONG_TYPE_HANDLE );
-      return PSO_WRONG_TYPE_HANDLE;
-   }
-   pMemDataDefinition = pDataDefinition->pMemDefinition;
+//   pKeyDefinition = (psoaKeyDefinition *)keyDefHandle;
+//   if ( pKeyDefinition->definitionType != PSOA_DEF_KEY ) {
+//      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_WRONG_TYPE_HANDLE );
+//      return PSO_WRONG_TYPE_HANDLE;
+//   }
+//   pMemKeyDefinition = pKeyDefinition->pMemDefinition;
+   
+//   if ( dataDefHandle == NULL ) {
+//      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_NULL_HANDLE );
+//      return PSO_NULL_HANDLE;
+//   }
+//   pDataDefinition = (psoaDataDefinition *)dataDefHandle;
+//   if ( pDataDefinition->definitionType != PSOA_DEF_DATA ) {
+//      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_WRONG_TYPE_HANDLE );
+//      return PSO_WRONG_TYPE_HANDLE;
+//   }
+//   pMemDataDefinition = pDataDefinition->pMemDefinition;
    
    if ( ! pSession->terminated ) {
       GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
-      ok = psonTopFolderCreateObject( pTree,
-                                      objectName,
-                                      nameLengthInBytes,
-                                      pDefinition,
-                                      pMemDataDefinition,
-                                      pMemKeyDefinition,
-                                      &pSession->context );
+      ok = psonTopFolderCreateMap( pTree,
+                                   objectName,
+                                   nameLengthInBytes,
+                                   pDefinition,
+                                   pKeyDefinition,
+                                   &pSession->context );
       PSO_POST_CONDITION( ok == true || ok == false );
    }
    else {
