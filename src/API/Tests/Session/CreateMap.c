@@ -141,13 +141,6 @@ void test_pass( void ** state )
                            NULL );
    assert_true( errcode == PSO_NULL_POINTER );
 
-   errcode = psoCreateMap( sessionHandle,
-                           "/api_session_create_keyed_object",
-                           strlen("/api_session_create_keyed_object"),
-                           &def,
-                           pKeyDefinition );
-   assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
-
    /* End of invalid args. This call should succeed. */
    errcode = psoCreateMap( sessionHandle,
                            "/api_session_create_keyed_object",

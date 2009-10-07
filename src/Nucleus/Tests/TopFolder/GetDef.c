@@ -24,27 +24,41 @@
 psonFolder * pTopFolder;
 psonSessionContext context;
 psonKeyDefinition * retKeyDef = NULL;
-psonDataDefinition * retDataDef = NULL;
+//psonDataDefinition * retDataDef = NULL;
 psoObjectDefinition retDef;
-psonDataDefinition fieldDef;
+//psonDataDefinition fieldDef;
 
-psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+psoObjectDefinition * def;
 
-psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
+psoKeyDefinition * keyDef;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
    bool ok;
-   
-   pTopFolder = initTopFolderTest( &context );
+   def = (psoObjectDefinition *) malloc(
+      offsetof(psoObjectDefinition, dataDef) + 50 );
+   assert( def != NULL );
+   def->type = PSO_HASH_MAP;
+   def->minNumOfDataRecords = 0;
+   def->minNumBlocks = 1;
+   def->dataDefType = PSO_DEF_USER_DEFINED;
+   def->dataDefLength = 50;
 
+   keyDef = malloc( offsetof( psoKeyDefinition, definition) + 20 );
+   assert( keyDef != NULL );
+
+   keyDef->type = PSO_DEF_USER_DEFINED;
+   keyDef->definitionLength = 20;
+
+   pTopFolder = initTopFolderTest( &context );
+   
    ok = psonTopFolderCreateMap( pTopFolder,
                                 "Test1",
                                 strlen("Test1"),
-                                &def,
-                                &keyDef,
+                                def,
+                                keyDef,
                                 &context );
    assert( ok );
 }
@@ -164,13 +178,14 @@ void test_pass( void ** state )
                              "Test1",
                              strlen("Test1"),
                              &retDef,
-                             &retDataDef,
                              &retKeyDef,
                              &context );
    assert_true( ok );
    
-   assert_memory_equal( retKeyDef, &keyDef, sizeof(psonKeyDefinition) );
-   assert_memory_equal( retDataDef, &fieldDef, sizeof(psonDataDefinition) );
+   assert_memory_equal( retKeyDef, &keyDef, 
+      offsetof(psoKeyDefinition,definition) + 20 );
+   assert_memory_equal( retDef, &def, 
+      offsetof(psoObjectDefinition,dataDef) + 50 );
    
 #endif
    return;

@@ -73,6 +73,7 @@ struct psonFolder
    
    struct psonHashTx hashObj;
    
+   psoObjectDefinition definition;
    /*
     * This field cannot be set or modified by the API. It is set to false
     * by the "constructor". Quasar will set it to true when creating a new
@@ -144,13 +145,12 @@ bool psonAPIFolderDestroyObject( psonFolder         * pFolder,
                                  uint32_t             nameLengthInBytes,
                                  psonSessionContext * pContext );
 
-bool psonAPIFolderGetDefinition( psonFolder          * pFolder,
-                                 const char          * objectName,
-                                 uint32_t              strLength,
-                                 psoObjectDefinition * pDefinition,
-                                 psonDataDefinition ** ppDataDefinition,
-                                 psonKeyDefinition  ** ppKeyDefinition,
-                                 psonSessionContext  * pContext );
+bool psonAPIFolderGetDefinition( psonFolder           * pFolder,
+                                 const char           * objectName,
+                                 uint32_t               strLength,
+                                 psoObjectDefinition ** ppDefinition,
+                                 psoKeyDefinition    ** ppKeyDefinition,
+                                 psonSessionContext   * pContext );
 
 bool psonAPIFolderGetFirst( psonFolder         * pFolder,
                             psonFolderItem     * pItem,
@@ -207,13 +207,12 @@ bool psonFolderFindObject( psonFolder         * pFolder,
                            psonHashTxItem    ** ppFoundFolder,
                            psonSessionContext * pContext );
 
-bool psonFolderGetDefinition( psonFolder          * pFolder,
-                              const char          * objectName,
-                              uint32_t              strLength,
-                              psoObjectDefinition * pDefinition,
-                              psonDataDefinition ** ppDataDefinition,
-                              psonKeyDefinition  ** ppKeyDefinition,
-                              psonSessionContext  * pContext );
+bool psonFolderGetDefinition( psonFolder           * pFolder,
+                              const char           * objectName,
+                              uint32_t               strLength,
+                              psoObjectDefinition ** pDefinition,
+                              psoKeyDefinition    ** ppKeyDefinition,
+                              psonSessionContext   * pContext );
 
 bool psonFolderGetDefLength( psonFolder          * pFolder,
                              const char          * objectName,
@@ -342,13 +341,12 @@ bool psonTopFolderEditObject( psonFolder         * pFolder,
                               psonFolderItem     * pFolderItem,
                               psonSessionContext * pContext );
 
-bool psonTopFolderGetDef( psonFolder          * pFolder,
-                          const char          * objectName,
-                          uint32_t              nameLengthInBytes,
-                          psoObjectDefinition * pDefinition,
-                          psonDataDefinition ** ppDataDefinition,
-                          psonKeyDefinition  ** ppKeyDefinition,
-                          psonSessionContext  * pContext );
+bool psonTopFolderGetDef( psonFolder           * pFolder,
+                          const char           * objectName,
+                          uint32_t               nameLengthInBytes,
+                          psoObjectDefinition ** pDefinition,
+                          psoKeyDefinition    ** ppKeyDefinition,
+                          psonSessionContext   * pContext );
 
 bool psonTopFolderGetDefLength( psonFolder         * pFolder,
                                 const char         * objectName,

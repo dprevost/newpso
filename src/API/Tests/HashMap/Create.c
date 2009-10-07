@@ -87,7 +87,8 @@ void test_pass( void ** state )
                                  strlen("my_map"),
                                  &def,
                                  &keyDef );
-   assert_true( errcode == PSO_NULL_POINTER );
+   fprintf( stderr, "%d\n", errcode );
+   assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    errcode = psoFolderCreateMap( folderHandle,
                                  "my_map",

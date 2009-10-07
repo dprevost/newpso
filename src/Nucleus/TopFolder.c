@@ -592,13 +592,12 @@ error_handler:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonTopFolderGetDef( psonFolder          * pFolder,
-                          const char          * objectName,
-                          uint32_t              nameLengthInBytes,
-                          psoObjectDefinition * pDefinition,
-                          psonDataDefinition ** ppDataDefinition,
-                          psonKeyDefinition  ** ppKeyDefinition,
-                          psonSessionContext  * pContext )
+bool psonTopFolderGetDef( psonFolder           * pFolder,
+                          const char           * objectName,
+                          uint32_t               nameLengthInBytes,
+                          psoObjectDefinition ** ppDefinition,
+                          psoKeyDefinition    ** ppKeyDefinition,
+                          psonSessionContext   * pContext )
 {
    psoErrors errcode = PSO_OK;
    uint32_t strLength;
@@ -609,13 +608,12 @@ bool psonTopFolderGetDef( psonFolder          * pFolder,
 
    PSO_PRE_CONDITION( pFolder          != NULL );
    PSO_PRE_CONDITION( objectName       != NULL );
-   PSO_PRE_CONDITION( pDefinition      != NULL );
+   PSO_PRE_CONDITION( ppDefinition     != NULL );
    PSO_PRE_CONDITION( ppKeyDefinition  != NULL );
-   PSO_PRE_CONDITION( ppDataDefinition != NULL );
    PSO_PRE_CONDITION( pContext         != NULL );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   *ppDataDefinition = NULL;
+   *ppDefinition = NULL;
    *ppKeyDefinition = NULL;
    
    strLength = nameLengthInBytes;
@@ -638,7 +636,7 @@ bool psonTopFolderGetDef( psonFolder          * pFolder,
    if ( strLength == 0 ) {
       /* Getting the status of the top folder (special case). */
       if ( psonLock( &pFolder->memObject, pContext ) ) {
-         pDefinition->type = PSO_FOLDER;
+         *ppDefinition = &pFolder->definition;
          
          psonUnlock( &pFolder->memObject, pContext );
       }
@@ -658,8 +656,7 @@ bool psonTopFolderGetDef( psonFolder          * pFolder,
          ok = psonFolderGetDefinition( pFolder,
                                        &(name[first]), 
                                        strLength, 
-                                       pDefinition,
-                                       ppDataDefinition,
+                                       ppDefinition,
                                        ppKeyDefinition,
                                        pContext );
          PSO_POST_CONDITION( ok == true || ok == false );

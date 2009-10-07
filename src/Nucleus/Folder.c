@@ -458,13 +458,12 @@ error_handler:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonAPIFolderGetDefinition( psonFolder          * pFolder,
-                                 const char          * objectName,
-                                 uint32_t              strLength,
-                                 psoObjectDefinition * pDefinition,
-                                 psonDataDefinition ** ppDataDefinition,
-                                 psonKeyDefinition  ** ppKeyDefinition,
-                                 psonSessionContext  * pContext )
+bool psonAPIFolderGetDefinition( psonFolder           * pFolder,
+                                 const char           * objectName,
+                                 uint32_t               strLength,
+                                 psoObjectDefinition ** ppDefinition,
+                                 psoKeyDefinition    ** ppKeyDefinition,
+                                 psonSessionContext   * pContext )
 {
    psoErrors errcode = PSO_OK;
    bool ok;
@@ -472,9 +471,8 @@ bool psonAPIFolderGetDefinition( psonFolder          * pFolder,
    
    PSO_PRE_CONDITION( pFolder          != NULL );
    PSO_PRE_CONDITION( objectName       != NULL )
-   PSO_PRE_CONDITION( pDefinition      != NULL );
+   PSO_PRE_CONDITION( ppDefinition      != NULL );
    PSO_PRE_CONDITION( ppKeyDefinition  != NULL );
-   PSO_PRE_CONDITION( ppDataDefinition != NULL );
    PSO_PRE_CONDITION( pContext         != NULL );
    PSO_PRE_CONDITION( strLength > 0 );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
@@ -507,8 +505,7 @@ bool psonAPIFolderGetDefinition( psonFolder          * pFolder,
       ok = psonFolderGetDefinition( pFolder,
                                     objectName,
                                     strLength, 
-                                    pDefinition,
-                                    ppDataDefinition,
+                                    ppDefinition,
                                     ppKeyDefinition,
                                     pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
@@ -1454,13 +1451,12 @@ the_exit:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonFolderGetDefinition( psonFolder          * pFolder,
-                              const char          * objectName,
-                              uint32_t              strLength,
-                              psoObjectDefinition * pDefinition,
-                              psonDataDefinition ** ppDataDefinition,
-                              psonKeyDefinition  ** ppKeyDefinition,
-                              psonSessionContext  * pContext )
+bool psonFolderGetDefinition( psonFolder           * pFolder,
+                              const char           * objectName,
+                              uint32_t               strLength,
+                              psoObjectDefinition ** ppDefinition,
+                              psoKeyDefinition    ** ppKeyDefinition,
+                              psonSessionContext   * pContext )
 {
    bool lastIteration = true;
    uint32_t partialLength = 0;
@@ -1478,9 +1474,8 @@ bool psonFolderGetDefinition( psonFolder          * pFolder,
    
    PSO_PRE_CONDITION( pFolder          != NULL );
    PSO_PRE_CONDITION( objectName       != NULL )
-   PSO_PRE_CONDITION( pDefinition      != NULL );
+   PSO_PRE_CONDITION( ppDefinition     != NULL );
    PSO_PRE_CONDITION( ppKeyDefinition  != NULL );
-   PSO_PRE_CONDITION( ppDataDefinition != NULL );
    PSO_PRE_CONDITION( pContext         != NULL );
    PSO_PRE_CONDITION( strLength > 0 );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
@@ -1526,18 +1521,20 @@ bool psonFolderGetDefinition( psonFolder          * pFolder,
       GET_PTR( pMemObject, pNode->offset, psonMemObject );
       if ( psonLock( pMemObject, pContext ) ) {
 
-         pDefinition->type = pNode->apiType;
-
          switch( pNode->apiType ) {
 
          case PSO_FOLDER:
+            {
+               psonFolder * p = GET_PTR_FAST( pNode->offset, psonFolder);
+               *ppDefinition = &p->definition;
+            }
             break;
          case PSO_HASH_MAP:
             {
                psonHashMap * p = GET_PTR_FAST( pNode->offset, psonHashMap);
                
-               *ppKeyDefinition = GET_PTR_FAST( p->keyDefOffset, psonKeyDefinition );
-               *ppDataDefinition = GET_PTR_FAST( p->dataDefOffset, psonDataDefinition );
+               *ppKeyDefinition = GET_PTR_FAST( p->keyDefOffset, psoKeyDefinition );
+               *ppDefinition = GET_PTR_FAST( p->dataDefOffset, psoObjectDefinition );
             }
             break;
          case PSO_QUEUE:
@@ -1545,15 +1542,15 @@ bool psonFolderGetDefinition( psonFolder          * pFolder,
             {
                psonQueue * p = GET_PTR_FAST( pNode->offset, psonQueue);
                
-               *ppDataDefinition = GET_PTR_FAST( p->dataDefOffset, psonDataDefinition );
+               *ppDefinition = GET_PTR_FAST( p->dataDefOffset, psoObjectDefinition );
             }
             break;
          case PSO_FAST_MAP:
             {
                psonFastMap * p = GET_PTR_FAST( pNode->offset, psonFastMap);
                
-               *ppKeyDefinition = GET_PTR_FAST( p->keyDefOffset, psonKeyDefinition );
-               *ppDataDefinition = GET_PTR_FAST( p->dataDefOffset, psonDataDefinition );
+               *ppKeyDefinition = GET_PTR_FAST( p->keyDefOffset, psoKeyDefinition );
+               *ppDefinition = GET_PTR_FAST( p->dataDefOffset, psoObjectDefinition );
             }
             break;
          default:
@@ -1597,8 +1594,7 @@ bool psonFolderGetDefinition( psonFolder          * pFolder,
    ok = psonFolderGetDefinition( pNextFolder,
                                  &objectName[partialLength+1], 
                                  strLength - partialLength - 1, 
-                                 pDefinition,
-                                 ppDataDefinition,
+                                 ppDefinition,
                                  ppKeyDefinition,
                                  pContext );
    PSO_POST_CONDITION( ok == true || ok == false );

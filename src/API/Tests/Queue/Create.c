@@ -43,8 +43,7 @@ void test_pass( void ** state )
    PSO_HANDLE sessionHandle, folderHandle;
    int errcode;
    psoObjectDefinition definition = { PSO_QUEUE, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
-   psoFieldDefinition fields[2];
-   PSO_HANDLE dataDefHandle;
+   psoObjectDefinition defDummy;
    
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
@@ -63,24 +62,14 @@ void test_pass( void ** state )
                             &folderHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_queue_create",
-                               strlen("api_queue_create"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    /* Invalid definition. */
    
-   memset( &definition, 0, sizeof(psoObjectDefinition) );
-   memset( fields, 0, 2*sizeof(psoFieldDefinition) );
+   memset( &defDummy, 0, sizeof(psoObjectDefinition) );
    
    errcode = psoFolderCreateQueue( folderHandle,
                                    "aqcr",
                                    strlen("aqcr"),
-                                   &definition );
+                                   &defDummy );
    assert_true( errcode == PSO_WRONG_OBJECT_TYPE );
 
    /* End of invalid args. This call should succeed. */
