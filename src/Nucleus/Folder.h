@@ -118,6 +118,25 @@ bool psonAPIFolderCreateObject( psonFolder          * pFolder,
                                 psonSessionContext  * pContext );
 
 /**
+ * Creates an immediate child of the folder.
+ */
+bool psonAPIFolderCreateMap( psonFolder          * pFolder,
+                             const char          * objectName,
+                             uint32_t              nameLengthInBytes,
+                             psoObjectDefinition * pDefinition,
+                             psoKeyDefinition    * pKeyDefinition,
+                             psonSessionContext  * pContext );
+
+/**
+ * Creates an immediate child of the folder.
+ */
+bool psonAPIFolderCreateQueue( psonFolder          * pFolder,
+                               const char          * objectName,
+                               uint32_t              nameLengthInBytes,
+                               psoObjectDefinition * pDefinition,
+                               psonSessionContext  * pContext );
+
+/**
  * Destroy an immediate child of the folder.
  */
 bool psonAPIFolderDestroyObject( psonFolder         * pFolder,

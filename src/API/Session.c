@@ -816,10 +816,12 @@ int psoInitSession( PSO_HANDLE * sessionHandle )
 
    GET_PTR( pSession->context.pAllocator, pSession->pHeader->allocatorOffset, void );
    
+#if 0
    /* Get the pointer to the map of data definitions */
    GET_PTR( pSession->pDataDefMap, pSession->pHeader->dataDefMapOffset, psonHashMap );
    /* Get the pointer to the map of key definitions */
    GET_PTR( pSession->pKeyDefMap, pSession->pHeader->keyDefMapOffset, psonHashMap );
+#endif
 
    psoaListReadersInit( &pSession->listReaders );
    pSession->terminated = false;

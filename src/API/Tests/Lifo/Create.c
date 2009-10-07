@@ -42,7 +42,7 @@ void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle, folderHandle;
    int errcode;
-   psoObjectDefinition definition;
+   psoObjectDefinition definition = { PSO_QUEUE, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
    psoFieldDefinition fields[2];
    PSO_HANDLE dataDefHandle;
    
@@ -79,24 +79,14 @@ void test_pass( void ** state )
    errcode = psoFolderCreateQueue( folderHandle,
                                    "aqcr",
                                    strlen("aqcr"),
-                                   &definition,
-                                   dataDefHandle );
+                                   &definition );
    assert_true( errcode == PSO_WRONG_OBJECT_TYPE );
-
-   definition.type = PSO_LIFO;
-   errcode = psoFolderCreateQueue( folderHandle,
-                                   "aqcr",
-                                   strlen("aqcr"),
-                                   &definition,
-                                   NULL );
-   assert_true( errcode == PSO_NULL_HANDLE );
 
    /* End of invalid args. This call should succeed. */
    errcode = psoFolderCreateQueue( folderHandle,
                                    "aqcr",
                                    strlen("aqcr"),
-                                   &definition,
-                                   dataDefHandle );
+                                   &definition );
    assert_true( errcode == PSO_OK );
 
    /* Close the folder and try to act on it */
@@ -106,8 +96,7 @@ void test_pass( void ** state )
    errcode = psoFolderCreateQueue( folderHandle,
                                    "aqcr2",
                                    strlen("aqcr2"),
-                                   &definition,
-                                   dataDefHandle );
+                                   &definition );
    assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    /* Reopen the folder, close the process and try to act on the session */
@@ -122,8 +111,7 @@ void test_pass( void ** state )
    errcode = psoFolderCreateQueue( folderHandle,
                                    "aqcr3",
                                    strlen("aqcr3"),
-                                   &definition,
-                                   dataDefHandle );
+                                   &definition );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 }
 

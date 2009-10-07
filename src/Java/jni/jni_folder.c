@@ -135,8 +135,7 @@ Java_org_photon_Folder_psoCreateObject( JNIEnv   * env,
    errcode = psoFolderCreateQueue( (PSO_HANDLE) handle,
                                    name,
                                    strlen(name),
-                                   &definition,
-                                   (PSO_HANDLE) dataDefHandle );
+                                   &definition );
 
    (*env)->ReleaseStringUTFChars( env, jname, name );
 
@@ -196,8 +195,7 @@ Java_org_photon_Folder_psoCreateObjectEx( JNIEnv * env,
       errcode = psoFolderCreateQueue( (PSO_HANDLE) handle,
                                       name,
                                       strlen(name),
-                                      &definition,
-                                      (PSO_HANDLE)dataDefHandle );
+                                      &definition );
    
       (*env)->ReleaseStringUTFChars( env, jname, name );
       psoDataDefClose( dataDefHandle );
@@ -249,8 +247,9 @@ Java_org_photon_Folder_psoCreateKeyedObject( JNIEnv     * env,
                                    name,
                                    strlen(name),
                                    &definition,
-                                   (PSO_HANDLE) dataDefHandle,
-                                   (PSO_HANDLE) keyDefHandle );
+                                   NULL );
+//                                   (PSO_HANDLE) dataDefHandle,
+//                                   (PSO_HANDLE) keyDefHandle );
 
    (*env)->ReleaseStringUTFChars( env, jname, name );
 
@@ -329,8 +328,9 @@ Java_org_photon_Folder_psoCreateKeyedObjectEx( JNIEnv * env,
                                  name,
                                  strlen(name),
                                  &definition,
-                                 dataDefHandle,
-                                 keyDefHandle );
+                                 NULL );
+//                                 dataDefHandle,
+//                                 keyDefHandle );
    
    (*env)->ReleaseStringUTFChars( env, jname, name );
    psoDataDefClose( dataDefHandle );

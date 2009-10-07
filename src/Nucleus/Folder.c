@@ -216,6 +216,175 @@ error_handler:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+/*
+ * The new object created by this function is a child of the folder 
+ */
+bool psonAPIFolderCreateMap( psonFolder          * pFolder,
+                             const char          * objectName,
+                             uint32_t              nameLengthInBytes,
+                             psoObjectDefinition * pDefinition,
+                             psoKeyDefinition    * pKeyDefinition,
+                             psonSessionContext  * pContext )
+{
+   psoErrors errcode = PSO_OK;
+   uint32_t strLength, i;
+   uint32_t first = 0;
+   const char * name = objectName;
+   bool ok;
+   
+   PSO_PRE_CONDITION( pFolder        != NULL );
+   PSO_PRE_CONDITION( objectName     != NULL );
+   PSO_PRE_CONDITION( pContext       != NULL );
+   PSO_PRE_CONDITION( pDefinition    != NULL );
+   PSO_PRE_CONDITION( pKeyDefinition != NULL );
+   PSO_PRE_CONDITION( pDefinition->type == PSO_FAST_MAP ||  
+                      pDefinition->type == PSO_HASH_MAP );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
+   
+   strLength = nameLengthInBytes;
+
+   if ( strLength > PSO_MAX_NAME_LENGTH ) {
+      errcode = PSO_OBJECT_NAME_TOO_LONG;
+      goto error_handler;
+   }
+   if ( strLength == 0 ) {
+      errcode = PSO_INVALID_OBJECT_NAME;
+      goto error_handler;
+   }
+
+   /* check for separators */
+   for ( i = 0; i < strLength; ++i ) {
+      if ( name[i] == '/' || name[i] == '\\' ) {
+         errcode = PSO_INVALID_OBJECT_NAME;
+         goto error_handler;
+      }
+   }
+   
+   /*
+    * There is no psonUnlock here - the recursive nature of the 
+    * function psonFolderInsertObject() means that it will release 
+    * the lock as soon as it can, after locking the
+    * next folder in the chain if needed. 
+    */
+   if ( psonLock(&pFolder->memObject, pContext) ) {
+      ok = psonFolderInsertMap( pFolder,
+                                &(name[first]),
+                                strLength, 
+                                pDefinition,
+                                pKeyDefinition,
+                                1, /* numBlocks, */
+                                0, /* expectedNumOfChilds, */
+                                pContext );
+      PSO_POST_CONDITION( ok == true || ok == false );
+      if ( ! ok ) goto error_handler;
+   }
+   else {
+      errcode = PSO_ENGINE_BUSY;
+      goto error_handler;
+   }
+   
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
+   return true;
+
+error_handler:
+
+   /*
+    * On failure, errcode would be non-zero, unless the failure occurs in
+    * some other function which already called psocSetError. 
+    */
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+   }
+   
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+   return false;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+/*
+ * The new object created by this function is a child of the folder 
+ */
+bool psonAPIFolderCreateQueue( psonFolder          * pFolder,
+                               const char          * objectName,
+                               uint32_t              nameLengthInBytes,
+                               psoObjectDefinition * pDefinition,
+                               psonSessionContext  * pContext )
+{
+   psoErrors errcode = PSO_OK;
+   uint32_t strLength, i;
+   uint32_t first = 0;
+   const char * name = objectName;
+   bool ok;
+   
+   PSO_PRE_CONDITION( pFolder     != NULL );
+   PSO_PRE_CONDITION( objectName  != NULL );
+   PSO_PRE_CONDITION( pContext    != NULL );
+   PSO_PRE_CONDITION( pDefinition != NULL );
+   PSO_PRE_CONDITION( pDefinition->type == PSO_QUEUE ||  
+                      pDefinition->type == PSO_LIFO );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
+   
+   strLength = nameLengthInBytes;
+
+   if ( strLength > PSO_MAX_NAME_LENGTH ) {
+      errcode = PSO_OBJECT_NAME_TOO_LONG;
+      goto error_handler;
+   }
+   if ( strLength == 0 ) {
+      errcode = PSO_INVALID_OBJECT_NAME;
+      goto error_handler;
+   }
+
+   /* check for separators */
+   for ( i = 0; i < strLength; ++i ) {
+      if ( name[i] == '/' || name[i] == '\\' ) {
+         errcode = PSO_INVALID_OBJECT_NAME;
+         goto error_handler;
+      }
+   }
+   
+   /*
+    * There is no psonUnlock here - the recursive nature of the 
+    * function psonFolderInsertObject() means that it will release 
+    * the lock as soon as it can, after locking the
+    * next folder in the chain if needed. 
+    */
+   if ( psonLock(&pFolder->memObject, pContext) ) {
+      ok = psonFolderInsertQueue( pFolder,
+                                  &(name[first]),
+                                  strLength, 
+                                  pDefinition,
+                                  1, /* numBlocks, */
+                                  0, /* expectedNumOfChilds, */
+                                  pContext );
+      PSO_POST_CONDITION( ok == true || ok == false );
+      if ( ! ok ) goto error_handler;
+   }
+   else {
+      errcode = PSO_ENGINE_BUSY;
+      goto error_handler;
+   }
+   
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
+   return true;
+
+error_handler:
+
+   /*
+    * On failure, errcode would be non-zero, unless the failure occurs in
+    * some other function which already called psocSetError. 
+    */
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+   }
+   
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+   return false;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 bool psonAPIFolderDestroyObject( psonFolder         * pFolder,
                                  const char         * objectName,
                                  uint32_t             nameLengthInBytes,

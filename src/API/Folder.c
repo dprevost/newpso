@@ -160,15 +160,12 @@ error_handler:
 int psoFolderCreateQueue( PSO_HANDLE            objectHandle,
                           const char          * objectName,
                           uint32_t              nameLengthInBytes,
-                          psoObjectDefinition * pDefinition,
-                          PSO_HANDLE            dataDefHandle )
+                          psoObjectDefinition * pDefinition )
 {
    psoaFolder * pFolder;
    psonFolder * pMemFolder;
    int errcode = PSO_OK;
    bool ok = true;
-   psonDataDefinition * pMemDataDefinition = NULL;
-   psoaDataDefinition * pDataDefinition;
    
    pFolder = (psoaFolder *) objectHandle;
    if ( pFolder == NULL ) return PSO_NULL_HANDLE;
@@ -200,18 +197,6 @@ int psoFolderCreateQueue( PSO_HANDLE            objectHandle,
       goto error_handler;
    }
 
-   if ( dataDefHandle == NULL ) {
-      errcode = PSO_NULL_HANDLE;
-      goto error_handler;
-   }
-   pDataDefinition = (psoaDataDefinition *)dataDefHandle;
-      
-   if ( pDataDefinition->definitionType != PSOA_DEF_DATA ) {
-      errcode = PSO_WRONG_TYPE_HANDLE;
-      goto error_handler;
-   }
-   pMemDataDefinition = pDataDefinition->pMemDefinition;
-
    if ( pFolder->object.pSession->terminated ) {
       errcode = PSO_SESSION_IS_TERMINATED;
       goto error_handler;
@@ -219,13 +204,11 @@ int psoFolderCreateQueue( PSO_HANDLE            objectHandle,
    
    pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
 
-   ok = psonAPIFolderCreateObject( pMemFolder,
-                                   objectName,
-                                   nameLengthInBytes,
-                                   pDefinition,
-                                   pMemDataDefinition,
-                                   NULL,
-                                   &pFolder->object.pSession->context );
+   ok = psonAPIFolderCreateQueue( pMemFolder,
+                                  objectName,
+                                  nameLengthInBytes,
+                                  pDefinition,
+                                  &pFolder->object.pSession->context );
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 
@@ -252,17 +235,12 @@ int psoFolderCreateMap( PSO_HANDLE            objectHandle,
                         const char          * objectName,
                         uint32_t              nameLengthInBytes,
                         psoObjectDefinition * pDefinition,
-                        PSO_HANDLE            dataDefHandle,
-                        PSO_HANDLE            keyDefHandle )
+                        psoKeyDefinition    * pKeyDefinition )
 {
    psoaFolder * pFolder;
    psonFolder * pMemFolder;
    int errcode = PSO_OK;
    bool ok = true;
-   psonDataDefinition * pMemDataDefinition = NULL;
-   psonKeyDefinition  * pMemKeyDefinition = NULL;
-   psoaDataDefinition * pDataDefinition;
-   psoaKeyDefinition  * pKeyDefinition;
    
    pFolder = (psoaFolder *) objectHandle;
    if ( pFolder == NULL ) return PSO_NULL_HANDLE;
@@ -294,28 +272,11 @@ int psoFolderCreateMap( PSO_HANDLE            objectHandle,
       goto error_handler;
    }
 
-   if ( keyDefHandle == NULL ) {
-      errcode = PSO_NULL_HANDLE;
+   if ( pKeyDefinition == NULL ) {
+      errcode = PSO_NULL_POINTER;
       goto error_handler;
    }
-   pKeyDefinition = (psoaKeyDefinition *)keyDefHandle;      
-   if ( pKeyDefinition->definitionType != PSOA_DEF_KEY ) {
-      errcode = PSO_WRONG_TYPE_HANDLE;
-      goto error_handler;
-   }
-   pMemKeyDefinition = pKeyDefinition->pMemDefinition;
    
-   if ( dataDefHandle == NULL ) {
-      errcode = PSO_NULL_HANDLE;
-      goto error_handler;
-   }
-   pDataDefinition = (psoaDataDefinition *)dataDefHandle;
-   if ( pDataDefinition->definitionType != PSOA_DEF_DATA ) {
-      errcode = PSO_WRONG_TYPE_HANDLE;
-      goto error_handler;
-   }
-   pMemDataDefinition = pDataDefinition->pMemDefinition;
-
    if ( pFolder->object.pSession->terminated ) {
       errcode = PSO_SESSION_IS_TERMINATED;
       goto error_handler;
@@ -323,13 +284,12 @@ int psoFolderCreateMap( PSO_HANDLE            objectHandle,
    
    pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
 
-   ok = psonAPIFolderCreateObject( pMemFolder,
-                                   objectName,
-                                   nameLengthInBytes,
-                                   pDefinition,
-                                   pMemDataDefinition,
-                                   pMemKeyDefinition,
-                                   &pFolder->object.pSession->context );
+   ok = psonAPIFolderCreateMap( pMemFolder,
+                                objectName,
+                                nameLengthInBytes,
+                                pDefinition,
+                                pKeyDefinition,
+                                &pFolder->object.pSession->context );
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 

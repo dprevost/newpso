@@ -42,7 +42,7 @@ void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle, folderHandle;
    int errcode;
-   psoObjectDefinition def = { PSO_QUEUE, 0, 0 };
+   psoObjectDefinition def = { PSO_QUEUE, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
    psoFieldDefinition fields[1] = {
       { "Field_1", PSO_VARCHAR, {10} }
    };
@@ -79,60 +79,46 @@ void test_pass( void ** state )
    errcode = psoFolderCreateQueue( NULL,
                                    "api_folder_create",
                                    strlen("api_folder_create"),
-                                   &def,
-                                   dataDefHandle );
+                                   &def );
    assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoFolderCreateQueue( sessionHandle,
                                    "api_folder_create",
                                    strlen("api_folder_create"),
-                                   &def,
-                                   dataDefHandle );
+                                   &def );
    assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    errcode = psoFolderCreateQueue( folderHandle,
                                    NULL,
                                    strlen("api_folder_create"),
-                                   &def,
-                                   dataDefHandle );
+                                   &def );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    errcode = psoFolderCreateQueue( folderHandle,
                                    "api_folder_create",
                                    0,
-                                   &def,
-                                   dataDefHandle );
+                                   &def );
    assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoFolderCreateQueue( folderHandle,
                                    "api_folder_create",
                                    strlen("api_folder_create"),
-                                   NULL,
-                                   dataDefHandle );
+                                   NULL );
    assert_true( errcode == PSO_NULL_POINTER );
 
    def.type = PSO_FOLDER;
    errcode = psoFolderCreateQueue( folderHandle,
                                    "api_folder_create",
                                    strlen("api_folder_create"),
-                                   &def,
-                                   dataDefHandle );
+                                   &def );
    assert_true( errcode == PSO_WRONG_OBJECT_TYPE );
    def.type = PSO_QUEUE;
-
-   errcode = psoFolderCreateQueue( folderHandle,
-                                   "api_folder_create",
-                                   strlen("api_folder_create"),
-                                   &def,
-                                   NULL );
-   assert_true( errcode == PSO_NULL_HANDLE );
 
    /* End of invalid args. This call should succeed. */
    errcode = psoFolderCreateQueue( folderHandle,
                                    "api_folder_create",
                                    strlen("api_folder_create"),
-                                   &def,
-                                   dataDefHandle );
+                                   &def );
    assert_true( errcode == PSO_OK );
 
    /* Close the folder and try to act on it */
@@ -142,8 +128,7 @@ void test_pass( void ** state )
    errcode = psoFolderCreateQueue( folderHandle,
                                    "api_folder_create2",
                                    strlen("api_folder_create2"),
-                                   &def,
-                                   dataDefHandle );
+                                   &def );
    assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    /* Reopen the folder, close the process and try to act on the session */
@@ -158,8 +143,7 @@ void test_pass( void ** state )
    errcode = psoFolderCreateQueue( folderHandle,
                                    "api_folder_create3",
                                    strlen("api_folder_create3"),
-                                   &def,
-                                   dataDefHandle );
+                                   &def );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 }
 

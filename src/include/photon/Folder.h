@@ -100,8 +100,6 @@ int psoFolderCreateFolder( PSO_HANDLE   folderHandle,
  *            counting the null terminator.
  * \param[in] definition The basic information needed to create the object:
  *            the type of object to create, etc.
- * \param[in] dataDefHandle Handle to the definition of the data fields.
- *            It can be set to NULL when creating a Folder.
  *
  * \return 0 on success or a ::psoErrors on error.
  */
@@ -109,8 +107,7 @@ PHOTON_EXPORT
 int psoFolderCreateQueue( PSO_HANDLE            folderHandle,
                           const char          * objectName,
                           psoUint32             nameLengthInBytes,
-                          psoObjectDefinition * definition,
-                          PSO_HANDLE            dataDefHandle );
+                          psoObjectDefinition * definition );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -143,8 +140,7 @@ int psoFolderCreateMap( PSO_HANDLE            folderHandle,
                         const char          * objectName,
                         psoUint32             nameLengthInBytes,
                         psoObjectDefinition * definition,
-                        PSO_HANDLE            dataDefHandle,
-                        PSO_HANDLE            keyDefHandle );
+                        psoKeyDefinition    * keyDefinition );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

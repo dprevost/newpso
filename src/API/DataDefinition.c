@@ -31,6 +31,7 @@ int psoDataDefClose( PSO_HANDLE definitionHandle )
    psoaDataDefinition * pDefinition;
    int errcode = PSO_OK;
    
+#if 0
    pDefinition = (psoaDataDefinition *) definitionHandle;
    if ( pDefinition == NULL ) return PSO_NULL_HANDLE;
    
@@ -59,7 +60,8 @@ int psoDataDefClose( PSO_HANDLE definitionHandle )
    else {
       errcode = PSO_SESSION_IS_TERMINATED;
    }
-   
+#endif
+
    return errcode;
 }
 
@@ -74,6 +76,7 @@ int psoDataDefCreate( PSO_HANDLE               sessionHandle,
                       PSO_HANDLE             * definitionHandle )
 {
    int errcode = PSO_OK;
+#if 0
    psoaSession* pSession;
    bool ok = true;
    psonDataDefinition * pMemDefinition = NULL;
@@ -161,7 +164,6 @@ int psoDataDefCreate( PSO_HANDLE               sessionHandle,
    pDefinition->pMemDefinition = pMemDefinition;
    
    *definitionHandle = (PSO_HANDLE) pDefinition;
-
    return PSO_OK;
    
 error_handler:
@@ -176,6 +178,7 @@ error_handler:
    if ( ! ok ) {
       errcode = psocGetLastError( &pSession->context.errorHandler );
    }
+#endif
 
    return errcode;
 }
@@ -190,6 +193,8 @@ int psoDataDefDestroy( PSO_HANDLE   sessionHandle,
                        psoUint32    nameLengthInBytes )
 {
    int errcode = PSO_OK;
+   
+#if 0
    psoaSession* pSession;
    bool ok = true;
 
@@ -225,6 +230,7 @@ int psoDataDefDestroy( PSO_HANDLE   sessionHandle,
    if ( ! ok ) {
       errcode = psocGetLastError( &pSession->context.errorHandler );
    }
+#endif
 
    return errcode;
 }
@@ -295,6 +301,7 @@ int psoDataDefOpen( PSO_HANDLE   sessionHandle,
                     PSO_HANDLE * definitionHandle )
 {
    int errcode = PSO_OK;
+#if 0
    psoaSession* pSession;
    bool ok = true;
    psonDataDefinition * pMemDefinition = NULL;
@@ -361,6 +368,7 @@ error_handler:
    if ( ! ok ) {
       errcode = psocGetLastError( &pSession->context.errorHandler );
    }
+#endif
 
    return errcode;
 }
