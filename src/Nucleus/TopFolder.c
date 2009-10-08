@@ -103,7 +103,6 @@ bool psonTopFolderCreateFolder( psonFolder          * pFolder,
    bool ok;
    uint32_t first = 0;
    const char * name = objectName;
-   psoObjectDefinition definition = { PSO_FOLDER, 0, 0 };
 
    PSO_PRE_CONDITION( pFolder     != NULL );
    PSO_PRE_CONDITION( objectName  != NULL );
@@ -133,19 +132,14 @@ bool psonTopFolderCreateFolder( psonFolder          * pFolder,
 
    /*
     * There is no psonUnlock here - the recursive nature of the 
-    * function psonFolderInsertObject() means that it will release 
+    * function psonFolderInsertFolder() means that it will release 
     * the lock as soon as it can, after locking the
     * next folder in the chain if needed. 
     */
    if ( psonLock( &pFolder->memObject, pContext ) ) {
-      ok = psonFolderInsertObject( pFolder,
+      ok = psonFolderInsertFolder( pFolder,
                                    &(name[first]),
                                    strLength, 
-                                   &definition,
-                                   NULL,
-                                   NULL,
-                                   1, /* numBlocks, */
-                                   0, /* expectedNumOfChilds, */
                                    pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
       if ( ! ok ) goto error_handler;
@@ -218,7 +212,7 @@ bool psonTopFolderCreateMap( psonFolder          * pFolder,
 
    /*
     * There is no psonUnlock here - the recursive nature of the 
-    * function psonFolderInsertObject() means that it will release 
+    * function psonFolderInsertMap() means that it will release 
     * the lock as soon as it can, after locking the
     * next folder in the chain if needed. 
     */
@@ -257,7 +251,7 @@ error_handler:
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
+#if 0
 bool psonTopFolderCreateObject( psonFolder          * pFolder,
                                 const char          * objectName,
                                 uint32_t              nameLengthInBytes,
@@ -342,6 +336,7 @@ error_handler:
    PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
+#endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -388,7 +383,7 @@ bool psonTopFolderCreateQueue( psonFolder          * pFolder,
 
    /*
     * There is no psonUnlock here - the recursive nature of the 
-    * function psonFolderInsertObject() means that it will release 
+    * function psonFolderInsertQueue() means that it will release 
     * the lock as soon as it can, after locking the
     * next folder in the chain if needed. 
     */

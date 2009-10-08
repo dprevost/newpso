@@ -61,23 +61,6 @@ int main( int argc, char * argv[] )
                               strlen("/api_fast_map_next_nofirst") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "api_fastmap_next_no_first",
-                              strlen("api_fastmap_next_no_first"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_fastmap_next_no_first",
-                               strlen("api_fastmap_next_no_first"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_fast_map_next_nofirst/test",
                            strlen("/api_fast_map_next_nofirst/test"),

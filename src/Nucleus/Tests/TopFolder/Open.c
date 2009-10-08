@@ -24,7 +24,6 @@ psonFolder * pTopFolder;
 psonSessionContext context;
 psonFolderItem folderItem;
 psoObjectDefinition def = { PSO_QUEUE, 0, 0 };
-psonDataDefinition dataDef;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -40,13 +39,11 @@ void setup_test()
                                    &context );
    assert( ok );
    
-   ok = psonTopFolderCreateObject( pTopFolder,
-                                   "Test1/Test2",
-                                   strlen("Test1/Test2"),
-                                   &def,
-                                   &dataDef,
-                                   NULL,
-                                   &context );
+   ok = psonTopFolderCreateQueue( pTopFolder,
+                                  "Test1/Test2",
+                                  strlen("Test1/Test2"),
+                                  &def,
+                                  &context );
    assert( ok );
 }
 

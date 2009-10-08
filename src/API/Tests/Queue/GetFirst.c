@@ -63,15 +63,6 @@ void test_pass( void ** state )
                               strlen("/api_queue_get_first") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_queue_get_first",
-                               strlen("api_queue_get_first"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_get_first/test",
                              strlen("/api_queue_get_first/test"),

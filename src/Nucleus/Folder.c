@@ -57,7 +57,6 @@ bool psonAPIFolderCreateFolder( psonFolder          * pFolder,
    uint32_t first = 0;
    const char * name = objectName;
    bool ok;
-   psoObjectDefinition definition = { PSO_FOLDER, 0, 0 };
    
    PSO_PRE_CONDITION( pFolder     != NULL );
    PSO_PRE_CONDITION( objectName  != NULL );
@@ -85,19 +84,14 @@ bool psonAPIFolderCreateFolder( psonFolder          * pFolder,
    
    /*
     * There is no psonUnlock here - the recursive nature of the 
-    * function psonFolderInsertObject() means that it will release 
+    * function psonFolderInsertFolder() means that it will release 
     * the lock as soon as it can, after locking the
     * next folder in the chain if needed. 
     */
    if ( psonLock(&pFolder->memObject, pContext) ) {
-      ok = psonFolderInsertObject( pFolder,
+      ok = psonFolderInsertFolder( pFolder,
                                    &(name[first]),
                                    strLength, 
-                                   &definition,
-                                   NULL,
-                                   NULL,
-                                   1, /* numBlocks, */
-                                   0, /* expectedNumOfChilds, */
                                    pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
       if ( ! ok ) goto error_handler;
@@ -126,6 +120,7 @@ error_handler:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if 0
 /*
  * The new object created by this function is a child of the folder 
  */
@@ -175,7 +170,7 @@ bool psonAPIFolderCreateObject( psonFolder          * pFolder,
    
    /*
     * There is no psonUnlock here - the recursive nature of the 
-    * function psonFolderInsertObject() means that it will release 
+    * function psonFolderInsertFolder() means that it will release 
     * the lock as soon as it can, after locking the
     * next folder in the chain if needed. 
     */
@@ -213,7 +208,7 @@ error_handler:
    PSO_TRACE_EXIT_NUCLEUS( pContext, false );
    return false;
 }
-
+#endif
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /*
@@ -262,7 +257,7 @@ bool psonAPIFolderCreateMap( psonFolder          * pFolder,
    
    /*
     * There is no psonUnlock here - the recursive nature of the 
-    * function psonFolderInsertObject() means that it will release 
+    * function psonFolderInsertMap() means that it will release 
     * the lock as soon as it can, after locking the
     * next folder in the chain if needed. 
     */
@@ -346,7 +341,7 @@ bool psonAPIFolderCreateQueue( psonFolder          * pFolder,
    
    /*
     * There is no psonUnlock here - the recursive nature of the 
-    * function psonFolderInsertObject() means that it will release 
+    * function psonFolderInsertQueue() means that it will release 
     * the lock as soon as it can, after locking the
     * next folder in the chain if needed. 
     */
@@ -2393,14 +2388,9 @@ the_exit:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool psonFolderInsertObject( psonFolder          * pFolder,
+bool psonFolderInsertFolder( psonFolder          * pFolder,
                              const char          * objectName,
                              uint32_t              strLength, 
-                             psoObjectDefinition * pDefinition,
-                             psonDataDefinition  * pDataDefinition,
-                             psonKeyDefinition   * pKeyDefinition,
-                             size_t                numBlocks,
-                             size_t                expectedNumOfChilds,
                              psonSessionContext  * pContext )
 {
    bool lastIteration = true;
@@ -2412,20 +2402,13 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
    unsigned char* ptr = NULL;
    psonFolder * pNextFolder = NULL;
    psonTxStatus* objTxStatus;  /* txStatus of the created object */
-   psonMemObjIdent memObjType = PSON_IDENT_LAST;
-   size_t bucket;
+   psonMemObjIdent memObjType = PSON_IDENT_FOLDER;
+   size_t bucket, numBlocks = 1;
    bool found, ok;
-#ifdef USE_DBC
-   int invalid_object_type = 0;
-#endif
 
    PSO_PRE_CONDITION( pFolder      != NULL );
    PSO_PRE_CONDITION( objectName   != NULL )
    PSO_PRE_CONDITION( pContext     != NULL );
-   PSO_PRE_CONDITION( pDefinition  != NULL );
-   if ( pDefinition->type != PSO_FOLDER ) {
-      PSO_PRE_CONDITION( pDataDefinition != NULL );
-   }
    PSO_PRE_CONDITION( strLength > 0 );
    PSO_PRE_CONDITION( pFolder->memObject.objType == PSON_IDENT_FOLDER );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
@@ -2510,24 +2493,6 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
          goto the_exit;
       }
 
-      switch( pDefinition->type ) {
-      case PSO_FOLDER:
-         memObjType = PSON_IDENT_FOLDER;
-         break;
-      case PSO_HASH_MAP:
-         memObjType = PSON_IDENT_HASH_MAP;
-         break;
-      case PSO_FAST_MAP:
-         memObjType = PSON_IDENT_MAP;
-         break;
-      case PSO_QUEUE:
-      case PSO_LIFO:
-         memObjType = PSON_IDENT_QUEUE;
-         break;
-      default:
-         PSO_POST_CONDITION( invalid_object_type );
-      }
-      
       ok = psonTxAddOps( (psonTx*)pContext->pTransaction,
                          PSON_TX_ADD_OBJECT,
                          SET_OFFSET(pFolder),
@@ -2553,61 +2518,17 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
       GET_PTR( pObjectNode, pHashItem->dataOffset, psonTreeNode );
       psonTreeNodeInit( pObjectNode, 
                         SET_OFFSET( ptr ),
-                        pDefinition->type,
+                        PSO_FOLDER,
                         SET_OFFSET(objTxStatus),
                         SET_OFFSET(pFolder),
                         pContext );
 
-      switch ( memObjType ) {
-
-      case PSON_IDENT_QUEUE:
-         ok = psonQueueInit( (psonQueue *)ptr,
-                             SET_OFFSET(pFolder),
-                             numBlocks,
-                             pObjectNode,
-                             pDefinition,
-                             pContext );
-         break;
-
-      case PSON_IDENT_FOLDER:
-         ok = psonFolderInit( (psonFolder*)ptr,
-                              SET_OFFSET(pFolder),
-                              numBlocks,
-                              expectedNumOfChilds,
-                              pObjectNode,
-                              pContext );
-         break;
-      
-//      case PSON_IDENT_HASH_MAP:
-//         ok = psonHashMapInit( (psonHashMap *)ptr,
-//                               SET_OFFSET(pFolder),
-//                               numBlocks,
-//                               expectedNumOfChilds,
-//                               pObjectNode,
-//                               pDefinition,
-//                               pKeyDefinition,
-//                               pDataDefinition,
-//                               pContext );
-//         break;
-
-//      case PSON_IDENT_MAP:
-//         ok = psonFastMapInit( (psonFastMap *)ptr,
-//                               SET_OFFSET(pFolder),
-//                               numBlocks,
-//                               expectedNumOfChilds,
-//                               pObjectNode,
-//                               SET_OFFSET(pHashItem),
-//                               pDefinition,
-//                               pKeyDefinition,
-//                               pDataDefinition,
-//                               pContext );
- //        PSO_POST_CONDITION( ok == true || ok == false );
-//         break;
-
-      default:
-         errcode = PSO_INTERNAL_ERROR;
-         goto the_exit;
-      }
+      ok = psonFolderInit( (psonFolder*)ptr,
+                           SET_OFFSET(pFolder),
+                           numBlocks,
+                           0,
+                           pObjectNode,
+                           pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
 
       if ( ! ok ) {
@@ -2668,14 +2589,9 @@ bool psonFolderInsertObject( psonFolder          * pFolder,
    
    psonUnlock( &pFolder->memObject, pContext );
 
-   ok = psonFolderInsertObject( pNextFolder,
+   ok = psonFolderInsertFolder( pNextFolder,
                                 &objectName[partialLength+1],
                                 strLength - partialLength - 1,
-                                pDefinition,
-                                pDataDefinition,
-                                pKeyDefinition,
-                                numBlocks,
-                                expectedNumOfChilds,
                                 pContext );
    PSO_POST_CONDITION( ok == true || ok == false );
 

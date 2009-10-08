@@ -43,7 +43,6 @@ void test_pass( void ** state )
    psonHashTxItem * pHashItem;
 //   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
 //   psonKeyDefinition key;
-//   psonDataDefinition fields;
    psonTreeNode node;
    psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
    psoKeyDefinition key = { PSO_DEF_USER_DEFINED, 0, '\0' };

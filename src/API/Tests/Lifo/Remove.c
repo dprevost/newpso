@@ -62,15 +62,6 @@ void test_NullData( void ** state )
                               strlen("/api_lifo_remove_null_data") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_lifo_remove_null_data",
-                               strlen("api_lifo_remove_null_data"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateQueue( sessionHandle,
                              "/api_lifo_remove_null_data/test",
                              strlen("/api_lifo_remove_null_data/test"),
@@ -116,15 +107,6 @@ void test_NullHandle( void ** state )
    errcode = psoCreateFolder( sessionHandle,
                               "/api_lifo_remove_null_handle",
                               strlen("/api_lifo_remove_null_handle") );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_lifo_remove_null_handle",
-                               strlen("api_lifo_remove_null_handle"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateQueue( sessionHandle,
@@ -173,15 +155,6 @@ void test_NullLength( void ** state )
                               strlen("/api_lifo_remove_null_length") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_lifo_remove_null_length",
-                               strlen("api_lifo_remove_null_length"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateQueue( sessionHandle,
                              "/api_lifo_remove_null_length/test",
                              strlen("/api_lifo_remove_null_length/test"),
@@ -227,15 +200,6 @@ void test_WrongHandle( void ** state )
    errcode = psoCreateFolder( sessionHandle,
                               "/api_lifo_remove_wrong_handle",
                               strlen("/api_lifo_remove_wrong_handle") );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_lifo_remove_wrong_handle",
-                               strlen("api_lifo_remove_wrong_handle"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateQueue( sessionHandle,
@@ -286,15 +250,6 @@ void test_pass( void ** state )
    errcode = psoCreateFolder( sessionHandle,
                               "/api_lifo_remove_pass",
                               strlen("/api_lifo_remove_pass") );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_lifo_remove_pass",
-                               strlen("api_lifo_remove_pass"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateQueue( sessionHandle,

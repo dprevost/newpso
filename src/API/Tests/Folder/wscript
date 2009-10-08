@@ -18,14 +18,15 @@ test_list = [
    'CreateMap',
    'CreateQueue',
    'Destroy',
-   'GetDataDef',
    'GetDef',
    'GetFirst',
-   'GetKeyDef',
    'GetNext',
    'Open',
    'OpenNoSess',
    'Status']
+
+#    'GetDataDef',
+#   'GetKeyDef',
 
 def build(bld):
    for prog in test_list:

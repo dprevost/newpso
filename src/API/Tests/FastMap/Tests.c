@@ -83,23 +83,6 @@ void test_pass( void ** state )
    errcode = psoGetInfo( sessionHandleEdit, &baseline2 );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandleEdit,
-                              "api_fastmap_tests",
-                              strlen("api_fastmap_tests"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   errcode = psoDataDefCreate( sessionHandleEdit,
-                               "api_fastmap_tests",
-                               strlen("api_fastmap_tests"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandleEdit,
                            "/api_map_tests/test",
                            strlen("/api_map_tests/test"),

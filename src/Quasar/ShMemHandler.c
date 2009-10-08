@@ -43,8 +43,8 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    psoObjectDefinition defMap = { PSO_HASH_MAP, 0, 0 };
    psonFolder * pTree, * pFolder;
    psonHashMap * pHashMap;
-   psonDataDefinition dummyDataDefinition;
-   psonKeyDefinition  dummyKeyDefinition;
+//   psonDataDefinition dummyDataDefinition;
+//   psonKeyDefinition  dummyKeyDefinition;
    
    psonFolderItem folderItem;
    psonTreeNode * pNode;

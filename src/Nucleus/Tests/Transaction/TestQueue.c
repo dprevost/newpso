@@ -39,7 +39,6 @@ void test_pass( void ** state )
    char * data3 = "My data3";
    psonQueueItem * pQueueItem;
    psoObjectDefinition def = { PSO_QUEUE, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
-   psonDataDefinition fields;
    psonTreeNode folderNode;
 
    pFolder = initFolderTest( &context );
@@ -52,15 +51,13 @@ void test_pass( void ** state )
    ok = psonFolderInit( pFolder, 0, 1, 0, &folderNode, &context );
    assert_true( ok );
    
-   ok = psonFolderInsertObject( pFolder,
-                                "test2",
-                                5,
-                                &def,
-                                &fields,
-                                NULL,
-                                1,
-                                0,
-                                &context );
+   ok = psonFolderInsertQueue( pFolder,
+                               "test2",
+                               5,
+                               &def,
+                               1,
+                               0,
+                               &context );
    assert_true( ok );
    
    ok = psonTxCommit( pTx, &context );

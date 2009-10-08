@@ -73,22 +73,6 @@ void test_pass( void ** state )
    /*
     * Create and populate the map.
     */
-   errcode = psoKeyDefCreate( sessionHandle1,
-                              "api_fastmap_empty",
-                              strlen("api_fastmap_empty"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   errcode = psoDataDefCreate( sessionHandle1,
-                               "api_fastmap_empty",
-                               strlen("api_fastmap_empty"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
 
    errcode = psoCreateMap( sessionHandle1,
                            "/api_map_empty/test",

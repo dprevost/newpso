@@ -60,15 +60,6 @@ void test_pass( void ** state )
                               strlen("/api_lifo_open_no_session") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_lifo_open_no_session",
-                               strlen("api_lifo_open_no_session"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateQueue( sessionHandle,
                              "/api_lifo_open_no_session/test",
                              strlen("/api_lifo_open_no_session/test"),

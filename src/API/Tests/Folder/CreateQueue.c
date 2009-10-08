@@ -65,15 +65,6 @@ void test_pass( void ** state )
                             &folderHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "Definition",
-                               strlen("Definition"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    /* Invalid arguments to tested function. */
 
    errcode = psoFolderCreateQueue( NULL,

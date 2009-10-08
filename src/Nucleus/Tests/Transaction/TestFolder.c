@@ -47,14 +47,9 @@ void test_pass( void ** state )
    assert_true( ok );
    
    /* Test 1 */
-   ok = psonFolderInsertObject( pFolder,
+   ok = psonFolderInsertFolder( pFolder,
                                 "test2",
                                 5,
-                                &folderDef,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert_true( ok );
    
@@ -79,14 +74,9 @@ void test_pass( void ** state )
    assert_true( pFolder->hashObj.numberOfItems == 0 );
    
    /* Test 2 */
-   ok = psonFolderInsertObject( pFolder,
+   ok = psonFolderInsertFolder( pFolder,
                                 "test2",
                                 5,
-                                &folderDef,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert_true( ok );
    
@@ -143,14 +133,9 @@ void test_pass( void ** state )
    assert_true( pFolder->hashObj.numberOfItems == 0 );
    
    /* Test 3 */
-   ok = psonFolderInsertObject( pFolder,
+   ok = psonFolderInsertFolder( pFolder,
                                 "test2",
                                 5,
-                                &folderDef,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert_true( ok );
    
@@ -182,14 +167,9 @@ void test_pass( void ** state )
    assert_true( pFolder->hashObj.numberOfItems == 0 );
    
    /* Test 4 */
-   ok = psonFolderInsertObject( pFolder,
+   ok = psonFolderInsertFolder( pFolder,
                                 "test2",
                                 5,
-                                &folderDef,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert_true( ok );
    

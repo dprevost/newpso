@@ -22,8 +22,8 @@
 
 psonFolder * pTopFolder;
 psonSessionContext context;
-psoObjectDefinition def = { PSO_QUEUE, 0, 0 };
-psonDataDefinition dataDef;
+psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -56,13 +56,12 @@ void test_invalid_length( void ** state )
    bool ok;
    int errcode;
    
-   ok = psonTopFolderCreateObject( pTopFolder,
-                                   "Test1/Test2",
-                                   0,
-                                   &def,
-                                   &dataDef,
-                                   NULL,
-                                   &context );
+   ok = psonTopFolderCreateMap( pTopFolder,
+                                "Test1/Test2",
+                                0,
+                                &def,
+                                &keyDef,
+                                &context );
    assert_false( ok );
    errcode = psocGetLastError( &context.errorHandler );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
@@ -75,29 +74,12 @@ void test_invalid_length( void ** state )
 void test_null_context( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonTopFolderCreateObject( pTopFolder,
-                                                     "Test1/Test2",
-                                                     strlen("Test1/Test2"),
-                                                     &def,
-                                                     &dataDef,
-                                                     NULL,
-                                                     NULL ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_null_datadef( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonTopFolderCreateObject( pTopFolder,
-                                                     "Test1/Test2",
-                                                     strlen("Test1/Test2"),
-                                                     &def,
-                                                     NULL,
-                                                     NULL,
-                                                     &context ) );
+   expect_assert_failure( psonTopFolderCreateMap( pTopFolder,
+                                                  "Test1/Test2",
+                                                  strlen("Test1/Test2"),
+                                                  &def,
+                                                  &keyDef,
+                                                  NULL ) );
 #endif
    return;
 }
@@ -107,13 +89,27 @@ void test_null_datadef( void ** state )
 void test_null_definition( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonTopFolderCreateObject( pTopFolder,
-                                                     "Test1/Test2",
-                                                     strlen("Test1/Test2"),
-                                                     NULL,
-                                                     &dataDef,
-                                                     NULL,
-                                                     &context ) );
+   expect_assert_failure( psonTopFolderCreateMap( pTopFolder,
+                                                  "Test1/Test2",
+                                                  strlen("Test1/Test2"),
+                                                  NULL,
+                                                  &keyDef,
+                                                  &context ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_keydef( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonTopFolderCreateMap( pTopFolder,
+                                                  "Test1/Test2",
+                                                  strlen("Test1/Test2"),
+                                                  &def,
+                                                  NULL,
+                                                  &context ) );
 #endif
    return;
 }
@@ -123,13 +119,12 @@ void test_null_definition( void ** state )
 void test_null_folder( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonTopFolderCreateObject( NULL,
-                                                     "Test1/Test2",
-                                                     strlen("Test1/Test2"),
-                                                     &def,
-                                                     &dataDef,
-                                                     NULL,
-                                                     &context ) );
+   expect_assert_failure( psonTopFolderCreateMap( NULL,
+                                                  "Test1/Test2",
+                                                  strlen("Test1/Test2"),
+                                                  &def,
+                                                  &keyDef,
+                                                  &context ) );
 #endif
    return;
 }
@@ -139,13 +134,12 @@ void test_null_folder( void ** state )
 void test_null_name( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonTopFolderCreateObject( pTopFolder,
-                                                     NULL,
-                                                     strlen("Test1/Test2"),
-                                                     &def,
-                                                     &dataDef,
-                                                     NULL,
-                                                     &context ) );
+   expect_assert_failure( psonTopFolderCreateMap( pTopFolder,
+                                                  NULL,
+                                                  strlen("Test1/Test2"),
+                                                  &def,
+                                                  &keyDef,
+                                                  &context ) );
 #endif
    return;
 }
@@ -157,13 +151,12 @@ void test_wrong_type( void ** state )
 #if defined(PSO_UNIT_TESTS)
    psoObjectDefinition def2 = { 0, 0, 0 };
 
-   expect_assert_failure( psonTopFolderCreateObject( pTopFolder,
-                                                     "Test1/Test2",
-                                                     strlen("Test1/Test2"),
-                                                     &def2,
-                                                     &dataDef,
-                                                     NULL,
-                                                     &context ) );
+   expect_assert_failure( psonTopFolderCreateMap( pTopFolder,
+                                                  "Test1/Test2",
+                                                  strlen("Test1/Test2"),
+                                                  &def2,
+                                                  &keyDef,
+                                                  &context ) );
 #endif
    return;
 }
@@ -176,22 +169,20 @@ void test_pass( void ** state )
    int errcode;
    bool ok;
    
-   ok = psonTopFolderCreateObject( pTopFolder,
-                                   "Test1/Test2",
-                                   strlen("Test1/Test2"),
-                                   &def,
-                                   &dataDef,
-                                   NULL,
-                                   &context );
+   ok = psonTopFolderCreateMap( pTopFolder,
+                                "Test1/Test2",
+                                strlen("Test1/Test2"),
+                                &def,
+                                &keyDef,
+                                &context );
    assert_true( ok );
    
-   ok = psonTopFolderCreateObject( pTopFolder,
-                                   "Test3/Test2",
-                                   strlen("Test3/Test2"),
-                                   &def,
-                                   &dataDef,
-                                   NULL,
-                                   &context );
+   ok = psonTopFolderCreateMap( pTopFolder,
+                                "Test3/Test2",
+                                strlen("Test3/Test2"),
+                                &def,
+                                &keyDef,
+                                &context );
    assert_false( ok );
    errcode = psocGetLastError( &context.errorHandler );
    assert_true( errcode == PSO_NO_SUCH_FOLDER );
@@ -209,8 +200,8 @@ int main()
    const UnitTest tests[] = {
       unit_test_setup_teardown( test_invalid_length,  setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_context,    setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_datadef,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_definition, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_keydef,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_folder,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_name,       setup_test, teardown_test ),
       unit_test_setup_teardown( test_wrong_type,      setup_test, teardown_test ),

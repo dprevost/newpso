@@ -166,7 +166,6 @@ void test_pass( void ** state )
    psoObjectDefinition mapDef = { PSO_FAST_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
    psoKeyDefinition key = { PSO_DEF_USER_DEFINED, 0, '\0' };
 
-   psonDataDefinition fields;
 
    ok = psonFolderEditObject( pFolder,
                               "test2",

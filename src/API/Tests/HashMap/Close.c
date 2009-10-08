@@ -70,24 +70,6 @@ void test_pass( void ** state )
                               strlen("/api_hashmap_close") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "API_Hashmap_Close",
-                              strlen("API_Hashmap_Close"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   
-   errcode = psoDataDefCreate( sessionHandle,
-                               "API_Hashmap_Close",
-                               strlen("API_Hashmap_Close"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_hashmap_close/test",
                            strlen("/api_hashmap_close/test"),

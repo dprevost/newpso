@@ -52,35 +52,32 @@ void test_name_length( void ** state )
    memset( name, 't', PSO_MAX_NAME_LENGTH+99 );
    name[PSO_MAX_NAME_LENGTH+99] = 0;
    
-   ok = psonAPIFolderCreateObject( pFolder,
-                                   "Test1",
-                                   0,
-                                   &def,
-                                   NULL,
-                                   NULL,
-                                   &context );
+   ok = psonAPIFolderCreateMap( pFolder,
+                                "Test1",
+                                0,
+                                &def,
+                                NULL,
+                                &context );
    assert_false( ok );
    errcode = psocGetLastError( &context.errorHandler );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
-   ok = psonAPIFolderCreateObject( pFolder,
-                                   "/Test2",
-                                   strlen("/Test2"),
-                                   &def,
-                                   NULL,
-                                   NULL,
-                                   &context );
+   ok = psonAPIFolderCreateMap( pFolder,
+                                "/Test2",
+                                strlen("/Test2"),
+                                &def,
+                                NULL,
+                                &context );
    assert_false( ok );
    errcode = psocGetLastError( &context.errorHandler );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
-   ok = psonAPIFolderCreateObject( pFolder,
-                                   name,
-                                   PSO_MAX_NAME_LENGTH+1,
-                                   &def,
-                                   NULL,
-                                   NULL,
-                                   &context );
+   ok = psonAPIFolderCreateMap( pFolder,
+                                name,
+                                PSO_MAX_NAME_LENGTH+1,
+                                &def,
+                                NULL,
+                                &context );
    assert_false( ok );
    errcode = psocGetLastError( &context.errorHandler );
    assert_true( errcode == PSO_OBJECT_NAME_TOO_LONG );
@@ -94,13 +91,12 @@ void test_name_length( void ** state )
 void test_null_context( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonAPIFolderCreateObject( pFolder,
-                                                     "Test1",
-                                                     strlen("Test1"),
-                                                     &def,
-                                                     NULL,
-                                                     NULL,
-                                                     NULL ) );
+   expect_assert_failure( psonAPIFolderCreateMap( pFolder,
+                                                  "Test1",
+                                                  strlen("Test1"),
+                                                  &def,
+                                                  NULL,
+                                                  NULL ) );
 #endif
    return;
 }
@@ -110,13 +106,12 @@ void test_null_context( void ** state )
 void test_null_definition( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonAPIFolderCreateObject( pFolder,
-                                                     "Test1",
-                                                     strlen("Test1"),
-                                                     NULL,
-                                                     NULL,
-                                                     NULL,
-                                                     &context ) );
+   expect_assert_failure( psonAPIFolderCreateMap( pFolder,
+                                                  "Test1",
+                                                  strlen("Test1"),
+                                                  NULL,
+                                                  NULL,
+                                                  &context ) );
 #endif
    return;
 }
@@ -126,13 +121,12 @@ void test_null_definition( void ** state )
 void test_null_folder( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonAPIFolderCreateObject( NULL,
-                                                     "Test1",
-                                                     strlen("Test1"),
-                                                     &def,
-                                                     NULL,
-                                                     NULL,
-                                                     &context ) );
+   expect_assert_failure( psonAPIFolderCreateMap( NULL,
+                                                  "Test1",
+                                                  strlen("Test1"),
+                                                  &def,
+                                                  NULL,
+                                                  &context ) );
 #endif
    return;
 }
@@ -142,13 +136,12 @@ void test_null_folder( void ** state )
 void test_null_name( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonAPIFolderCreateObject( pFolder,
-                                                     NULL,
-                                                     strlen("Test1"),
-                                                     &def,
-                                                     NULL,
-                                                     NULL,
-                                                     &context ) );
+   expect_assert_failure( psonAPIFolderCreateMap( pFolder,
+                                                  NULL,
+                                                  strlen("Test1"),
+                                                  &def,
+                                                  NULL,
+                                                  &context ) );
 #endif
    return;
 }
@@ -160,13 +153,12 @@ void test_wrong_type( void ** state )
 #if defined(PSO_UNIT_TESTS)
    psoObjectDefinition local_def = { 0, 0, 0 };
 
-   expect_assert_failure( psonAPIFolderCreateObject( pFolder,
-                                                     "Test1",
-                                                     strlen("Test1"),
-                                                     &local_def,
-                                                     NULL,
-                                                     NULL,
-                                                     &context ) );
+   expect_assert_failure( psonAPIFolderCreateMap( pFolder,
+                                                  "Test1",
+                                                  strlen("Test1"),
+                                                  &local_def,
+                                                  NULL,
+                                                  &context ) );
 #endif
    return;
 }
@@ -178,22 +170,20 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    bool ok;
    
-   ok = psonAPIFolderCreateObject( pFolder,
-                                   "Test1",
-                                   strlen("Test1"),
-                                   &def,
-                                   NULL,
-                                   NULL,
-                                   &context );
+   ok = psonAPIFolderCreateMap( pFolder,
+                                "Test1",
+                                strlen("Test1"),
+                                &def,
+                                NULL,
+                                &context );
    assert_true( ok );
    
-   ok = psonAPIFolderCreateObject( pFolder,
-                                   "Test2",
-                                   strlen("Test2"),
-                                   &def,
-                                   NULL,
-                                   NULL,
-                                   &context );
+   ok = psonAPIFolderCreateMap( pFolder,
+                                "Test2",
+                                strlen("Test2"),
+                                &def,
+                                NULL,
+                                &context );
    assert_true( ok );
    
 #endif

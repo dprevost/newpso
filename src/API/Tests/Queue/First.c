@@ -62,15 +62,6 @@ void test_null_data( void ** state )
                               strlen("/api_queue_first_null_data") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_queue_first_null_data",
-                               strlen("api_queue_first_null_data"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_first_null_data/test",
                              strlen("/api_queue_first_null_data/test"),
@@ -115,15 +106,6 @@ void test_null_handle( void ** state )
                               strlen("/api_queue_first_null_handle") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_queue_first_null_handle",
-                               strlen("api_queue_first_null_handle"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_first_null_handle/test",
                              strlen("/api_queue_first_null_handle/test"),
@@ -165,15 +147,6 @@ void test_null_length( void ** state )
    errcode = psoCreateFolder( sessionHandle,
                               "/api_queue_first_null_length",
                               strlen("/api_queue_first_null_length") );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_queue_first_null_length",
-                               strlen("api_queue_first_null_length"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateQueue( sessionHandle,
@@ -220,15 +193,6 @@ void test_wrong_handle( void ** state )
                               strlen("/api_queue_first_wrong_handle") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_queue_first_wrong_handle",
-                               strlen("api_queue_first_wrong_handle"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_first_wrong_handle/test",
                              strlen("/api_queue_first_wrong_handle/test"),
@@ -271,15 +235,6 @@ void test_pass( void ** state )
    errcode = psoCreateFolder( sessionHandle,
                               "/api_queue_first_pass",
                               strlen("/api_queue_first_pass") );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_queue_first_pass",
-                               strlen("api_queue_first_pass"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateQueue( sessionHandle,

@@ -32,7 +32,6 @@ void setup_test()
    psonTxStatus status;
    psoObjectDefinition def = { PSO_FAST_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
    psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
-   psonDataDefinition fields;
    
    pHashMap = initHashMapTest( &context );
    assert( pHashMap != NULL );

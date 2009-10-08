@@ -54,15 +54,6 @@ void test_pass( void ** state )
    errcode = psoInitSession( &sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_session_create_object",
-                               strlen("api_session_create_object"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    /* Invalid arguments to tested function. */
 
    errcode = psoCreateQueue( NULL,

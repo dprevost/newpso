@@ -85,15 +85,6 @@ void test_pass( void ** state )
                               strlen("/api_lifo_definition") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_lifo_definition",
-                               strlen("api_lifo_definition"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateQueue( sessionHandle,
                              "/api_lifo_definition/test",
                              strlen("/api_lifo_definition/test"),

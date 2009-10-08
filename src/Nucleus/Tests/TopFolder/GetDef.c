@@ -23,13 +23,10 @@
 
 psonFolder * pTopFolder;
 psonSessionContext context;
-psonKeyDefinition * retKeyDef = NULL;
-//psonDataDefinition * retDataDef = NULL;
-psoObjectDefinition retDef;
-//psonDataDefinition fieldDef;
+psoKeyDefinition * retKeyDef = NULL;
+psoObjectDefinition * retDef = NULL;
 
 psoObjectDefinition * def;
-
 psoKeyDefinition * keyDef;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -67,6 +64,11 @@ void setup_test()
 
 void teardown_test()
 {
+   if ( def != NULL ) free( def );
+   def = NULL;
+   if ( keyDef != NULL ) free( keyDef );
+   keyDef = NULL;
+   
    if (g_pBaseAddr) free(g_pBaseAddr);
    g_pBaseAddr = NULL;
 }
@@ -80,25 +82,8 @@ void test_null_context( void ** state )
                                                "Test1",
                                                strlen("Test1"),
                                                &retDef,
-                                               &retDataDef,
                                                &retKeyDef,
                                                NULL ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_null_datadef( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonTopFolderGetDef( pTopFolder,
-                                               "Test1",
-                                               strlen("Test1"),
-                                               &retDef,
-                                               NULL,
-                                               &retKeyDef,
-                                               &context ) );
 #endif
    return;
 }
@@ -112,7 +97,6 @@ void test_null_def( void ** state )
                                                "Test1",
                                                strlen("Test1"),
                                                NULL,
-                                               &retDataDef,
                                                &retKeyDef,
                                                &context ) );
 #endif
@@ -128,7 +112,6 @@ void test_null_folder( void ** state )
                                                "Test1",
                                                strlen("Test1"),
                                                &retDef,
-                                               &retDataDef,
                                                &retKeyDef,
                                                &context ) );
 #endif
@@ -144,7 +127,6 @@ void test_null_key_def( void ** state )
                                                "Test1",
                                                strlen("Test1"),
                                                &retDef,
-                                               &retDataDef,
                                                NULL,
                                                &context ) );
 #endif
@@ -160,7 +142,6 @@ void test_null_name( void ** state )
                                                NULL,
                                                strlen("Test1"),
                                                &retDef,
-                                               &retDataDef,
                                                &retKeyDef,
                                                &context ) );
 #endif
@@ -199,7 +180,6 @@ int main()
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
       unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_datadef, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_def,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_folder,  setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_key_def, setup_test, teardown_test ),

@@ -56,33 +56,10 @@ void teardown_test()
 void test_null_context( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonFolderInsertObject( pFolder,
+   expect_assert_failure( psonFolderInsertFolder( pFolder,
                                                   "test2",
                                                   5,
-                                                  &def,
-                                                  NULL,
-                                                  NULL,
-                                                  1,
-                                                  0,
                                                   NULL ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_null_definition( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonFolderInsertObject( pFolder,
-                                                  "test2",
-                                                  5,
-                                                  NULL,
-                                                  NULL,
-                                                  NULL,
-                                                  1,
-                                                  0,
-                                                  &context ) );
 #endif
    return;
 }
@@ -92,14 +69,9 @@ void test_null_definition( void ** state )
 void test_null_folder( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonFolderInsertObject( NULL,
+   expect_assert_failure( psonFolderInsertFolder( NULL,
                                                   "test2",
                                                   5,
-                                                  &def,
-                                                  NULL,
-                                                  NULL,
-                                                  1,
-                                                  0,
                                                   &context ) );
 #endif
    return;
@@ -110,14 +82,9 @@ void test_null_folder( void ** state )
 void test_null_name( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonFolderInsertObject( pFolder,
+   expect_assert_failure( psonFolderInsertFolder( pFolder,
                                                   NULL,
                                                   5,
-                                                  &def,
-                                                  NULL,
-                                                  NULL,
-                                                  1,
-                                                  0,
                                                   &context ) );
 #endif
    return;
@@ -129,32 +96,9 @@ void test_wrong_type( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    pFolder->memObject.objType = PSON_IDENT_HASH_MAP;
-   expect_assert_failure( psonFolderInsertObject( pFolder,
+   expect_assert_failure( psonFolderInsertFolder( pFolder,
                                                   "test2",
                                                   5,
-                                                  &def,
-                                                  NULL,
-                                                  NULL,
-                                                  1,
-                                                  0,
-                                                  &context ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_zero_blocks( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonFolderInsertObject( pFolder,
-                                                  "test2",
-                                                  5,
-                                                  &def,
-                                                  NULL,
-                                                  NULL,
-                                                  0,
-                                                  0,
                                                   &context ) );
 #endif
    return;
@@ -165,13 +109,8 @@ void test_zero_blocks( void ** state )
 void test_zero_length( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonFolderInsertObject( pFolder,
+   expect_assert_failure( psonFolderInsertFolder( pFolder,
                                                   "test2",
-                                                  0,
-                                                  &def,
-                                                  NULL,
-                                                  NULL,
-                                                  1,
                                                   0,
                                                   &context ) );
 #endif
@@ -185,26 +124,16 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
    bool ok;
    
-   ok = psonFolderInsertObject( pFolder,
+   ok = psonFolderInsertFolder( pFolder,
                                 "test2",
                                 5,
-                                &def,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert_true( ok );
    assert_true( node.txCounter == 1 );
    
-   ok = psonFolderInsertObject( pFolder,
+   ok = psonFolderInsertFolder( pFolder,
                                 "test3",
                                 5,
-                                &def,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert_true( ok == true );
    assert_true( node.txCounter == 2 );
@@ -224,11 +153,9 @@ int main()
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
       unit_test_setup_teardown( test_null_context,    setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_definition, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_folder,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_name,       setup_test, teardown_test ),
       unit_test_setup_teardown( test_wrong_type,      setup_test, teardown_test ),
-      unit_test_setup_teardown( test_zero_blocks,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_zero_length,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_pass,            setup_test, teardown_test )
    };

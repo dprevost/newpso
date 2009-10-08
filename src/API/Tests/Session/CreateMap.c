@@ -78,23 +78,6 @@ void test_pass( void ** state )
    errcode = psoInitSession( &sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_session_create_keyed_object",
-                               strlen("api_session_create_keyed_object"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "api_session_create_keyed_object",
-                              strlen("api_session_create_keyed_object"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-
    /* Invalid arguments to tested function. */
 
    errcode = psoCreateMap( NULL,

@@ -456,6 +456,7 @@ int psoExitSession( PSO_HANDLE sessionHandle )
     
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if 0
 int psoGetDataDefinition( PSO_HANDLE   sessionHandle,
                           const char * objectName,
                           uint32_t     nameLengthInBytes,
@@ -590,6 +591,7 @@ int psoGetDefinition( PSO_HANDLE            sessionHandle,
    
    return errcode;
 }   
+#endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -646,6 +648,7 @@ int psoGetInfo( PSO_HANDLE   sessionHandle,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if 0
 int psoGetKeyDefinition( PSO_HANDLE   sessionHandle,
                          const char * objectName,
                          uint32_t     nameLengthInBytes,
@@ -721,6 +724,7 @@ int psoGetKeyDefinition( PSO_HANDLE   sessionHandle,
    
    return errcode;
 }   
+#endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

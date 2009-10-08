@@ -110,6 +110,7 @@ bool psonAPIFolderCreateFolder( psonFolder         * pFolder,
 /**
  * Creates an immediate child of the folder.
  */
+#if 0
 bool psonAPIFolderCreateObject( psonFolder          * pFolder,
                                 const char          * objectName,
                                 uint32_t              nameLengthInBytes,
@@ -117,6 +118,7 @@ bool psonAPIFolderCreateObject( psonFolder          * pFolder,
                                 psonDataDefinition  * pDataDefinition,
                                 psonKeyDefinition   * pKeyDefinition,
                                 psonSessionContext  * pContext );
+#endif
 
 /**
  * Creates an immediate child of the folder.
@@ -241,6 +243,11 @@ bool psonFolderInit( psonFolder         * pFolder,
                      psonTreeNode       * pNode,
                      psonSessionContext * pContext );
 
+bool psonFolderInsertFolder( psonFolder          * pFolder,
+                             const char          * objectName,
+                             uint32_t              strLength,
+                             psonSessionContext  * pContext );
+
 bool psonFolderInsertMap( psonFolder          * pFolder,
                           const char          * objectName,
                           uint32_t              strLength,
@@ -249,16 +256,6 @@ bool psonFolderInsertMap( psonFolder          * pFolder,
                           size_t                numBlocks,
                           size_t                expectedNumOfChilds,
                           psonSessionContext  * pContext );
-
-bool psonFolderInsertObject( psonFolder          * pFolder,
-                             const char          * objectName,
-                             uint32_t              strLength,
-                             psoObjectDefinition * pDefinition,
-                             psonDataDefinition  * pDataDefinition,
-                             psonKeyDefinition   * pKeyDefinition,
-                             size_t                numBlocks,
-                             size_t                expectedNumOfChilds,
-                             psonSessionContext  * pContext );
 
 bool psonFolderInsertQueue( psonFolder          * pFolder,
                             const char          * objectName,

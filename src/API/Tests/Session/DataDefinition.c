@@ -64,23 +64,6 @@ void test_pass( void ** state )
    errcode = psoInitSession( &sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_session_data_definition",
-                               strlen("api_session_data_definition"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "api_session_data_definition",
-                              strlen("api_session_data_definition"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_session_data_definition",
                            strlen("/api_session_data_definition"),

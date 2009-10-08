@@ -166,30 +166,6 @@ int psoFolderDestroyObject( PSO_HANDLE   folderHandle,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /**
- * \brief Retrieve the data definition of the named object.
- *
- * To avoid memory leaks, you must close the handle that will be 
- * returned by this function (see ::psoDataDefClose).
- *
- * The handle might be set to NULL by this function if the object is a folder.
- *
- * \param[in]  folderHandle Handle to the current folder.
- * \param[in]  objectName The name of the object. 
- * \param[in]  nameLengthInBytes The length of \em objectName (in bytes) not
- *             counting the null terminator.
- * \param[out] dataDefHandle Handle to the definition of the data fields.
- *
- * \return 0 on success or a ::psoErrors on error.
- */
-PHOTON_EXPORT
-int psoFolderGetDataDefinition( PSO_HANDLE   folderHandle,
-                                const char * objectName,
-                                psoUint32    nameLengthInBytes,
-                                PSO_HANDLE * dataDefHandle );
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-/**
  * \brief Retrieve the object definition of the named object.
  *
  * \param[in]  folderHandle Handle to the current folder.

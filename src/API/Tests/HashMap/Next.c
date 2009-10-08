@@ -81,24 +81,6 @@ void test_no_first( void ** state )
                               strlen("/api_hashmap_next_no_first") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "API_Hashmap_NextNoFirst",
-                              strlen("API_Hashmap_NextNoFirst"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   
-   errcode = psoDataDefCreate( sessionHandle,
-                               "API_Hashmap_NextNoFirst",
-                               strlen("API_Hashmap_NextNoFirst"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_hashmap_next_no_first/test",
                            strlen("/api_hashmap_next_no_first/test"),
@@ -161,24 +143,6 @@ void test_null_data( void ** state )
    errcode = psoCreateFolder( sessionHandle,
                               "/api_hashmap_next_null_data",
                               strlen("/api_hashmap_next_null_data") );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "API_Hashmap_NextNullData",
-                              strlen("API_Hashmap_NextNullData"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   
-   errcode = psoDataDefCreate( sessionHandle,
-                               "API_Hashmap_NextNullData",
-                               strlen("API_Hashmap_NextNullData"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateMap( sessionHandle,
@@ -249,24 +213,6 @@ void test_null_datalength( void ** state )
                               strlen("/api_hashmap_next_null_data_length") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "API_Hashmap_NextNullDataLength",
-                              strlen("API_Hashmap_NextNullDataLength"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   
-   errcode = psoDataDefCreate( sessionHandle,
-                               "API_Hashmap_NextNullDataLength",
-                               strlen("API_Hashmap_NextNullDataLength"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_hashmap_next_null_data_length/test",
                            strlen("/api_hashmap_next_null_data_length/test"),
@@ -333,24 +279,6 @@ void test_null_handle( void ** state )
    errcode = psoCreateFolder( sessionHandle,
                               "/api_hashmap_next_null_handle",
                               strlen("/api_hashmap_next_null_handle") );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "API_Hashmap_NextNullHandle",
-                              strlen("API_Hashmap_NextNullHandle"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   
-   errcode = psoDataDefCreate( sessionHandle,
-                               "API_Hashmap_NextNullHandle",
-                               strlen("API_Hashmap_NextNullHandle"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateMap( sessionHandle,
@@ -421,24 +349,6 @@ void test_null_key( void ** state )
                               strlen("/api_hashmap_next_null_key") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "API_Hashmap_NextNullKey",
-                              strlen("API_Hashmap_NextNullKey"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   
-   errcode = psoDataDefCreate( sessionHandle,
-                               "API_Hashmap_NextNullKey",
-                               strlen("API_Hashmap_NextNullKey"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_hashmap_next_null_key/test",
                            strlen("/api_hashmap_next_null_key/test"),
@@ -505,24 +415,6 @@ void test_null_keylength( void ** state )
    errcode = psoCreateFolder( sessionHandle,
                               "/api_hashmap_next_null_key_length",
                               strlen("/api_hashmap_next_null_key_length") );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "API_Hashmap_NextNullKeyLength",
-                              strlen("API_Hashmap_NextNullKeyLength"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   
-   errcode = psoDataDefCreate( sessionHandle,
-                               "API_Hashmap_NextNullKeyLength",
-                               strlen("API_Hashmap_NextNullKeyLength"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateMap( sessionHandle,
@@ -593,24 +485,6 @@ void test_wrong_handle( void ** state )
                               strlen("/api_hashmap_next_wrong_handle") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "API_Hashmap_NextWrongHandle",
-                              strlen("API_Hashmap_NextWrongHandle"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   
-   errcode = psoDataDefCreate( sessionHandle,
-                               "API_Hashmap_NextWrongHandle",
-                               strlen("API_Hashmap_NextWrongHandle"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_hashmap_next_wrong_handle/test",
                            strlen("/api_hashmap_next_wrong_handle/test"),
@@ -677,24 +551,6 @@ void test_pass( void ** state )
    errcode = psoCreateFolder( sessionHandle,
                               "/api_hashmap_next_pass",
                               strlen("/api_hashmap_next_pass") );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "API_Hashmap_NextPass",
-                              strlen("API_Hashmap_NextPass"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   
-   errcode = psoDataDefCreate( sessionHandle,
-                               "API_Hashmap_NextPass",
-                               strlen("API_Hashmap_NextPass"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateMap( sessionHandle,

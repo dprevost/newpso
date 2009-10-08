@@ -374,6 +374,8 @@ error_handler:
     
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#if 0
+
 int psoFolderGetDataDefinition( PSO_HANDLE   objectHandle,
                                 const char * objectName,
                                 uint32_t     nameLengthInBytes,
@@ -534,6 +536,7 @@ error_handler:
    PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }   
+#endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -612,7 +615,7 @@ error_handler:
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
+#if 0
 int psoFolderGetKeyDefinition( PSO_HANDLE   objectHandle,
                                const char * objectName,
                                uint32_t     nameLengthInBytes,
@@ -699,6 +702,7 @@ error_handler:
    PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }
+#endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

@@ -57,23 +57,6 @@ int main( int argc, char * argv[] )
                               strlen("/api_fastmap_reset_wrong_type") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "api_fastmap_reset_wrong_type",
-                              strlen("api_fastmap_reset_wrong_type"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_fastmap_reset_wrong_type",
-                               strlen("api_fastmap_reset_wrong_type"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_fastmap_reset_wrong_type/test",
                            strlen("/api_fastmap_reset_wrong_type/test"),

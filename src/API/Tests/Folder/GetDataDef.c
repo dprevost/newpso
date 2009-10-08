@@ -69,24 +69,6 @@ void test_pass( void ** state )
                               strlen("/api_folder_getdef") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_folder_getdef",
-                               strlen("api_folder_getdef"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)&dataDef,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "api_folder_getdef",
-                              strlen("api_folder_getdef"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_folder_getdef/map1",
                            strlen("/api_folder_getdef/map1"),

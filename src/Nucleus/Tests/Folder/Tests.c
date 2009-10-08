@@ -46,39 +46,24 @@ void test_pass( void ** state )
    assert_true( ok );
    
    /* Create "/Test2" */   
-   ok = psonFolderInsertObject( pFolder1,
+   ok = psonFolderInsertFolder( pFolder1,
                                 "test2",
                                 5,
-                                &def,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert_true( ok );
 
    /* Try to create "/Test2" again - must fail */   
-   ok = psonFolderInsertObject( pFolder1,
+   ok = psonFolderInsertFolder( pFolder1,
                                 "test2",
                                 5,
-                                &def,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert_false( ok );
    assert_true( psocGetLastError( &context.errorHandler ) == PSO_OBJECT_ALREADY_PRESENT );
    
    /* Create "/Test3" */   
-   ok = psonFolderInsertObject( pFolder1,
+   ok = psonFolderInsertFolder( pFolder1,
                                 "test3",
                                 5,
-                                &def,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert_true( ok );
 
@@ -94,26 +79,16 @@ void test_pass( void ** state )
    GET_PTR( pFolder2, pDescriptor->offset, psonFolder );
 
    /* Create "/Test2/Test4" from "/Test2" */   
-   ok = psonFolderInsertObject( pFolder2,
+   ok = psonFolderInsertFolder( pFolder2,
                                 "test4",
                                 5,
-                                &def,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert_true( ok );
 
    /* Create "/Test2/Test2" */   
-   ok = psonFolderInsertObject( pFolder2,
+   ok = psonFolderInsertFolder( pFolder2,
                                 "test2",
                                 5,
-                                &def,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert_true( ok );
    
@@ -148,14 +123,9 @@ void test_pass( void ** state )
    
    /* Create "/Test2/Test4/Test5 from "/" */
    
-   ok = psonFolderInsertObject( pFolder1,
+   ok = psonFolderInsertFolder( pFolder1,
                                 "test2/test4/test5",
                                 17,
-                                &def,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert_true( ok );
    

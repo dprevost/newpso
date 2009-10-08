@@ -32,12 +32,9 @@ void setup_test()
    
    pFolder = initTopFolderTest( &context );
 
-   ok = psonAPIFolderCreateObject( pFolder,
+   ok = psonAPIFolderCreateFolder( pFolder,
                                    "Test1",
                                    strlen("Test1"),
-                                   &def,
-                                   NULL,
-                                   NULL,
                                    &context );
    assert( ok );
    
