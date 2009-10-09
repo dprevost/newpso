@@ -23,8 +23,9 @@
 psonFolder* pFolder;
 psonSessionContext context;
 psonTxStatus status;
-psoObjectDefinition def = { PSO_FOLDER, 0, 0 };
 psonTreeNode node;
+psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -60,7 +61,7 @@ void test_null_context( void ** state )
                                                "test2",
                                                5,
                                                &def,
-                                               NULL,
+                                               &keyDef,
                                                1,
                                                0,
                                                NULL ) );
@@ -77,7 +78,7 @@ void test_null_definition( void ** state )
                                                "test2",
                                                5,
                                                NULL,
-                                               NULL,
+                                               &keyDef,
                                                1,
                                                0,
                                                &context ) );
@@ -91,6 +92,23 @@ void test_null_folder( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonFolderInsertMap( NULL,
+                                               "test2",
+                                               5,
+                                               &def,
+                                               &keyDef,
+                                               1,
+                                               0,
+                                               &context ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_keydef( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonFolderInsertMap( pFolder,
                                                "test2",
                                                5,
                                                &def,
@@ -111,7 +129,7 @@ void test_null_name( void ** state )
                                                NULL,
                                                5,
                                                &def,
-                                               NULL,
+                                               &keyDef,
                                                1,
                                                0,
                                                &context ) );
@@ -129,7 +147,7 @@ void test_wrong_type( void ** state )
                                                "test2",
                                                5,
                                                &def,
-                                               NULL,
+                                               &keyDef,
                                                1,
                                                0,
                                                &context ) );
@@ -146,7 +164,7 @@ void test_zero_blocks( void ** state )
                                                "test2",
                                                5,
                                                &def,
-                                               NULL,
+                                               &keyDef,
                                                0,
                                                0,
                                                &context ) );
@@ -163,7 +181,7 @@ void test_zero_length( void ** state )
                                                "test2",
                                                0,
                                                &def,
-                                               NULL,
+                                               &keyDef,
                                                1,
                                                0,
                                                &context ) );
@@ -182,7 +200,7 @@ void test_pass( void ** state )
                              "test2",
                              5,
                              &def,
-                             NULL,
+                             &keyDef,
                              1,
                              0,
                              &context );
@@ -193,7 +211,7 @@ void test_pass( void ** state )
                              "test3",
                              5,
                              &def,
-                             NULL,
+                             &keyDef,
                              1,
                              0,
                              &context );
@@ -217,6 +235,7 @@ int main()
       unit_test_setup_teardown( test_null_context,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_definition, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_folder,     setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_keydef,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_name,       setup_test, teardown_test ),
       unit_test_setup_teardown( test_wrong_type,      setup_test, teardown_test ),
       unit_test_setup_teardown( test_zero_blocks,     setup_test, teardown_test ),

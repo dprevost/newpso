@@ -22,7 +22,8 @@
 
 psonFolder * pFolder;
 psonSessionContext context;
-psoObjectDefinition def = { PSO_FOLDER, 0, 0 };
+psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -56,7 +57,7 @@ void test_name_length( void ** state )
                                 "Test1",
                                 0,
                                 &def,
-                                NULL,
+                                &keyDef,
                                 &context );
    assert_false( ok );
    errcode = psocGetLastError( &context.errorHandler );
@@ -66,7 +67,7 @@ void test_name_length( void ** state )
                                 "/Test2",
                                 strlen("/Test2"),
                                 &def,
-                                NULL,
+                                &keyDef,
                                 &context );
    assert_false( ok );
    errcode = psocGetLastError( &context.errorHandler );
@@ -76,7 +77,7 @@ void test_name_length( void ** state )
                                 name,
                                 PSO_MAX_NAME_LENGTH+1,
                                 &def,
-                                NULL,
+                                &keyDef,
                                 &context );
    assert_false( ok );
    errcode = psocGetLastError( &context.errorHandler );
@@ -95,7 +96,7 @@ void test_null_context( void ** state )
                                                   "Test1",
                                                   strlen("Test1"),
                                                   &def,
-                                                  NULL,
+                                                  &keyDef,
                                                   NULL ) );
 #endif
    return;
@@ -110,7 +111,7 @@ void test_null_definition( void ** state )
                                                   "Test1",
                                                   strlen("Test1"),
                                                   NULL,
-                                                  NULL,
+                                                  &keyDef,
                                                   &context ) );
 #endif
    return;
@@ -122,6 +123,21 @@ void test_null_folder( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonAPIFolderCreateMap( NULL,
+                                                  "Test1",
+                                                  strlen("Test1"),
+                                                  &def,
+                                                  &keyDef,
+                                                  &context ) );
+#endif
+   return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_keydef( void ** state )
+{
+#if defined(PSO_UNIT_TESTS)
+   expect_assert_failure( psonAPIFolderCreateMap( pFolder,
                                                   "Test1",
                                                   strlen("Test1"),
                                                   &def,
@@ -140,7 +156,7 @@ void test_null_name( void ** state )
                                                   NULL,
                                                   strlen("Test1"),
                                                   &def,
-                                                  NULL,
+                                                  &keyDef,
                                                   &context ) );
 #endif
    return;
@@ -157,7 +173,7 @@ void test_wrong_type( void ** state )
                                                   "Test1",
                                                   strlen("Test1"),
                                                   &local_def,
-                                                  NULL,
+                                                  &keyDef,
                                                   &context ) );
 #endif
    return;
@@ -174,7 +190,7 @@ void test_pass( void ** state )
                                 "Test1",
                                 strlen("Test1"),
                                 &def,
-                                NULL,
+                                &keyDef,
                                 &context );
    assert_true( ok );
    
@@ -182,7 +198,7 @@ void test_pass( void ** state )
                                 "Test2",
                                 strlen("Test2"),
                                 &def,
-                                NULL,
+                                &keyDef,
                                 &context );
    assert_true( ok );
    
@@ -201,6 +217,7 @@ int main()
       unit_test_setup_teardown( test_null_context,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_definition, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_folder,     setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_keydef,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_name,       setup_test, teardown_test ),
       unit_test_setup_teardown( test_wrong_type,      setup_test, teardown_test ),
       unit_test_setup_teardown( test_pass,            setup_test, teardown_test )

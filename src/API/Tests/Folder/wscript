@@ -18,13 +18,13 @@ test_list = [
    'CreateMap',
    'CreateQueue',
    'Destroy',
-   'GetDef',
    'GetFirst',
    'GetNext',
    'Open',
    'OpenNoSess',
    'Status']
 
+#   'GetDef',
 #    'GetDataDef',
 #   'GetKeyDef',
 

@@ -64,19 +64,40 @@ int psoQueueClose( PSO_HANDLE objectHandle );
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /**
- * \brief Retrieve the data definition of the queue.
+ * \brief Retrieve the definition of the queue.
  *
- * To avoid memory leaks, you must close the handle that will be 
- * returned by this function (see ::psoDataDefClose).
+ * The definition includes a buffer of variable length. To retrieve the
+ * length needed for \em definition you can use ::psoQueueDefLength.
+ *
+ * Note: if the actual definition length is larger than the provided 
+ * buffer, the retrieved definition will be truncated.
  *
  * \param[in]  objectHandle The handle to the queue (see ::psoQueueOpen).
- * \param[out] dataDefHandle Handle to the definition of the data fields.
+ * \param[out] definition  A user-provided buffer where the queue definition
+ *             will be copied.
+ * \param[in]  length The length of the \em definition buffer. It must be
+ *             equal or greater than sizeof(psoObjectDefinition).
  *
  * \return 0 on success or a ::psoErrors on error.
  */
 PHOTON_EXPORT
-int psoQueueDefinition( PSO_HANDLE   objectHandle, 
-                        PSO_HANDLE * dataDefHandle );
+int psoQueueDefinition( PSO_HANDLE            objectHandle, 
+                        psoObjectDefinition * definition,
+                        psoUint32             length );
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+/**
+ * \brief Retrieve the total length of the definition of the queue.
+ *
+ * \param[in]  objectHandle The handle to the queue (see ::psoQueueOpen).
+ * \param[out] length The length of the queue definition.
+ *
+ * \return 0 on success or a ::psoErrors on error.
+ */
+PHOTON_EXPORT
+int psoQueueDefLength( PSO_HANDLE   objectHandle, 
+                       psoUint32  * length );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

@@ -97,76 +97,112 @@ error_handler:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int psoFastMapDefinition( PSO_HANDLE   objectHandle,
-                          PSO_HANDLE * keyDefHandle,
-                          PSO_HANDLE * dataDefHandle )
+int psoFastMapDefinition( PSO_HANDLE            objectHandle,
+                          psoObjectDefinition * definition,
+                          psoUint32             length )
 {
    psoaFastMap * pHashMap;
    psonFastMap * pMemHashMap;
    int errcode = PSO_OK;
    psonSessionContext * pContext;
-   psoaDataDefinition * pDataDefinition = NULL;
-   psoaKeyDefinition  * pKeyDefinition = NULL;
+   psoObjectDefinition * pMyDefinition = NULL;
+   uint32_t myLength;
    
    pHashMap = (psoaFastMap *) objectHandle;
    if ( pHashMap == NULL ) return PSO_NULL_HANDLE;
    
    if ( pHashMap->object.type != PSOA_MAP ) return PSO_WRONG_TYPE_HANDLE;
 
+   if ( pHashMap->object.pSession->terminated ) {
+      return PSO_SESSION_IS_TERMINATED;
+   }
+
    pContext = &pHashMap->object.pSession->context;
 
-   pHashMap->object.pSession->context.indent = 0;
-   PSO_TRACE_ENTER_API( &pHashMap->object.pSession->context );
+   pContext->indent = 0;
+   PSO_TRACE_ENTER_API( pContext );
 
-   if ( keyDefHandle == NULL || dataDefHandle == NULL ) {
+   if ( definition == NULL ) {
       errcode = PSO_NULL_POINTER;
       goto error_handler;
    }
 
-   if ( pHashMap->object.pSession->terminated ) {
-      errcode = PSO_SESSION_IS_TERMINATED;
-      return errcode;
-//      goto error_handler;
+   if ( length < sizeof(psoObjectDefinition) ) {
+      errcode = PSO_INVALID_LENGTH;
+      goto error_handler;
    }
 
-   pDataDefinition = malloc( sizeof(psoaDataDefinition) );
-   if ( pDataDefinition == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-   pKeyDefinition = malloc( sizeof(psoaKeyDefinition) );
-   if ( pKeyDefinition == NULL ) {
-      errcode = PSO_NOT_ENOUGH_HEAP_MEMORY;
-      goto error_handler;
-   }
-   
    pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
-      
-   pDataDefinition->pSession = pHashMap->object.pSession;
-   pDataDefinition->definitionType = PSOA_DEF_DATA;
-   GET_PTR( pDataDefinition->pMemDefinition, 
-            pMemHashMap->dataDefOffset, 
-            psonDataDefinition );
-   *dataDefHandle = (PSO_HANDLE) pDataDefinition;
 
-   pKeyDefinition->pSession = pHashMap->object.pSession;
-   pKeyDefinition->definitionType = PSOA_DEF_KEY;
-   GET_PTR( pKeyDefinition->pMemDefinition, 
-            pMemHashMap->keyDefOffset, 
-            psonKeyDefinition );
-   *keyDefHandle = (PSO_HANDLE) pKeyDefinition;
-   
-   PSO_TRACE_EXIT_API( &pHashMap->object.pSession->context, true );
+   GET_PTR( pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
+   myLength = offsetof(psoObjectDefinition, dataDef) + 
+      pMyDefinition->dataDefLength;
+   if ( myLength >= length ) {
+      // possibly truncated. This is ok
+      memcpy( definition, pMyDefinition, length );
+   }
+   else {
+      // Make sure that the "leftover" is zeroed
+      memset( definition, 0, length );
+      memcpy( definition, pMyDefinition, myLength );
+   }
+
+   PSO_TRACE_EXIT_API( pContext, true );
    return PSO_OK;
 
 error_handler:
 
-   if ( pDataDefinition ) free(pDataDefinition);
-   if ( pKeyDefinition) free(pKeyDefinition);
-   psocSetError( &pHashMap->object.pSession->context.errorHandler, 
-      g_psoErrorHandle, errcode );
+   psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    
-   PSO_TRACE_EXIT_API( &pHashMap->object.pSession->context, false );
+   PSO_TRACE_EXIT_API( pContext, false );
+   return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int psoFastMapDefLength( PSO_HANDLE   objectHandle,
+                         psoUint32  * length )
+{
+   psoaFastMap * pHashMap;
+   psonFastMap * pMemHashMap;
+   int errcode = PSO_OK;
+   psonSessionContext * pContext;
+   psoObjectDefinition * pMyDefinition = NULL;
+   
+   pHashMap = (psoaFastMap *) objectHandle;
+   if ( pHashMap == NULL ) return PSO_NULL_HANDLE;
+   
+   if ( pHashMap->object.type != PSOA_MAP ) return PSO_WRONG_TYPE_HANDLE;
+
+   if ( pHashMap->object.pSession->terminated ) {
+      errcode = PSO_SESSION_IS_TERMINATED;
+      return errcode;
+   }
+
+   pContext = &pHashMap->object.pSession->context;
+
+   pContext->indent = 0;
+   PSO_TRACE_ENTER_API( pContext );
+
+   if ( length == NULL ) {
+      errcode = PSO_NULL_POINTER;
+      goto error_handler;
+   }
+   *length = 0;
+   
+   pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
+
+   GET_PTR( pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
+   *length = offsetof(psoObjectDefinition, dataDef) + pMyDefinition->dataDefLength;
+
+   PSO_TRACE_EXIT_API( pContext, true );
+   return PSO_OK;
+
+error_handler:
+
+   psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+   
+   PSO_TRACE_EXIT_API( pContext, false );
    return errcode;
 }
 
@@ -663,6 +699,111 @@ error_handler:
    }
    
    PSO_TRACE_EXIT_API( &pHashMap->object.pSession->context, false );
+   return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int psoFastMapKeyDefinition( PSO_HANDLE         objectHandle,
+                             psoKeyDefinition * definition,
+                             psoUint32          length )
+{
+   psoaFastMap * pHashMap;
+   psonFastMap * pMemHashMap;
+   int errcode = PSO_OK;
+   psonSessionContext * pContext;
+   psoKeyDefinition * pMyDefinition = NULL;
+   uint32_t myLength;
+   
+   pHashMap = (psoaFastMap *) objectHandle;
+   if ( pHashMap == NULL ) return PSO_NULL_HANDLE;
+   
+   if ( pHashMap->object.type != PSOA_MAP ) return PSO_WRONG_TYPE_HANDLE;
+
+   if ( pHashMap->object.pSession->terminated ) return PSO_SESSION_IS_TERMINATED;
+
+   pContext = &pHashMap->object.pSession->context;
+   pContext->indent = 0;
+   PSO_TRACE_ENTER_API( pContext );
+
+   if ( definition == NULL ) {
+      errcode = PSO_NULL_POINTER;
+      goto error_handler;
+   }
+
+   if ( length < sizeof(psoKeyDefinition) ) {
+      errcode = PSO_INVALID_LENGTH;
+      goto error_handler;
+   }
+
+   pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
+
+   GET_PTR( pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
+   myLength = offsetof(psoKeyDefinition, definition) + 
+      pMyDefinition->definitionLength;
+   if ( myLength >= length ) {
+      // possibly truncated. This is ok
+      memcpy( definition, pMyDefinition, length );
+   }
+   else {
+      // Make sure that the "leftover" is zeroed
+      memset( definition, 0, length );
+      memcpy( definition, pMyDefinition, myLength );
+   }
+
+   PSO_TRACE_EXIT_API( pContext, true );
+   return PSO_OK;
+
+error_handler:
+
+   psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+   
+   PSO_TRACE_EXIT_API( pContext, false );
+   return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int psoFastMapKeyDefLength( PSO_HANDLE   objectHandle,
+                            psoUint32  * length )
+{
+   psoaFastMap * pHashMap;
+   psonFastMap * pMemHashMap;
+   int errcode = PSO_OK;
+   psonSessionContext * pContext;
+   psoKeyDefinition * pMyDefinition = NULL;
+   
+   pHashMap = (psoaFastMap *) objectHandle;
+   if ( pHashMap == NULL ) return PSO_NULL_HANDLE;
+   
+   if ( pHashMap->object.type != PSOA_MAP ) return PSO_WRONG_TYPE_HANDLE;
+
+   if ( pHashMap->object.pSession->terminated ) return PSO_SESSION_IS_TERMINATED;
+
+   pContext = &pHashMap->object.pSession->context;
+   pContext->indent = 0;
+   PSO_TRACE_ENTER_API( pContext );
+
+   if ( length == NULL ) {
+      errcode = PSO_NULL_POINTER;
+      goto error_handler;
+   }
+   *length = 0;
+   
+   pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
+
+   GET_PTR( pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
+   *length = offsetof(psoKeyDefinition, definition) + 
+      pMyDefinition->definitionLength;
+
+   PSO_TRACE_EXIT_API( pContext, true );
+   return PSO_OK;
+
+error_handler:
+
+   psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+   
+   PSO_TRACE_EXIT_API( pContext, false );
    return errcode;
 }
 

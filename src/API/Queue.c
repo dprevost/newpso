@@ -84,14 +84,16 @@ int psoQueueClose( PSO_HANDLE objectHandle )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int psoQueueDefinition( PSO_HANDLE   objectHandle, 
-                        PSO_HANDLE * dataDefHandle )
+int psoQueueDefinition( PSO_HANDLE            objectHandle, 
+                        psoObjectDefinition * definition,
+                        psoUint32             length )
 {
    psoaQueue * pQueue;
    psonQueue * pMemQueue;
    int errcode = PSO_OK;
    psonSessionContext * pContext;
-   psoaDataDefinition * pDataDefinition = NULL;
+   psoObjectDefinition * pMyDefinition = NULL;
+   uint32_t myLength;
    
    pQueue = (psoaQueue *) objectHandle;
    if ( pQueue == NULL ) return PSO_NULL_HANDLE;
@@ -100,26 +102,31 @@ int psoQueueDefinition( PSO_HANDLE   objectHandle,
 
    pContext = &pQueue->object.pSession->context;
 
-   if ( dataDefHandle == NULL ) {
+   if ( definition == NULL ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NULL_POINTER );
       return PSO_NULL_POINTER;
    }
 
-   pDataDefinition = malloc( sizeof(psoaDataDefinition) );
-   if ( pDataDefinition == NULL ) {
-      psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NOT_ENOUGH_HEAP_MEMORY );
-      return PSO_NOT_ENOUGH_HEAP_MEMORY;
+   if ( length < sizeof(psoObjectDefinition) ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_INVALID_LENGTH );
+      return PSO_INVALID_LENGTH;
    }
-
+   
    if ( ! pQueue->object.pSession->terminated ) {
       pMemQueue = (psonQueue *) pQueue->object.pMyMemObject;
-      
-      pDataDefinition->pSession = pQueue->object.pSession;
-      pDataDefinition->definitionType = PSOA_DEF_DATA;
-      GET_PTR( pDataDefinition->pMemDefinition, 
-               pMemQueue->dataDefOffset, 
-               psonDataDefinition );
-      *dataDefHandle = (PSO_HANDLE) pDataDefinition;
+
+      GET_PTR( pMyDefinition, pMemQueue->dataDefOffset, psoObjectDefinition );
+      myLength = offsetof(psoObjectDefinition, dataDef) + 
+         pMyDefinition->dataDefLength;
+      if ( myLength >= length ) {
+         // possibly truncated. This is ok
+         memcpy( definition, pMyDefinition, length );
+      }
+      else {
+         // Make sure that the "leftover" is zeroed
+         memset( definition, 0, length );
+         memcpy( definition, pMyDefinition, myLength );
+      }
    }
    else {
       errcode = PSO_SESSION_IS_TERMINATED;
@@ -130,6 +137,45 @@ int psoQueueDefinition( PSO_HANDLE   objectHandle,
    }
    
    return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int psoQueueDefLength( PSO_HANDLE   objectHandle, 
+                       psoUint32  * length )
+{
+   psoaQueue * pQueue;
+   psonQueue * pMemQueue;
+   int errcode = PSO_OK;
+   psonSessionContext * pContext;
+   psoObjectDefinition * pMyDefinition = NULL;
+   
+   pQueue = (psoaQueue *) objectHandle;
+   if ( pQueue == NULL ) return PSO_NULL_HANDLE;
+   
+   if ( pQueue->object.type != PSOA_QUEUE ) return PSO_WRONG_TYPE_HANDLE;
+
+   pContext = &pQueue->object.pSession->context;
+
+   if ( length == NULL ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NULL_POINTER );
+      return PSO_NULL_POINTER;
+   }
+   *length = 0;
+   
+   if ( ! pQueue->object.pSession->terminated ) {
+      pMemQueue = (psonQueue *) pQueue->object.pMyMemObject;
+
+      GET_PTR( pMyDefinition, pMemQueue->dataDefOffset, psoObjectDefinition );
+      *length = offsetof(psoObjectDefinition, dataDef) + 
+         pMyDefinition->dataDefLength;
+   }
+   else {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_SESSION_IS_TERMINATED );
+      return PSO_SESSION_IS_TERMINATED;
+   }
+   
+   return PSO_OK;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -54,8 +54,10 @@ void test_pass( void ** state )
    int errcode;
    struct dummy * data1 = NULL;
    size_t lenData;
-
-   psoObjectDefinition queueDef = { PSO_QUEUE, 0, 0 };
+   uint32_t lengthDef;
+   
+   psoObjectDefinition * queueDef;
+   psoObjectDefinition * retDef;
 
    psoFieldDefinition fields[5] = {
       { "field1", PSO_TINYINT,   {0} },
@@ -65,12 +67,21 @@ void test_pass( void ** state )
       { "field5", PSO_LONGVARBINARY, {0} }
    };
    
-   psoFieldDefinition retFields[5];
-   psoObjectDefinition retDef;
-   PSO_HANDLE dataDefHandle, retDataDefHandle;
+   lengthDef = offsetof(psoObjectDefinition, dataDef) + 
+      5*sizeof(psoFieldDefinition);
+
+   queueDef = (psoObjectDefinition*) malloc( lengthDef );
+   assert_false( queueDef == NULL );
+   retDef = (psoObjectDefinition*) malloc( lengthDef );
+   assert_false( retDef == NULL );
    
-   memset( &retDef, 0, sizeof(psoObjectDefinition) );
-   memset( &retFields, 0, 5*sizeof(psoFieldDefinition) );
+   memset( queueDef, 0, lengthDef );
+   queueDef->type = PSO_FOLDER;
+   queueDef->minNumBlocks = 1;
+   queueDef->dataDefLength = 5*sizeof(psoFieldDefinition);
+   memcpy( queueDef->dataDef, fields, 5*sizeof(psoFieldDefinition) );
+   
+   memset( retDef, 0, lengthDef );
 
    lenData = offsetof(struct dummy, bin) + 10;
    data1 = (struct dummy *)malloc( lenData );
@@ -89,7 +100,7 @@ void test_pass( void ** state )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_definition/test",
                              strlen("/api_queue_definition/test"),
-                             &queueDef );
+                             queueDef );
    assert_true( errcode == PSO_OK );
 
    errcode = psoQueueOpen( sessionHandle,
@@ -103,22 +114,34 @@ void test_pass( void ** state )
 
    /* Invalid arguments to tested function. */
 
-   errcode = psoQueueDefinition( NULL, &retDataDefHandle );
+   errcode = psoQueueDefinition( NULL, retDef, lengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
-   errcode = psoQueueDefinition( objHandle, NULL );
+   errcode = psoQueueDefinition( objHandle, NULL, lengthDef );
    assert_true( errcode == PSO_NULL_POINTER );
 
+   errcode = psoQueueDefinition( objHandle, retDef, 0 );
+   assert_true( errcode == PSO_INVALID_LENGTH );
+
+   errcode = psoQueueDefinition( objHandle, retDef, sizeof(psoObjectDefinition)-1 );
+   assert_true( errcode == PSO_INVALID_LENGTH );
+
    /* End of invalid args. This call should succeed. */
-   errcode = psoQueueDefinition( objHandle, &retDataDefHandle );
+   // Limit condition
+   errcode = psoQueueDefinition( objHandle, retDef, sizeof(psoObjectDefinition) );
    assert_true( errcode == PSO_OK );
+
+   errcode = psoQueueDefinition( objHandle, retDef, lengthDef );
+   assert_true( errcode == PSO_OK );
+
+   assert_true( memcmp( queueDef, retDef, lengthDef ) == 0 );
 
    /* Close the session and try to act on the object */
 
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoQueueDefinition( objHandle, &retDataDefHandle );
+   errcode = psoQueueDefinition( objHandle, retDef, lengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();

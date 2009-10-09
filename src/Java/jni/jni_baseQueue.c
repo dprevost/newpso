@@ -88,7 +88,7 @@ Java_org_photon_BaseQueue_psoDataDefinition( JNIEnv * env,
    unsigned int defNameLength;
    jstring jdataDefName;
    
-   errcode = psoQueueDefinition( (PSO_HANDLE) handle, &dataDefHandle );
+//   errcode = psoQueueDefinition( (PSO_HANDLE) handle, &dataDefHandle );
    if ( errcode == 0 ) {
       errcode = psoaDataDefGetDef( dataDefHandle,
                                    &defName,
