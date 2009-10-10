@@ -15,6 +15,7 @@
 test_list = [
    'Close',
    'Create',
+   'Definition',
    'Delete',
    'Edit',
    'Empty',
@@ -23,6 +24,8 @@ test_list = [
    'GetFirst',
    'GetNext',
    'Insert',
+   'KeyDefinition',
+   'KeyDefLength',
    'Next',
    'Open',
    'Replace',
@@ -30,8 +33,6 @@ test_list = [
    'Retrieve',
    'Status',
    'Tests']
-
-#   'Definition',
 
 def build(bld):
    for prog in test_list:

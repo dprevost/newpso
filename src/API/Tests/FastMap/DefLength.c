@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2008-2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -20,7 +20,7 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "API/HashMap.h"
+#include "API/FastMap.h"
 #include "API/Tests/quasar-run.h"
 
 struct dummy {
@@ -49,6 +49,7 @@ void teardown_test()
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    struct dummy * data1 = NULL;
@@ -56,16 +57,16 @@ void test_pass( void ** state )
    size_t lenData;
    uint32_t lengthDef;
    psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
-   
+   uint32_t retLengthDef = 0;
+
    psoObjectDefinition * hashMapDef;
-   psoObjectDefinition * retDef;
 
    psoFieldDefinition fields[5] = {
-      { "field1", PSO_TINYINT,  { 0  } },
-      { "field2", PSO_INTEGER,  { 0  } },
-      { "field3", PSO_CHAR,     { 30 } },
-      { "field4", PSO_SMALLINT, { 0  } },
-      { "field5", PSO_LONGVARBINARY, { 0 } }
+      { "field1", PSO_TINYINT,   {0} },
+      { "field2", PSO_INTEGER,   {0} },
+      { "field3", PSO_CHAR,      {30} },
+      { "field4", PSO_SMALLINT,  {0} },
+      { "field5", PSO_LONGVARBINARY, {0} }
    };
    
    lengthDef = offsetof(psoObjectDefinition, dataDef) + 
@@ -73,18 +74,14 @@ void test_pass( void ** state )
 
    hashMapDef = (psoObjectDefinition*) malloc( lengthDef );
    assert_false( hashMapDef == NULL );
-   retDef = (psoObjectDefinition*) malloc( lengthDef );
-   assert_false( retDef == NULL );
    
    memset( hashMapDef, 0, lengthDef );
-   hashMapDef->type = PSO_HASH_MAP;
+   hashMapDef->type = PSO_FAST_MAP;
    hashMapDef->minNumBlocks = 1;
    hashMapDef->dataDefType = PSO_DEF_PHOTON_ODBC_SIMPLE;
    hashMapDef->dataDefLength = 5*sizeof(psoFieldDefinition);
    memcpy( hashMapDef->dataDef, fields, 5*sizeof(psoFieldDefinition) );
    
-   memset( retDef, 0, lengthDef );
-
    lenData = offsetof(struct dummy, bin) + 10;
    data1 = (struct dummy *)malloc( lenData );
    
@@ -95,58 +92,36 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
-                              "/api_hashmap_definition",
-                              strlen("/api_hashmap_definition") );
+                              "/api_fast_map_definition",
+                              strlen("/api_fast_map_definition") );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateMap( sessionHandle,
-                           "/api_hashmap_definition/test",
-                           strlen("/api_hashmap_definition/test"),
+                           "/api_fast_map_definition/test",
+                           strlen("/api_fast_map_definition/test"),
                            hashMapDef,
                            &keyDef );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoHashMapOpen( sessionHandle,
-                             "/api_hashmap_definition/test",
-                             strlen("/api_hashmap_definition/test"),
+   errcode = psoFastMapEdit( sessionHandle,
+                             "/api_fast_map_definition/test",
+                             strlen("/api_fast_map_definition/test"),
                              &objHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoHashMapInsert( objHandle, key, strlen(key), data1, lenData );
+   errcode = psoFastMapInsert( objHandle, key, strlen(key), data1, lenData );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
 
-   errcode = psoHashMapDefinition( NULL, 
-                                   retDef,
-                                   lengthDef );
+   errcode = psoFastMapDefLength( NULL, &retLengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
-   errcode = psoHashMapDefinition( objHandle, 
-                                   NULL,
-                                   lengthDef );
+   errcode = psoFastMapDefLength( objHandle, NULL );
    assert_true( errcode == PSO_NULL_POINTER );
 
-   errcode = psoHashMapDefinition( objHandle, 
-                                   retDef,
-                                   0 );
-   assert_true( errcode == PSO_INVALID_LENGTH );
-
-   errcode = psoHashMapDefinition( objHandle, 
-                                   retDef,
-                                   sizeof(psoObjectDefinition)-1 );
-   assert_true( errcode == PSO_INVALID_LENGTH );
-
    /* End of invalid args. This call should succeed. */
-   // Test limit condition
-   errcode = psoHashMapDefinition( objHandle, 
-                                   retDef,
-                                   sizeof(psoObjectDefinition) );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoHashMapDefinition( objHandle,
-                                   retDef,
-                                   lengthDef );
+   errcode = psoFastMapDefLength( objHandle, &retLengthDef );
    assert_true( errcode == PSO_OK );
 
    /* Close the session and try to act on the object */
@@ -154,12 +129,13 @@ void test_pass( void ** state )
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoHashMapDefinition( objHandle,
-                                   retDef,
-                                   lengthDef );
+   errcode = psoFastMapDefLength( objHandle, &retLengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();
+   
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -179,4 +155,5 @@ int main()
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 

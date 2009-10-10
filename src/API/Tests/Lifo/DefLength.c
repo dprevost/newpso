@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2008-2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -20,7 +20,8 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "API/Queue.h"
+#include "API/Lifo.h"
+#include "API/Tests/quasar-run.h"
 
 struct dummy {
    char c;
@@ -29,8 +30,6 @@ struct dummy {
    uint16_t u16;
    unsigned char bin[1];
 };
-
-#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -56,14 +55,14 @@ void test_pass( void ** state )
    size_t lenData;
    uint32_t lengthDef;
    uint32_t retLengthDef = 0;
-   
+
    psoObjectDefinition * queueDef;
 
    psoFieldDefinition fields[5] = {
-      { "field1", PSO_TINYINT,   {0} },
-      { "field2", PSO_INTEGER,   {0} },
-      { "field3", PSO_CHAR,      {30} },
-      { "field4", PSO_SMALLINT,  {0} },
+      { "field1", PSO_TINYINT,       {0} },
+      { "field2", PSO_INTEGER,       {0} },
+      { "field3", PSO_CHAR,          {30} },
+      { "field4", PSO_SMALLINT,      {0} },
       { "field5", PSO_LONGVARBINARY, {0} }
    };
    
@@ -74,7 +73,7 @@ void test_pass( void ** state )
    assert_false( queueDef == NULL );
    
    memset( queueDef, 0, lengthDef );
-   queueDef->type = PSO_QUEUE;
+   queueDef->type = PSO_LIFO;
    queueDef->minNumBlocks = 1;
    queueDef->dataDefType = PSO_DEF_PHOTON_ODBC_SIMPLE;
    queueDef->dataDefLength = 5*sizeof(psoFieldDefinition);
@@ -90,45 +89,45 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
-                              "/api_queue_definition",
-                              strlen("/api_queue_definition") );
+                              "/api_lifo_definition",
+                              strlen("/api_lifo_definition") );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateQueue( sessionHandle,
-                             "/api_queue_definition/test",
-                             strlen("/api_queue_definition/test"),
+                             "/api_lifo_definition/test",
+                             strlen("/api_lifo_definition/test"),
                              queueDef );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoQueueOpen( sessionHandle,
-                           "/api_queue_definition/test",
-                           strlen("/api_queue_definition/test"),
-                           &objHandle );
+   errcode = psoLifoOpen( sessionHandle,
+                          "/api_lifo_definition/test",
+                          strlen("/api_lifo_definition/test"),
+                          &objHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoQueuePush( objHandle, data1, lenData );
+   errcode = psoLifoPush( objHandle, data1, lenData );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
 
-   errcode = psoQueueDefLength( NULL, &retLengthDef );
+   errcode = psoLifoDefLength( NULL, &retLengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
-   errcode = psoQueueDefLength( objHandle, NULL );
+   errcode = psoLifoDefLength( objHandle, NULL );
    assert_true( errcode == PSO_NULL_POINTER );
 
    /* End of invalid args. This call should succeed. */
-   errcode = psoQueueDefLength( objHandle, &retLengthDef );
+   errcode = psoLifoDefLength( objHandle, &retLengthDef );
    assert_true( errcode == PSO_OK );
 
    assert_true( retLengthDef == lengthDef );
-   
+
    /* Close the session and try to act on the object */
 
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoQueueDefLength( objHandle, &retLengthDef );
+   errcode = psoLifoDefLength( objHandle, &retLengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();

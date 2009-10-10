@@ -55,33 +55,24 @@ void test_pass( void ** state )
    char key[] = "My Key";
    size_t lenData;
    uint32_t lengthDef;
-   psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
-   
-   psoObjectDefinition * hashMapDef;
-   psoObjectDefinition * retDef;
+   psoKeyDefinition * keyDef = NULL;
+   psoObjectDefinition hashMapDef = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoKeyDefinition * retDef;
 
-   psoFieldDefinition fields[5] = {
-      { "field1", PSO_TINYINT,  { 0  } },
-      { "field2", PSO_INTEGER,  { 0  } },
-      { "field3", PSO_CHAR,     { 30 } },
-      { "field4", PSO_SMALLINT, { 0  } },
-      { "field5", PSO_LONGVARBINARY, { 0 } }
-   };
-   
-   lengthDef = offsetof(psoObjectDefinition, dataDef) + 
-      5*sizeof(psoFieldDefinition);
+   psoKeyFieldDefinition fields[1] = { "MyKey", PSO_KEY_LONGVARCHAR, 0 };
 
-   hashMapDef = (psoObjectDefinition*) malloc( lengthDef );
-   assert_false( hashMapDef == NULL );
-   retDef = (psoObjectDefinition*) malloc( lengthDef );
+   lengthDef = offsetof(psoKeyDefinition, definition) + 
+      sizeof(psoKeyFieldDefinition);
+
+   keyDef = (psoKeyDefinition*) malloc( lengthDef );
+   assert_false( keyDef == NULL );
+   retDef = (psoKeyDefinition*) malloc( lengthDef );
    assert_false( retDef == NULL );
    
-   memset( hashMapDef, 0, lengthDef );
-   hashMapDef->type = PSO_HASH_MAP;
-   hashMapDef->minNumBlocks = 1;
-   hashMapDef->dataDefType = PSO_DEF_PHOTON_ODBC_SIMPLE;
-   hashMapDef->dataDefLength = 5*sizeof(psoFieldDefinition);
-   memcpy( hashMapDef->dataDef, fields, 5*sizeof(psoFieldDefinition) );
+   memset( keyDef, 0, lengthDef );
+   keyDef->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   keyDef->definitionLength = sizeof(psoKeyFieldDefinition);
+   memcpy( keyDef->definition, fields, sizeof(psoKeyFieldDefinition) );
    
    memset( retDef, 0, lengthDef );
 
@@ -102,8 +93,8 @@ void test_pass( void ** state )
    errcode = psoCreateMap( sessionHandle,
                            "/api_hashmap_definition/test",
                            strlen("/api_hashmap_definition/test"),
-                           hashMapDef,
-                           &keyDef );
+                           &hashMapDef,
+                           keyDef );
    assert_true( errcode == PSO_OK );
 
    errcode = psoHashMapOpen( sessionHandle,
@@ -117,36 +108,36 @@ void test_pass( void ** state )
 
    /* Invalid arguments to tested function. */
 
-   errcode = psoHashMapDefinition( NULL, 
-                                   retDef,
-                                   lengthDef );
+   errcode = psoHashMapKeyDefinition( NULL, 
+                                      retDef,
+                                      lengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
-   errcode = psoHashMapDefinition( objHandle, 
-                                   NULL,
-                                   lengthDef );
+   errcode = psoHashMapKeyDefinition( objHandle, 
+                                      NULL,
+                                      lengthDef );
    assert_true( errcode == PSO_NULL_POINTER );
 
-   errcode = psoHashMapDefinition( objHandle, 
-                                   retDef,
-                                   0 );
+   errcode = psoHashMapKeyDefinition( objHandle, 
+                                      retDef,
+                                      0 );
    assert_true( errcode == PSO_INVALID_LENGTH );
 
-   errcode = psoHashMapDefinition( objHandle, 
-                                   retDef,
-                                   sizeof(psoObjectDefinition)-1 );
+   errcode = psoHashMapKeyDefinition( objHandle, 
+                                      retDef,
+                                      sizeof(psoKeyDefinition)-1 );
    assert_true( errcode == PSO_INVALID_LENGTH );
 
    /* End of invalid args. This call should succeed. */
    // Test limit condition
-   errcode = psoHashMapDefinition( objHandle, 
-                                   retDef,
-                                   sizeof(psoObjectDefinition) );
+   errcode = psoHashMapKeyDefinition( objHandle,
+                                      retDef,
+                                      sizeof(psoKeyDefinition) );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoHashMapDefinition( objHandle,
-                                   retDef,
-                                   lengthDef );
+   errcode = psoHashMapKeyDefinition( objHandle,
+                                      retDef,
+                                      lengthDef );
    assert_true( errcode == PSO_OK );
 
    /* Close the session and try to act on the object */
@@ -154,9 +145,9 @@ void test_pass( void ** state )
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoHashMapDefinition( objHandle,
-                                   retDef,
-                                   lengthDef );
+   errcode = psoHashMapKeyDefinition( objHandle,
+                                      retDef,
+                                      lengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();

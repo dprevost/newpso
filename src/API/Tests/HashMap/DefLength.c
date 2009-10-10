@@ -56,9 +56,9 @@ void test_pass( void ** state )
    size_t lenData;
    uint32_t lengthDef;
    psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
+   uint32_t retLengthDef = 0;
    
    psoObjectDefinition * hashMapDef;
-   psoObjectDefinition * retDef;
 
    psoFieldDefinition fields[5] = {
       { "field1", PSO_TINYINT,  { 0  } },
@@ -73,8 +73,6 @@ void test_pass( void ** state )
 
    hashMapDef = (psoObjectDefinition*) malloc( lengthDef );
    assert_false( hashMapDef == NULL );
-   retDef = (psoObjectDefinition*) malloc( lengthDef );
-   assert_false( retDef == NULL );
    
    memset( hashMapDef, 0, lengthDef );
    hashMapDef->type = PSO_HASH_MAP;
@@ -83,12 +81,10 @@ void test_pass( void ** state )
    hashMapDef->dataDefLength = 5*sizeof(psoFieldDefinition);
    memcpy( hashMapDef->dataDef, fields, 5*sizeof(psoFieldDefinition) );
    
-   memset( retDef, 0, lengthDef );
-
    lenData = offsetof(struct dummy, bin) + 10;
    data1 = (struct dummy *)malloc( lenData );
    
-   errcode = psoInit( "10701", "Definition" );
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -117,36 +113,14 @@ void test_pass( void ** state )
 
    /* Invalid arguments to tested function. */
 
-   errcode = psoHashMapDefinition( NULL, 
-                                   retDef,
-                                   lengthDef );
+   errcode = psoHashMapDefLength( NULL, &retLengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
-   errcode = psoHashMapDefinition( objHandle, 
-                                   NULL,
-                                   lengthDef );
+   errcode = psoHashMapDefLength( objHandle, NULL );
    assert_true( errcode == PSO_NULL_POINTER );
 
-   errcode = psoHashMapDefinition( objHandle, 
-                                   retDef,
-                                   0 );
-   assert_true( errcode == PSO_INVALID_LENGTH );
-
-   errcode = psoHashMapDefinition( objHandle, 
-                                   retDef,
-                                   sizeof(psoObjectDefinition)-1 );
-   assert_true( errcode == PSO_INVALID_LENGTH );
-
    /* End of invalid args. This call should succeed. */
-   // Test limit condition
-   errcode = psoHashMapDefinition( objHandle, 
-                                   retDef,
-                                   sizeof(psoObjectDefinition) );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoHashMapDefinition( objHandle,
-                                   retDef,
-                                   lengthDef );
+   errcode = psoHashMapDefLength( objHandle, &retLengthDef );
    assert_true( errcode == PSO_OK );
 
    /* Close the session and try to act on the object */
@@ -154,9 +128,7 @@ void test_pass( void ** state )
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoHashMapDefinition( objHandle,
-                                   retDef,
-                                   lengthDef );
+   errcode = psoHashMapDefLength( objHandle, &retLengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();
