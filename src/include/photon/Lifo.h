@@ -64,7 +64,7 @@ int psoLifoClose( PSO_HANDLE objectHandle );
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /**
- * \brief Retrieve the data definition of the queue.
+ * \brief Retrieve the definition of the queue.
  *
  * The definition includes a buffer of variable length. To retrieve the
  * length needed for \em definition you can use ::psoLifoDefLength.
@@ -81,8 +81,9 @@ int psoLifoClose( PSO_HANDLE objectHandle );
  * \return 0 on success or a ::psoErrors on error.
  */
 PHOTON_EXPORT
-int psoLifoDefinition( PSO_HANDLE   objectHandle, 
-                       PSO_HANDLE * dataDefHandle );
+int psoLifoDefinition( PSO_HANDLE            objectHandle, 
+                       psoObjectDefinition * definition,
+                       psoUint32             length );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

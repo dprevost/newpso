@@ -16,7 +16,6 @@ test_list = [
    'Close',
    'Create',
    'Delete',
-   'Definition',
    'Edit',
    'Empty',
    'First',
@@ -31,6 +30,8 @@ test_list = [
    'Retrieve',
    'Status',
    'Tests']
+
+#   'Definition',
 
 def build(bld):
    for prog in test_list:

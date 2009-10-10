@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -55,9 +55,9 @@ void test_pass( void ** state )
    struct dummy * data1 = NULL;
    size_t lenData;
    uint32_t lengthDef;
+   uint32_t retLengthDef = 0;
    
    psoObjectDefinition * queueDef;
-   psoObjectDefinition * retDef;
 
    psoFieldDefinition fields[5] = {
       { "field1", PSO_TINYINT,   {0} },
@@ -72,8 +72,6 @@ void test_pass( void ** state )
 
    queueDef = (psoObjectDefinition*) malloc( lengthDef );
    assert_false( queueDef == NULL );
-   retDef = (psoObjectDefinition*) malloc( lengthDef );
-   assert_false( retDef == NULL );
    
    memset( queueDef, 0, lengthDef );
    queueDef->type = PSO_QUEUE;
@@ -82,8 +80,6 @@ void test_pass( void ** state )
    queueDef->dataDefLength = 5*sizeof(psoFieldDefinition);
    memcpy( queueDef->dataDef, fields, 5*sizeof(psoFieldDefinition) );
    
-   memset( retDef, 0, lengthDef );
-
    lenData = offsetof(struct dummy, bin) + 10;
    data1 = (struct dummy *)malloc( lenData );
    
@@ -115,34 +111,25 @@ void test_pass( void ** state )
 
    /* Invalid arguments to tested function. */
 
-   errcode = psoQueueDefinition( NULL, retDef, lengthDef );
+   errcode = psoQueueDefLength( NULL, &retLengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
-   errcode = psoQueueDefinition( objHandle, NULL, lengthDef );
+   errcode = psoQueueDefLength( objHandle, NULL );
    assert_true( errcode == PSO_NULL_POINTER );
-
-   errcode = psoQueueDefinition( objHandle, retDef, 0 );
-   assert_true( errcode == PSO_INVALID_LENGTH );
-
-   errcode = psoQueueDefinition( objHandle, retDef, sizeof(psoObjectDefinition)-1 );
-   assert_true( errcode == PSO_INVALID_LENGTH );
 
    /* End of invalid args. This call should succeed. */
    // Limit condition
-   errcode = psoQueueDefinition( objHandle, retDef, sizeof(psoObjectDefinition) );
+   errcode = psoQueueDefLength( objHandle, &retLengthDef );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoQueueDefinition( objHandle, retDef, lengthDef );
-   assert_true( errcode == PSO_OK );
-
-   assert_true( memcmp( queueDef, retDef, lengthDef ) == 0 );
-
+   assert_true( retLengthDef == lengthDef );
+   
    /* Close the session and try to act on the object */
 
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoQueueDefinition( objHandle, retDef, lengthDef );
+   errcode = psoQueueDefLength( objHandle, &retLengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();

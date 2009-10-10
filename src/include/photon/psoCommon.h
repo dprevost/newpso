@@ -220,7 +220,7 @@ struct psoObjectDefinition
     * 
     * It can be NULL if not needed.
     */
-   unsigned char * dataDef;
+   unsigned char dataDef[1];
 
 };
 
