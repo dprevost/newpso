@@ -142,7 +142,7 @@ int psoLifoDefinition( PSO_HANDLE            objectHandle,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 int psoLifoDefLength( PSO_HANDLE   objectHandle, 
-                      psoUint32  * length )
+                      psoUint32  * pLength )
 {
    psoaLifo * pLifo;
    psonQueue * pMemLifo;
@@ -157,17 +157,17 @@ int psoLifoDefLength( PSO_HANDLE   objectHandle,
 
    pContext = &pLifo->object.pSession->context;
 
-   if ( length == NULL ) {
+   if ( pLength == NULL ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NULL_POINTER );
       return PSO_NULL_POINTER;
    }
-   *length = 0;
+   *pLength = 0;
 
    if ( ! pLifo->object.pSession->terminated ) {
       pMemLifo = (psonQueue *) pLifo->object.pMyMemObject;
       
       GET_PTR( pMyDefinition, pMemLifo->dataDefOffset, psoObjectDefinition );
-      *length = offsetof(psoObjectDefinition, dataDef) + 
+      *pLength = offsetof(psoObjectDefinition, dataDef) + 
          pMyDefinition->dataDefLength;
    }
    else {

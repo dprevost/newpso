@@ -161,7 +161,7 @@ error_handler:
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 int psoFastMapDefLength( PSO_HANDLE   objectHandle,
-                         psoUint32  * length )
+                         psoUint32  * pLength )
 {
    psoaFastMap * pHashMap;
    psonFastMap * pMemHashMap;
@@ -184,16 +184,16 @@ int psoFastMapDefLength( PSO_HANDLE   objectHandle,
    pContext->indent = 0;
    PSO_TRACE_ENTER_API( pContext );
 
-   if ( length == NULL ) {
+   if ( pLength == NULL ) {
       errcode = PSO_NULL_POINTER;
       goto error_handler;
    }
-   *length = 0;
+   *pLength = 0;
    
    pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
 
    GET_PTR( pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
-   *length = offsetof(psoObjectDefinition, dataDef) + pMyDefinition->dataDefLength;
+   *pLength = offsetof(psoObjectDefinition, dataDef) + pMyDefinition->dataDefLength;
 
    PSO_TRACE_EXIT_API( pContext, true );
    return PSO_OK;
@@ -765,7 +765,7 @@ error_handler:
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 int psoFastMapKeyDefLength( PSO_HANDLE   objectHandle,
-                            psoUint32  * length )
+                            psoUint32  * pLength )
 {
    psoaFastMap * pHashMap;
    psonFastMap * pMemHashMap;
@@ -784,16 +784,16 @@ int psoFastMapKeyDefLength( PSO_HANDLE   objectHandle,
    pContext->indent = 0;
    PSO_TRACE_ENTER_API( pContext );
 
-   if ( length == NULL ) {
+   if ( pLength == NULL ) {
       errcode = PSO_NULL_POINTER;
       goto error_handler;
    }
-   *length = 0;
+   *pLength = 0;
    
    pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
 
    GET_PTR( pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
-   *length = offsetof(psoKeyDefinition, definition) + 
+   *pLength = offsetof(psoKeyDefinition, definition) + 
       pMyDefinition->definitionLength;
 
    PSO_TRACE_EXIT_API( pContext, true );

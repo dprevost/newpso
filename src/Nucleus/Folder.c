@@ -466,7 +466,7 @@ bool psonAPIFolderGetDefinition( psonFolder           * pFolder,
    
    PSO_PRE_CONDITION( pFolder          != NULL );
    PSO_PRE_CONDITION( objectName       != NULL )
-   PSO_PRE_CONDITION( ppDefinition      != NULL );
+   PSO_PRE_CONDITION( ppDefinition     != NULL );
    PSO_PRE_CONDITION( ppKeyDefinition  != NULL );
    PSO_PRE_CONDITION( pContext         != NULL );
    PSO_PRE_CONDITION( strLength > 0 );

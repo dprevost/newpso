@@ -142,7 +142,7 @@ int psoQueueDefinition( PSO_HANDLE            objectHandle,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 int psoQueueDefLength( PSO_HANDLE   objectHandle, 
-                       psoUint32  * length )
+                       psoUint32  * pLength )
 {
    psoaQueue * pQueue;
    psonQueue * pMemQueue;
@@ -157,17 +157,17 @@ int psoQueueDefLength( PSO_HANDLE   objectHandle,
 
    pContext = &pQueue->object.pSession->context;
 
-   if ( length == NULL ) {
+   if ( pLength == NULL ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NULL_POINTER );
       return PSO_NULL_POINTER;
    }
-   *length = 0;
+   *pLength = 0;
    
    if ( ! pQueue->object.pSession->terminated ) {
       pMemQueue = (psonQueue *) pQueue->object.pMyMemObject;
 
       GET_PTR( pMyDefinition, pMemQueue->dataDefOffset, psoObjectDefinition );
-      *length = offsetof(psoObjectDefinition, dataDef) + 
+      *pLength = offsetof(psoObjectDefinition, dataDef) + 
          pMyDefinition->dataDefLength;
    }
    else {
