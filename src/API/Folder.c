@@ -463,13 +463,15 @@ error_handler:
    PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }   
+#endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 int psoFolderGetDefinition( PSO_HANDLE            objectHandle,
                             const char          * objectName,
                             uint32_t              nameLengthInBytes,
-                            psoObjectDefinition * pDefinition )
+                            psoObjectDefinition * pDefinition
+                            uint32_t              length )
 {
    psoaFolder * pFolder;
    psonFolder * pMemFolder;
@@ -536,7 +538,6 @@ error_handler:
    PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
    return errcode;
 }   
-#endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

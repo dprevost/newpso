@@ -444,10 +444,12 @@ Java_org_photon_Folder_psoDefinition( JNIEnv * env,
       return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
    }
 
+#if 0
    errcode = psoFolderGetDefinition( (PSO_HANDLE) handle,
                                      objectName,
                                      strlen(objectName),
                                      &objDefinition );
+#endif
    (*env)->ReleaseStringUTFChars( env, jname, objectName );
 
    if ( errcode == 0 ) {
