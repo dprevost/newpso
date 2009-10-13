@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -20,16 +20,8 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "API/HashMap.h"
+#include "API/Folder.h"
 #include "API/Tests/quasar-run.h"
-
-struct dummy {
-   char c;
-   uint32_t u32;
-   char str[30];
-   uint16_t u16;
-   unsigned char bin[1];
-};
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -49,11 +41,8 @@ void teardown_test()
 
 void test_pass( void ** state )
 {
-   PSO_HANDLE sessionHandle, objHandle;
+   PSO_HANDLE objHandle, sessionHandle;
    int errcode;
-   struct dummy * data1 = NULL;
-   char key[] = "My Key";
-   size_t lenData;
    uint32_t lengthDef;
    psoKeyDefinition * keyDef = NULL;
    psoObjectDefinition hashMapDef = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
@@ -76,68 +65,93 @@ void test_pass( void ** state )
    
    memset( retDef, 0, lengthDef );
 
-   lenData = offsetof(struct dummy, bin) + 10;
-   data1 = (struct dummy *)malloc( lenData );
-   
-   errcode = psoInit( "10701", "Definition" );
+   errcode = psoInit( "10701", "GetDefinition" );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
-                              "/api_hashmap_definition",
-                              strlen("/api_hashmap_definition") );
+                              "/api_folder_getdef",
+                              strlen("/api_folder_getdef") );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateMap( sessionHandle,
-                           "/api_hashmap_definition/test",
-                           strlen("/api_hashmap_definition/test"),
+                           "/api_folder_getdef/map1",
+                           strlen("/api_folder_getdef/map1"),
                            &hashMapDef,
                            keyDef );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoHashMapOpen( sessionHandle,
-                             "/api_hashmap_definition/test",
-                             strlen("/api_hashmap_definition/test"),
-                             &objHandle );
+   errcode = psoFolderOpen( sessionHandle,
+                            "/api_folder_getdef",
+                            strlen("/api_folder_getdef"),
+                            &objHandle );
    assert_true( errcode == PSO_OK );
-
-   errcode = psoHashMapInsert( objHandle, key, strlen(key), data1, lenData );
-   assert_true( errcode == PSO_OK );
-
+   
    /* Invalid arguments to tested function. */
-
-   errcode = psoHashMapKeyDefinition( NULL, 
-                                      retDef,
-                                      lengthDef );
+   errcode = psoFolderGetKeyDefinition( NULL,
+                                        "map1",
+                                        strlen("map1"),
+                                        retDef,
+                                        lengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
-   errcode = psoHashMapKeyDefinition( objHandle, 
-                                      NULL,
-                                      lengthDef );
-   assert_true( errcode == PSO_NULL_POINTER );
+   errcode = psoFolderGetKeyDefinition( sessionHandle,
+                                        "map1",
+                                        strlen("map1"),
+                                        retDef,
+                                        lengthDef );
+   assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
-   errcode = psoHashMapKeyDefinition( objHandle, 
-                                      retDef,
-                                      0 );
+   errcode = psoFolderGetKeyDefinition( objHandle,
+                                        NULL,
+                                        strlen("map1"),
+                                        retDef,
+                                        lengthDef );
+   assert_true( errcode == PSO_INVALID_OBJECT_NAME );
+   errcode = psoFolderGetKeyDefinition( objHandle,
+                                        "map1",
+                                        0,
+                                        retDef,
+                                        lengthDef );
    assert_true( errcode == PSO_INVALID_LENGTH );
 
-   errcode = psoHashMapKeyDefinition( objHandle, 
-                                      retDef,
-                                      sizeof(psoKeyDefinition)-1 );
+   errcode = psoFolderGetKeyDefinition( objHandle,
+                                        "map1",
+                                        strlen("map1"),
+                                        NULL,
+                                        lengthDef );
+   assert_true( errcode == PSO_NULL_POINTER );
+
+   errcode = psoFolderGetKeyDefinition( objHandle,
+                                        "map1",
+                                        strlen("map1"),
+                                        retDef,
+                                        0 );
+   assert_true( errcode == PSO_INVALID_LENGTH );
+
+   errcode = psoFolderGetKeyDefinition( objHandle,
+                                        "map1",
+                                        strlen("map1"),
+                                        retDef,
+                                        sizeof(psoKeyDefinition)-1 );
    assert_true( errcode == PSO_INVALID_LENGTH );
 
    /* End of invalid args. This call should succeed. */
    // Test limit condition
-   errcode = psoHashMapKeyDefinition( objHandle,
-                                      retDef,
-                                      sizeof(psoKeyDefinition) );
+   errcode = psoFolderGetKeyDefinition( objHandle,
+                                        "map1",
+                                        strlen("map1"),
+                                        retDef,
+                                        sizeof(psoKeyDefinition)  );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoHashMapKeyDefinition( objHandle,
-                                      retDef,
-                                      lengthDef );
+   errcode = psoFolderGetKeyDefinition( objHandle,
+                                        "map1",
+                                        strlen("map1"),
+                                        retDef,
+                                        lengthDef  );
    assert_true( errcode == PSO_OK );
 
    assert_true( memcmp( keyDef, retDef, lengthDef ) == 0 );
@@ -147,9 +161,11 @@ void test_pass( void ** state )
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoHashMapKeyDefinition( objHandle,
-                                      retDef,
-                                      lengthDef );
+   errcode = psoFolderGetKeyDefinition( objHandle,
+                                        "map1",
+                                        strlen("map1"),
+                                        retDef,
+                                        lengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();

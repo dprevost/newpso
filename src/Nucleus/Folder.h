@@ -345,13 +345,6 @@ bool psonTopFolderGetDef( psonFolder           * pFolder,
                           psoKeyDefinition    ** ppKeyDefinition,
                           psonSessionContext   * pContext );
 
-bool psonTopFolderGetDefLength( psonFolder         * pFolder,
-                                const char         * objectName,
-                                uint32_t             nameLengthInBytes,
-                                uint32_t           * pDataDefLength,
-                                uint32_t           * pKeyDefLength,
-                                psonSessionContext * pContext );
-
 bool psonTopFolderGetStatus( psonFolder         * pFolder,
                              const char         * objectName,
                              uint32_t             nameLengthInBytes,

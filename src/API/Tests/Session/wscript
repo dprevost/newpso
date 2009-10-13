@@ -19,19 +19,19 @@ test_list = [
    'CreateFolder',
    'CreateMap',
    'CreateQueue',
+   'Definition',
+   'DefLength',
    'Destroy',
    'ErrorMsg',
    'Exit',
    'GetInfo',
    'Init',
+   'KeyDefinition',
+   'KeyDefLength',
    'LastError',
    'OpenObj',
    'Rollback',
    'Status' ]
-
-#   'DataDefinition',
-#   'Definition',
-#   'KeyDefinition',
 
 def build(bld):
    for prog in test_list:

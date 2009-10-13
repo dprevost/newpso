@@ -115,6 +115,8 @@ void test_pass( void ** state )
    errcode = psoFastMapKeyDefLength( objHandle, &retLengthDef );
    assert_true( errcode == PSO_OK );
 
+   assert_true( retLengthDef == lengthDef );
+
    /* Close the session and try to act on the object */
 
    errcode = psoExitSession( sessionHandle );

@@ -140,6 +140,8 @@ void test_pass( void ** state )
                                       lengthDef );
    assert_true( errcode == PSO_OK );
 
+   assert_true( memcmp( keyDef, retDef, lengthDef ) == 0 );
+
    /* Close the session and try to act on the object */
 
    errcode = psoExitSession( sessionHandle );

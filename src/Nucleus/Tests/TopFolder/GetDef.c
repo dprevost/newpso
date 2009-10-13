@@ -163,9 +163,10 @@ void test_pass( void ** state )
                              &context );
    assert_true( ok );
    
-   assert_memory_equal( retKeyDef, &keyDef, 
+//   fprintf(stderr, "%d\n", def->type
+   assert_memory_equal( retKeyDef, keyDef, 
       offsetof(psoKeyDefinition,definition) + 20 );
-   assert_memory_equal( retDef, &def, 
+   assert_memory_equal( retDef, def, 
       offsetof(psoObjectDefinition,dataDef) + 50 );
    
 #endif

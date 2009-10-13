@@ -43,23 +43,35 @@ void test_pass( void ** state )
 {
    PSO_HANDLE objHandle, sessionHandle;
    int errcode;
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
-   psoFieldDefinition dataDef = { "Field_1", PSO_VARCHAR, {120} };
-   psoKeyFieldDefinition keyDef = { "Key1", PSO_KEY_VARCHAR, 80 };
-   PSO_HANDLE dataDefHandle, keyDefHandle;
-   PSO_HANDLE returnedDef;
-   psoKeyDefinition * pKeyDefinition;
-   
-   pKeyDefinition = malloc( offsetof( psoKeyDefinition, definition) +
-                           sizeof(psoKeyFieldDefinition) );
-   assert_false( pKeyDefinition == NULL );
+   psoObjectDefinition * def = NULL;
+   psoObjectDefinition returnedDef;
+   psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
+   uint32_t lengthDef;
+   uint32_t retLengthDef;
 
-   pKeyDefinition->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
-   pKeyDefinition->definitionLength = sizeof(psoKeyFieldDefinition);
-   memcpy( pKeyDefinition->definition, &keyDef, sizeof(psoKeyFieldDefinition) );
+   psoFieldDefinition fields[5] = {
+      { "field1", PSO_TINYINT,  { 0  } },
+      { "field2", PSO_INTEGER,  { 0  } },
+      { "field3", PSO_CHAR,     { 30 } },
+      { "field4", PSO_SMALLINT, { 0  } },
+      { "field5", PSO_LONGVARBINARY, { 0 } }
+   };
 
-   errcode = psoInit( "10701", "GetDataDef" );
+   lengthDef = offsetof(psoObjectDefinition, dataDef) + 
+      5*sizeof(psoFieldDefinition);
+
+   def = (psoObjectDefinition*) malloc( lengthDef );
+   assert_false( def == NULL );
+
+   errcode = psoInit( "10701", "GetDefinition" );
    assert_true( errcode == PSO_OK );
+   
+   memset( def, 0, lengthDef );
+   def->type = PSO_HASH_MAP;
+   def->minNumBlocks = 1;
+   def->dataDefType = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   def->dataDefLength = 5*sizeof(psoFieldDefinition);
+   memcpy( def->dataDef, fields, 5*sizeof(psoFieldDefinition) );
    
    errcode = psoInitSession( &sessionHandle );
    assert_true( errcode == PSO_OK );
@@ -72,8 +84,8 @@ void test_pass( void ** state )
    errcode = psoCreateMap( sessionHandle,
                            "/api_folder_getdef/map1",
                            strlen("/api_folder_getdef/map1"),
-                           &def,
-                           pKeyDefinition );
+                           def,
+                           &keyDef );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFolderOpen( sessionHandle,
@@ -83,51 +95,54 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_OK );
    
    /* Invalid arguments to tested function. */
-   errcode = psoFolderGetDataDefinition( NULL,
-                                         "map1",
-                                         strlen("map1"),
-                                         &returnedDef );
+   errcode = psoFolderGetDefLength( NULL,
+                                    "map1",
+                                    strlen("map1"),
+                                    &retLengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
-   errcode = psoFolderGetDataDefinition( sessionHandle,
-                                         "map1",
-                                         strlen("map1"),
-                                         &returnedDef );
+   errcode = psoFolderGetDefLength( sessionHandle,
+                                    "map1",
+                                    strlen("map1"),
+                                    &retLengthDef );
    assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
-   errcode = psoFolderGetDataDefinition( objHandle,
-                                         NULL,
-                                         strlen("map1"),
-                                         &returnedDef );
+   errcode = psoFolderGetDefLength( objHandle,
+                                    NULL,
+                                    strlen("map1"),
+                                    &retLengthDef );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
-   errcode = psoFolderGetDataDefinition( objHandle,
-                                         "map1",
-                                         0,
-                                         &returnedDef );
+
+   errcode = psoFolderGetDefLength( objHandle,
+                                    "map1",
+                                    0,
+                                    &retLengthDef );
    assert_true( errcode == PSO_INVALID_LENGTH );
 
-   errcode = psoFolderGetDataDefinition( objHandle,
-                                         "map1",
-                                         strlen("map1"),
-                                         NULL );
+   errcode = psoFolderGetDefLength( objHandle,
+                                    "map1",
+                                    strlen("map1"),
+                                    NULL );
    assert_true( errcode == PSO_NULL_POINTER );
 
    /* End of invalid args. This call should succeed. */
-   errcode = psoFolderGetDataDefinition( objHandle,
-                                         "map1",
-                                         strlen("map1"),
-                                         &returnedDef );
+   errcode = psoFolderGetDefLength( objHandle,
+                                    "map1",
+                                    strlen("map1"),
+                                    &retLengthDef );
    assert_true( errcode == PSO_OK );
 
+   assert_true( retLengthDef == lengthDef );
+   
    /* Close the session and try to act on the object */
 
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoFolderGetDataDefinition( objHandle,
-                                         "map1",
-                                         strlen("map1"),
-                                         &returnedDef );
+   errcode = psoFolderGetDefLength( objHandle,
+                                    "map1",
+                                    strlen("map1"),
+                                    &retLengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();

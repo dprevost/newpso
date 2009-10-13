@@ -42,22 +42,24 @@ void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle;
    int errcode;
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
-   psoFieldDefinition fields[1] = {
-      { "Field_1", PSO_VARCHAR, {10} }
-   };
-   psoKeyFieldDefinition keyDef = { "Key1", PSO_KEY_VARCHAR, 100 };
-   PSO_HANDLE dataDefHandle, keyDefHandle, returnedDef;
-   psoKeyDefinition * pKeyDefinition;
+   uint32_t lengthDef;
+   psoKeyDefinition * keyDef = NULL;
+   psoObjectDefinition hashMapDef = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   uint32_t retLengthDef;
+
+   psoKeyFieldDefinition fields[1] = { "MyKey", PSO_KEY_LONGVARCHAR, 0 };
+
+   lengthDef = offsetof(psoKeyDefinition, definition) + 
+      sizeof(psoKeyFieldDefinition);
+
+   keyDef = (psoKeyDefinition*) malloc( lengthDef );
+   assert_false( keyDef == NULL );
    
-   pKeyDefinition = malloc( offsetof( psoKeyDefinition, definition) +
-                           sizeof(psoKeyFieldDefinition) );
-   assert_false( pKeyDefinition == NULL );
-
-   pKeyDefinition->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
-   pKeyDefinition->definitionLength = sizeof(psoKeyFieldDefinition);
-   memcpy( pKeyDefinition->definition, &keyDef, sizeof(psoKeyFieldDefinition) );
-
+   memset( keyDef, 0, lengthDef );
+   keyDef->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   keyDef->definitionLength = sizeof(psoKeyFieldDefinition);
+   memcpy( keyDef->definition, fields, sizeof(psoKeyFieldDefinition) );
+   
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
@@ -65,53 +67,56 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateMap( sessionHandle,
-                           "/api_session_data_definition",
-                           strlen("/api_session_data_definition"),
-                           &def,
-                           pKeyDefinition );
+                           "/api_session_key_definition",
+                           strlen("/api_session_key_definition"),
+                           &hashMapDef,
+                           keyDef );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
 
-   errcode = psoGetDataDefinition( NULL,
-                                   "/api_session_data_definition",
-                                   strlen("/api_session_data_definition"),
-                                   &returnedDef );
+   errcode = psoGetKeyDefLength( NULL,
+                                 "/api_session_key_definition",
+                                 strlen("/api_session_key_definition"),
+                                 &retLengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
-   errcode = psoGetDataDefinition( sessionHandle,
-                                   NULL,
-                                   strlen("/api_session_data_definition"),
-                                   &returnedDef );
+   errcode = psoGetKeyDefLength( sessionHandle,
+                                 NULL,
+                                 strlen("/api_session_key_definition"),
+                                 &retLengthDef );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
-   errcode = psoGetDataDefinition( sessionHandle,
-                                   "/api_session_data_definition",
-                                   0,
-                                   &returnedDef );
+   errcode = psoGetKeyDefLength( sessionHandle,
+                                 "/api_session_key_definition",
+                                 0,
+                                 &retLengthDef );
    assert_true( errcode == PSO_INVALID_LENGTH );
 
-   errcode = psoGetDataDefinition( sessionHandle,
-                                   "/api_session_data_definition",
-                                   strlen("/api_session_data_definition"),
-                                   NULL );
+   errcode = psoGetKeyDefLength( sessionHandle,
+                                 "/api_session_key_definition",
+                                 strlen("/api_session_key_definition"),
+                                 NULL );
    assert_true( errcode == PSO_NULL_POINTER );
 
    /* End of invalid args. This call should succeed. */
-   errcode = psoGetDataDefinition( sessionHandle,
-                                   "/api_session_data_definition",
-                                   strlen("/api_session_data_definition"),
-                                   &returnedDef );
+
+   errcode = psoGetKeyDefLength( sessionHandle,
+                                 "/api_session_key_definition",
+                                 strlen("/api_session_key_definition"),
+                                 &retLengthDef );
    assert_true( errcode == PSO_OK );
+
+   assert_true( retLengthDef == lengthDef );
 
    /* Close the process and try to act on the session */
 
    psoExit();
    
-   errcode = psoGetDataDefinition( sessionHandle,
-                                   "/api_session_data_definition",
-                                   strlen("/api_session_data_definition"),
-                                   &returnedDef );
+   errcode = psoGetKeyDefLength( sessionHandle,
+                                 "/api_session_key_definition",
+                                 strlen("/api_session_key_definition"),
+                                 &retLengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 }
 
