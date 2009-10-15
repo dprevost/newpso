@@ -37,7 +37,11 @@ public class Queue<O, S extends PSOSerialize<O>> extends BaseQueue implements It
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-   public Queue() { super(); }
+   public Queue( S serializer ) {
+      super();
+
+      this.serializer = serializer;
+   }
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
@@ -48,6 +52,8 @@ public class Queue<O, S extends PSOSerialize<O>> extends BaseQueue implements It
       super (session, name );
 
       this.serializer = serializer;
+      
+      System.out.println( definition.dataDefType );
       
 // need a test to validate serializer versus - queue definition type
 //                     create the proper type of serializer and initialize it

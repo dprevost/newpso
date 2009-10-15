@@ -23,14 +23,27 @@ package org.photon.serializer;
  * class of all Photon containers.
  */
 public interface PSOSerialize<T> {
-   
-//   String[] getSupportedDefinitions();
 
+   /**
+    * Pack the object as an array of bytes.
+    */
    byte[] packObject( T obj ) throws Exception;
+   
    
    void setDefinition( byte[] dataDef );
 
+   /**
+    * Retrieve a serialized object.
+    */
    T unpackObject( byte[] buffer ) throws Exception;
+   
+   /**
+    * This function is used for validation; to make sure that the
+    * declared serailizer will be able to pack and unpack the objects
+    * according to the definition type that was used when the 
+    * container was created.
+    */
+   org.photon.DefinitionType getType();
    
 }
 

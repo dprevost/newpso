@@ -37,7 +37,7 @@ public class BaseQueue {
 
    private Session session;
 
-   private DataDefinition definition;
+   protected ObjectDefinition definition;
    
    private String name;
    
@@ -135,23 +135,23 @@ public static Class<?> forName(String className)
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    /**
-    * Retrieve the data definition of the queue.
+    * Retrieve the definition of the queue.
     *
     * @return A new data definition of the queue.
     *
     * @exception PhotonException On an error with the Photon library.
     */
-   public DataDefinition getDataDefinition() throws PhotonException {
+   public ObjectDefinition getDefinition() throws PhotonException {
 
       int errcode;
-      DataDefinition definition;
+      ObjectDefinition definition;
       
       if ( handle == 0 ) {
          throw new PhotonException( PhotonErrors.NULL_HANDLE );
       }
-      definition = new DataDefinition();
+      definition = new ObjectDefinition();
       
-      errcode = psoDataDefinition( handle, definition );
+      errcode = psoObjectDefinition( handle, definition );
       if ( errcode != 0 ) {
          throw new PhotonException( PhotonErrors.getEnum(errcode) );
       }
@@ -221,46 +221,6 @@ public static Class<?> forName(String className)
          return errcode;
       }
       
-      throw new PhotonException( PhotonErrors.getEnum(errcode) );
-   }
-
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   /**
-    * Retrieve the data definition of the last accessed record.
-    * <p>
-    * Queues will usually contain data records with an identical layout (data 
-    * definition of the items). This layout was defined when the queue was 
-    * created. 
-    * <p>
-    * You can also insert and retrieve data records with different layouts if
-    * the object was created with the flag PSO_MULTIPLE_DATA_DEFINITIONS. The
-    * layout defined when a queue is created is then used as the default one.
-    * <p>
-    * The DataDefinition object returned by this method can be used to 
-    * access the layout on a record-by-record base.
-    * <p>
-    * Note: you only need to get this object once. The hidden fields 
-    * associated with this object will be updated after each record is
-    * retrieved. The object will point to the data definition of the 
-    * queue itself when initially constructed.
-    *
-    * @return A new data definition of the items retrieved from the queue.
-    *
-    * @exception PhotonException On an error with the Photon library.
-    */
-   public DataDefinition getRecordDefinition() throws PhotonException {
-      
-      int errcode;
-      DataDefinition definition = new DataDefinition();
-      
-      if ( handle == 0 ) {
-         throw new PhotonException( PhotonErrors.NULL_HANDLE );
-      }
-
-      errcode = psoGetRecordDefinition( handle, definition );
-      if ( errcode == 0 ) return definition;
-
       throw new PhotonException( PhotonErrors.getEnum(errcode) );
    }
 
@@ -369,16 +329,14 @@ public static Class<?> forName(String className)
 
    private native void psoClose( long handle );
 
-   private native int psoDataDefinition( long handle, DataDefinition definition );
+   private native int psoObjectDefinition( long             handle,
+                                           ObjectDefinition definition );
 
    protected native int psoGetFirst( long   handle,
                                    byte[] buffer );
 
    protected native int psoGetNext( long   handle,
                                   byte[] buffer );
-
-   private native int psoGetRecordDefinition( long           handle, 
-                                              DataDefinition definition );
 
    private native int psoGetStatus( long         handle,
                                     ObjectStatus status );

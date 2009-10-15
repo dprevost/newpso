@@ -148,10 +148,7 @@ public class Folder implements Iterable<FolderEntry>, Iterator<FolderEntry> {
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    /**
-    * Create a new object in shared memory as a child of the current folder.
-    * <p>
-    * This overloaded method should be used for objects not requiring
-    * a key definition (queues, etc.).
+    * Create a new queue in shared memory as a child of the current folder.
     * <p>
     * The creation of the object only becomes permanent after a call to 
     * Session.commit.
@@ -166,18 +163,16 @@ public class Folder implements Iterable<FolderEntry>, Iterator<FolderEntry> {
     * @exception PhotonException On an error with the Photon library.
     */
    public void createObject( String           objectName,
-                             ObjectDefinition definition, 
-                             DataDefinition   dataDef ) throws PhotonException {
+                             ObjectDefinition definition ) throws PhotonException {
       int errcode;
 
       if ( handle == 0 ) {
          throw new PhotonException( PhotonErrors.NULL_HANDLE );
       }
 
-      errcode = psoCreateObject( handle, 
-                                 objectName, 
-                                 definition,
-                                 dataDef );
+      errcode = psoCreateQueue( handle, 
+                                objectName, 
+                                definition );
       if ( errcode != 0 ) {
          throw new PhotonException( PhotonErrors.getEnum(errcode) );
       }
@@ -187,50 +182,6 @@ public class Folder implements Iterable<FolderEntry>, Iterator<FolderEntry> {
 
    /**
     * Create a new object in shared memory as a child of the current folder.
-    * <p>
-    * This overloaded method should be used for objects not requiring
-    * a key definition (queues, etc.). It also uses the name of an
-    * existing data definition instead of requiring a DataDefinition
-    * object.
-    * <p>
-    * The creation of the object only becomes permanent after a call to 
-    * Session.commit.
-    * <p>
-    * This function does not return a Java object linked to the newly 
-    * created object. You must use org.photon.Queue.open and similar to 
-    * access the newly created object.
-    *
-    * @param objectName  The name of the newly created object.
-    * @param definition  The object definition (its type, etc.).
-    * @param dataDefName The name of the definition of the data fields.
-    * @exception PhotonException On an error with the Photon library.
-    */
-   public void createObject( String           objectName,
-                             ObjectDefinition definition, 
-                             String           dataDefName ) throws PhotonException {
-      int errcode;
-
-      if ( handle == 0 ) {
-         throw new PhotonException( PhotonErrors.NULL_HANDLE );
-      }
-
-      errcode = psoCreateObjectEx( handle,
-                                   session.handle,
-                                   objectName, 
-                                   definition,
-                                   dataDefName );
-      if ( errcode != 0 ) {
-         throw new PhotonException( PhotonErrors.getEnum(errcode) );
-      }
-   }
-
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   /**
-    * Create a new object in shared memory as a child of the current folder.
-    * <p>
-    * This overloaded method should only be used for objects requiring
-    * a key definition (maps, etc.).
     * <p>
     * The creation of the object only becomes permanent after a call to 
     * Session.commit.
@@ -247,63 +198,17 @@ public class Folder implements Iterable<FolderEntry>, Iterator<FolderEntry> {
     */
    public void createObject( String           objectName,
                              ObjectDefinition definition, 
-                             KeyDefinition    keyDef,
-                             DataDefinition   dataDef ) throws PhotonException {
+                             KeyDefinition    keyDef ) throws PhotonException {
       int errcode;
 
       if ( handle == 0 ) {
          throw new PhotonException( PhotonErrors.NULL_HANDLE );
       }
 
-      errcode = psoCreateKeyedObject( handle, 
-                                      objectName, 
-                                      definition,
-                                      keyDef,
-                                      dataDef );
-      if ( errcode != 0 ) {
-         throw new PhotonException( PhotonErrors.getEnum(errcode) );
-      }
-   }
-
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   /**
-    * Create a new object in shared memory as a child of the current folder.
-    * <p>
-    * This overloaded method should only be used for objects requiring
-    * a key definition (maps, etc.). It also uses the names of 
-    * both an existing data definition and a key definition instead 
-    * of requiring a DataDefinition object and a KeyDefinition object.
-    * <p>
-    * The creation of the object only becomes permanent after a call to 
-    * Session.commit.
-    * <p>
-    * This function does not return a Java object linked to the newly 
-    * created object. You must use org.photon.Hashmap and similar to 
-    * access the newly created object.
-    *
-    * @param objectName  The name of the newly created object.
-    * @param definition  The object definition (its type, etc.)
-    * @param keyDefName  The definition of the key.
-    * @param dataDefName The definition of the data fields.
-    * @exception PhotonException On an error with the Photon library.
-    */
-   public void createObject( String           objectName,
-                             ObjectDefinition definition, 
-                             String           keyDefName,
-                             String           dataDefName ) throws PhotonException {
-      int errcode;
-
-      if ( handle == 0 ) {
-         throw new PhotonException( PhotonErrors.NULL_HANDLE );
-      }
-
-      errcode = psoCreateKeyedObjectEx( handle, 
-                                        session.handle,
-                                        objectName, 
-                                        definition,
-                                        keyDefName,
-                                        dataDefName );
+      errcode = psoCreateMap( handle, 
+                              objectName, 
+                              definition,
+                              keyDef );
       if ( errcode != 0 ) {
          throw new PhotonException( PhotonErrors.getEnum(errcode) );
       }
@@ -348,26 +253,6 @@ public class Folder implements Iterable<FolderEntry>, Iterator<FolderEntry> {
          handle = 0;
          super.finalize();
       }
-   }
-   
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   public DataDefinition getDataDefinition( String objectName ) throws PhotonException {
-
-      int errcode;
-      DataDefinition definition;
-      
-      if ( handle == 0 ) {
-         throw new PhotonException( PhotonErrors.NULL_HANDLE );
-      }
-      definition = new DataDefinition();
-      
-      errcode = psoDataDefinition( handle, objectName, definition );
-      if ( errcode != 0 ) {
-         throw new PhotonException( PhotonErrors.getEnum(errcode) );
-      }
-      
-      return definition;
    }
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
@@ -571,56 +456,53 @@ public class Folder implements Iterable<FolderEntry>, Iterator<FolderEntry> {
 
    private static native void initIDs();
 
-   private native int psoCreateFolder( long   handle,
-                                       String objectName );
+   private native int psoCreateFolder(
+      long   handle,
+      String objectName );
 
-   private native int psoCreateObject( long             handle,
-                                       String           objectName, 
-                                       ObjectDefinition definition, 
-                                       DataDefinition   dataDef );
+   private native int psoCreateQueue(
+      long             handle,
+      String           objectName, 
+      ObjectDefinition definition );
 
-   private native int psoCreateObjectEx( long             handle,
-                                         long             sessionHandle,
-                                         String           objectName, 
-                                         ObjectDefinition definition, 
-                                         String           dataDefName );
+   private native int psoCreateMap(
+      long             handle,
+      String           objectName, 
+      ObjectDefinition definition, 
+      KeyDefinition    keyDef );
 
-   private native int psoCreateKeyedObject( long             handle,
-                                            String           objectName, 
-                                            ObjectDefinition definition, 
-                                            KeyDefinition    keyDef,
-                                            DataDefinition   dataDef );
-
-   private native int psoCreateKeyedObjectEx( long             handle,
-                                              long             sessionHandle,
-                                              String           objectName, 
-                                              ObjectDefinition definition, 
-                                              String           keyDefName,
-                                              String           dataDefName );
-
-   private native int psoDataDefinition( long           handle, 
-                                         String         objectName,
-                                         DataDefinition definition );
-
-   private native int psoDefinition( long             handle,
-                                     String           objectName,
-                                     ObjectDefinition definition );
+   private native int psoDefinition(
+      long             handle,
+      String           objectName,
+      ObjectDefinition definition );
    
-   private native int psoDestroyObject( long handle, String objectName );
+   private native int psoDestroyObject(
+      long   handle,
+      String objectName );
 
-   private native void psoClose( long handle );
+   private native void psoClose(
+      long handle );
 
-   private native int psoGetFirst( long handle, FolderEntry e );
+   private native int psoGetFirst(
+      long        handle,
+      FolderEntry e );
 
-   private native int psoGetNext( long handle, FolderEntry e );
+   private native int psoGetNext(
+      long        handle,
+      FolderEntry e );
 
-   private native int psoKeyDefinition( long          handle,
-                                        String        objectName,
-                                        KeyDefinition definition );
+   private native int psoKeyDefinition(
+      long          handle,
+      String        objectName,
+      KeyDefinition definition );
 
-   private native int psoOpen( Session session, String name );
+   private native int psoOpen(
+      Session session,
+      String  name );
 
-   private native int psoStatus( long handle, ObjectStatus status );
+   private native int psoStatus(
+      long         handle,
+      ObjectStatus status );
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 }

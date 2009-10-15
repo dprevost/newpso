@@ -41,6 +41,12 @@ public class ArrayListSerializer implements PSOSerialize<ArrayList> {
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
+   public org.photon.DefinitionType getType() {
+      return org.photon.DefinitionType.PHOTON_ODBC_SIMPLE;
+   }
+      
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
    public byte[] packObject( ArrayList obj ) throws Exception {
 
       byte [] data = psoPackObject( obj );

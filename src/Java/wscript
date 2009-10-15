@@ -40,6 +40,9 @@ def build(bld):
 
    '''
    javah org.photon.FieldType
+   find_sources_in_dirs
+   
+   javah -classpath ../../build/default/src/Java/java_src org.photon.Queue
    
    javadoc -sourcepath java_src -d doc org.photon org.photon.serializer
    '''

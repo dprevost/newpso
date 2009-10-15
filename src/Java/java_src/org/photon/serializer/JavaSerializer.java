@@ -29,7 +29,13 @@ public class JavaSerializer<T extends Serializable> implements PSOSerialize<T> {
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
    
    public JavaSerializer() {}
-   
+
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   public org.photon.DefinitionType getType() {
+      return org.photon.DefinitionType.JAVA;
+   }
+      
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    public byte[] packObject( T obj ) throws Exception {

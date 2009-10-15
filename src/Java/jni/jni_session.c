@@ -108,16 +108,15 @@ Java_org_photon_Session_psoCreateQueue( JNIEnv * env,
                                         jobject  jobj,
                                         jlong    jhandle,
                                         jstring  jname,
-                                        jobject  jdefinition,
-                                        jlong    jdataDefHandle )
+                                        jobject  jdefinition )
 {
    int errcode;
 
    /* Native variables */
    size_t handle = (size_t) jhandle;
-   size_t dataDefHandle = (size_t) jdataDefHandle;
    const char * name;
    psoObjectDefinition definition;
+  
    
    definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
    definition.minNumOfDataRecords = (size_t) (*env)->GetLongField( env,
@@ -125,16 +124,21 @@ Java_org_photon_Session_psoCreateQueue( JNIEnv * env,
    definition.minNumBlocks = (size_t) (*env)->GetLongField( env,
       jdefinition, g_idObjDefMinNumBlocks );
    
+   definition.dataDefLength = 0;
+//   enum psoDefinitionType dataDefType;
+
+//   psoUint32 dataDefLength;
+
    name = (*env)->GetStringUTFChars( env, jname, NULL );
    if ( name == NULL ) {
       return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
    }
 
+//fprintf( stderr, "errcode = %d\n", errcode );
    errcode = psoCreateQueue( (PSO_HANDLE) handle,
                              name,
                              strlen(name),
                              &definition );
-   //                          (PSO_HANDLE)dataDefHandle );
    
    (*env)->ReleaseStringUTFChars( env, jname, name );
 

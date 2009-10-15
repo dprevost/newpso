@@ -19,18 +19,31 @@
 package org.photon;
 
 import java.util.*;
-
-public enum DefinitionType {
    
-   USER_DEFINED(3),
+public enum DefinitionType {
+
+   /**
+    * The packing and unpacking routines are user-defined.
+    */
+   USER_DEFINED(2),
+   
+   /**
+    * Default java serialization.
+    */
+   JAVA(3),
    /**
     * A simplified version of ODBC. 
     * 
     * The fields must all have a fixed length except for the last one. 
     * This condition makes it easy to map the data record with a C struct.
     */
-   PHOTON_ODBC_SIMPLE(4);
-
+   PHOTON_ODBC_SIMPLE(4),
+   
+   /**
+    * Not implemented yet. Soon...
+    */
+   PROTO_BUF(5);
+   
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    private int type;
