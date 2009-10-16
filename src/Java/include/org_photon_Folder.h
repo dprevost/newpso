@@ -25,43 +25,19 @@ JNIEXPORT jint JNICALL Java_org_photon_Folder_psoCreateFolder
 
 /*
  * Class:     org_photon_Folder
- * Method:    psoCreateObject
- * Signature: (JLjava/lang/String;Lorg/photon/ObjectDefinition;Lorg/photon/DataDefinition;)I
+ * Method:    psoCreateQueue
+ * Signature: (JLjava/lang/String;Lorg/photon/ObjectDefinition;)I
  */
-JNIEXPORT jint JNICALL Java_org_photon_Folder_psoCreateObject
-  (JNIEnv *, jobject, jlong, jstring, jobject, jobject);
-
-/*
- * Class:     org_photon_Folder
- * Method:    psoCreateObjectEx
- * Signature: (JJLjava/lang/String;Lorg/photon/ObjectDefinition;Ljava/lang/String;)I
- */
-JNIEXPORT jint JNICALL Java_org_photon_Folder_psoCreateObjectEx
-  (JNIEnv *, jobject, jlong, jlong, jstring, jobject, jstring);
-
-/*
- * Class:     org_photon_Folder
- * Method:    psoCreateKeyedObject
- * Signature: (JLjava/lang/String;Lorg/photon/ObjectDefinition;Lorg/photon/KeyDefinition;Lorg/photon/DataDefinition;)I
- */
-JNIEXPORT jint JNICALL Java_org_photon_Folder_psoCreateKeyedObject
-  (JNIEnv *, jobject, jlong, jstring, jobject, jobject, jobject);
-
-/*
- * Class:     org_photon_Folder
- * Method:    psoCreateKeyedObjectEx
- * Signature: (JJLjava/lang/String;Lorg/photon/ObjectDefinition;Ljava/lang/String;Ljava/lang/String;)I
- */
-JNIEXPORT jint JNICALL Java_org_photon_Folder_psoCreateKeyedObjectEx
-  (JNIEnv *, jobject, jlong, jlong, jstring, jobject, jstring, jstring);
-
-/*
- * Class:     org_photon_Folder
- * Method:    psoDataDefinition
- * Signature: (JLjava/lang/String;Lorg/photon/DataDefinition;)I
- */
-JNIEXPORT jint JNICALL Java_org_photon_Folder_psoDataDefinition
+JNIEXPORT jint JNICALL Java_org_photon_Folder_psoCreateQueue
   (JNIEnv *, jobject, jlong, jstring, jobject);
+
+/*
+ * Class:     org_photon_Folder
+ * Method:    psoCreateMap
+ * Signature: (JLjava/lang/String;Lorg/photon/ObjectDefinition;Lorg/photon/KeyDefinition;)I
+ */
+JNIEXPORT jint JNICALL Java_org_photon_Folder_psoCreateMap
+  (JNIEnv *, jobject, jlong, jstring, jobject, jobject);
 
 /*
  * Class:     org_photon_Folder

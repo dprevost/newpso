@@ -135,6 +135,15 @@ extern jfieldID g_idRecordOffset;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+psoObjectDefinition * Java2C_ObjectDefinition( JNIEnv  * env,
+                                               jobject   jdefinition );
+
+int C2Java_ObjectDefinition( JNIEnv              * env,
+                             jobject               jdefinition,
+                             psoObjectDefinition * pDefinition );
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 static inline jstring getNotNullTerminatedString( JNIEnv * env, 
                                                   char   * inStr,
                                                   size_t   maxLength )

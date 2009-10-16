@@ -51,7 +51,7 @@ public class ObjectDefinition {
    /**
     * Type of definition of the data fields.
     */
-   DefinitionType dataDefType = DefinitionType.USER_DEFINED;
+   int dataDefType = DefinitionType.USER_DEFINED.getType();
    
    /**
     * Definition of the data fields.
@@ -100,7 +100,7 @@ public class ObjectDefinition {
       this.type = type.getType();
       this.minNumOfDataRecords = minNumOfDataRecords;
       this.minNumBlocks = minNumBlocks;
-      dataDefType = defType;
+      dataDefType = defType.getType();
    }
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
@@ -113,7 +113,7 @@ public class ObjectDefinition {
       this.type = type.getType();
       this.minNumOfDataRecords = minNumOfDataRecords;
       this.minNumBlocks = minNumBlocks;
-      dataDefType = defType;
+      dataDefType = defType.getType();
       dataDef = dataDefinition;
       dataDefLength = dataDef.length;
    }
@@ -128,7 +128,7 @@ public class ObjectDefinition {
       this.type = type.getType();
       this.minNumOfDataRecords = minNumOfDataRecords;
       this.minNumBlocks = minNumBlocks;
-      dataDefType = defType;
+      dataDefType = defType.getType();
       dataDefStr = dataDefinition;
       dataDefLength = -1 * dataDefStr.length();
    }
@@ -154,7 +154,9 @@ public class ObjectDefinition {
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-   public DefinitionType getDataType() { return dataDefType; }
+   public DefinitionType getDataType() { 
+      return DefinitionType.getEnum( dataDefType ); 
+   }
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 

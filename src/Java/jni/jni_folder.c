@@ -103,103 +103,35 @@ Java_org_photon_Folder_psoCreateFolder( JNIEnv  * env,
  * Signature: (JLjava/lang/String;Lorg/photon/ObjectDefinition;Lorg/photon/DataDefinition;)I
  */
 JNIEXPORT jint JNICALL 
-Java_org_photon_Folder_psoCreateObject( JNIEnv   * env,
-                                        jobject    jobj,
-                                        jlong      jhandle,
-                                        jstring    jname, 
-                                        jobject    jdefinition,
-                                        jobject    jdataDef )
+Java_org_photon_Folder_psoCreateQueue( JNIEnv   * env,
+                                       jobject    jobj,
+                                       jlong      jhandle,
+                                       jstring    jname, 
+                                       jobject    jdefinition )
 {
    int errcode;
 
    /* Native variables */
    size_t handle = (size_t) jhandle;
    const char * name;
-   psoObjectDefinition definition;
-   size_t dataDefHandle = 0;
+   psoObjectDefinition * pDefinition;
    
-   definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
+   pDefinition = Java2C_ObjectDefinition( env, jdefinition );
+   if ( pDefinition == NULL ) return PSO_NOT_ENOUGH_HEAP_MEMORY;
    
-   definition.minNumOfDataRecords = 
-      (*env)->GetIntField( env, jdefinition, g_idObjDefMinNumOfDataRecords );
-   definition.minNumBlocks = 
-      (*env)->GetIntField( env, jdefinition, g_idObjDefMinNumBlocks );
-   
-   dataDefHandle = (*env)->GetLongField( env, jdataDef, g_idDataDefHandle );
-
    name = (*env)->GetStringUTFChars( env, jname, NULL );
    if ( name == NULL ) {
+      free( pDefinition );
       return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
    }
 
    errcode = psoFolderCreateQueue( (PSO_HANDLE) handle,
                                    name,
                                    strlen(name),
-                                   &definition );
+                                   pDefinition );
 
    (*env)->ReleaseStringUTFChars( env, jname, name );
-
-   return errcode;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-/*
- * Class:     org_photon_Folder
- * Method:    psoCreateObjectEx
- * Signature: (JJLjava/lang/String;Lorg/photon/ObjectDefinition;Ljava/lang/String;)I
- */
-JNIEXPORT jint JNICALL
-Java_org_photon_Folder_psoCreateObjectEx( JNIEnv * env,
-                                          jobject  jobj,
-                                          jlong    jhandle,
-                                          jlong    jsessionHandle,
-                                          jstring  jname,
-                                          jobject  jdefinition,
-                                          jstring  jdataDefName )
-{
-   int errcode;
-
-   /* Native variables */
-   size_t handle = (size_t) jhandle;
-   size_t sessionHandle = (size_t) jsessionHandle;
-   PSO_HANDLE dataDefHandle = NULL;
-   const char * name;
-   psoObjectDefinition definition;
-   const char * dataDefName;
-   
-   definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
-   definition.minNumOfDataRecords = (size_t) (*env)->GetLongField( env,
-      jdefinition, g_idObjDefMinNumOfDataRecords );
-   definition.minNumBlocks = (size_t) (*env)->GetLongField( env,
-      jdefinition, g_idObjDefMinNumBlocks );
-
-   dataDefName = (*env)->GetStringUTFChars( env, jdataDefName, NULL );
-   if ( dataDefName == NULL ) {
-      return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
-   }
-
-   errcode = psoDataDefOpen( (PSO_HANDLE)sessionHandle,
-                             dataDefName,
-                             strlen(dataDefName),
-                             &dataDefHandle );
-   (*env)->ReleaseStringUTFChars( env, jdataDefName, dataDefName );
-   if ( errcode == 0 ) {
-   
-      name = (*env)->GetStringUTFChars( env, jname, NULL );
-      if ( name == NULL ) {
-         psoDataDefClose( dataDefHandle );
-         return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
-      }
-
-      errcode = psoFolderCreateQueue( (PSO_HANDLE) handle,
-                                      name,
-                                      strlen(name),
-                                      &definition );
-   
-      (*env)->ReleaseStringUTFChars( env, jname, name );
-      psoDataDefClose( dataDefHandle );
-   }
+   free( pDefinition );
    
    return errcode;
 }

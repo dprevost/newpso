@@ -115,98 +115,29 @@ Java_org_photon_Session_psoCreateQueue( JNIEnv * env,
    /* Native variables */
    size_t handle = (size_t) jhandle;
    const char * name;
-   psoObjectDefinition definition;
+   psoObjectDefinition * pDefinition;
   
-   
-   definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
-   definition.minNumOfDataRecords = (size_t) (*env)->GetLongField( env,
-      jdefinition, g_idObjDefMinNumOfDataRecords );
-   definition.minNumBlocks = (size_t) (*env)->GetLongField( env,
-      jdefinition, g_idObjDefMinNumBlocks );
-   
-   definition.dataDefLength = 0;
-//   enum psoDefinitionType dataDefType;
-
-//   psoUint32 dataDefLength;
+   pDefinition = Java2C_ObjectDefinition( env, jdefinition );
+   if ( pDefinition == NULL ) return PSO_NOT_ENOUGH_HEAP_MEMORY;
 
    name = (*env)->GetStringUTFChars( env, jname, NULL );
    if ( name == NULL ) {
+      free( pDefinition );
       return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
    }
 
-//fprintf( stderr, "errcode = %d\n", errcode );
    errcode = psoCreateQueue( (PSO_HANDLE) handle,
                              name,
                              strlen(name),
-                             &definition );
+                             pDefinition );
    
    (*env)->ReleaseStringUTFChars( env, jname, name );
+   free( pDefinition );
 
    return errcode;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-/*
- * Class:     org_photon_Session
- * Method:    psoCreateObjectEx
- * Signature: (JLjava/lang/String;Lorg/photon/ObjectDefinition;Ljava/lang/String;)I
- */
-JNIEXPORT jint JNICALL
-Java_org_photon_Session_psoCreateQueueEx( JNIEnv * env,
-                                          jobject  jobj,
-                                          jlong    jhandle,
-                                          jstring  jname,
-                                          jobject  jdefinition,
-                                          jstring  jdataDefName )
-{
-   int errcode;
-
-   /* Native variables */
-   size_t handle = (size_t) jhandle;
-   PSO_HANDLE dataDefHandle = NULL;
-   const char * name;
-   psoObjectDefinition definition;
-   const char * dataDefName;
-   
-   definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
-   definition.minNumOfDataRecords = (size_t) (*env)->GetLongField( env,
-      jdefinition, g_idObjDefMinNumOfDataRecords );
-   definition.minNumBlocks = (size_t) (*env)->GetLongField( env,
-      jdefinition, g_idObjDefMinNumBlocks );
-
-   dataDefName = (*env)->GetStringUTFChars( env, jdataDefName, NULL );
-   if ( dataDefName == NULL ) {
-      return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
-   }
-
-   errcode = psoDataDefOpen( (PSO_HANDLE)handle,
-                             dataDefName,
-                             strlen(dataDefName),
-                             &dataDefHandle );
-   (*env)->ReleaseStringUTFChars( env, jdataDefName, dataDefName );
-   if ( errcode == 0 ) {
-   
-      name = (*env)->GetStringUTFChars( env, jname, NULL );
-      if ( name == NULL ) {
-         psoDataDefClose( dataDefHandle );
-         return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
-      }
-
-      errcode = psoCreateQueue( (PSO_HANDLE) handle,
-                                name,
-                                strlen(name),
-                                &definition );
-//                                (PSO_HANDLE)dataDefHandle );
-   
-      (*env)->ReleaseStringUTFChars( env, jname, name );
-      psoDataDefClose( dataDefHandle );
-   }
-   
-   return errcode;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
 /*
  * Class:     org_photon_Session
  * Method:    psoCreateKeyedObject
@@ -218,26 +149,21 @@ Java_org_photon_Session_psoCreateMap( JNIEnv * env,
                                       jlong    jhandle,
                                       jstring  jname,
                                       jobject  jdefinition,
-                                      jlong    jdataDefHandle,
-                                      jlong    jkeyDefHandle )
+                                      jobject  jkeyDefinition )
 {
    int errcode;
 
    /* Native variables */
    size_t handle = (size_t) jhandle;
-   size_t dataDefHandle = (size_t) jdataDefHandle;
-   size_t keyDefHandle  = (size_t) jkeyDefHandle;
    const char * name;
-   psoObjectDefinition definition;
-   
-   definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
-   definition.minNumOfDataRecords = (size_t) (*env)->GetLongField( env,
-      jdefinition, g_idObjDefMinNumOfDataRecords );
-   definition.minNumBlocks = (size_t) (*env)->GetLongField( env,
-      jdefinition, g_idObjDefMinNumBlocks );
+   psoObjectDefinition * pDefinition;
+  
+   pDefinition = Java2C_ObjectDefinition( env, jdefinition );
+   if ( pDefinition == NULL ) return PSO_NOT_ENOUGH_HEAP_MEMORY;
    
    name = (*env)->GetStringUTFChars( env, jname, NULL );
    if ( name == NULL ) {
+      free( pDefinition );
       return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
    }
 
@@ -245,92 +171,11 @@ Java_org_photon_Session_psoCreateMap( JNIEnv * env,
    errcode = psoCreateMap( (PSO_HANDLE) handle,
                            name,
                            strlen(name),
-                           &definition,
-                           (PSO_HANDLE)dataDefHandle,
-                           (PSO_HANDLE)keyDefHandle );
-#endif
-   (*env)->ReleaseStringUTFChars( env, jname, name );
-
-   return errcode;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-/*
- * Class:     org_photon_Session
- * Method:    psoCreateKeyedObjectEx
- * Signature: (JLjava/lang/String;Lorg/photon/ObjectDefinition;Ljava/lang/String;Ljava/lang/String;)I
- */
-JNIEXPORT jint JNICALL
-Java_org_photon_Session_psoCreateMapEx( JNIEnv * env,
-                                        jobject  jobj,
-                                        jlong    jhandle,
-                                        jstring  jname,
-                                        jobject  jdefinition,
-                                        jstring  jkeyDefName,
-                                        jstring  jdataDefName )
-{
-   int errcode;
-
-   /* Native variables */
-   size_t handle = (size_t) jhandle;
-   PSO_HANDLE dataDefHandle = NULL, keyDefHandle = NULL;
-   const char * name;
-   psoObjectDefinition definition;
-   const char * dataDefName, * keyDefName;
-   
-   definition.type  = (*env)->GetIntField( env, jdefinition, g_idObjDefType );
-   definition.minNumOfDataRecords = (size_t) (*env)->GetLongField( env,
-      jdefinition, g_idObjDefMinNumOfDataRecords );
-   definition.minNumBlocks = (size_t) (*env)->GetLongField( env,
-      jdefinition, g_idObjDefMinNumBlocks );
-
-   dataDefName = (*env)->GetStringUTFChars( env, jdataDefName, NULL );
-   if ( dataDefName == NULL ) {
-      return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
-   }
-
-   errcode = psoDataDefOpen( (PSO_HANDLE)handle,
-                             dataDefName,
-                             strlen(dataDefName),
-                             &dataDefHandle );
-   (*env)->ReleaseStringUTFChars( env, jdataDefName, dataDefName );
-   if ( errcode != 0 ) return errcode;
-   
-   keyDefName = (*env)->GetStringUTFChars( env, jkeyDefName, NULL );
-   if ( keyDefName == NULL ) {
-      psoDataDefClose( dataDefHandle );
-      return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
-   }
-
-   errcode = psoKeyDefOpen( (PSO_HANDLE)handle,
-                            keyDefName,
-                            strlen(keyDefName),
-                            &keyDefHandle );
-   (*env)->ReleaseStringUTFChars( env, jkeyDefName, keyDefName );
-   if ( errcode != 0 ) {
-      psoDataDefClose( dataDefHandle );
-      return errcode;
-   }
-   
-   name = (*env)->GetStringUTFChars( env, jname, NULL );
-   if ( name == NULL ) {
-      psoDataDefClose( dataDefHandle );
-      psoKeyDefClose( keyDefHandle );
-      return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
-   }
-
-#if 0
-   errcode = psoCreateMap( (PSO_HANDLE) handle,
-                           name,
-                           strlen(name),
-                           &definition,
+                           pDefinition,
                            pKeyDefinition );
 #endif
-
    (*env)->ReleaseStringUTFChars( env, jname, name );
-   psoDataDefClose( dataDefHandle );
-   psoKeyDefClose( keyDefHandle );
+   free( pDefinition );
    
    return errcode;
 }
