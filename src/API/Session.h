@@ -86,6 +86,18 @@ int psoaSessionCloseObj( psoaSession             * pSession,
                          struct psoaCommonObject * pObject );
 
 PHOTON_API_EXPORT
+int psoaSessionGetDef( PSO_HANDLE             sessionHandle,
+                       const char           * objectName,
+                       uint32_t               nameLengthInBytes,
+                       psoObjectDefinition ** ppDefinition );
+
+PHOTON_API_EXPORT
+int psoaSessionGetKeyDef( PSO_HANDLE          sessionHandle,
+                          const char        * objectName,
+                          uint32_t            nameLengthInBytes,
+                          psoKeyDefinition ** ppDefinition );
+
+PHOTON_API_EXPORT
 int psoaSessionOpenObj( psoaSession             * pSession,
                         psoObjectType             objectType,
                         psoaEditMode              editMode,

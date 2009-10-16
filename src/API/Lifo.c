@@ -603,6 +603,47 @@ error_handler:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+int psoaLifoGetDef( PSO_HANDLE             objectHandle, 
+                    psoObjectDefinition ** ppDefinition )
+{
+   psoaLifo * pLifo;
+   psonQueue * pMemLifo;
+   int errcode = PSO_OK;
+   psonSessionContext * pContext;
+   psoObjectDefinition * pMyDefinition = NULL;
+   
+   pLifo = (psoaLifo *) objectHandle;
+   if ( pLifo == NULL ) return PSO_NULL_HANDLE;
+   
+   if ( pLifo->object.type != PSOA_LIFO ) return PSO_WRONG_TYPE_HANDLE;
+
+   pContext = &pLifo->object.pSession->context;
+
+   if ( ppDefinition == NULL ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NULL_POINTER );
+      return PSO_NULL_POINTER;
+   }
+
+   if ( ! pLifo->object.pSession->terminated ) {
+      pMemLifo = (psonQueue *) pLifo->object.pMyMemObject;
+      
+      GET_PTR( pMyDefinition, pMemLifo->dataDefOffset, psoObjectDefinition );
+      
+      *ppDefinition = pMyDefinition;
+   }
+   else {
+      errcode = PSO_SESSION_IS_TERMINATED;
+   }
+   
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+   }
+   
+   return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 int psoaLifoNext( psoaLifo       * pLifo,
                   unsigned char ** pData,
                   uint32_t       * pLength )

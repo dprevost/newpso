@@ -76,28 +76,14 @@ public class BaseQueue {
          throw new PhotonException( PhotonErrors.getEnum(errcode) );
       }
 
-      /*
-java.lang.reflect
-Class Constructor<T>
-public T newInstance(Object... initargs)
-              throws InstantiationException,
-                     IllegalAccessException,
-                     IllegalArgumentException,
-                     InvocationTargetException
-                     
---------------------
-Foo.class
----------------
-forName
-
-public static Class<?> forName(String className)
-                        throws ClassNotFoundException
-                        
-
-                     
-                     */
+      this.definition = new ObjectDefinition();
       
-      
+      errcode = psoDefinition( handle, definition );
+      if ( errcode != 0 ) {
+         close();
+         throw new PhotonException( PhotonErrors.getEnum(errcode) );
+      }
+
       this.session = session;
       this.name = name;
    }
@@ -151,7 +137,7 @@ public static Class<?> forName(String className)
       }
       definition = new ObjectDefinition();
       
-      errcode = psoObjectDefinition( handle, definition );
+      errcode = psoDefinition( handle, definition );
       if ( errcode != 0 ) {
          throw new PhotonException( PhotonErrors.getEnum(errcode) );
       }
@@ -271,6 +257,15 @@ public static Class<?> forName(String className)
       if ( errcode != 0 ) {
          throw new PhotonException( PhotonErrors.getEnum(errcode) );
       }
+
+      this.definition = new ObjectDefinition();
+      
+      errcode = psoDefinition( handle, definition );
+      if ( errcode != 0 ) {
+         close();
+         throw new PhotonException( PhotonErrors.getEnum(errcode) );
+      }
+
       this.session = session;
       this.name = name;
    }
@@ -329,8 +324,8 @@ public static Class<?> forName(String className)
 
    private native void psoClose( long handle );
 
-   private native int psoObjectDefinition( long             handle,
-                                           ObjectDefinition definition );
+   private native int psoDefinition( long             handle,
+                                     ObjectDefinition definition );
 
    protected native int psoGetFirst( long   handle,
                                    byte[] buffer );

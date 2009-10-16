@@ -56,6 +56,10 @@ int psoaLifoFirst( psoaLifo       * pLifo,
                    unsigned char ** data,
                    uint32_t       * length );
 
+PHOTON_API_EXPORT
+int psoaLifoGetDef( PSO_HANDLE             queueHandle,
+                    psoObjectDefinition ** ppDefinition );
+
 /** 
  * Iterates through the queue - no data items are removed from the queue
  * by this function.

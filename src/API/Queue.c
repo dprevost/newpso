@@ -32,13 +32,13 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int psoQueueClose( PSO_HANDLE objectHandle )
+int psoQueueClose( PSO_HANDLE queueHandle )
 {
    psoaQueue * pQueue;
    psonQueue * pMemQueue;
    int errcode = PSO_OK;
    
-   pQueue = (psoaQueue *) objectHandle;
+   pQueue = (psoaQueue *) queueHandle;
    if ( pQueue == NULL ) return PSO_NULL_HANDLE;
    
    if ( pQueue->object.type != PSOA_QUEUE ) return PSO_WRONG_TYPE_HANDLE;
@@ -84,7 +84,7 @@ int psoQueueClose( PSO_HANDLE objectHandle )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int psoQueueDefinition( PSO_HANDLE            objectHandle, 
+int psoQueueDefinition( PSO_HANDLE            queueHandle, 
                         psoObjectDefinition * definition,
                         psoUint32             length )
 {
@@ -95,7 +95,7 @@ int psoQueueDefinition( PSO_HANDLE            objectHandle,
    psoObjectDefinition * pMyDefinition = NULL;
    uint32_t myLength;
    
-   pQueue = (psoaQueue *) objectHandle;
+   pQueue = (psoaQueue *) queueHandle;
    if ( pQueue == NULL ) return PSO_NULL_HANDLE;
    
    if ( pQueue->object.type != PSOA_QUEUE ) return PSO_WRONG_TYPE_HANDLE;
@@ -141,7 +141,7 @@ int psoQueueDefinition( PSO_HANDLE            objectHandle,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int psoQueueDefLength( PSO_HANDLE   objectHandle, 
+int psoQueueDefLength( PSO_HANDLE   queueHandle, 
                        psoUint32  * pLength )
 {
    psoaQueue * pQueue;
@@ -150,7 +150,7 @@ int psoQueueDefLength( PSO_HANDLE   objectHandle,
    psonSessionContext * pContext;
    psoObjectDefinition * pMyDefinition = NULL;
    
-   pQueue = (psoaQueue *) objectHandle;
+   pQueue = (psoaQueue *) queueHandle;
    if ( pQueue == NULL ) return PSO_NULL_HANDLE;
    
    if ( pQueue->object.type != PSOA_QUEUE ) return PSO_WRONG_TYPE_HANDLE;
@@ -180,7 +180,7 @@ int psoQueueDefLength( PSO_HANDLE   objectHandle,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int psoQueueGetFirst( PSO_HANDLE   objectHandle,
+int psoQueueGetFirst( PSO_HANDLE   queueHandle,
                       void       * buffer,
                       uint32_t     bufferLength,
                       uint32_t   * returnedLength )
@@ -190,7 +190,7 @@ int psoQueueGetFirst( PSO_HANDLE   objectHandle,
    int errcode = PSO_OK;
    bool ok = true;
 
-   pQueue = (psoaQueue *) objectHandle;
+   pQueue = (psoaQueue *) queueHandle;
    if ( pQueue == NULL ) return PSO_NULL_HANDLE;
    
    if ( pQueue->object.type != PSOA_QUEUE ) return PSO_WRONG_TYPE_HANDLE;
@@ -247,7 +247,7 @@ error_handler:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int psoQueueGetNext( PSO_HANDLE   objectHandle,
+int psoQueueGetNext( PSO_HANDLE   queueHandle,
                      void       * buffer,
                      uint32_t     bufferLength,
                      uint32_t   * returnedLength )
@@ -257,7 +257,7 @@ int psoQueueGetNext( PSO_HANDLE   objectHandle,
    int errcode = PSO_OK;
    bool ok = true;
 
-   pQueue = (psoaQueue *) objectHandle;
+   pQueue = (psoaQueue *) queueHandle;
    if ( pQueue == NULL ) return PSO_NULL_HANDLE;
    
    if ( pQueue->object.type != PSOA_QUEUE ) return PSO_WRONG_TYPE_HANDLE;
@@ -311,14 +311,14 @@ error_handler:
 int psoQueueOpen( PSO_HANDLE   sessionHandle,
                   const char * queueName,
                   uint32_t     nameLengthInBytes,
-                  PSO_HANDLE * objectHandle )
+                  PSO_HANDLE * queueHandle )
 {
    psoaSession * pSession;
    psoaQueue * pQueue = NULL;
    int errcode;
    
-   if ( objectHandle == NULL ) return PSO_NULL_HANDLE;
-   *objectHandle = NULL;
+   if ( queueHandle == NULL ) return PSO_NULL_HANDLE;
+   *queueHandle = NULL;
 
    pSession = (psoaSession*) sessionHandle;
    if ( pSession == NULL ) return PSO_NULL_HANDLE;
@@ -362,7 +362,7 @@ int psoQueueOpen( PSO_HANDLE   sessionHandle,
       free(pQueue);
    }
    else {
-      *objectHandle = (PSO_HANDLE) pQueue;
+      *queueHandle = (PSO_HANDLE) pQueue;
    }
 
    return errcode;
@@ -370,7 +370,7 @@ int psoQueueOpen( PSO_HANDLE   sessionHandle,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int psoQueuePop( PSO_HANDLE   objectHandle,
+int psoQueuePop( PSO_HANDLE   queueHandle,
                  void       * buffer,
                  uint32_t     bufferLength,
                  uint32_t   * returnedLength )
@@ -380,7 +380,7 @@ int psoQueuePop( PSO_HANDLE   objectHandle,
    int errcode = PSO_OK;
    bool ok = true;
 
-   pQueue = (psoaQueue *) objectHandle;
+   pQueue = (psoaQueue *) queueHandle;
    if ( pQueue == NULL ) return PSO_NULL_HANDLE;
    
    if ( pQueue->object.type != PSOA_QUEUE ) return PSO_WRONG_TYPE_HANDLE;
@@ -437,7 +437,7 @@ error_handler:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int psoQueuePush( PSO_HANDLE   objectHandle,
+int psoQueuePush( PSO_HANDLE   queueHandle,
                   const void * data,
                   uint32_t     dataLength )
 {
@@ -446,7 +446,7 @@ int psoQueuePush( PSO_HANDLE   objectHandle,
    int errcode = PSO_OK;
    bool ok = true;
    
-   pQueue = (psoaQueue *) objectHandle;
+   pQueue = (psoaQueue *) queueHandle;
    if ( pQueue == NULL ) return PSO_NULL_HANDLE;
    
    if ( pQueue->object.type != PSOA_QUEUE ) return PSO_WRONG_TYPE_HANDLE;
@@ -490,7 +490,7 @@ int psoQueuePush( PSO_HANDLE   objectHandle,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int psoQueuePushNow( PSO_HANDLE   objectHandle,
+int psoQueuePushNow( PSO_HANDLE   queueHandle,
                      const void * data,
                      uint32_t     dataLength )
 {
@@ -499,7 +499,7 @@ int psoQueuePushNow( PSO_HANDLE   objectHandle,
    int errcode = PSO_OK;
    bool ok = true;
 
-   pQueue = (psoaQueue *) objectHandle;
+   pQueue = (psoaQueue *) queueHandle;
    if ( pQueue == NULL ) return PSO_NULL_HANDLE;
    
    if ( pQueue->object.type != PSOA_QUEUE ) return PSO_WRONG_TYPE_HANDLE;
@@ -543,7 +543,7 @@ int psoQueuePushNow( PSO_HANDLE   objectHandle,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int psoQueueStatus( PSO_HANDLE     objectHandle,
+int psoQueueStatus( PSO_HANDLE     queueHandle,
                     psoObjStatus * pStatus )
 {
    psoaQueue * pQueue;
@@ -551,7 +551,7 @@ int psoQueueStatus( PSO_HANDLE     objectHandle,
    int errcode = PSO_OK;
    psonSessionContext * pContext;
    
-   pQueue = (psoaQueue *) objectHandle;
+   pQueue = (psoaQueue *) queueHandle;
    if ( pQueue == NULL ) return PSO_NULL_HANDLE;
    
    if ( pQueue->object.type != PSOA_QUEUE ) return PSO_WRONG_TYPE_HANDLE;
@@ -646,6 +646,47 @@ error_handler:
    
    if ( ! ok ) {
       errcode = psocGetLastError( &pQueue->object.pSession->context.errorHandler );
+   }
+   
+   return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int psoaQueueGetDef( PSO_HANDLE             queueHandle, 
+                     psoObjectDefinition ** ppDefinition )
+{
+   psoaQueue * pQueue;
+   psonQueue * pMemQueue;
+   int errcode = PSO_OK;
+   psonSessionContext * pContext;
+   psoObjectDefinition * pMyDefinition = NULL;
+   
+   pQueue = (psoaQueue *) queueHandle;
+   if ( pQueue == NULL ) return PSO_NULL_HANDLE;
+   
+   if ( pQueue->object.type != PSOA_QUEUE ) return PSO_WRONG_TYPE_HANDLE;
+
+   pContext = &pQueue->object.pSession->context;
+
+   if ( ppDefinition == NULL ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NULL_POINTER );
+      return PSO_NULL_POINTER;
+   }
+
+   if ( ! pQueue->object.pSession->terminated ) {
+      pMemQueue = (psonQueue *) pQueue->object.pMyMemObject;
+
+      GET_PTR( pMyDefinition, pMemQueue->dataDefOffset, psoObjectDefinition );
+      
+      *ppDefinition = pMyDefinition;
+   }
+   else {
+      errcode = PSO_SESSION_IS_TERMINATED;
+   }
+   
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
    return errcode;

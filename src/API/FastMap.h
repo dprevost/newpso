@@ -60,6 +60,14 @@ int psoaFastMapFirst( psoaFastMap    * pHashMap,
                       uint32_t       * dataLength );
 
 PHOTON_API_EXPORT
+int psoaFastMapGetDef( PSO_HANDLE             hashmapHandle,
+                       psoObjectDefinition ** ppDefinition );
+
+PHOTON_API_EXPORT
+int psoaFastMapGetKeyDef( PSO_HANDLE          hashmapHandle,
+                          psoKeyDefinition ** ppDefinition );
+
+PHOTON_API_EXPORT
 int psoaFastMapNext( psoaFastMap    * pHashMap,
                      unsigned char ** key,
                      uint32_t       * keyLength,

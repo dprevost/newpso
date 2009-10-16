@@ -1110,6 +1110,142 @@ int psoaCloseSession( psoaSession * pSession )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+int psoaSessionGetDef( PSO_HANDLE             sessionHandle,
+                       const char           * objectName,
+                       uint32_t               nameLengthInBytes,
+                       psoObjectDefinition ** ppDefinition )
+{
+   psoaSession * pSession;
+   int errcode = PSO_OK;
+   psonFolder * pTree;
+   bool ok = true;
+   psonSessionContext * pContext;
+   psoObjectDefinition * pMyDefinition = NULL;
+   psoKeyDefinition  * pMyKeyDefinition = NULL;
+   uint32_t myLength;
+ 
+   pSession = (psoaSession*) sessionHandle;
+
+   if ( pSession == NULL ) return PSO_NULL_HANDLE;   
+   if ( pSession->type != PSOA_SESSION ) return PSO_WRONG_TYPE_HANDLE;
+   if ( pSession->terminated ) return PSO_SESSION_IS_TERMINATED;
+
+   pSession->context.indent = 0;
+   PSO_TRACE_ENTER_API( &pSession.context );
+   
+   if ( objectName == NULL ) {
+      errcode = PSO_INVALID_OBJECT_NAME;
+      goto error_handler;
+   }
+
+   if ( nameLengthInBytes == 0 ) {
+      errcode = PSO_INVALID_LENGTH;
+      goto error_handler;
+   }
+   
+   if ( ppDefinition == NULL ) {
+      errcode = PSO_NULL_POINTER;
+      goto error_handler;
+   }
+   
+   GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
+   ok = psonTopFolderGetDef( pTree, 
+                             objectName,
+                             nameLengthInBytes,
+                             &pMyDefinition,
+                             &pMyKeyDefinition,
+                             &pSession->context );
+   PSO_POST_CONDITION( ok == true || ok == false );
+
+   PSO_POST_CONDITION( pMyDefinition != NULL );
+
+   *ppDefinition = pMyDefinition;
+
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
+   return PSO_OK;
+
+error_handler:
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, errcode );
+   }
+   
+   if ( ! ok ) {
+      errcode = psocGetLastError( &pSession->context.errorHandler );
+   }
+   
+   PSO_TRACE_EXIT_API( &pSession->context, false );
+   return errcode;
+}   
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int psoaSessionGetKeyDef( PSO_HANDLE          sessionHandle,
+                          const char        * objectName,
+                          uint32_t            nameLengthInBytes,
+                          psoKeyDefinition ** ppDefinition )
+{
+   psoaSession * pSession;
+   int errcode = PSO_OK;
+   psonFolder * pTree;
+   bool ok = true;
+   psoObjectDefinition * pMyDefinition = NULL;
+   psoKeyDefinition  * pMyKeyDefinition = NULL;
+ 
+   pSession = (psoaSession*) sessionHandle;
+
+   if ( pSession == NULL ) return PSO_NULL_HANDLE;   
+   if ( pSession->type != PSOA_SESSION ) return PSO_WRONG_TYPE_HANDLE;
+   if ( pSession->terminated ) return PSO_SESSION_IS_TERMINATED;
+
+   pSession->context.indent = 0;
+   PSO_TRACE_ENTER_API( &pSession.context );
+   
+   if ( objectName == NULL ) {
+      errcode = PSO_INVALID_OBJECT_NAME;
+      goto error_handler;
+   }
+
+   if ( nameLengthInBytes == 0 ) {
+      errcode = PSO_INVALID_LENGTH;
+      goto error_handler;
+   }
+   
+   if ( ppDefinition == NULL ) {
+      errcode = PSO_NULL_POINTER;
+      goto error_handler;
+   }
+   
+   GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
+   ok = psonTopFolderGetDef( pTree, 
+                             objectName,
+                             nameLengthInBytes,
+                             &pMyDefinition,
+                             &pMyKeyDefinition,
+                             &pSession->context );
+   PSO_POST_CONDITION( ok == true || ok == false );
+
+   PSO_POST_CONDITION( pMyKeyDefinition != NULL );
+
+   *ppDefinition = pMyKeyDefinition;
+
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
+   return PSO_OK;
+
+error_handler:
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, errcode );
+   }
+   
+   if ( ! ok ) {
+      errcode = psocGetLastError( &pSession->context.errorHandler );
+   }
+   
+   PSO_TRACE_EXIT_API( &pSession->context, false );
+   return errcode;
+}   
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 int psoaSessionOpenObj( psoaSession             * pSession,
                         enum psoObjectType        objectType,
                         psoaEditMode              editMode,

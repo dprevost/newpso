@@ -1083,6 +1083,97 @@ error_handler:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+int psoaFastMapDefinition( PSO_HANDLE             objectHandle,
+                           psoObjectDefinition ** ppDefinition )
+{
+   psoaFastMap * pHashMap;
+   psonFastMap * pMemHashMap;
+   int errcode = PSO_OK;
+   psonSessionContext * pContext;
+   psoObjectDefinition * pMyDefinition = NULL;
+   
+   pHashMap = (psoaFastMap *) objectHandle;
+   if ( pHashMap == NULL ) return PSO_NULL_HANDLE;
+   
+   if ( pHashMap->object.type != PSOA_MAP ) return PSO_WRONG_TYPE_HANDLE;
+
+   if ( pHashMap->object.pSession->terminated ) {
+      return PSO_SESSION_IS_TERMINATED;
+   }
+
+   pContext = &pHashMap->object.pSession->context;
+
+   pContext->indent = 0;
+   PSO_TRACE_ENTER_API( pContext );
+
+   if ( ppDefinition == NULL ) {
+      errcode = PSO_NULL_POINTER;
+      goto error_handler;
+   }
+
+   pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
+
+   GET_PTR( pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
+
+   *ppDefinition = pMyDefinition;
+
+   PSO_TRACE_EXIT_API( pContext, true );
+   return PSO_OK;
+
+error_handler:
+
+   psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+   
+   PSO_TRACE_EXIT_API( pContext, false );
+   return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int psoaFastMapGetKeyDef( PSO_HANDLE          objectHandle,
+                          psoKeyDefinition ** ppDefinition )
+{
+   psoaFastMap * pHashMap;
+   psonFastMap * pMemHashMap;
+   int errcode = PSO_OK;
+   psonSessionContext * pContext;
+   psoKeyDefinition * pMyDefinition = NULL;
+   
+   pHashMap = (psoaFastMap *) objectHandle;
+   if ( pHashMap == NULL ) return PSO_NULL_HANDLE;
+   
+   if ( pHashMap->object.type != PSOA_MAP ) return PSO_WRONG_TYPE_HANDLE;
+
+   if ( pHashMap->object.pSession->terminated ) return PSO_SESSION_IS_TERMINATED;
+
+   pContext = &pHashMap->object.pSession->context;
+   pContext->indent = 0;
+   PSO_TRACE_ENTER_API( pContext );
+
+   if ( ppDefinition == NULL ) {
+      errcode = PSO_NULL_POINTER;
+      goto error_handler;
+   }
+
+   pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
+
+   GET_PTR( pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
+
+   *ppDefinition = pMyDefinition;
+   
+   PSO_TRACE_EXIT_API( pContext, true );
+   return PSO_OK;
+
+error_handler:
+
+   psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+   
+   PSO_TRACE_EXIT_API( pContext, false );
+   return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 int psoaFastMapNext( psoaFastMap    * pHashMap,
                      unsigned char ** pKey,
                      uint32_t       * pKeyLength,

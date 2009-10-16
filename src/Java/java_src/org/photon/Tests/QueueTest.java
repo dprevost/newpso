@@ -54,10 +54,10 @@ public class QueueTest {
       byte[] q = new byte[1];
       
       ObjectDefinition definition = new ObjectDefinition( 
-         ObjectType.QUEUE, 1, 0, DefinitionType.USER_DEFINED );
+         ObjectType.QUEUE, 1, 0, DefinitionType.JAVA );
       
       session.createQueue( "/JavaTestQueue1", definition );
-      
+      session.commit();
    }
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
@@ -92,6 +92,31 @@ public class QueueTest {
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    public static void test2( org.photon.Session session ) throws Exception {
+      
+      ObjectDefinition definition = new ObjectDefinition( 
+         ObjectType.QUEUE, 1, 0, DefinitionType.USER_DEFINED );
+      
+      session.createQueue( "/JavaTestQueue2", definition );
+
+      JavaSerializer<DummyJava> s = new JavaSerializer<DummyJava>();
+
+      try {
+         Queue<DummyJava, JavaSerializer<DummyJava>> queue = 
+            new Queue<DummyJava, JavaSerializer<DummyJava>>( session, 
+                                                             "/JavaTestQueue2",
+                                                             s );
+      } catch ( PhotonException e ) {
+         if ( e.getErrorCode() != PhotonErrors.INVALID_DATA_DEFINITION_TYPE ) {
+            throw e;
+         }
+      }
+      session.rollback();
+      
+   }
+
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   public static void test3( org.photon.Session session ) throws Exception {
       
       JavaSerializer<DummyJava> s = new JavaSerializer<DummyJava>();
       

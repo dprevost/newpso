@@ -21,28 +21,47 @@ package org.photon;
 import java.lang.*;
 import java.util.*;
 
-public class KeyDefinition implements Iterable<String>, Iterator<String> {
+public class KeyDefinition {
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-   /** To save the native pointer/handle of the C struct. */
-   long handle = 0;
+   /**
+    * Type of definition of the key fields.
+    */
+   int type = DefinitionType.USER_DEFINED.getType();
 
-   /** The name of the key definition. */
-   private String name;
+   /**
+    * Definition of the key fields.
+    * <p>
+    * This definition can be used as a comment to describe the content
+    * of the object. It can also be used to pack and unpack the items
+    * (serialized objects) contain in the object container.
+    * <p>
+    * It can be NULL if not needed.
+    */
+   byte [] keyDef;
+
+   /**
+    * Definition of the key fields as a string
+    * <p>
+    * This definition can be used as a comment to describe the content
+    * of the object. It can also be used to pack and unpack the items
+    * (serialized objects) contain in the object container.
+    * <p>
+    * It can be NULL if not needed.
+    */
+   String keyDefStr;
    
-   /** The session we belong to. */
-   private Session session;
-
-   /** The definition type of the key definition. */
-   private int type;
-
-   /** Pointer to the actual key definition. */
-   private byte[] keyDef;
+   /*
+    * A bit of a hack. 
+    *
+    * The definition can be either an array of bytes or a string. Or nothing.
+    *
+    * If zero, no dataDef. If < 0, a string. A byte[] otherwise.
+    *
+    */
+   int keyDefLength = 0; 
    
-   /** Iterator */
-   private int currentLength = 0;
-
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    static {
@@ -51,263 +70,55 @@ public class KeyDefinition implements Iterable<String>, Iterator<String> {
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-   /**
-    * Default constructor.
-    * <p>
-    * You must use open() or create to access a key definition in 
-    * shared memory.
-    */
-   public KeyDefinition() {}
-   
+   public KeyDefinition( DefinitionType defType ) {
+      this.type = defType.getType();
+   }
+
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-   /**
-    * Creates a new key definition in shared memory.
-    *
-    * @param session The session we belong to.
-    * @param name The name of the definition.
-    * @param type The type of definition (ODBC, user defined, etc.)
-    * @param keyDef The key definition (as an opaque type)
-    *
-    * @exception PhotonException An abnormal error with the Photon library.
-    */
-   public KeyDefinition( Session        session,
-                         String         name,
-                         DefinitionType type,
-                         byte[]         keyDef ) throws PhotonException {
-   
-      int errcode;
+   public KeyDefinition( DefinitionType defType,
+                         byte[]         keyDefinition ) {
       
-      errcode = psoCreate( session.handle,
-                           name,
-                           type.getType(),
-                           keyDef,
-                           keyDef.length );
-      if ( errcode != 0 ) {
-         throw new PhotonException( PhotonErrors.getEnum(errcode) );
-      }
+      this.type = defType.getType();
+      keyDef = keyDefinition;
+      keyDefLength = keyDef.length;
+   }
 
-      this.name    = name;
-      this.session = session;
-      this.keyDef  = keyDef;
-      this.type    = type.getType();
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   public KeyDefinition( DefinitionType defType,
+                         String         keyDefinition ) {
+
+      this.type = defType.getType();
+      keyDefStr = keyDefinition;
+      keyDefLength = -keyDefStr.length();
    }
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    /**
-    * Opens an existing key definition in shared memory.
-    *
-    * @param session The session we belong to.
-    * @param name The name of the definition.
-    *
-    * @exception PhotonException An abnormal error with the Photon library.
+    * Default constructor. It is not public.
     */
-   public KeyDefinition( Session session,
-                         String  name ) throws PhotonException {
-   
-      int errcode;
-      
-      errcode = psoOpen( session.handle, name );
-      if ( errcode != 0 ) {
-         throw new PhotonException( PhotonErrors.getEnum(errcode) );
-      }
-
-      this.name = name;
-      this.session = session;
-   }
-
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   /**
-    * Closes our access to the key definition in shared memory.
-    *
-    * @exception PhotonException An abnormal error with the Photon library.
-    */
-   public void close() throws PhotonException {
-      
-      int errcode;
-      
-      errcode = psoClose( handle );
-      if ( errcode != 0 ) {
-         throw new PhotonException( PhotonErrors.getEnum(errcode) );
-      }
-      
-      handle = 0;
-      name = "";
-      currentLength = 0;
-   }
+   KeyDefinition() {}
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-   /**
-    * Creates a new key definition in shared memory.
-    *
-    * @param name The name of the definition.
-    * @param type The type of definition (ODBC, user defined, etc.)
-    * @param keyDef The key definition (as an opaque type)
-    *
-    * @exception PhotonException An abnormal error with the Photon library.
-    */
-   public void create( String         name,
-                       DefinitionType type,
-                       byte[]         keyDef ) throws PhotonException {
-   
-      int errcode;
-      
-      if ( handle != 0 ) {
-         throw new PhotonException( PhotonErrors.ALREADY_OPEN );
-      }
-      
-      errcode = psoCreate( session.handle,
-                           name,
-                           type.getType(),
-                           keyDef,
-                           keyDef.length );
-      if ( errcode != 0 ) {
-         throw new PhotonException( PhotonErrors.getEnum(errcode) );
-      }
-
-      this.name   = name;
-      this.keyDef = keyDef;
-      this.type   = type.getType();
-   }
-
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   /**
-    * Cleanup the object before GC.
-    */
-   protected void finalize() throws Throwable {     
-      
-      try {
-         psoClose(handle);
-      } finally {
-         handle = 0;
-         super.finalize();
-      }
-   }
-
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   public byte[] getDefinition() throws PhotonException {
-
-      if ( handle == 0 ) {
-         throw new PhotonException( PhotonErrors.NULL_HANDLE );
-      }
-      return keyDef;
-   }
+   public byte[] getDefBytes() { return keyDef; }
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-   public int getLength() throws PhotonException {
-
-      if ( handle == 0 ) {
-         throw new PhotonException( PhotonErrors.NULL_HANDLE );
-      }
-      return keyDef.length;
-   }
+   public String getDefString() { return keyDefStr; }
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    public DefinitionType getType() throws PhotonException {
 
-      if ( handle == 0 ) {
-         throw new PhotonException( PhotonErrors.NULL_HANDLE );
-      }
       return DefinitionType.getEnum(type);
    }
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-   /**
-    * Implement the Iterator interface.
-    * <p>
-    * The three methods, hasNext, next and remove implement Iterator.
-    */
-   public boolean hasNext() {
-
-      if ( currentLength < keyDef.length )
-         return true;
-      
-      return false;
-   }
-
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   /** This method implements the Iterable interface */
-   public Iterator<String> iterator() {
-      return this;
-   }
-   
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   /**
-    * Implement the Iterator interface.
-    * <p>
-    * The three methods, hasNext, next and remove implement Iterator.
-    */
-   public String next() {
-      
-      if ( currentLength >= keyDef.length ) {
-         currentLength = 0;
-         throw new NoSuchElementException();
-      }
-      
-      return psoGetNext();
-   }
-
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   /**
-    * Opens an existing key definition in shared memory.
-    *
-    * @param session The session we belong to.
-    * @param name The name of the definition.
-    *
-    * @exception PhotonException An abnormal error with the Photon library.
-    */
-   public void open( String  name ) throws PhotonException {
-   
-      int errcode;
-      
-      errcode = psoOpen( session.handle, name );
-      if ( errcode != 0 ) {
-         throw new PhotonException( PhotonErrors.getEnum(errcode) );
-      }
-
-      this.name = name;
-   }
-
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   /**
-    * Implement the Iterator interface.
-    * <p>
-    * The three methods, hasNext, next and remove implement Iterator.
-    * <p>
-    * Note: remove() will throw an UnsupportedOperation Exception
-    * since this operation is not supported.
-    */
-   public void remove() {
-      throw new UnsupportedOperationException();
-   }
-
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
    private static native void initIDs();
-
-   private native int psoClose( long h );
-
-   private native int psoCreate( long    hSession,
-                                 String  name,
-                                 int     type,
-                                 byte [] keyDef,
-                                 int     keyDefLength );
-
-   private native String psoGetNext();
-   
-   private native int psoOpen( long hSession, String name );
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 }

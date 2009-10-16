@@ -66,6 +66,14 @@ int psoaHashMapFirst( psoaHashMap    * pHashMap,
                       uint32_t       * dataLength );
 
 PHOTON_API_EXPORT
+int psoaHashMapGetDef( PSO_HANDLE             hashmapHandle,
+                       psoObjectDefinition ** ppDefinition );
+
+PHOTON_API_EXPORT
+int psoaHashMapGetKeyDef( PSO_HANDLE          hashmapHandle,
+                          psoKeyDefinition ** ppDefinition );
+
+PHOTON_API_EXPORT
 int psoaHashMapNext( psoaHashMap    * pHashMap,
                      unsigned char ** key,
                      uint32_t       * keyLength,

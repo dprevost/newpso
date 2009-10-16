@@ -41,6 +41,7 @@ public class Test {
          
          QueueTest.test1( session );
          QueueTest.test2( session );
+         QueueTest.test3( session );
 
          try {
             QueueTest.cleanupTests( session );

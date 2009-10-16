@@ -46,29 +46,37 @@ jfieldID g_id_dataDefLength;
 JNIEXPORT void JNICALL 
 Java_org_photon_ObjectDefinition_initIDs( JNIEnv * env, jclass defClass )
 {
-   g_id_type = (*env)->GetFieldID( env, defClass, "type", "I" );
+   g_id_type = (*env)->GetFieldID( 
+      env, defClass, "type", "I" );
    if ( g_id_type == NULL ) return;
-   g_id_minNumOfDataRecords = (*env)->GetFieldID( env, defClass, "minNumOfDataRecords", "J" );
+   g_id_minNumOfDataRecords = (*env)->GetFieldID(
+      env, defClass, "minNumOfDataRecords", "J" );
    if ( g_id_minNumOfDataRecords == NULL ) return;
-   g_id_minNumBlocks = (*env)->GetFieldID( env, defClass, "minNumBlocks", "J" );
+   g_id_minNumBlocks = (*env)->GetFieldID( 
+      env, defClass, "minNumBlocks", "J" );
    if ( g_id_minNumBlocks == NULL ) return;
 
-   g_id_dataDefType = (*env)->GetFieldID( env, defClass, "dataDefType", "I" );
-   if ( g_id_dataDefType = NULL ) return;
+   g_id_dataDefType = (*env)->GetFieldID(
+      env, defClass, "dataDefType", "I" );
+   if ( g_id_dataDefType == NULL ) return;
 
-   g_id_dataDef = (*env)->GetFieldID( env, defClass, "dataDef", "[B" );
-   if ( g_id_dataDef = NULL ) return;
-   g_id_dataDefStr = (*env)->GetFieldID( env, defClass, "dataDefStr", "Ljava/lang/String;" );
-   if ( g_id_dataDefStr = NULL ) return;
-   g_id_dataDefLength = (*env)->GetFieldID( env, defClass, "dataDefLength", "I" );
-   if ( g_id_dataDefLength = NULL ) return;
+   g_id_dataDef = (*env)->GetFieldID(
+      env, defClass, "dataDef", "[B" );
+   if ( g_id_dataDef == NULL ) return;
+   g_id_dataDefStr = (*env)->GetFieldID(
+      env, defClass, "dataDefStr", "Ljava/lang/String;" );
+   if ( g_id_dataDefStr == NULL ) return;
+   g_id_dataDefLength = (*env)->GetFieldID(
+      env, defClass, "dataDefLength", "I" );
+   if ( g_id_dataDefLength == NULL ) return;
 
+fprintf( stderr, "id ok %p \n", g_id_dataDefLength );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /*
- * Internal to the library.
+ * Internal to the jni library.
  */
 psoObjectDefinition * Java2C_ObjectDefinition( JNIEnv  * env,
                                                jobject   jdefinition )
@@ -79,7 +87,7 @@ psoObjectDefinition * Java2C_ObjectDefinition( JNIEnv  * env,
    jstring jstr;
    jbyteArray jdefArray;
    jbyte * jdef;
-
+fprintf( stderr, "ok 1\n" );
    /*
     * A bit of a hack. 
     *
@@ -89,7 +97,8 @@ psoObjectDefinition * Java2C_ObjectDefinition( JNIEnv  * env,
     *
     */
    length = (*env)->GetIntField( env, jdefinition, g_id_dataDefLength );
-   if ( length  == 0 ) {
+fprintf( stderr, "ok 2 %d %p\n", length, g_id_dataDefLength );
+   if ( length == 0 ) {
       pDefinition = (psoObjectDefinition *)
          malloc( sizeof(psoObjectDefinition) );
    }
@@ -101,18 +110,26 @@ psoObjectDefinition * Java2C_ObjectDefinition( JNIEnv  * env,
       pDefinition = (psoObjectDefinition *)
          malloc( offsetof(psoObjectDefinition, dataDef) - length );
    }
+fprintf( stderr, "ok 3\n" );
    if ( pDefinition == NULL ) return NULL;
+fprintf( stderr, "ok 4\n" );
    
    pDefinition->type  = (*env)->GetIntField( env, jdefinition, g_id_type );
+fprintf( stderr, "ok 5\n" );
    pDefinition->minNumOfDataRecords = (size_t) (*env)->GetLongField( env,
       jdefinition, g_id_minNumOfDataRecords );
+fprintf( stderr, "ok 6\n" );
    pDefinition->minNumBlocks = (size_t) (*env)->GetLongField( env,
       jdefinition, g_id_minNumBlocks );
+fprintf( stderr, "ok 7\n" );
    pDefinition->dataDefType = (*env)->GetIntField( env,
       jdefinition, g_id_dataDefType );
+fprintf( stderr, "ok 8\n" );
 
    pDefinition->dataDefLength = 0;
+fprintf( stderr, "ok 8\n" );
    if ( length  > 0 ) {
+fprintf( stderr, "ok 10\n" );
       pDefinition->dataDefLength = length;
       jdefArray = (*env)->GetObjectField( env, jdefinition, g_id_dataDef );
       if ( jdefArray == NULL ) return NULL;
@@ -123,6 +140,7 @@ psoObjectDefinition * Java2C_ObjectDefinition( JNIEnv  * env,
       (*env)->ReleaseByteArrayElements( env, jdefArray, jdef, JNI_ABORT );
    }
    else if ( length < 0 ) {
+fprintf( stderr, "ok 11\n" );
       pDefinition->dataDefLength = -length;
       jstr = (*env)->GetObjectField( env, jdefinition, g_id_dataDefStr );
       if ( jstr == NULL ) return NULL;
@@ -130,84 +148,17 @@ psoObjectDefinition * Java2C_ObjectDefinition( JNIEnv  * env,
       if ( str == NULL ) return NULL;
       
       memcpy( pDefinition->dataDef, str, pDefinition->dataDefLength );
-   (*env)->ReleaseStringUTFChars( env, jstr, str );
+      (*env)->ReleaseStringUTFChars( env, jstr, str );
    }
+fprintf( stderr, "ok 12\n" );
 
    return pDefinition;
-#if 0
-
-   /** Type of the object */
-   int type;
-   
-   /**
-    * Optimization feature - not implemented yet.
-    * <p>
-    * The expected minimum number of data records. This is used internally
-    * to avoid shrinking the internal "holder" of the data beyond what is
-    * needed to hold this minimum number of data records.
-    */
-   long minNumOfDataRecords = 0;
-   
-   /**
-    * Optimization feature - not implemented yet
-    * <p>
-    * The expected minimum number of blocks. This is used internally
-    * to avoid shrinking the shared-memory object beyond a certain predefined
-    * minimum size. 
-    * <p>
-    * Potential issue: the amount of overhead used by Photon will vary;
-    * some potential factors includes the type of object, the number of 
-    * data records, the length of the data records (and keys, if used).
-    * <p>
-    * You might want to retrieve the status of the object and evaluate
-    * the minimum number of blocks needed from it..
-    */
-   long minNumBlocks = 1;
-
-   /**
-    * Type of definition of the data fields.
-    */
-   int dataDefType = DefinitionType.USER_DEFINED.getType();
-   
-   /**
-    * Definition of the data fields.
-    * <p>
-    * This definition can be used as a comment to describe the content
-    * of the object. It can also be used to pack and unpack the items
-    * (serialized objects) contain in the object container.
-    * <p>
-    * It can be NULL if not needed.
-    */
-   byte [] dataDef;
-
-   /**
-    * Definition of the data fields as a string
-    * <p>
-    * This definition can be used as a comment to describe the content
-    * of the object. It can also be used to pack and unpack the items
-    * (serialized objects) contain in the object container.
-    * <p>
-    * It can be NULL if not needed.
-    */
-   String dataDefStr;
-   
-   /*
-    * A bit of a hack. 
-    *
-    * The dataDef can be either an array of bytes or a string. Or nothing.
-    *
-    * If zero, no dataDef. If < 0, a string. A byte[] otherwise.
-    *
-    */
-   int dataDefLength = 0; 
-#endif
-
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /*
- * Internal to the library.
+ * Internal to the jni library.
  */
 int C2Java_ObjectDefinition( JNIEnv              * env,
                              jobject               jdefinition,

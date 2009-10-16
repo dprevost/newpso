@@ -53,10 +53,11 @@ public class Queue<O, S extends PSOSerialize<O>> extends BaseQueue implements It
 
       this.serializer = serializer;
       
+      if ( serializer.getType() != definition.getDataType() ) {
+         close();
+         throw new PhotonException( PhotonErrors.INVALID_DATA_DEFINITION_TYPE );
+      }
       System.out.println( definition.dataDefType );
-      
-// need a test to validate serializer versus - queue definition type
-//                     create the proper type of serializer and initialize it
    }
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
@@ -197,8 +198,5 @@ public class Queue<O, S extends PSOSerialize<O>> extends BaseQueue implements It
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-//   private static native void initIDs();
-
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 }
 

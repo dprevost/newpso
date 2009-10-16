@@ -329,26 +329,23 @@ Java_org_photon_Session_psoGetDefinition( JNIEnv * env,
    int errcode;
    size_t handle = (size_t) jhandle;
    const char * objectName;
-   psoObjectDefinition objDefinition;
+   psoObjectDefinition * pDefinition = NULL;
    
    objectName = (*env)->GetStringUTFChars( env, jname, NULL );
    if ( objectName == NULL ) {
       return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
    }
 
-   errcode = psoGetDefinition( (PSO_HANDLE) handle,
-                               objectName,
-                               strlen(objectName),
-                               &objDefinition );
+   errcode = psoaSessionGetDef( (PSO_HANDLE) handle,
+                                objectName,
+                                strlen(objectName),
+                                &pDefinition );
    (*env)->ReleaseStringUTFChars( env, jname, objectName );
 
    if ( errcode == 0 ) {
-      (*env)->SetIntField( env, jdefinition,  g_idObjDefType,
-         objDefinition.type );
-      (*env)->SetLongField( env, jdefinition, g_idObjDefMinNumOfDataRecords,
-         objDefinition.minNumOfDataRecords );
-      (*env)->SetLongField( env, jdefinition, g_idObjDefMinNumBlocks,
-         objDefinition.minNumBlocks );
+      errcode = C2Java_ObjectDefinition( env,
+                                         jdefinition,
+                                         pDefinition );     
    }
 
    return errcode;
@@ -371,65 +368,23 @@ Java_org_photon_Session_psoGetKeyDefinition( JNIEnv * env,
    int errcode;
    size_t handle = (size_t) jhandle;
    const char * objectName;
-   PSO_HANDLE keyDefHandle = NULL;
-   enum psoDefinitionType  defType;
-   unsigned char * keyDef;
-   unsigned int  keyDefLength; 
-   jbyteArray jba;
-   char * defName, * keyDefName;
-   unsigned int defNameLength;
-   jstring jkeyDefName;
+   psoKeyDefinition * pDefinition = NULL;
    
    objectName = (*env)->GetStringUTFChars( env, jname, NULL );
    if ( objectName == NULL ) {
       return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
    }
 
-   errcode = psoGetKeyDefinition( (PSO_HANDLE) handle,
-                                  objectName,
-                                  strlen(objectName),
-                                  &keyDefHandle );
+   errcode = psoaSessionGetKeyDef( (PSO_HANDLE) handle,
+                                   objectName,
+                                   strlen(objectName),
+                                   &pDefinition );
    (*env)->ReleaseStringUTFChars( env, jname, objectName );
 
    if ( errcode == 0 ) {
-      errcode = psoaKeyDefGetDef( keyDefHandle,
-                                  &defName,
-                                  &defNameLength,
-                                  &defType,
-                                  (unsigned char **)&keyDef,
-                                  &keyDefLength );
-      if ( errcode != 0 ) {
-         psoKeyDefClose( keyDefHandle );
-         return errcode;
-      }
-   
-      // The name is the key in the hashmap and is not null-terminated
-      keyDefName = calloc( defNameLength + 1, 1 );
-      if ( keyDefName == NULL ) {
-         psoKeyDefClose( keyDefHandle );
-         return PSO_NOT_ENOUGH_HEAP_MEMORY;
-      }
-      memcpy( keyDefName, defName, defNameLength );
-      jkeyDefName = (*env)->NewStringUTF( env, keyDefName );
-      free( keyDefName );
-      if ( jkeyDefName == NULL ) {
-         psoKeyDefClose( keyDefHandle );
-         return PSO_NOT_ENOUGH_HEAP_MEMORY;
-      }
-
-      jba = (*env)->NewByteArray( env, keyDefLength );
-      if ( jba == NULL ) {
-         psoKeyDefClose( keyDefHandle );
-         (*env)->DeleteLocalRef( env, jkeyDefName );
-         return PSO_NOT_ENOUGH_HEAP_MEMORY;
-      }
-   
-      (*env)->SetByteArrayRegion( env, jba, 0, keyDefLength, (jbyte *)keyDef );
-
-      (*env)->SetObjectField( env, jdefinition, g_idKeyDefKeyDef, jba );
-      (*env)->SetIntField(    env, jdefinition, g_idKeyDefType,   defType );
-      (*env)->SetLongField(   env, jdefinition, g_idKeyDefHandle, (size_t)keyDefHandle );
-      (*env)->SetObjectField( env, jdefinition, g_idKeyDefName,   jkeyDefName );
+      errcode = C2Java_KeyDefinition( env,
+                                      jdefinition,
+                                      pDefinition );     
    }
 
    return errcode;
@@ -531,14 +486,7 @@ Java_org_photon_Session_psoGetStatus( JNIEnv  * env,
    (*env)->ReleaseStringUTFChars( env, jname, objectName );
 
    if ( errcode == 0 ) {
-      (*env)->SetIntField(  env, jstatus, g_idStatusType, status.type );
-      (*env)->SetIntField ( env, jstatus, g_idStatusStatus, status.status );
-      (*env)->SetLongField( env, jstatus, g_idStatusNumBlocks, status.numBlocks );
-      (*env)->SetLongField( env, jstatus, g_idStatusNumBlockGroup, status.numBlockGroup );
-      (*env)->SetLongField( env, jstatus, g_idStatusNumDataItem, status.numDataItem );
-      (*env)->SetLongField( env, jstatus, g_idStatusFreeBytes, status.freeBytes );
-      (*env)->SetIntField ( env, jstatus, g_idStatusMaxDataLength, status.maxDataLength );
-      (*env)->SetIntField ( env, jstatus, g_idStatusMaxKeyLength, status.maxKeyLength );
+      C2Java_ObjStatus( env, jstatus, &status );
    }
    
    return errcode;

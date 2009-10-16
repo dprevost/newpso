@@ -101,6 +101,7 @@ public class ObjectDefinition {
       this.minNumOfDataRecords = minNumOfDataRecords;
       this.minNumBlocks = minNumBlocks;
       dataDefType = defType.getType();
+      dataDefLength = 0;
    }
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
@@ -152,6 +153,14 @@ public class ObjectDefinition {
 
    public long getMinNumBlocks() { return minNumBlocks; }
 
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   public byte[] getDataDefBytes() { return dataDef; }
+   
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   public String getDataDefString() { return dataDefStr; }
+   
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    public DefinitionType getDataType() { 

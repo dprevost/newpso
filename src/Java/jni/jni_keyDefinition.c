@@ -21,16 +21,18 @@
 #include <jni.h>
 #include <photon/photon.h>
 #include <string.h>
+#include <stddef.h>
+#include <ctype.h> 
+#include <wchar.h>
 
 #include "jni_photon.h"
 #include "org_photon_KeyDefinition.h"
 #include "API/KeyDefinition.h"
 
-jfieldID g_idKeyDefHandle;
-jfieldID g_idKeyDefKeyDef;
-jfieldID g_idKeyDefType;
-jfieldID g_idKeyDefCurrentLength;
-jfieldID g_idKeyDefName;
+jfieldID g_id_type;
+jfieldID g_id_keyDef;
+jfieldID g_id_keyDefStr;
+jfieldID g_id_keyDefLength;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -43,284 +45,141 @@ JNIEXPORT void JNICALL
 Java_org_photon_KeyDefinition_initIDs( JNIEnv * env,
                                        jclass   classDefinition )
 {
-   g_idKeyDefHandle  = (*env)->GetFieldID( env, classDefinition, "handle", "J" );
-   if ( g_idKeyDefHandle == NULL ) return;
-   g_idKeyDefKeyDef = (*env)->GetFieldID( env, classDefinition, "keyDef", "[B" );
-   if ( g_idKeyDefKeyDef == NULL ) return;
-   g_idKeyDefType = (*env)->GetFieldID( env, classDefinition, "type", "J" );
-   if ( g_idKeyDefType == NULL ) return;
-   g_idKeyDefCurrentLength = (*env)->GetFieldID( env, classDefinition, 
-      "currentLength", "J" );
-   if ( g_idKeyDefCurrentLength == NULL ) return;
-   g_idKeyDefName = (*env)->GetFieldID( env, classDefinition, 
-      "name", "Ljava/lang/String;" );
-   if ( g_idKeyDefName == NULL ) return;
+   g_id_type = (*env)->GetFieldID( env, 
+      classDefinition, "type", "I" );
+   if ( g_id_type == NULL ) return;
+   g_id_keyDef = (*env)->GetFieldID( env, 
+      classDefinition, "keyDef", "[B" );
+   if ( g_id_keyDef == NULL ) return;
+   g_id_keyDefStr = (*env)->GetFieldID( env, 
+      classDefinition, "keyDefStr", "Ljava/lang/String;" );
+   if ( g_id_keyDefStr == NULL ) return;
+   g_id_keyDefLength = (*env)->GetFieldID( env, 
+      classDefinition, "keyDefLength", "I" );
+   if ( g_id_keyDefLength == NULL ) return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /*
- * Class:     org_photon_KeyDefinition
- * Method:    psoClose
- * Signature: (J)I
+ * Internal to the library.
  */
-JNIEXPORT jint JNICALL
-Java_org_photon_KeyDefinition_psoClose( JNIEnv * env,
-                                         jobject  jobj,
-                                         jlong    jhandle )
+psoKeyDefinition * Java2C_KeyDefinition( JNIEnv  * env,
+                                         jobject   jdefinition )
 {
-   int errcode;
+   int length;
+   psoKeyDefinition * pDefinition;
+   const char * str;
+   jstring jstr;
+   jbyteArray jdefArray;
+   jbyte * jdef;
 
-   /* Native variables */
-   size_t handle = (size_t) jhandle;
-
-   errcode = psoKeyDefClose( (PSO_HANDLE)handle );
-
-   return errcode;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-/*
- * Class:     org_photon_KeyDefinition
- * Method:    psoCreate
- * Signature: (JLjava/lang/String;I[BI)I
- */
-JNIEXPORT jint JNICALL
-Java_org_photon_KeyDefinition_psoCreate( JNIEnv *   env,
-                                         jobject    jobj,
-                                         jlong      jhandle,
-                                         jstring    jname,
-                                         jint       jtype,
-                                         jbyteArray jkeyDef,
-                                         jint       jlength )
-{
-   int errcode;
-
-   /* Native variables */
-   size_t handle = (size_t) jhandle;
-   const char * name;
-   PSO_HANDLE definitionHandle;
-   jbyte * keyDef;
-   
-   name = (*env)->GetStringUTFChars( env, jname, NULL );
-   if ( name == NULL ) {
-      return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
+   /*
+    * A bit of a hack. 
+    *
+    * dataDef can be either an array of bytes or a string. Or nothing.
+    *
+    * If zero, no dataDef. If < 0, a string. A byte[] otherwise.
+    *
+    */
+   length = (*env)->GetIntField( env, jdefinition, g_id_keyDefLength );
+   if ( length  == 0 ) {
+      pDefinition = (psoKeyDefinition *) malloc( sizeof(psoKeyDefinition) );
    }
-
-   keyDef = (*env)->GetByteArrayElements( env, jkeyDef, NULL );
-   if ( keyDef == NULL ) {
-      (*env)->ReleaseStringUTFChars( env, jname, name );
-      return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
+   else if ( length > 0 ) {
+      pDefinition = (psoKeyDefinition *)
+         malloc( offsetof(struct psoKeyDefinition, definition) + length );
    }
-   
-   errcode = psoKeyDefCreate( (PSO_HANDLE)handle,
-                              name,
-                              strlen(name),
-                              jtype,
-                              (const unsigned char *)keyDef,
-                              jlength,
-                              &definitionHandle );
-   (*env)->ReleaseStringUTFChars( env, jname, name );
-   (*env)->ReleaseByteArrayElements( env, jkeyDef, keyDef, JNI_ABORT );
-
-   if ( errcode == PSO_OK ) {
-      (*env)->SetLongField( env, jobj, g_idKeyDefHandle, 
-         (size_t) definitionHandle );
+   else {
+      pDefinition = (psoKeyDefinition *)
+         malloc( offsetof(psoKeyDefinition, definition) - length );
    }
-
-   return errcode;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-/*
- * Class:     org_photon_KeyDefinition
- * Method:    psoGetNext
- * Signature: ()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL 
-Java_org_photon_KeyDefinition_psoGetNext( JNIEnv * env,
-                                          jobject  jobj )
-{
-   jbyte * keyDef;
-   jbyteArray jkeyDef;
-   int type, i, count = 0;
-   int currentLength;
-   jsize keyDefLength;
-   char msg[1000];
+   if ( pDefinition == NULL ) return NULL;
    
-   jkeyDef = (*env)->GetObjectField( env, jobj, g_idKeyDefKeyDef );
-   type = (*env)->GetIntField( env, jobj, g_idKeyDefType );
-   currentLength = (*env)->GetIntField( env, jobj, g_idKeyDefCurrentLength );
-   
-   keyDef = (*env)->GetByteArrayElements( env, jkeyDef, NULL );
-   if ( keyDef == NULL ) {
-      (*env)->NewStringUTF( env, "" );
+   pDefinition->type  = (*env)->GetIntField( env, jdefinition, g_id_type );
+
+   pDefinition->definitionLength = 0;
+   if ( length  > 0 ) {
+      pDefinition->definitionLength = length;
+      jdefArray = (*env)->GetObjectField( env, jdefinition, g_id_keyDef );
+      if ( jdefArray == NULL ) return NULL;
+      jdef = (*env)->GetByteArrayElements( env, jdefArray, NULL );
+      if ( jdef == NULL ) return NULL;
+
+      memcpy( pDefinition->definition, jdef, pDefinition->definitionLength );
+      (*env)->ReleaseByteArrayElements( env, jdefArray, jdef, JNI_ABORT );
    }
-   keyDefLength = (*env)->GetArrayLength( env, jkeyDef );
-
-   if ( type == PSO_DEF_USER_DEFINED ) {
+   else if ( length < 0 ) {
+      pDefinition->definitionLength = -length;
+      jstr = (*env)->GetObjectField( env, jdefinition, g_id_keyDefStr );
+      if ( jstr == NULL ) return NULL;
+      str = (*env)->GetStringUTFChars( env, jstr, NULL );
+      if ( str == NULL ) return NULL;
       
-      for ( i = currentLength; i < keyDefLength; ++i ) {
-         if ( keyDef[i] == 0 ) {
-            currentLength = i + 1;
-            break;
-         }
-         msg[count] = keyDef[i];
-         currentLength++;
-         count++;
-         if ( count == 999 ) {
-            // Reallocation would be better here
-            msg[count] = 0;
-            break;
-         }
-      }
+      memcpy( pDefinition->definition, str, pDefinition->definitionLength );
+      (*env)->ReleaseStringUTFChars( env, jstr, str );
    }
-   else if ( type == PSO_DEF_PHOTON_ODBC_SIMPLE ) {
-      /*
-       * We don't need to count - msg cannot overflow with this type.
-       */
-      char name [PSO_MAX_FIELD_LENGTH+1];
-      char tmp[20];
-      uint32_t currentField = currentLength / sizeof(psoFieldDefinition);
-      psoFieldDefinition * field = (psoFieldDefinition *)keyDef;
-   
-      strcpy( msg, "Name: " );
+
+   return pDefinition;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+/*
+ * Internal to the library.
+ */
+int C2Java_KeyDefinition( JNIEnv           * env,
+                          jobject            jdefinition,
+                          psoKeyDefinition * pDefinition )
+{
+   int i;
+   mbstate_t state;
+   int num, is_string = 0;
+   jbyteArray jba;
+   jstring jstr;
+   char * str;
+
+   (*env)->SetIntField( env, jdefinition, g_id_type, pDefinition->type );
+
+   if ( pDefinition->definitionLength == 0 ) {
+       (*env)->SetIntField( env, jdefinition, g_id_keyDefLength, 0 );
+   }
+   else {
+      memset( &state, 0, sizeof(state) );
+      num = mbrtowc( (wchar_t *)NULL,
+                       (const char *)pDefinition->definition,
+                       pDefinition->definitionLength,
+                       &state );
+      if ( num >= 0 ) {
+         // Probably a utf-8 string - no conversion error.
+         (*env)->SetIntField( env,
+            jdefinition, g_id_keyDefLength, -pDefinition->definitionLength );
+
+         str = malloc( pDefinition->definitionLength + 1 );
+         if ( str == NULL ) return PSO_NOT_ENOUGH_HEAP_MEMORY;
       
-      if ( field[currentField].name[PSO_MAX_FIELD_LENGTH-1] == '\0' ) {
-         strcat( msg, field[currentField].name );
+         memcpy( str, pDefinition->definition, pDefinition->definitionLength );
+         str[pDefinition->definitionLength] = 0;
+         jstr = (*env)->NewStringUTF( env, str );
+         free( str );
+         if ( jstr == NULL ) return PSO_NOT_ENOUGH_HEAP_MEMORY;
+
+         (*env)->SetObjectField( env, jdefinition, g_id_keyDefStr, jstr );
       }
       else {
-         memcpy( name, field[currentField].name, PSO_MAX_FIELD_LENGTH );
-         name[PSO_MAX_FIELD_LENGTH] = '\0';
-         strcat( msg, name );
+         (*env)->SetIntField( env,
+            jdefinition, g_id_keyDefLength, pDefinition->definitionLength );
+
+         jba = (*env)->NewByteArray( env, pDefinition->definitionLength );
+         if ( jba == NULL ) {
+            return PSO_NOT_ENOUGH_HEAP_MEMORY;
+         }
+         (*env)->SetByteArrayRegion( env, jba, 0, pDefinition->definitionLength,
+            (jbyte *)pDefinition->definition );
+         (*env)->SetObjectField( env, jdefinition, g_id_keyDef, jba );
       }
-      
-      strcat( msg, ", Type: " );
-      switch ( field[currentField].type ) {
-
-      case PSO_KEY_INTEGER:
-         strcat( msg, "Integer" );
-         break;
-      case PSO_KEY_BIGINT:
-         strcat( msg, "BigInt" );
-         break;
-      case PSO_KEY_DATE:
-         strcat( msg, "Date" );
-         break;
-      case PSO_KEY_TIME:
-         strcat( msg, "Time" );
-         break;
-      case PSO_KEY_TIMESTAMP:
-         strcat( msg, "TimeStamp" );
-         break;
-
-      case PSO_KEY_BINARY:
-         strcat( msg, "Binary, Length: " );
-         sprintf( tmp, "%d", field[currentField].vals.length );
-         strcat( msg, tmp );
-         break;
-      case PSO_KEY_CHAR:
-         strcat( msg, "Char, Length: " );
-         sprintf( tmp, "%d", field[currentField].vals.length );
-         strcat( msg, tmp );
-         break;
-
-      case PSO_KEY_VARBINARY:
-         strcat( msg, "VarBinary, Length: " );
-         sprintf( tmp, "%d", field[currentField].vals.length );
-         strcat( msg, tmp );
-         break;
-
-      case PSO_KEY_VARCHAR:
-         strcat( msg, "VarChar, Length: " );
-         sprintf( tmp, "%d", field[currentField].vals.length );
-         strcat( msg, tmp );
-         break;
-
-      case PSO_KEY_LONGVARBINARY:
-         strcat( msg, "LongVarBinary" );
-         break;
-      case PSO_KEY_LONGVARCHAR:
-         strcat( msg, "LongVarChar" );
-         break;
-
-      default:
-         strcat( msg, "Invalid/unknown key type" );
-      }
-
-      currentLength += sizeof(psoFieldDefinition);
-   }
-
-   (*env)->SetIntField( env, jobj, g_idKeyDefCurrentLength, currentLength );
-   (*env)->ReleaseByteArrayElements( env, jkeyDef, keyDef, JNI_ABORT );
-
-   return (*env)->NewStringUTF( env, msg );
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-/*
- * Class:     org_photon_KeyDefinition
- * Method:    psoOpen
- * Signature: (JLjava/lang/String;)I
- */
-JNIEXPORT jint JNICALL
-Java_org_photon_KeyDefinition_psoOpen( JNIEnv * env,
-                                       jobject  jobj,
-                                       jlong    jhandle,
-                                       jstring  jname )
-{
-   int errcode;
-   
-   /* Native variables */
-   size_t handle = (size_t) jhandle;
-   const char * name;
-   PSO_HANDLE definitionHandle;
-   unsigned char * keyDef;
-   enum psoDefinitionType defType;
-   unsigned int keyDefLength;
-   jbyteArray jba;
-   char * dummyName;
-   unsigned int dummyLength;
-   
-   name = (*env)->GetStringUTFChars( env, jname, NULL );
-   if ( name == NULL ) {
-      return PSO_NOT_ENOUGH_HEAP_MEMORY; // out-of-memory exception by the JVM
    }
    
-   errcode = psoKeyDefOpen( (PSO_HANDLE)handle,
-                            name,
-                            strlen(name),
-                            &definitionHandle );
-   (*env)->ReleaseStringUTFChars( env, jname, name );
-   
-   if ( errcode != 0 ) return errcode;
-   
-   errcode = psoaKeyDefGetDef( definitionHandle,
-                               &dummyName,
-                               &dummyLength,
-                               &defType,
-                               &keyDef,
-                               &keyDefLength );
-   if ( errcode != 0 ) {
-      psoKeyDefClose( definitionHandle );
-      return errcode;
-   }
-   
-   jba = (*env)->NewByteArray( env, keyDefLength );
-   if ( jba == NULL ) {
-      psoKeyDefClose( definitionHandle );
-      return PSO_NOT_ENOUGH_HEAP_MEMORY;
-   }
-   
-   (*env)->SetByteArrayRegion( env, jba, 0, keyDefLength, (jbyte *)keyDef );
-
-   (*env)->SetObjectField( env, jobj, g_idKeyDefKeyDef, jba );
-   (*env)->SetIntField(    env, jobj, g_idKeyDefType,   defType );
-   (*env)->SetLongField(   env, jobj, g_idKeyDefHandle, (size_t)definitionHandle );
-
    return 0;
 }
 

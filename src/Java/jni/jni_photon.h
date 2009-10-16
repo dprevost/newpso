@@ -64,29 +64,6 @@ extern jfieldID g_idInfoDllVersion;
 extern jfieldID g_idInfoQuasarVersion;
 extern jfieldID g_idInfoCreationTime;
 
-/* The KeyDefinition class */
-extern jfieldID g_idKeyDefHandle;
-extern jfieldID g_idKeyDefKeyDef;
-extern jfieldID g_idKeyDefType;
-extern jfieldID g_idKeyDefName;
-
-/* The ObjectDefinition class */
-
-extern jfieldID g_idObjDefType;
-extern jfieldID g_idObjDefMinNumOfDataRecords;
-extern jfieldID g_idObjDefMinNumBlocks;
-
-/* The ObjectStatus class */
-
-extern jfieldID g_idStatusType;
-extern jfieldID g_idStatusStatus;
-extern jfieldID g_idStatusNumBlocks;
-extern jfieldID g_idStatusNumBlockGroup;
-extern jfieldID g_idStatusNumDataItem;
-extern jfieldID g_idStatusFreeBytes;
-extern jfieldID g_idStatusMaxDataLength;
-extern jfieldID g_idStatusMaxKeyLength;
-
 /* The Session class */
 
 extern jfieldID g_idSessionHandle;
@@ -141,6 +118,10 @@ psoObjectDefinition * Java2C_ObjectDefinition( JNIEnv  * env,
 int C2Java_ObjectDefinition( JNIEnv              * env,
                              jobject               jdefinition,
                              psoObjectDefinition * pDefinition );
+
+void C2Java_ObjStatus( JNIEnv       * env,
+                       jobject        jstatus,
+                       psoObjStatus * pStatus );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

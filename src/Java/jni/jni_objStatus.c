@@ -25,14 +25,14 @@
 #include "jni_photon.h"
 #include "org_photon_ObjectStatus.h"
 
-jfieldID g_idStatusType;
-jfieldID g_idStatusStatus;
-jfieldID g_idStatusNumBlocks;
-jfieldID g_idStatusNumBlockGroup;
-jfieldID g_idStatusNumDataItem;
-jfieldID g_idStatusFreeBytes;
-jfieldID g_idStatusMaxDataLength;
-jfieldID g_idStatusMaxKeyLength;
+jfieldID g_id_Type;
+jfieldID g_id_Status;
+jfieldID g_id_NumBlocks;
+jfieldID g_id_NumBlockGroup;
+jfieldID g_id_NumDataItem;
+jfieldID g_id_FreeBytes;
+jfieldID g_id_MaxDataLength;
+jfieldID g_id_MaxKeyLength;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -44,22 +44,40 @@ jfieldID g_idStatusMaxKeyLength;
 JNIEXPORT void JNICALL
 Java_org_photon_ObjectStatus_initIDs( JNIEnv * env, jclass statusClass )
 {
-   g_idStatusType = (*env)->GetFieldID( env, statusClass, "type", "I" );
-   if ( g_idStatusType == NULL ) return;
-   g_idStatusStatus = (*env)->GetFieldID( env, statusClass, "status", "I" );
-   if ( g_idStatusStatus == NULL ) return;
-   g_idStatusNumBlocks = (*env)->GetFieldID( env, statusClass, "numBlocks", "J" );
-   if ( g_idStatusNumBlocks == NULL ) return;
-   g_idStatusNumBlockGroup = (*env)->GetFieldID( env, statusClass, "numBlockGroup", "J" );
-   if ( g_idStatusNumBlockGroup == NULL ) return;
-   g_idStatusNumDataItem = (*env)->GetFieldID( env, statusClass, "numDataItem", "J" );
-   if ( g_idStatusNumDataItem == NULL ) return;
-   g_idStatusFreeBytes = (*env)->GetFieldID( env, statusClass, "freeBytes", "J" );
-   if ( g_idStatusFreeBytes == NULL ) return;
-   g_idStatusMaxDataLength = (*env)->GetFieldID( env, statusClass, "maxDataLength", "I" );
-   if ( g_idStatusMaxDataLength == NULL ) return;
-   g_idStatusMaxKeyLength = (*env)->GetFieldID( env, statusClass, "maxKeyLength", "I" );
-   if ( g_idStatusMaxKeyLength == NULL ) return;
+   g_id_Type = (*env)->GetFieldID( env, statusClass, "type", "I" );
+   if ( g_id_Type == NULL ) return;
+   g_id_Status = (*env)->GetFieldID( env, statusClass, "status", "I" );
+   if ( g_id_Status == NULL ) return;
+   g_id_NumBlocks = (*env)->GetFieldID( env, statusClass, "numBlocks", "J" );
+   if ( g_id_NumBlocks == NULL ) return;
+   g_id_NumBlockGroup = (*env)->GetFieldID( env, statusClass, "numBlockGroup", "J" );
+   if ( g_id_NumBlockGroup == NULL ) return;
+   g_id_NumDataItem = (*env)->GetFieldID( env, statusClass, "numDataItem", "J" );
+   if ( g_id_NumDataItem == NULL ) return;
+   g_id_FreeBytes = (*env)->GetFieldID( env, statusClass, "freeBytes", "J" );
+   if ( g_id_FreeBytes == NULL ) return;
+   g_id_MaxDataLength = (*env)->GetFieldID( env, statusClass, "maxDataLength", "I" );
+   if ( g_id_MaxDataLength == NULL ) return;
+   g_id_MaxKeyLength = (*env)->GetFieldID( env, statusClass, "maxKeyLength", "I" );
+   if ( g_id_MaxKeyLength == NULL ) return;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+/*
+ * Internal to the jni library.
+ */
+void C2Java_ObjStatus( JNIEnv       * env,
+                       jobject        jstatus,
+                       psoObjStatus * pStatus )
+{
+   (*env)->SetIntField(  env, jstatus, g_id_Type,          pStatus->type );
+   (*env)->SetIntField(  env, jstatus, g_id_Status,        pStatus->status );
+   (*env)->SetLongField( env, jstatus, g_id_NumBlocks,     pStatus->numBlocks );
+   (*env)->SetLongField( env, jstatus, g_id_NumBlockGroup, pStatus->numBlockGroup );
+   (*env)->SetLongField( env, jstatus, g_id_NumDataItem,   pStatus->numDataItem );
+   (*env)->SetLongField( env, jstatus, g_id_FreeBytes,     pStatus->freeBytes );
+   (*env)->SetIntField(  env, jstatus, g_id_MaxDataLength, pStatus->maxDataLength );
+   (*env)->SetIntField(  env, jstatus, g_id_MaxKeyLength,  pStatus->maxKeyLength );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

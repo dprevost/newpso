@@ -72,62 +72,21 @@ Java_org_photon_BaseQueue_psoClose( JNIEnv  * env,
  * Signature: (JLorg/photon/DataDefinition;)I
  */
 JNIEXPORT jint JNICALL
-Java_org_photon_BaseQueue_psoDataDefinition( JNIEnv * env,
-                                             jobject  jobj,
-                                             jlong    jhandle,
-                                             jobject  jdefinition )
+Java_org_photon_BaseQueue_psoDefinition( JNIEnv * env,
+                                         jobject  jobj,
+                                         jlong    jhandle,
+                                         jobject  jdefinition )
 {
    int errcode;
    size_t handle = (size_t) jhandle;
-   PSO_HANDLE dataDefHandle = NULL;
-   enum psoDefinitionType  defType;
-   unsigned char * dataDef;
-   unsigned int  dataDefLength; 
-   jbyteArray jba;
-   char * defName, * dataDefName;
-   unsigned int defNameLength;
-   jstring jdataDefName;
-   
-//   errcode = psoQueueDefinition( (PSO_HANDLE) handle, &dataDefHandle );
-   if ( errcode == 0 ) {
-      errcode = psoaDataDefGetDef( dataDefHandle,
-                                   &defName,
-                                   &defNameLength,
-                                   &defType,
-                                   (unsigned char **)&dataDef,
-                                   &dataDefLength );
-      if ( errcode != 0 ) {
-         psoDataDefClose( dataDefHandle );
-         return errcode;
-      }
-   
-      // The name is the key in the hashmap and is not null-terminated
-      dataDefName = calloc( defNameLength + 1, 1 );
-      if ( dataDefName == NULL ) {
-         psoDataDefClose( dataDefHandle );
-         return PSO_NOT_ENOUGH_HEAP_MEMORY;
-      }
-      memcpy( dataDefName, defName, defNameLength );
-      jdataDefName = (*env)->NewStringUTF( env, dataDefName );
-      free( dataDefName );
-      if ( jdataDefName == NULL ) {
-         psoDataDefClose( dataDefHandle );
-         return PSO_NOT_ENOUGH_HEAP_MEMORY;
-      }
-      
-      jba = (*env)->NewByteArray( env, dataDefLength );
-      if ( jba == NULL ) {
-         psoDataDefClose( dataDefHandle );
-         (*env)->DeleteLocalRef( env, jdataDefName );
-         return PSO_NOT_ENOUGH_HEAP_MEMORY;
-      }
-   
-      (*env)->SetByteArrayRegion( env, jba, 0, dataDefLength, (jbyte *)dataDef );
+   psoObjectDefinition * pDefinition = NULL;
 
-      (*env)->SetObjectField( env, jdefinition, g_idDataDefDataDef, jba );
-      (*env)->SetIntField(    env, jdefinition, g_idDataDefType,    defType );
-      (*env)->SetLongField(   env, jdefinition, g_idDataDefHandle,  (size_t)dataDefHandle );
-      (*env)->SetObjectField( env, jdefinition, g_idDataDefName,    jdataDefName );
+   errcode = psoaQueueGetDef( (PSO_HANDLE) handle, &pDefinition );
+                            
+   if ( errcode == 0 ) {
+      errcode = C2Java_ObjectDefinition( env,
+                                         jdefinition,
+                                         pDefinition );     
    }
 
    return errcode;
@@ -188,74 +147,6 @@ Java_org_photon_BaseQueue_psoGetNext( JNIEnv   * env,
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-/*
- * Class:     org_photon_BaseQueue
- * Method:    psoGetRecordDefinition
- * Signature: (JLorg/photon/DataDefinition;)I
- */
-JNIEXPORT jint JNICALL
-Java_org_photon_BaseQueue_psoGetRecordDefinition( JNIEnv * env,
-                                                  jobject  jobj,
-                                                  jlong    jhandle, 
-                                                  jobject  jdefinition )
-{
-   int errcode;
-   size_t handle = (size_t) jhandle;
-   PSO_HANDLE dataDefHandle = NULL;
-   enum psoDefinitionType  defType;
-   unsigned char * dataDef;
-   unsigned int  dataDefLength; 
-   jbyteArray jba;
-   char * defName, * dataDefName;
-   unsigned int defNameLength;
-   jstring jdataDefName;
-   
-   errcode = psoQueueRecordDefinition( (PSO_HANDLE) handle, &dataDefHandle );
-   if ( errcode == 0 ) {
-      errcode = psoaDataDefGetDef( dataDefHandle,
-                                   &defName,
-                                   &defNameLength,
-                                   &defType,
-                                   (unsigned char **)&dataDef,
-                                   &dataDefLength );
-      if ( errcode != 0 ) {
-         psoDataDefClose( dataDefHandle );
-         return errcode;
-      }
-   
-      // The name is the key in the hashmap and is not null-terminated
-      dataDefName = calloc( defNameLength + 1, 1 );
-      if ( dataDefName == NULL ) {
-         psoDataDefClose( dataDefHandle );
-         return PSO_NOT_ENOUGH_HEAP_MEMORY;
-      }
-      memcpy( dataDefName, defName, defNameLength );
-      jdataDefName = (*env)->NewStringUTF( env, dataDefName );
-      free( dataDefName );
-      if ( jdataDefName == NULL ) {
-         psoDataDefClose( dataDefHandle );
-         return PSO_NOT_ENOUGH_HEAP_MEMORY;
-      }
-      
-      jba = (*env)->NewByteArray( env, dataDefLength );
-      if ( jba == NULL ) {
-         psoDataDefClose( dataDefHandle );
-         (*env)->DeleteLocalRef( env, jdataDefName );
-         return PSO_NOT_ENOUGH_HEAP_MEMORY;
-      }
-   
-      (*env)->SetByteArrayRegion( env, jba, 0, dataDefLength, (jbyte *)dataDef );
-
-      (*env)->SetObjectField( env, jdefinition, g_idDataDefDataDef, jba );
-      (*env)->SetIntField(    env, jdefinition, g_idDataDefType,    defType );
-      (*env)->SetLongField(   env, jdefinition, g_idDataDefHandle,  (size_t)dataDefHandle );
-      (*env)->SetObjectField( env, jdefinition, g_idDataDefName,    jdataDefName );
-   }
-
-   return errcode;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /*
  * Class:     org_photon_BaseQueue
@@ -275,14 +166,7 @@ Java_org_photon_BaseQueue_psoGetStatus( JNIEnv  * env,
    errcode = psoQueueStatus( (PSO_HANDLE) handle, &status );
 
    if ( errcode == 0 ) {
-      (*env)->SetIntField(  env, jstatus, g_idStatusType,          status.type );
-      (*env)->SetIntField(  env, jstatus, g_idStatusStatus,        status.status );
-      (*env)->SetLongField( env, jstatus, g_idStatusNumBlocks,     status.numBlocks );
-      (*env)->SetLongField( env, jstatus, g_idStatusNumBlockGroup, status.numBlockGroup );
-      (*env)->SetLongField( env, jstatus, g_idStatusNumDataItem,   status.numDataItem );
-      (*env)->SetLongField( env, jstatus, g_idStatusFreeBytes,     status.freeBytes );
-      (*env)->SetIntField(  env, jstatus, g_idStatusMaxDataLength, status.maxDataLength );
-      (*env)->SetIntField(  env, jstatus, g_idStatusMaxKeyLength,  status.maxKeyLength );
+      C2Java_ObjStatus( env, jstatus, &status );
    }
    
    return errcode;

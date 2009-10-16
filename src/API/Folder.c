@@ -994,3 +994,160 @@ error_handler:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+/* The non-API functions in alphabetic order */
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int psoaFolderGetDef( PSO_HANDLE             objectHandle,
+                      const char           * objectName,
+                      uint32_t               nameLengthInBytes,
+                      psoObjectDefinition ** ppDefinition )
+{
+   psoaFolder * pFolder;
+   psonFolder * pMemFolder;
+   int errcode = PSO_OK;
+   bool ok = true;
+   psonSessionContext * pContext;
+   psoObjectDefinition * pMyDefinition = NULL;
+   psoKeyDefinition  * pMyKeyDefinition = NULL;
+
+   pFolder = (psoaFolder *) objectHandle;
+   if ( pFolder == NULL ) return PSO_NULL_HANDLE;
+   
+   if ( pFolder->object.type != PSOA_FOLDER ) {
+      return PSO_WRONG_TYPE_HANDLE;
+   }
+
+   if ( pFolder->object.pSession->terminated ) {
+      return PSO_SESSION_IS_TERMINATED;
+   }
+
+   pContext = &pFolder->object.pSession->context;
+   pContext->indent = 0;
+   PSO_TRACE_ENTER_API( pContext );
+
+   if ( objectName == NULL ) {
+      errcode = PSO_INVALID_OBJECT_NAME;
+      goto error_handler;
+   }
+
+   if ( nameLengthInBytes == 0 ) {
+      errcode = PSO_INVALID_LENGTH;
+      goto error_handler;
+   }
+   
+   if ( ppDefinition == NULL ) {
+      errcode = PSO_NULL_POINTER;
+      goto error_handler;
+   }
+   
+   pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
+
+   ok = psonAPIFolderGetDefinition( pMemFolder,
+                                    objectName,
+                                    nameLengthInBytes,
+                                    &pMyDefinition,
+                                    &pMyKeyDefinition,
+                                    pContext );
+   PSO_POST_CONDITION( ok == true || ok == false );
+   if ( ! ok ) goto error_handler;
+   PSO_POST_CONDITION( pMyDefinition != NULL );
+
+   *ppDefinition = pMyDefinition;
+
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
+   return PSO_OK;
+
+error_handler:
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pFolder->object.pSession->context.errorHandler, 
+         g_psoErrorHandle, errcode );
+   }
+   
+   if ( ! ok ) {
+      errcode = psocGetLastError( &pFolder->object.pSession->context.errorHandler );
+   }
+   
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
+   return errcode;
+}   
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int psoaFolderGetKeyDef( PSO_HANDLE          objectHandle,
+                         const char        * objectName,
+                         uint32_t            nameLengthInBytes,
+                         psoKeyDefinition ** ppDefinition )
+{
+   psoaFolder * pFolder;
+   psonFolder * pMemFolder;
+   int errcode = PSO_OK;
+   bool ok = true;
+   psonSessionContext * pContext;
+   psoObjectDefinition * pMyDefinition = NULL;
+   psoKeyDefinition  * pMyKeyDefinition = NULL;
+   
+   pFolder = (psoaFolder *) objectHandle;
+   if ( pFolder == NULL ) return PSO_NULL_HANDLE;
+   
+   if ( pFolder->object.type != PSOA_FOLDER ) {
+      return PSO_WRONG_TYPE_HANDLE;
+   }
+
+   if ( pFolder->object.pSession->terminated ) {
+      return PSO_SESSION_IS_TERMINATED;
+   }
+
+   pContext = &pFolder->object.pSession->context;
+   pContext->indent = 0;
+   PSO_TRACE_ENTER_API( pContext );
+
+   if ( objectName == NULL ) {
+      errcode = PSO_INVALID_OBJECT_NAME;
+      goto error_handler;
+   }
+
+   if ( nameLengthInBytes == 0 ) {
+      errcode = PSO_INVALID_LENGTH;
+      goto error_handler;
+   }
+   
+   if ( ppDefinition == NULL ) {
+      errcode = PSO_NULL_POINTER;
+      goto error_handler;
+   }
+   
+   pMemFolder = (psonFolder *) pFolder->object.pMyMemObject;
+
+   ok = psonAPIFolderGetDefinition( pMemFolder,
+                                    objectName,
+                                    nameLengthInBytes,
+                                    &pMyDefinition,
+                                    &pMyKeyDefinition,
+                                    pContext );
+   PSO_POST_CONDITION( ok == true || ok == false );
+   if ( ! ok ) goto error_handler;
+
+   PSO_POST_CONDITION( pMyKeyDefinition != NULL );
+   
+   *ppDefinition = pMyKeyDefinition;
+
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, true );
+   return PSO_OK;
+
+error_handler:
+
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pFolder->object.pSession->context.errorHandler, 
+         g_psoErrorHandle, errcode );
+   } 
+   else {
+      errcode = psocGetLastError( &pFolder->object.pSession->context.errorHandler );
+   }
+   
+   PSO_TRACE_EXIT_API( &pFolder->object.pSession->context, false );
+   return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
