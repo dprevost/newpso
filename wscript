@@ -58,6 +58,8 @@ def configure(conf):
    conf.check_tool('java')
    conf.check_jni_headers()
 
+   conf.check_java_class('org.junit.Assert')
+
    conf.check_tool('UnitTest')
    conf.check_tool('misc')
    conf.check_tool('doxygen', tooldir='Configure')

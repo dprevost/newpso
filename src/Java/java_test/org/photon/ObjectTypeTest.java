@@ -25,12 +25,66 @@ import java.util.*;
 
 public class ObjectTypeTest {
 
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   static {
+      System.loadLibrary("photon_jni");
+      System.loadLibrary("photon_jni_test");
+   }
+
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
    @Test
    public void testFolder() {
       ObjectType obj = ObjectType.FOLDER;
-      
-//      Collection collection = new ArrayList();
-      assertTrue(obj.getType() == 1);
+      assertTrue(obj.getType() == getFolder());
    }
+   
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   @Test
+   public void testHashMap() {
+      ObjectType obj = ObjectType.HASH_MAP;
+      assertTrue(obj.getType() == getHashMap());
+   }
+   
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   @Test
+   public void testFastMap() {
+      ObjectType obj = ObjectType.FAST_MAP;
+      assertTrue(obj.getType() == getFastMap());
+   }
+   
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   @Test
+   public void testLifo() {
+      ObjectType obj = ObjectType.LIFO;
+      assertTrue(obj.getType() == getLifo());
+   }
+   
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   @Test
+   public void testQueue() {
+      ObjectType obj = ObjectType.QUEUE;
+      assertTrue(obj.getType() == getQueue());
+   }
+   
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   public static void main(String args[]) {
+      org.junit.runner.JUnitCore.main("org.photon.ObjectTypeTest");
+    
+   }
+
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   private native int getFolder();
+   private native int getHashMap();
+   private native int getFastMap();
+   private native int getLifo();
+   private native int getQueue();
 
 }

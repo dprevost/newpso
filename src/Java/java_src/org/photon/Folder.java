@@ -389,7 +389,8 @@ public class Folder implements Iterable<FolderEntry>, Iterator<FolderEntry> {
    /**
     * Implement the Iterator interface.
     * <p>
-    * The three methods, hasNext, next and remove implement Iterator.
+    * The three methods, hasNext, next and remove implement the interface
+    * Iterator.
     */
    public FolderEntry next() {
       

@@ -15,8 +15,21 @@
 
 def build(bld):
    
+   java_debug = bld.new_task_gen( features    = 'javac seq',
+                                  source_root = 'java_src' )
+
+   java_release = java_debug.clone('release')
+
    bld.new_task_gen( features    = 'javac seq',
-                     source_root = 'java_src' )
+                     source_root = 'java_test',
+                     classpath   = [ bld.env['CLASSPATH'] + ':' + bld.srcnode.abspath(bld.env) + 'src/Java/java_src'] )
+   
+   '''  classpath   = bld.env['CLASSPATH'] '''
+   
+   
+   '''   bld.new_task_gen( features    = 'javac seq',
+                     source_root = 'java_test' )
+   '''
    ''',
                      sourcepath  = ['java_src/photon', 'java_src/serializer'] )
    #'org/photon' )
@@ -32,13 +45,22 @@ def build(bld):
                                includes     = 'include .. ../include',
                                target       = 'photon_jni',
                                uselib_local = 'photon Common Nucleus',
-                               uselib       = 'JAVA',
-                               lib          = bld.env['CMOCKERY'] )
+                               lib          = bld.env['CMOCKERY'],
+                               uselib       = 'JAVA' )
    jni_lib.find_sources_in_dirs('jni')
 
    jni_lib_release = jni_lib.clone('release')
 
+   jni_test = bld.new_task_gen( features     = 'cc cshlib',
+                                includes     = 'include .. ../include',
+                                target       = 'photon_jni_test',
+                                uselib_local = 'photon Common Nucleus',
+                                lib          = bld.env['CMOCKERY'],
+                                uselib       = 'JAVA' )
+   jni_test.find_sources_in_dirs('jni_test')
+
    '''
+   java -cp /usr/share/java/junit4.jar:java_test:java_src org.photon.ObjectTypeTest
    javah org.photon.FieldType
    find_sources_in_dirs
    
