@@ -27,15 +27,16 @@ import java.util.*;
  * This class manipulates the data as an array of bytes; it does not 
  * attempt to interpret the data as a java object or some other construct.
  * <p>
- * Although this class can be used directly, it is recommended to use it 
- * as a superclass. See the Photon Queue class as an example.
+ * This class cannot be used directly (protected constructors). You should use
+ * it as a superclass. See the Photon Queue class as an example.
  */
 public class BaseQueue {
 
    /** To save the native pointer/handle of the C struct. */
    protected long handle = 0;
 
-   private Session session;
+   /** The session we belong to */
+   protected Session session;
 
    protected ObjectDefinition definition;
    
@@ -55,7 +56,7 @@ public class BaseQueue {
     * A default constructor. You must use open() to access a FIFO queue in 
     * shared memory.
     */
-   public BaseQueue() {}
+   protected BaseQueue() {}
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
@@ -67,7 +68,7 @@ public class BaseQueue {
     *
     * @exception PhotonException On an error with the Photon library.
     */
-   public BaseQueue( Session session, String name ) throws PhotonException {
+   protected BaseQueue( Session session, String name ) throws PhotonException {
       
       int errcode;
       
@@ -174,6 +175,10 @@ public class BaseQueue {
       
       throw new PhotonException( PhotonErrors.getEnum(errcode) );
    }
+   
+   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
+
+   public String getName() { return name; }
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 

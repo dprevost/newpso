@@ -34,12 +34,6 @@
  
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-/* The DataDefinition class */
-extern jfieldID g_idDataDefHandle;
-extern jfieldID g_idDataDefDataDef;
-extern jfieldID g_idDataDefType;
-extern jfieldID g_idDataDefName;
-
 /* The FolderEntry class */
 
 extern jfieldID g_idEntryType;
@@ -91,12 +85,6 @@ extern jfieldID g_idSessionHandle;
 /* The folder class */
 
 extern jfieldID g_idFolderHandle;
-
-/* The Queue class */
-
-extern jfieldID g_idQueueHandle;
-
-
 
 /* The Definition class */
 

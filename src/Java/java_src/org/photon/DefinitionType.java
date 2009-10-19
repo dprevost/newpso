@@ -63,7 +63,6 @@ public enum DefinitionType {
       for ( DefinitionType myType : DefinitionType.values() ) {
          reverseLookup.put( myType.getType(), myType );
       }
-      initIDs();
    }
 
    public static DefinitionType getEnum(int type) {

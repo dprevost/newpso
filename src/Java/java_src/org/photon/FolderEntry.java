@@ -44,15 +44,7 @@ public class FolderEntry {
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-   private FolderEntry( ObjectType entryType, String entryName, int entryStatus ) {
-      type = entryType.getType();
-      name = entryName;
-      status = entryStatus;
-   }
-   
-   // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
-
-   public FolderEntry() {}
+   protected FolderEntry() {}
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 

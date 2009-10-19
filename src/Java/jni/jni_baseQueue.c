@@ -26,8 +26,8 @@
 #include "org_photon_BaseQueue.h"
 #include "API/Queue.h"
 
-jfieldID g_idQueueHandle;
-jfieldID g_idQueueErrcode;
+static jfieldID g_id_handle;
+static jfieldID g_id_errcode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -39,10 +39,10 @@ jfieldID g_idQueueErrcode;
 JNIEXPORT void JNICALL
 Java_org_photon_BaseQueue_initIDs( JNIEnv * env, jclass queueClass )
 {
-   g_idQueueHandle = (*env)->GetFieldID( env, queueClass, "handle", "J" );
-   if ( g_idQueueHandle == NULL ) return;
-   g_idQueueErrcode = (*env)->GetFieldID( env, queueClass, "myerrcode", "I" );
-   if ( g_idQueueErrcode == NULL ) return;
+   g_id_handle = (*env)->GetFieldID( env, queueClass, "handle", "J" );
+   if ( g_id_handle == NULL ) return;
+   g_id_errcode = (*env)->GetFieldID( env, queueClass, "myerrcode", "I" );
+   if ( g_id_errcode == NULL ) return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -68,8 +68,8 @@ Java_org_photon_BaseQueue_psoClose( JNIEnv  * env,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 /*
  * Class:     org_photon_BaseQueue
- * Method:    psoDataDefinition
- * Signature: (JLorg/photon/DataDefinition;)I
+ * Method:    psoDefinition
+ * Signature: (JLorg/photon/ObjectDefinition;)I
  */
 JNIEXPORT jint JNICALL
 Java_org_photon_BaseQueue_psoDefinition( JNIEnv * env,
@@ -203,7 +203,7 @@ Java_org_photon_BaseQueue_psoOpen( JNIEnv  * env,
    (*env)->ReleaseStringUTFChars( env, jname, queueName );
 
    if ( errcode == PSO_OK ) {
-      (*env)->SetLongField( env, jobj, g_idQueueHandle, (size_t) handle );
+      (*env)->SetLongField( env, jobj, g_id_handle, (size_t) handle );
    }
 
    return errcode;
@@ -233,7 +233,7 @@ Java_org_photon_BaseQueue_psoPop( JNIEnv   * env,
       (*env)->SetByteArrayRegion( env, jbuffer, 0, length, (jbyte*)data );
    }
    else {
-      (*env)->SetIntField( env, jobj, g_idQueueErrcode, errcode );
+      (*env)->SetIntField( env, jobj, g_id_errcode, errcode );
    }
    
    return jbuffer;
