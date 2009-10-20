@@ -93,30 +93,32 @@ Java_org_photon_BaseQueue_psoDefinition( JNIEnv * env,
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
 /*
  * Class:     org_photon_BaseQueue
  * Method:    psoGetFirst
- * Signature: (J[B)I
+ * Signature: (J)[B
  */
-JNIEXPORT jint JNICALL 
-Java_org_photon_BaseQueue_psoGetFirst( JNIEnv   * env,
-                                       jobject    jobj,
-                                       jlong      jhandle,
-                                       jbyteArray jbuffer )
+JNIEXPORT jbyteArray JNICALL 
+Java_org_photon_BaseQueue_psoGetFirst( JNIEnv * env,
+                                       jobject  jobj,
+                                       jlong    jhandle )
 {
    int errcode;
    size_t handle = (size_t) jhandle;
    unsigned char * data;
    unsigned int length;
-   
+   jbyteArray jbuffer;
+
    errcode = psoaQueueFirst( (psoaQueue *) handle, &data, &length );
    if ( errcode == 0 ) {
       jbuffer = (*env)->NewByteArray( env, length );
       (*env)->SetByteArrayRegion( env, jbuffer, 0, length, (jbyte*)data );
    }
+   else {
+      (*env)->SetIntField( env, jobj, g_id_errcode, errcode );
+   }
    
-   return errcode;
+   return jbuffer;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -124,26 +126,29 @@ Java_org_photon_BaseQueue_psoGetFirst( JNIEnv   * env,
 /*
  * Class:     org_photon_BaseQueue
  * Method:    psoGetNext
- * Signature: (J[B)I
+ * Signature: (J)[B
  */
-JNIEXPORT jint JNICALL
+JNIEXPORT jbyteArray JNICALL
 Java_org_photon_BaseQueue_psoGetNext( JNIEnv   * env,
                                       jobject    jobj,
-                                      jlong      jhandle,
-                                      jbyteArray jbuffer )
+                                      jlong      jhandle )
 {
    int errcode;
    size_t handle = (size_t) jhandle;
    unsigned char * data;
    unsigned int length;
-   
+   jbyteArray jbuffer;
+                                      
    errcode = psoaQueueNext( (psoaQueue *) handle, &data, &length );
    if ( errcode == 0 ) {
       jbuffer = (*env)->NewByteArray( env, length );
       (*env)->SetByteArrayRegion( env, jbuffer, 0, length, (jbyte*)data );
    }
+   else {
+      (*env)->SetIntField( env, jobj, g_id_errcode, errcode );
+   }
    
-   return errcode;
+   return jbuffer;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -24,6 +24,12 @@ def build(bld):
                      source_root = 'java_test',
                      classpath   = [ bld.env['CLASSPATH'] + ':' + bld.srcnode.abspath(bld.env) + 'src/Java/java_src'] )
    
+   perf_debug = bld.new_task_gen( features    = 'javac seq',
+                                  source_root = 'java_perf',
+                                  classpath   = [ bld.env['CLASSPATH'] + ':' + bld.srcnode.abspath(bld.env) + 'src/Java/java_src'] )
+   perf_release = perf_debug.clone('release')
+
+
    '''  classpath   = bld.env['CLASSPATH'] '''
    
    

@@ -89,7 +89,7 @@ public class Queue<O, S extends PSOSerialize<O>> extends BaseQueue implements It
          if ( getNextRecord() ) {
             return dataBuffer;
          }
-      } catch (Exception e) {}
+      } catch (Exception e) { e.printStackTrace(); }
 
       throw new NoSuchElementException();
    }
@@ -98,7 +98,6 @@ public class Queue<O, S extends PSOSerialize<O>> extends BaseQueue implements It
 
    boolean getNextRecord() throws PhotonException, Exception {
       
-      int errcode;
       byte[] buffer = null;
       
       if ( handle == 0 ) {
@@ -107,21 +106,23 @@ public class Queue<O, S extends PSOSerialize<O>> extends BaseQueue implements It
 
       if ( endIteration ) {
          endIteration = false;
-         errcode = psoGetFirst( handle, buffer );
+         buffer = psoGetFirst( handle );
       } else {
-         errcode = psoGetNext( handle, buffer );
+         buffer = psoGetNext( handle );
       }
-      if ( errcode == 0 ) {
+      if ( myerrcode == 0 ) {
          dataBuffer = serializer.unpackObject( buffer );
          return true;
       }
+      System.out.printf(" myerrcode = " + myerrcode );
+      
       endIteration = true;
-      if ( errcode == PhotonErrors.IS_EMPTY.getErrorNumber() || 
-           errcode == PhotonErrors.REACHED_THE_END.getErrorNumber() ) {
+      if ( myerrcode == PhotonErrors.IS_EMPTY.getErrorNumber() || 
+           myerrcode == PhotonErrors.REACHED_THE_END.getErrorNumber() ) {
          return false;
       }
       
-      throw new PhotonException( PhotonErrors.getEnum(errcode) );
+      throw new PhotonException( PhotonErrors.getEnum(myerrcode) );
    }
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--

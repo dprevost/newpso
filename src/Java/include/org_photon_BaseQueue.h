@@ -25,27 +25,27 @@ JNIEXPORT void JNICALL Java_org_photon_BaseQueue_psoClose
 
 /*
  * Class:     org_photon_BaseQueue
- * Method:    psoObjectDefinition
+ * Method:    psoDefinition
  * Signature: (JLorg/photon/ObjectDefinition;)I
  */
-JNIEXPORT jint JNICALL Java_org_photon_BaseQueue_psoObjectDefinition
+JNIEXPORT jint JNICALL Java_org_photon_BaseQueue_psoDefinition
   (JNIEnv *, jobject, jlong, jobject);
 
 /*
  * Class:     org_photon_BaseQueue
  * Method:    psoGetFirst
- * Signature: (J[B)I
+ * Signature: (J)[B
  */
-JNIEXPORT jint JNICALL Java_org_photon_BaseQueue_psoGetFirst
-  (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL Java_org_photon_BaseQueue_psoGetFirst
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     org_photon_BaseQueue
  * Method:    psoGetNext
- * Signature: (J[B)I
+ * Signature: (J)[B
  */
-JNIEXPORT jint JNICALL Java_org_photon_BaseQueue_psoGetNext
-  (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL Java_org_photon_BaseQueue_psoGetNext
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     org_photon_BaseQueue

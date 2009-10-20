@@ -162,18 +162,16 @@ public class BaseQueue {
 
    public int getFirstRaw( byte [] buffer ) throws PhotonException {
       
-      int errcode;
-
       if ( handle == 0 ) {
          throw new PhotonException( PhotonErrors.NULL_HANDLE );
       }
 
-      errcode = psoGetFirst( handle, buffer );
-      if ( errcode == 0 || errcode == PhotonErrors.IS_EMPTY.getErrorNumber() ) { 
-         return errcode;
+      buffer = psoGetFirst( handle );
+      if ( myerrcode == 0 || myerrcode == PhotonErrors.IS_EMPTY.getErrorNumber() ) { 
+         return myerrcode;
       }
       
-      throw new PhotonException( PhotonErrors.getEnum(errcode) );
+      throw new PhotonException( PhotonErrors.getEnum(myerrcode) );
    }
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
@@ -201,18 +199,16 @@ public class BaseQueue {
     */
    public int getNextRaw( byte[] buffer ) throws PhotonException {
 
-      int errcode;
-
       if ( handle == 0 ) {
          throw new PhotonException( PhotonErrors.NULL_HANDLE );
       }
 
-      errcode = psoGetNext( handle, buffer );
-      if ( errcode == 0 || errcode == PhotonErrors.REACHED_THE_END.getErrorNumber() ) { 
-         return errcode;
+      buffer = psoGetNext( handle );
+      if ( myerrcode == 0 || myerrcode == PhotonErrors.REACHED_THE_END.getErrorNumber() ) { 
+         return myerrcode;
       }
       
-      throw new PhotonException( PhotonErrors.getEnum(errcode) );
+      throw new PhotonException( PhotonErrors.getEnum(myerrcode) );
    }
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
@@ -332,11 +328,9 @@ public class BaseQueue {
    private native int psoDefinition( long             handle,
                                      ObjectDefinition definition );
 
-   protected native int psoGetFirst( long   handle,
-                                   byte[] buffer );
+   protected native byte[] psoGetFirst( long handle );
 
-   protected native int psoGetNext( long   handle,
-                                  byte[] buffer );
+   protected native byte[] psoGetNext( long handle );
 
    private native int psoGetStatus( long         handle,
                                     ObjectStatus status );
