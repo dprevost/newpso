@@ -18,6 +18,7 @@ java_src=$java_src"org.photon.PhotonException "
 java_src=$java_src"org.photon.Photon "
 java_src=$java_src"org.photon.Queue "
 java_src=$java_src"org.photon.Session "
+java_src=$java_src"org.photon.TuppleQueue "
 
 #java_src=$java_src"org.photon.ArrayListSerializer "
 #java_src=$java_src"org.photon.JavaSerializer "
