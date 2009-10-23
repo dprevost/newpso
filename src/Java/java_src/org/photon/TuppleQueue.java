@@ -150,7 +150,7 @@ public class TuppleQueue<O> extends BaseQueue implements Iterable<O>, Iterator<O
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-   public O pop() throws PhotonException, Exception {
+   public O pop() throws PhotonException {
       
       O obj;
       
@@ -205,7 +205,7 @@ public class TuppleQueue<O> extends BaseQueue implements Iterable<O>, Iterator<O
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-   private native Constructor findConstructor( Constructor ctrs[] );
+   private native Constructor<O> findConstructor( Constructor<O> ctrs[] );
 
    private native O getFirstTupple( long handle );
 
@@ -217,7 +217,7 @@ public class TuppleQueue<O> extends BaseQueue implements Iterable<O>, Iterator<O
 
    private native int pushNowTupple( long handle, Object... arguments );
 
-   private native Constructor validateConstructor( Constructor ctr );
+   private native Constructor<O> validateConstructor( Constructor<O> ctr );
 
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 }
