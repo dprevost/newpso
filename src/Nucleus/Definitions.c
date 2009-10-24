@@ -42,11 +42,6 @@ void psonDataDefinitionDump( psonDataDefinition * pDataDefinition,
       fprintf( pContext->tracefp, "Type is first - probably an error\n" );
       break;
 
-   case PSO_DEF_NONE:
-      DO_INDENT( pContext, indent );
-      fprintf( pContext->tracefp, "Type is none - might be an error\n" );
-      break;
-   
    case PSO_DEF_USER_DEFINED:
       DO_INDENT( pContext, indent );
       fprintf( pContext->tracefp, "Type is user defined\n" );

@@ -16,12 +16,15 @@ test_list = [
    'Close',
    'Create',
    'Definition',
+   'DefLength',
    'Delete',
    'First',
    'Get',
    'GetFirst',
    'GetNext',
    'Insert',
+   'KeyDefinition',
+   'KeyDefLength',
    'Next',
    'Open',
    'OpenNoSession',
@@ -42,6 +45,7 @@ def build(bld):
          uselib_local = 'photon Nucleus Common') 
       if bld.env['CMOCKERY']:
          obj.unit_test = 1
+      obj.rpath = "../.."
 
       bld.add_manual_dependency(
          bld.path.find_resource(prog_c),

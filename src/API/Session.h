@@ -57,10 +57,10 @@ typedef struct psoaSession
    struct psonSession* pCleanup;
 
    /** Pointer to the hashmap holding the data definitions */
-   struct psonHashMap * pDataDefMap;
+//   struct psonHashMap * pDataDefMap;
 
    /** Pointer to the hashmap holding the key definitions */
-   struct psonHashMap * pKeyDefMap;
+//   struct psonHashMap * pKeyDefMap;
    
    bool terminated;
    
@@ -84,6 +84,18 @@ int psoaCloseSession( psoaSession* pSession );
 PHOTON_API_EXPORT
 int psoaSessionCloseObj( psoaSession             * pSession,
                          struct psoaCommonObject * pObject );
+
+PHOTON_API_EXPORT
+int psoaSessionGetDef( PSO_HANDLE             sessionHandle,
+                       const char           * objectName,
+                       uint32_t               nameLengthInBytes,
+                       psoObjectDefinition ** ppDefinition );
+
+PHOTON_API_EXPORT
+int psoaSessionGetKeyDef( PSO_HANDLE          sessionHandle,
+                          const char        * objectName,
+                          uint32_t            nameLengthInBytes,
+                          psoKeyDefinition ** ppDefinition );
 
 PHOTON_API_EXPORT
 int psoaSessionOpenObj( psoaSession             * pSession,

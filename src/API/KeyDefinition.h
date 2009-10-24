@@ -28,6 +28,7 @@
 #include <photon/psoPhotonODBC.h>
 #include "Nucleus/Definitions.h"
 #include "API/Session.h"
+#include "Nucleus/HashMap.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -44,27 +45,13 @@ struct psoaKeyDefinition
    
    psonKeyDefinition * pMemDefinition;
 
-   char * name;
-   
-   uint32_t nameLength;
+   psonHashTxItem * pHashItem;
 
 };
 
 typedef struct psoaKeyDefinition psoaKeyDefinition;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-/*
- * This function is not included in the published API.
- *
- * This function can be dangerous. Handles to key definition are 
- * not counted for performance reasons -> this might destroy a
- * definition which is used by someone else...
- */
-PHOTON_API_EXPORT
-int psoaKeyDefDestroy( PSO_HANDLE   sessionHandle,
-                       const char * definitionName,
-                       psoUint32    nameLengthInBytes );
 
 PHOTON_EXPORT
 int psoaKeyDefGetDef( PSO_HANDLE                definitionHandle,

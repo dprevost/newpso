@@ -14,7 +14,9 @@
 
 test_list = [
         'CommitEdit',
-        'Create',
+        'CreateFolder',
+        'CreateMap',
+        'CreateQueue',
         'Delete',
         'Destroy',
         'Edit',
@@ -25,7 +27,9 @@ test_list = [
         'Get',
         'GetStatus',
         'Init',
-        'Insert',
+        'InsertFolder',
+        'InsertMap',
+        'InsertQueue',
         'Release',
         'Remove',
         'Resize',

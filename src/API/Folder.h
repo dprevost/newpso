@@ -43,6 +43,20 @@ typedef struct psoaFolder
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+PHOTON_API_EXPORT
+int psoaFolderGetDef( PSO_HANDLE             folderHandle,
+                      const char           * objectName,
+                      uint32_t               nameLengthInBytes,
+                      psoObjectDefinition ** ppDefinition );
+
+PHOTON_API_EXPORT
+int psoaFolderGetKeyDef( PSO_HANDLE          folderHandle,
+                         const char        * objectName,
+                         uint32_t            nameLengthInBytes,
+                         psoKeyDefinition ** ppDefinition );
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 END_C_DECLS
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

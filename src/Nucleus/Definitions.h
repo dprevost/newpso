@@ -41,7 +41,7 @@ BEGIN_C_DECLS
  
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-struct psonDataDefinition
+struct psonqqDataDefinition
 {
    enum psoDefinitionType type;
    
@@ -52,7 +52,7 @@ struct psonDataDefinition
 
 typedef struct psonDataDefinition psonDataDefinition;
 
-struct psonKeyDefinition
+struct psonKeyqqDefinition
 {
    enum psoDefinitionType type;
    

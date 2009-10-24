@@ -20,32 +20,39 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/Lifo.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
    char buffer[200];
    uint32_t length;
-   psoObjectDefinition defLifo = { PSO_LIFO, 0, 0, 0 };
+   psoObjectDefinition defLifo = { PSO_LIFO, 0, 0 };
    psoFieldDefinition fields[1] = {
       { "Field_1", PSO_VARCHAR, {10} }
    };
    PSO_HANDLE dataDefHandle;
    
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -56,20 +63,10 @@ int main( int argc, char * argv[] )
                               strlen("/api_lifo_get_first") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_lifo_get_first",
-                               strlen("api_lifo_get_first"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateQueue( sessionHandle,
                              "/api_lifo_get_first/test",
                              strlen("/api_lifo_get_first/test"),
-                             &defLifo,
-                             dataDefHandle );
+                             &defLifo );
    assert_true( errcode == PSO_OK );
 
    errcode = psoLifoOpen( sessionHandle,
@@ -78,7 +75,7 @@ int main( int argc, char * argv[] )
                            &objHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoLifoPush( objHandle, data1, strlen(data1), NULL );
+   errcode = psoLifoPush( objHandle, data1, strlen(data1) );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
@@ -99,7 +96,7 @@ int main( int argc, char * argv[] )
                                buffer,
                                2,
                                &length );
-   assert_true( errcode == INVALID_LENGTH );
+   assert_true( errcode == PSO_INVALID_LENGTH );
    
    errcode = psoLifoGetFirst( objHandle,
                                buffer,
@@ -113,9 +110,7 @@ int main( int argc, char * argv[] )
                                200,
                                &length );
    assert_true( errcode == PSO_OK );
-   if ( memcmp( buffer, data1, strlen(data1) ) != 0 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( memcmp( buffer, data1, strlen(data1) ) == 0 );
    
    /* Close the session and try to act on the object */
 
@@ -129,8 +124,22 @@ int main( int argc, char * argv[] )
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
    
-   return 0;
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

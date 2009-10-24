@@ -134,6 +134,36 @@ void psonHashMapCommitRemove( psonHashMap        * pHashMap,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+bool psonHashMapDecrement( psonHashMap        * pHashMap,
+                           psonHashTxItem     * pHashItem,
+                           psonSessionContext * pContext )
+{
+   PSO_PRE_CONDITION( pHashMap  != NULL );
+   PSO_PRE_CONDITION( pHashItem != NULL );
+   PSO_PRE_CONDITION( pContext  != NULL );
+   PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
+
+   if ( psonLock( &pHashMap->memObject, pContext ) ) {
+      
+      pHashItem->txStatus.usageCounter--;
+
+      psonUnlock( &pHashMap->memObject, pContext );
+   }
+   else {
+      psocSetError( &pContext->errorHandler,
+                    g_psoErrorHandle,
+                    PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+      return false;
+   }
+
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
+   return true;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 bool psonHashMapDelete( psonHashMap        * pHashMap,
                         const void         * pKey,
                         uint32_t             keyLength, 
@@ -197,6 +227,118 @@ bool psonHashMapDelete( psonHashMap        * pHashMap,
          goto the_exit;
       }
 
+      ok = psonTxAddOps( (psonTx*)pContext->pTransaction,
+                         PSON_TX_REMOVE_DATA,
+                         SET_OFFSET(pHashMap),
+                         PSON_IDENT_HASH_MAP,
+                         SET_OFFSET( pHashItem),
+                         0,
+                         pContext );
+      PSO_POST_CONDITION( ok == true || ok == false );
+      if ( ! ok ) goto the_exit;
+      
+      txItemStatus->txOffset = SET_OFFSET(pContext->pTransaction);
+      txItemStatus->status = PSON_TXS_DESTROYED;
+      pMapNode->txCounter++;
+
+      psonUnlock( &pHashMap->memObject, pContext );
+   }
+   else {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+      return false;
+   }
+
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
+   return true;
+   
+the_exit:
+
+   psonUnlock( &pHashMap->memObject, pContext );
+   /* psocSetError might have been already called by some other function */
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+   }
+   
+   PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+   return false;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+/*
+ * Only delete if there is zero access to the item. This is used for the
+ * data definitions and key definitions.
+ */
+bool psonHashMapDeleteZero( psonHashMap        * pHashMap,
+                            const void         * pKey,
+                            uint32_t             keyLength, 
+                            psonSessionContext * pContext )
+{
+   psoErrors errcode = PSO_OK;
+   psonHashTxItem* pHashItem = NULL;
+   psonTxStatus * txItemStatus, * txHashMapStatus;
+   size_t bucket;
+   bool found, ok;
+   psonTreeNode * pMapNode = NULL;
+   
+   PSO_PRE_CONDITION( pHashMap != NULL );
+   PSO_PRE_CONDITION( pKey     != NULL );
+   PSO_PRE_CONDITION( pContext != NULL );
+   PSO_PRE_CONDITION( keyLength > 0 );
+   PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
+   
+   GET_PTR( pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR( txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
+
+   if ( psonLock( &pHashMap->memObject, pContext ) ) {
+      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pTransaction), pContext ) 
+         || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus, pContext ) ) {
+         errcode = PSO_OBJECT_IS_DELETED;
+         goto the_exit;
+      }
+   
+      /*
+       * The first step is to retrieve the item.
+       */
+      found = psonHashTxGet( &pHashMap->hashObj, 
+                           (unsigned char *)pKey,
+                           keyLength,
+                           &pHashItem,
+                           &bucket,
+                           pContext );
+      if ( ! found ) {
+         errcode = PSO_NO_SUCH_ITEM;
+         goto the_exit;
+      }
+      while ( pHashItem->nextSameKey != PSON_NULL_OFFSET ) {
+         GET_PTR( pHashItem, pHashItem->nextSameKey, psonHashTxItem );
+      }
+      
+      txItemStatus = &pHashItem->txStatus;
+
+      /* 
+       * If the transaction id of the item is non-zero, a big no-no - 
+       * we do not support two transactions on the same data
+       * (and if remove is committed - the data is "non-existent").
+       */
+      if ( txItemStatus->txOffset != PSON_NULL_OFFSET ) {
+         if ( txItemStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
+            errcode = PSO_NO_SUCH_ITEM;
+         }
+         else {
+            errcode = PSO_ITEM_IS_IN_USE;
+         }
+         goto the_exit;
+      }
+      // This is the condition
+      fprintf( stderr, " usage counter: %d\n", txItemStatus->usageCounter );
+      if ( txItemStatus->usageCounter > 0 ) {
+         errcode = PSO_ITEM_IS_IN_USE;
+         goto the_exit;
+      }
+      
       ok = psonTxAddOps( (psonTx*)pContext->pTransaction,
                          PSON_TX_REMOVE_DATA,
                          SET_OFFSET(pHashMap),
@@ -666,24 +808,54 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+bool psonHashMapIncrement( psonHashMap        * pHashMap,
+                           psonHashTxItem     * pHashItem,
+                           psonSessionContext * pContext )
+{
+   PSO_PRE_CONDITION( pHashMap  != NULL );
+   PSO_PRE_CONDITION( pHashItem != NULL );
+   PSO_PRE_CONDITION( pContext  != NULL );
+   PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
+   PSO_TRACE_ENTER_NUCLEUS( pContext );
+
+   if ( psonLock( &pHashMap->memObject, pContext ) ) {
+      
+      pHashItem->txStatus.usageCounter++;
+
+      psonUnlock( &pHashMap->memObject, pContext );
+   }
+   else {
+      psocSetError( &pContext->errorHandler,
+                    g_psoErrorHandle,
+                    PSO_OBJECT_CANNOT_GET_LOCK );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+      return false;
+   }
+
+   PSO_TRACE_EXIT_NUCLEUS( pContext, true );
+   return true;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 bool psonHashMapInit( psonHashMap         * pHashMap,
                       ptrdiff_t             parentOffset,
                       size_t                numberOfBlocks,
                       size_t                expectedNumOfItems,
                       psonTreeNode        * pNode,
                       psoObjectDefinition * pDefinition,
-                      psonKeyDefinition   * pKeyDefinition,
-                      psonDataDefinition  * pDataDefinition,
+                      psoKeyDefinition    * pKeyDefinition,
                       psonSessionContext  * pContext )
 {
    psoErrors errcode;
+   size_t len;
+   void * ptr;
    
    PSO_PRE_CONDITION( pHashMap        != NULL );
    PSO_PRE_CONDITION( pContext        != NULL );
    PSO_PRE_CONDITION( pNode           != NULL );
    PSO_PRE_CONDITION( pDefinition     != NULL );
    PSO_PRE_CONDITION( pKeyDefinition  != NULL );
-   PSO_PRE_CONDITION( pDataDefinition != NULL );
    PSO_PRE_CONDITION( parentOffset    != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
@@ -715,8 +887,35 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
       return false;
    }
    
-   pHashMap->dataDefOffset = SET_OFFSET(pDataDefinition);
-   pHashMap->keyDefOffset  = SET_OFFSET(pKeyDefinition);
+   len = offsetof( psoObjectDefinition, dataDef ) + pDefinition->dataDefLength;
+   if ( pDefinition->dataDefLength == 0 ) {
+      len = sizeof( psoObjectDefinition );
+   }
+   ptr = psonMalloc( &pHashMap->memObject, len, pContext );
+   if ( ptr == NULL ) {
+      psocSetError( &pContext->errorHandler,
+                    g_psoErrorHandle,
+                    PSO_NOT_ENOUGH_PSO_MEMORY );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+      return false;
+   }
+   memcpy( ptr, pDefinition, len );
+   pHashMap->dataDefOffset = SET_OFFSET(ptr);
+   
+   len = offsetof( psoKeyDefinition, definition ) + pKeyDefinition->definitionLength;
+   if ( pKeyDefinition->definitionLength == 0 ) {
+      len = sizeof( psoKeyDefinition );
+   }
+   ptr = psonMalloc( &pHashMap->memObject, len, pContext );
+   if ( ptr == NULL ) {
+      psocSetError( &pContext->errorHandler,
+                    g_psoErrorHandle,
+                    PSO_NOT_ENOUGH_PSO_MEMORY );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+      return false;
+   }
+   memcpy( ptr, pKeyDefinition, len );
+   pHashMap->keyDefOffset  = SET_OFFSET(ptr);
 
    pHashMap->isSystemObject = false;
 

@@ -84,14 +84,16 @@ int psoLifoClose( PSO_HANDLE objectHandle )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int psoLifoDefinition( PSO_HANDLE   objectHandle, 
-                       PSO_HANDLE * dataDefHandle )
+int psoLifoDefinition( PSO_HANDLE            objectHandle, 
+                       psoObjectDefinition * definition,
+                       psoUint32             length )
 {
    psoaLifo * pLifo;
    psonQueue * pMemLifo;
    int errcode = PSO_OK;
    psonSessionContext * pContext;
-   psoaDataDefinition * pDataDefinition = NULL;
+   psoObjectDefinition * pMyDefinition = NULL;
+   uint32_t myLength;
    
    pLifo = (psoaLifo *) objectHandle;
    if ( pLifo == NULL ) return PSO_NULL_HANDLE;
@@ -100,26 +102,73 @@ int psoLifoDefinition( PSO_HANDLE   objectHandle,
 
    pContext = &pLifo->object.pSession->context;
 
-   if ( dataDefHandle == NULL ) {
+   if ( definition == NULL ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NULL_POINTER );
       return PSO_NULL_POINTER;
    }
 
-   pDataDefinition = malloc( sizeof(psoaDataDefinition) );
-   if ( pDataDefinition == NULL ) {
-      psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NOT_ENOUGH_HEAP_MEMORY );
-      return PSO_NOT_ENOUGH_HEAP_MEMORY;
+   if ( length < sizeof(psoObjectDefinition) ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_INVALID_LENGTH );
+      return PSO_INVALID_LENGTH;
    }
 
    if ( ! pLifo->object.pSession->terminated ) {
       pMemLifo = (psonQueue *) pLifo->object.pMyMemObject;
       
-      pDataDefinition->pSession = pLifo->object.pSession;
-      pDataDefinition->definitionType = PSOA_DEF_DATA;
-      GET_PTR( pDataDefinition->pMemDefinition, 
-               pMemLifo->dataDefOffset, 
-               psonDataDefinition );
-      *dataDefHandle = (PSO_HANDLE) pDataDefinition;
+      GET_PTR( pMyDefinition, pMemLifo->dataDefOffset, psoObjectDefinition );
+      myLength = offsetof(psoObjectDefinition, dataDef) + 
+         pMyDefinition->dataDefLength;
+      if ( myLength >= length ) {
+         // possibly truncated. This is ok
+         memcpy( definition, pMyDefinition, length );
+      }
+      else {
+         // Make sure that the "leftover" is zeroed
+         memset( definition, 0, length );
+         memcpy( definition, pMyDefinition, myLength );
+      }
+   }
+   else {
+      errcode = PSO_SESSION_IS_TERMINATED;
+   }
+   
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
+   }
+   
+   return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int psoLifoDefLength( PSO_HANDLE   objectHandle, 
+                      psoUint32  * pLength )
+{
+   psoaLifo * pLifo;
+   psonQueue * pMemLifo;
+   int errcode = PSO_OK;
+   psonSessionContext * pContext;
+   psoObjectDefinition * pMyDefinition = NULL;
+   
+   pLifo = (psoaLifo *) objectHandle;
+   if ( pLifo == NULL ) return PSO_NULL_HANDLE;
+   
+   if ( pLifo->object.type != PSOA_LIFO ) return PSO_WRONG_TYPE_HANDLE;
+
+   pContext = &pLifo->object.pSession->context;
+
+   if ( pLength == NULL ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NULL_POINTER );
+      return PSO_NULL_POINTER;
+   }
+   *pLength = 0;
+
+   if ( ! pLifo->object.pSession->terminated ) {
+      pMemLifo = (psonQueue *) pLifo->object.pMyMemObject;
+      
+      GET_PTR( pMyDefinition, pMemLifo->dataDefOffset, psoObjectDefinition );
+      *pLength = offsetof(psoObjectDefinition, dataDef) + 
+         pMyDefinition->dataDefLength;
    }
    else {
       errcode = PSO_SESSION_IS_TERMINATED;
@@ -547,6 +596,47 @@ error_handler:
    
    if ( ! ok ) {
       errcode = psocGetLastError( &pLifo->object.pSession->context.errorHandler );
+   }
+   
+   return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int psoaLifoGetDef( PSO_HANDLE             objectHandle, 
+                    psoObjectDefinition ** ppDefinition )
+{
+   psoaLifo * pLifo;
+   psonQueue * pMemLifo;
+   int errcode = PSO_OK;
+   psonSessionContext * pContext;
+   psoObjectDefinition * pMyDefinition = NULL;
+   
+   pLifo = (psoaLifo *) objectHandle;
+   if ( pLifo == NULL ) return PSO_NULL_HANDLE;
+   
+   if ( pLifo->object.type != PSOA_LIFO ) return PSO_WRONG_TYPE_HANDLE;
+
+   pContext = &pLifo->object.pSession->context;
+
+   if ( ppDefinition == NULL ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, PSO_NULL_POINTER );
+      return PSO_NULL_POINTER;
+   }
+
+   if ( ! pLifo->object.pSession->terminated ) {
+      pMemLifo = (psonQueue *) pLifo->object.pMyMemObject;
+      
+      GET_PTR( pMyDefinition, pMemLifo->dataDefOffset, psoObjectDefinition );
+      
+      *ppDefinition = pMyDefinition;
+   }
+   else {
+      errcode = PSO_SESSION_IS_TERMINATED;
+   }
+   
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
    }
    
    return errcode;

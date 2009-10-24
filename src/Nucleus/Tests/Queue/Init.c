@@ -24,7 +24,6 @@ psonQueue * pQueue;
 psonSessionContext context;
 psonTxStatus status;
 psoObjectDefinition def = { PSO_QUEUE, 0, 0 };
-psonDataDefinition fields;
 psonTreeNode queueNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -56,24 +55,7 @@ void test_null_context( void ** state )
                                          1,
                                          &queueNode,
                                          &def,
-                                         &fields,
                                          NULL ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_null_datadef( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonQueueInit( pQueue, 
-                                         0,
-                                         1,
-                                         &queueNode,
-                                         &def,
-                                         NULL,
-                                         &context ) );
 #endif
    return;
 }
@@ -88,7 +70,6 @@ void test_null_definition( void ** state )
                                          1,
                                          &queueNode,
                                          NULL,
-                                         &fields,
                                          &context ) );
 #endif
    return;
@@ -104,7 +85,6 @@ void test_null_node( void ** state )
                                          1,
                                          NULL,
                                          &def,
-                                         &fields,
                                          &context ) );
 #endif
    return;
@@ -120,7 +100,6 @@ void test_null_parent( void ** state )
                                          1,
                                          &queueNode,
                                          &def,
-                                         &fields,
                                          &context ) );
 #endif
    return;
@@ -136,13 +115,10 @@ void test_null_queue( void ** state )
                                          1,
                                          &queueNode,
                                          &def,
-                                         &fields,
                                          &context ) );
 #endif
    return;
 }
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -154,7 +130,6 @@ void test_zero_blocks( void ** state )
                                          0,
                                          &queueNode,
                                          &def,
-                                         &fields,
                                          &context ) );
 #endif
    return;
@@ -172,7 +147,6 @@ void test_pass( void ** state )
                        1,
                        &queueNode,
                        &def,
-                       &fields,
                        &context );
    assert_true( ok );
    
@@ -188,7 +162,6 @@ int main()
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
       unit_test_setup_teardown( test_null_context,    setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_datadef,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_definition, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_node,       setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_parent,     setup_test, teardown_test ),

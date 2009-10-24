@@ -95,6 +95,25 @@ int psoDataDefCreate( PSO_HANDLE               sessionHandle,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /**
+ * \brief Destroy an existing data definition.
+ *
+ * This function will not complete successfully if the data definition
+ * is still used to define an object.
+ *
+ * \param[in]  sessionHandle The handle to the current session.
+ * \param[in]  definitionName The name of the data definition. 
+ * \param[in]  nameLengthInBytes The length of \em definitionName (in bytes).
+ *
+ * \return 0 on success or a ::psoErrors on error.
+ */
+PHOTON_EXPORT
+int psoDataDefDestroy( PSO_HANDLE   sessionHandle,
+                       const char * definitionName,
+                       psoUint32    nameLengthInBytes );
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+/**
  * \brief Retrieves a data definition.
  * 
  * You can call the function ::psoDataDefGetLength to retrieve the 

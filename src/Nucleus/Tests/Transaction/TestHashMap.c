@@ -41,10 +41,11 @@ void test_pass( void ** state )
    char * data2 = "My data2";
    char * data3 = "My data3";
    psonHashTxItem * pHashItem;
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
-   psonKeyDefinition key;
-   psonDataDefinition fields;
+//   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+//   psonKeyDefinition key;
    psonTreeNode node;
+   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoKeyDefinition key = { PSO_DEF_USER_DEFINED, 0, '\0' };
 
    pFolder = initFolderTest( &context );
    pTx = context.pTransaction;
@@ -56,15 +57,14 @@ void test_pass( void ** state )
    ok = psonFolderInit( pFolder, 0, 1, 0, &node, &context );
    assert_true( ok );
    
-   ok = psonFolderInsertObject( pFolder,
-                                "test2",
-                                5,
-                                &def,
-                                &fields,
-                                &key,
-                                1,
-                                0,
-                                &context );
+   ok = psonFolderInsertMap( pFolder,
+                             "test2",
+                             5,
+                             &def,
+                             &key,
+                             1,
+                             0,
+                             &context );
    assert_true( ok );
    psonTxCommit( pTx, &context );
 

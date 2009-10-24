@@ -42,11 +42,11 @@ void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle, folderHandle;
    int errcode;
+
    psoObjectDefinition definition;
-   psoFieldDefinition fields[2];
-   psoKeyFieldDefinition keyDef;
-   PSO_HANDLE keyDefHandle, dataDefHandle;
-   
+   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
+
    errcode = psoInit( "10701", "Create" );
    assert_true( errcode == PSO_OK );
    
@@ -64,24 +64,6 @@ void test_pass( void ** state )
                             &folderHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "API_Hashmap_Create",
-                              strlen("API_Hashmap_Create"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   
-   errcode = psoDataDefCreate( sessionHandle,
-                               "API_Hashmap_Create",
-                               strlen("API_Hashmap_Create"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    /* Invalid definition. */
    
    memset( &definition, 0, sizeof(psoObjectDefinition) );
@@ -90,34 +72,51 @@ void test_pass( void ** state )
                                  "my_map",
                                  strlen("my_map"),
                                  &definition,
-                                 dataDefHandle,
-                                 keyDefHandle );
+                                 &keyDef );
    assert_true( errcode == PSO_WRONG_OBJECT_TYPE );
 
-   definition.type = PSO_HASH_MAP;   
-   errcode = psoFolderCreateMap( folderHandle,
+   errcode = psoFolderCreateMap( NULL,
                                  "my_map",
                                  strlen("my_map"),
-                                 &definition,
-                                 dataDefHandle,
-                                 NULL );
+                                 &def,
+                                 &keyDef );
    assert_true( errcode == PSO_NULL_HANDLE );
+
+   errcode = psoFolderCreateMap( folderHandle,
+                                 NULL,
+                                 strlen("my_map"),
+                                 &def,
+                                 &keyDef );
+   fprintf( stderr, "%d\n", errcode );
+   assert_true( errcode == PSO_INVALID_OBJECT_NAME );
+
+   errcode = psoFolderCreateMap( folderHandle,
+                                 "my_map",
+                                 0,
+                                 &def,
+                                 &keyDef );
+   assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoFolderCreateMap( folderHandle,
                                  "my_map",
                                  strlen("my_map"),
-                                 &definition,
                                  NULL,
-                                 keyDefHandle );
-   assert_true( errcode == PSO_NULL_HANDLE );
-   
+                                 &keyDef );
+   assert_true( errcode == PSO_NULL_POINTER );
+
+   errcode = psoFolderCreateMap( folderHandle,
+                                 "my_map",
+                                 strlen("my_map"),
+                                 &def,
+                                 NULL );
+   assert_true( errcode == PSO_NULL_POINTER );
+
    /* End of invalid args. This call should succeed. */
    errcode = psoFolderCreateMap( folderHandle,
                                  "my_map",
                                  strlen("my_map"),
-                                 &definition,
-                                 dataDefHandle,
-                                 keyDefHandle );
+                                 &def,
+                                 &keyDef );
    assert_true( errcode == PSO_OK );
 
    /* Close the folder and try to act on it */
@@ -127,9 +126,8 @@ void test_pass( void ** state )
    errcode = psoFolderCreateMap( folderHandle,
                                  "my_map2",
                                  strlen("my_map2"),
-                                 &definition,
-                                 dataDefHandle,
-                                 keyDefHandle );
+                                 &def,
+                                 &keyDef );
    assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    /* Reopen the folder, close the process and try to act on the session */
@@ -144,9 +142,8 @@ void test_pass( void ** state )
    errcode = psoFolderCreateMap( folderHandle,
                                  "my_map3",
                                  strlen("my_map3"),
-                                 &definition,
-                                 dataDefHandle,
-                                 keyDefHandle );
+                                 &def,
+                                 &keyDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 }
 

@@ -40,6 +40,10 @@ bool psonFastMapCopy( psonFastMap        * pOldMap,
                       psonSessionContext * pContext )
 {
    int errcode;
+   size_t len;
+   void * ptr;
+   psoObjectDefinition * pDefinition;
+   psoKeyDefinition    * pKeyDefinition;
    
    PSO_PRE_CONDITION( pOldMap      != NULL );
    PSO_PRE_CONDITION( pNewMap      != NULL );
@@ -74,9 +78,41 @@ bool psonFastMapCopy( psonFastMap        * pOldMap,
       return false;
    }
 
-   pNewMap->dataDefOffset = pOldMap->dataDefOffset;
-   pNewMap->keyDefOffset = pOldMap->keyDefOffset;
+//   pNewMap->dataDefOffset = pOldMap->dataDefOffset;
+//   pNewMap->keyDefOffset = pOldMap->keyDefOffset;
+   pDefinition = GET_PTR_FAST( pOldMap->dataDefOffset, psoObjectDefinition );
+   pKeyDefinition = GET_PTR_FAST( pOldMap->keyDefOffset, psoKeyDefinition );
    
+   len = offsetof( psoObjectDefinition, dataDef ) + pDefinition->dataDefLength;
+   if ( pDefinition->dataDefLength == 0 ) {
+      len = sizeof( psoObjectDefinition );
+   }
+   ptr = psonMalloc( &pNewMap->memObject, len, pContext );
+   if ( ptr == NULL ) {
+      psocSetError( &pContext->errorHandler,
+                    g_psoErrorHandle,
+                    PSO_NOT_ENOUGH_PSO_MEMORY );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+      return false;
+   }
+   memcpy( ptr, pDefinition, len );
+   pNewMap->dataDefOffset = SET_OFFSET(ptr);
+   
+   len = offsetof( psoKeyDefinition, definition ) + pKeyDefinition->definitionLength;
+   if ( pKeyDefinition->definitionLength == 0 ) {
+      len = sizeof( psoKeyDefinition );
+   }
+   ptr = psonMalloc( &pNewMap->memObject, len, pContext );
+   if ( ptr == NULL ) {
+      psocSetError( &pContext->errorHandler,
+                    g_psoErrorHandle,
+                    PSO_NOT_ENOUGH_PSO_MEMORY );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+      return false;
+   }
+   memcpy( ptr, pKeyDefinition, len );
+   pNewMap->keyDefOffset  = SET_OFFSET(ptr);
+
    errcode = psonHashCopy( &pOldMap->hashObj, &pNewMap->hashObj, pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
@@ -445,18 +481,18 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
                       psonTreeNode        * pNode,
                       ptrdiff_t             hashItemOffset,
                       psoObjectDefinition * pDefinition,
-                      psonKeyDefinition   * pKeyDefinition,
-                      psonDataDefinition  * pDataDefinition,
+                      psoKeyDefinition    * pKeyDefinition,
                       psonSessionContext  * pContext )
 {
    psoErrors errcode;
+   size_t len;
+   void * ptr;
    
    PSO_PRE_CONDITION( pHashMap        != NULL );
    PSO_PRE_CONDITION( pContext        != NULL );
    PSO_PRE_CONDITION( pNode           != NULL );
    PSO_PRE_CONDITION( pDefinition     != NULL );
    PSO_PRE_CONDITION( pKeyDefinition  != NULL );
-   PSO_PRE_CONDITION( pDataDefinition != NULL );
    PSO_PRE_CONDITION( hashItemOffset != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( parentOffset   != PSON_NULL_OFFSET );
    PSO_PRE_CONDITION( numberOfBlocks > 0 );
@@ -488,9 +524,37 @@ bool psonFastMapInit( psonFastMap         * pHashMap,
       PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
    }
+
+   len = offsetof( psoObjectDefinition, dataDef ) + pDefinition->dataDefLength;
+   if ( pDefinition->dataDefLength == 0 ) {
+      len = sizeof( psoObjectDefinition );
+   }
+   ptr = psonMalloc( &pHashMap->memObject, len, pContext );
+   if ( ptr == NULL ) {
+      psocSetError( &pContext->errorHandler,
+                    g_psoErrorHandle,
+                    PSO_NOT_ENOUGH_PSO_MEMORY );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+      return false;
+   }
+   memcpy( ptr, pDefinition, len );
+   pHashMap->dataDefOffset = SET_OFFSET(ptr);
    
-   pHashMap->dataDefOffset = SET_OFFSET(pDataDefinition);
-   pHashMap->keyDefOffset  = SET_OFFSET(pKeyDefinition);
+   len = offsetof( psoKeyDefinition, definition ) + pKeyDefinition->definitionLength;
+   if ( pKeyDefinition->definitionLength == 0 ) {
+      len = sizeof( psoKeyDefinition );
+   }
+   ptr = psonMalloc( &pHashMap->memObject, len, pContext );
+   if ( ptr == NULL ) {
+      psocSetError( &pContext->errorHandler,
+                    g_psoErrorHandle,
+                    PSO_NOT_ENOUGH_PSO_MEMORY );
+      PSO_TRACE_EXIT_NUCLEUS( pContext, false );
+      return false;
+   }
+   memcpy( ptr, pKeyDefinition, len );
+   pHashMap->keyDefOffset  = SET_OFFSET(ptr);
+
    pHashMap->latestVersion = hashItemOffset;
    pHashMap->editVersion   = PSON_NULL_OFFSET;
    

@@ -55,9 +55,11 @@ void test_pass( void ** state )
    struct dummy * data1 = NULL;
    char key[] = "My Key";
    size_t lenData;
+   uint32_t lengthDef;
+   psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
 
-   psoObjectDefinition hashMapDef = { PSO_FAST_MAP, 0, 0 };
-   psoKeyFieldDefinition keyDef = { "MyKey", PSO_KEY_LONGVARCHAR, 0 };
+   psoObjectDefinition * hashMapDef;
+   psoObjectDefinition * retDef;
 
    psoFieldDefinition fields[5] = {
       { "field1", PSO_TINYINT,   {0} },
@@ -66,16 +68,23 @@ void test_pass( void ** state )
       { "field4", PSO_SMALLINT,  {0} },
       { "field5", PSO_LONGVARBINARY, {0} }
    };
-   PSO_HANDLE keyDefHandle, dataDefHandle;
-   PSO_HANDLE retKeyDefHandle = NULL, retDataDefHandle = NULL;
-
-   psoFieldDefinition retFields[5];
-   psoObjectDefinition retDef;
-   psoKeyFieldDefinition retKeyDef;
    
-   memset( &retDef,    0, sizeof(psoObjectDefinition) );
-   memset( &retKeyDef, 0, sizeof(psoKeyFieldDefinition) );
-   memset( &retFields, 0, 5*sizeof(psoFieldDefinition) );
+   lengthDef = offsetof(psoObjectDefinition, dataDef) + 
+      5*sizeof(psoFieldDefinition);
+
+   hashMapDef = (psoObjectDefinition*) malloc( lengthDef );
+   assert_false( hashMapDef == NULL );
+   retDef = (psoObjectDefinition*) malloc( lengthDef );
+   assert_false( retDef == NULL );
+   
+   memset( hashMapDef, 0, lengthDef );
+   hashMapDef->type = PSO_FAST_MAP;
+   hashMapDef->minNumBlocks = 1;
+   hashMapDef->dataDefType = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   hashMapDef->dataDefLength = 5*sizeof(psoFieldDefinition);
+   memcpy( hashMapDef->dataDef, fields, 5*sizeof(psoFieldDefinition) );
+   
+   memset( retDef, 0, lengthDef );
 
    lenData = offsetof(struct dummy, bin) + 10;
    data1 = (struct dummy *)malloc( lenData );
@@ -91,29 +100,11 @@ void test_pass( void ** state )
                               strlen("/api_fast_map_definition") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "api_fastmap_definition",
-                              strlen("api_fastmap_definition"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_fastmap_definition",
-                               strlen("api_fastmap_definition"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_fast_map_definition/test",
                            strlen("/api_fast_map_definition/test"),
-                           &hashMapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           hashMapDef,
+                           &keyDef );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapEdit( sessionHandle,
@@ -122,61 +113,55 @@ void test_pass( void ** state )
                              &objHandle );
    assert_true( errcode == PSO_OK );
 
-   /* Test of the data definition with inserts . */
    errcode = psoFastMapInsert( objHandle, key, strlen(key), data1, lenData );
    assert_true( errcode == PSO_OK );
-fprintf(stderr, "ok 1 \n" );
+
    /* Invalid arguments to tested function. */
 
    errcode = psoFastMapDefinition( NULL, 
-                                   &retKeyDefHandle,
-                                   &retDataDefHandle );
+                                   retDef,
+                                   lengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
-   
-   errcode = psoFastMapDefinition( objHandle,
-                                   NULL,
-                                   &retDataDefHandle );
-   assert_true( errcode == PSO_NULL_POINTER );
 
-   errcode = psoFastMapDefinition( objHandle,
-                                   &retKeyDefHandle,
-                                   NULL );
-   assert_true( errcode == PSO_NULL_POINTER );
-
-fprintf(stderr, "ok 2 \n" );
-   /* End of invalid args. This call should succeed. */
    errcode = psoFastMapDefinition( objHandle, 
-                                   &retKeyDefHandle,
-                                   &retDataDefHandle );
+                                   NULL,
+                                   lengthDef );
+   assert_true( errcode == PSO_NULL_POINTER );
+
+   errcode = psoFastMapDefinition( objHandle, 
+                                   retDef,
+                                   0 );
+   assert_true( errcode == PSO_INVALID_LENGTH );
+
+   errcode = psoFastMapDefinition( objHandle, 
+                                   retDef,
+                                   sizeof(psoObjectDefinition)-1 );
+   assert_true( errcode == PSO_INVALID_LENGTH );
+
+   /* End of invalid args. This call should succeed. */
+
+   errcode = psoFastMapDefinition( objHandle, 
+                                   retDef,
+                                   sizeof(psoObjectDefinition) );
    assert_true( errcode == PSO_OK );
 
-//   if ( memcmp( &hashMapDef, &retDef, sizeof(psoObjectDefinition) ) != 0 ) {
-//      ERROR_EXIT( expectedToPass, NULL, ; );
-//   }
-//   if ( memcmp( fields, retFields, 5*sizeof(psoFieldDefinition) ) != 0 ) {
-//      ERROR_EXIT( expectedToPass, NULL, ; );
-//   }
+   errcode = psoFastMapDefinition( objHandle,
+                                   retDef,
+                                   lengthDef );
+   assert_true( errcode == PSO_OK );
 
-//   if ( memcmp( &hashMapDef, &retDef, sizeof(psoObjectDefinition) ) != 0 ) {
-//      ERROR_EXIT( expectedToPass, NULL, ; );
-//   }
-//   if ( memcmp( &keyDef, &retKeyDef, sizeof(psoKeyFieldDefinition) ) != 0 ) {
-//      ERROR_EXIT( expectedToPass, NULL, ; );
-//   }
+   assert_true( memcmp( hashMapDef, retDef, lengthDef ) == 0 );
 
    /* Close the session and try to act on the object */
 
-fprintf(stderr, "ok 3 \n" );
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
-fprintf(stderr, "ok 5 \n" );
 
    errcode = psoFastMapDefinition( objHandle,
-                                   &retKeyDefHandle,
-                                   &retDataDefHandle );
+                                   retDef,
+                                   lengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
-fprintf(stderr, "ok 4 \n" );
    psoExit();
    
 #endif

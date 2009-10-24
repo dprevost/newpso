@@ -20,26 +20,93 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/CommonObject.h"
-#include "API/Session.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_object( void ** state )
 {
    PSO_HANDLE sessionHandle;
    int errcode;
    struct psoaCommonObject object;
    
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", NULL );
+   assert_true( errcode == PSO_OK );
+   
+   errcode = psoInitSession( &sessionHandle );
+   assert_true( errcode == PSO_OK );
+
+   errcode = psoCreateFolder( sessionHandle,
+                              "/api_session_closeobj_null_object",
+                              strlen("/api_session_closeobj_null_object") );
+   assert_true( errcode == PSO_OK );
+
+   errcode = psoaSessionOpenObj( (psoaSession *) sessionHandle,
+                                 PSO_FOLDER,
+                                 false,
+                                 "/api_session_closeobj_null_object",
+                                 strlen("/api_session_closeobj_null_object"),
+                                 &object );
+   assert_true( errcode == PSO_OK );
+
+   expect_assert_failure( psoaSessionCloseObj( (psoaSession *) sessionHandle,
+                                               NULL ) );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_session( void ** state )
+{
+   PSO_HANDLE sessionHandle;
+   int errcode;
+   struct psoaCommonObject object;
+   
+   errcode = psoInit( "10701", NULL );
+   assert_true( errcode == PSO_OK );
+   
+   errcode = psoInitSession( &sessionHandle );
+   assert_true( errcode == PSO_OK );
+
+   errcode = psoCreateFolder( sessionHandle,
+                              "/api_session_closeobj_null_session",
+                              strlen("/api_session_closeobj_null_session") );
+   assert_true( errcode == PSO_OK );
+
+   errcode = psoaSessionOpenObj( (psoaSession *) sessionHandle,
+                                 PSO_FOLDER,
+                                 false,
+                                 "/api_session_closeobj_null_session",
+                                 strlen("/api_session_closeobj_null_session"),
+                                 &object );
+   assert_true( errcode == PSO_OK );
+
+   expect_assert_failure( psoaSessionCloseObj( NULL, &object ) );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
+{
+   PSO_HANDLE sessionHandle;
+   int errcode;
+   struct psoaCommonObject object;
+   
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -63,8 +130,24 @@ int main( int argc, char * argv[] )
    assert_true( errcode == PSO_OK );
 
    psoExit();
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_null_object,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_session, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
    
-   return 0;
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -44,14 +44,9 @@ void setup_test()
    ok = psonFolderInit( pFolder, 0, 1, 0, &node, &context );
    assert( ok );
    
-   ok = psonFolderInsertObject( pFolder,
+   ok = psonFolderInsertFolder( pFolder,
                                 "test2",
                                 5,
-                                &def,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert( ok );
 }
@@ -206,14 +201,9 @@ void test_pass( void ** state )
    assert_false( ok );
    assert_true( psocGetLastError( &context.errorHandler ) == PSO_NO_SUCH_OBJECT );
       
-   ok = psonFolderInsertObject( pFolder,
+   ok = psonFolderInsertFolder( pFolder,
                                 "test4",
                                 5,
-                                &def,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert_true( ok );
    

@@ -66,21 +66,40 @@ int psoHashMapClose( PSO_HANDLE objectHandle );
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /**
- * \brief Retrieve the data definition of the hash map.
+ * \brief Retrieve the definition of the hash map.
  *
- * To avoid memory leaks, you must close the handles that will be 
- * returned by this function (see ::psoDataDefClose and ::psoKeyDefClose).
+ * The definition includes a buffer of variable length. To retrieve the
+ * length needed for \em definition you can use ::psoHashMapDefLength.
+ *
+ * Note: if the actual definition length is larger than the provided 
+ * buffer, the retrieved definition will be truncated.
  *
  * \param[in]  objectHandle The handle to the hash map (see ::psoHashMapOpen).
- * \param[out] keyDefHandle Handle to the key definition. 
- * \param[out] dataDefHandle Handle to the definition of the data fields.
+ * \param[out] definition  A user-provided buffer where the definition
+ *             will be copied.
+ * \param[in]  length The length of the \em definition buffer. It must be
+ *             equal or greater than sizeof(psoObjectDefinition).
  *
  * \return 0 on success or a ::psoErrors on error.
  */
 PHOTON_EXPORT
-int psoHashMapDefinition( PSO_HANDLE   objectHandle, 
-                          PSO_HANDLE * keyDefHandle,
-                          PSO_HANDLE * dataDefHandle );
+int psoHashMapDefinition( PSO_HANDLE            objectHandle, 
+                          psoObjectDefinition * definition,
+                          psoUint32             length );
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+/**
+ * \brief Retrieve the total length of the definition of the hash map.
+ *
+ * \param[in]  objectHandle The handle to the hash map (see ::psoHashMapOpen).
+ * \param[out] length The length of the hash map definition.
+ *
+ * \return 0 on success or a ::psoErrors on error.
+ */
+PHOTON_EXPORT
+int psoHashMapDefLength( PSO_HANDLE   objectHandle, 
+                         psoUint32  * length );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -233,6 +252,44 @@ int psoHashMapInsert( PSO_HANDLE   objectHandle,
                       psoUint32    keyLength,
                       const void * data,
                       psoUint32    dataLength );
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+/**
+ * \brief Retrieve the key definition of the hash map.
+ *
+ * The key definition includes a buffer of variable length. To retrieve the
+ * length needed for \em definition you can use ::psoHashMapKeyDefLength.
+ *
+ * Note: if the actual key definition length is larger than the provided 
+ * buffer, the retrieved key definition will be truncated.
+ *
+ * \param[in]  objectHandle The handle to the hash map (see ::psoHashMapOpen).
+ * \param[out] key definition  A user-provided buffer where the definition
+ *             will be copied.
+ * \param[in]  length The length of the \em keydefinition buffer. It must be
+ *             equal or greater than sizeof(psoKeyDefinition).
+ *
+ * \return 0 on success or a ::psoErrors on error.
+ */
+PHOTON_EXPORT
+int psoHashMapKeyDefinition( PSO_HANDLE         objectHandle, 
+                             psoKeyDefinition * definition,
+                             psoUint32          length );
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+/**
+ * \brief Retrieve the total length of the key definition of the hash map.
+ *
+ * \param[in]  objectHandle The handle to the hash map (see ::psoHashMapOpen).
+ * \param[out] length The length of the hash map key definition.
+ *
+ * \return 0 on success or a ::psoErrors on error.
+ */
+PHOTON_EXPORT
+int psoHashMapKeyDefLength( PSO_HANDLE   objectHandle, 
+                            psoUint32  * length );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

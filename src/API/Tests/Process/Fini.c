@@ -19,35 +19,77 @@
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #include "API/Process.h"
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_process( void ** state )
 {
    psoaProcess process;
    int errcode;
    bool ok;
    
    ok = psocInitThreadLock( &g_ProcessMutex );
-   if ( ! ok ) {
-      return -1;
-   }
+   assert_true( ok );
    
    memset( &process, 0, sizeof(psoaProcess) );
-   if ( argc > 1 ) {
-      errcode = psoaProcessInit( &process, argv[1], argv[0] );
-   }
-   else {
-      errcode = psoaProcessInit( &process, "10701", argv[0] );
-   }
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      return -1;
-   }
-   
-   psoaProcessFini();
-   
-   return 0;
+
+   errcode = psoaProcessInit( &process, "10701", NULL );
+   assert_true( errcode == PSO_OK );
+
+   g_processInstance = NULL;
+   expect_assert_failure( psoaProcessFini() );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
+{
+   psoaProcess process;
+   int errcode;
+   bool ok;
+   
+   ok = psocInitThreadLock( &g_ProcessMutex );
+   assert_true( ok );
+   
+   memset( &process, 0, sizeof(psoaProcess) );
+   
+   errcode = psoaProcessInit( &process, "10701", NULL );
+   assert_true( errcode == PSO_OK );
+   
+   psoaProcessFini();
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_null_process, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+

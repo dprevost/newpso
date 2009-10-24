@@ -14,8 +14,9 @@
 
 test_list = [
         'Close',
-        'Create',
         'CreateFolder',
+        'CreateMap',
+        'CreateQueue',
         'Destroy',
         'Edit',
         'GetDef',

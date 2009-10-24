@@ -27,10 +27,25 @@
 #if defined WIN32
 #  pragma warning(default:4273)
 #endif
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_context( void ** state )
 {
    psoaProcess process;
    int errcode;
@@ -38,21 +53,80 @@ int main( int argc, char * argv[] )
    bool ok;
    
    ok = psocInitThreadLock( &g_ProcessMutex );
-   if ( ! ok ) {
-      return -1;
-   }
+   assert_true( ok );
+      
+   memset( &process, 0, sizeof(psoaProcess) );
+   errcode = psoaProcessInit( &process, "10701", "" );
+   assert_true( errcode == PSO_OK );
+   
+   memset( &context, 0, sizeof context );
+   context.pidLocker= getpid();
+   psocInitErrorHandler( &context.errorHandler );
+   
+   expect_assert_failure( psoaOpenMemory( &process, "dummy", 100, NULL ) );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_filename( void ** state )
+{
+   psoaProcess process;
+   int errcode;
+   psonSessionContext context;
+   bool ok;
+   
+   ok = psocInitThreadLock( &g_ProcessMutex );
+   assert_true( ok );
+      
+   memset( &process, 0, sizeof(psoaProcess) );
+   errcode = psoaProcessInit( &process, "10701", "" );
+   assert_true( errcode == PSO_OK );
+
+   memset( &context, 0, sizeof context );
+   context.pidLocker= getpid();
+   psocInitErrorHandler( &context.errorHandler );
+   
+   expect_assert_failure( psoaOpenMemory( &process, NULL, 100, &context ) );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_process( void ** state )
+{
+   psoaProcess process;
+   int errcode;
+   psonSessionContext context;
+   bool ok;
+   
+   ok = psocInitThreadLock( &g_ProcessMutex );
+   assert_true( ok );
+      
+   memset( &process, 0, sizeof(psoaProcess) );
+   errcode = psoaProcessInit( &process, "10701", "" );
+   assert_true( errcode == PSO_OK );
+
+   memset( &context, 0, sizeof context );
+   context.pidLocker= getpid();
+   psocInitErrorHandler( &context.errorHandler );
+   
+   expect_assert_failure( psoaOpenMemory( NULL, "dummy", 100, &context ) );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
+{
+   psoaProcess process;
+   int errcode;
+   psonSessionContext context;
+   bool ok;
+   
+   ok = psocInitThreadLock( &g_ProcessMutex );
+   assert_true( ok );
 
    memset( &process, 0, sizeof(psoaProcess) );
-   if ( argc > 1 ) {
-      errcode = psoaProcessInit( &process, argv[1], argv[0] );
-   }
-   else {
-      errcode = psoaProcessInit( &process, "10701", argv[0] );
-   }
-   if ( errcode != PSO_OK ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      return -1;
-   }
+   errcode = psoaProcessInit( &process, "10701", "" );
+   assert_true( errcode == PSO_OK );
 
    memset( &context, 0, sizeof context );
    context.pidLocker= getpid();
@@ -60,14 +134,29 @@ int main( int argc, char * argv[] )
    
    errcode = psoaOpenMemory( &process, "dummy", 100, &context );
 
-   if ( errcode != PSO_BACKSTORE_FILE_MISSING ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      return -1;
-   }
+   assert_true( errcode == PSO_BACKSTORE_FILE_MISSING );
 
    psoaProcessFini();
-
-   return 0;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_null_context,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_filename, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_null_process,  setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,          setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+

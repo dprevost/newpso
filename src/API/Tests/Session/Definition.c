@@ -20,57 +20,70 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle;
    int errcode;
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 }, returnedDef;
-   psoFieldDefinition fields[1] = {
-      { "Field_1", PSO_VARCHAR, {10} }
-   };
-   psoKeyFieldDefinition keyDef = { "Key1", PSO_KEY_VARCHAR, 100 };
-   PSO_HANDLE dataDefHandle, keyDefHandle;
-   
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
-   assert_true( errcode == PSO_OK );
-   
-   errcode = psoInitSession( &sessionHandle );
-   assert_true( errcode == PSO_OK );
+   psoObjectDefinition * def = NULL;
+   psoObjectDefinition returnedDef;
+   psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoObjectDefinition * retDef;
+   uint32_t lengthDef;
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_session_definition",
-                               strlen("api_session_definition"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
+   psoFieldDefinition fields[5] = {
+      { "field1", PSO_TINYINT,  { 0  } },
+      { "field2", PSO_INTEGER,  { 0  } },
+      { "field3", PSO_CHAR,     { 30 } },
+      { "field4", PSO_SMALLINT, { 0  } },
+      { "field5", PSO_LONGVARBINARY, { 0 } }
+   };
+
+   lengthDef = offsetof(psoObjectDefinition, dataDef) + 
+      5*sizeof(psoFieldDefinition);
+
+   def = (psoObjectDefinition*) malloc( lengthDef );
+   assert_false( def == NULL );
+   retDef = (psoObjectDefinition*) malloc( lengthDef );
+   assert_false( retDef == NULL );
+
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "api_session_definition",
-                              strlen("api_session_definition"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
+   
+   memset( def, 0, lengthDef );
+   def->type = PSO_HASH_MAP;
+   def->minNumBlocks = 1;
+   def->dataDefType = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   def->dataDefLength = 5*sizeof(psoFieldDefinition);
+   memcpy( def->dataDef, fields, 5*sizeof(psoFieldDefinition) );
+   
+   memset( retDef, 0, lengthDef );
+
+   errcode = psoInitSession( &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateMap( sessionHandle,
                            "/api_session_definition",
                            strlen("/api_session_definition"),
-                           &def,
-                           dataDefHandle,
-                           keyDefHandle );
+                           def,
+                           &keyDef );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
@@ -78,33 +91,61 @@ int main( int argc, char * argv[] )
    errcode = psoGetDefinition( NULL,
                                "/api_session_definition",
                                strlen("/api_session_definition"),
-                               &returnedDef );
+                               retDef,
+                               lengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoGetDefinition( sessionHandle,
                                NULL,
                                strlen("/api_session_definition"),
-                               &returnedDef );
+                               retDef,
+                               lengthDef );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    errcode = psoGetDefinition( sessionHandle,
                                "/api_session_definition",
                                0,
-                               &returnedDef );
-   assert_true( errcode == INVALID_LENGTH );
+                               retDef,
+                               lengthDef );
+   assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoGetDefinition( sessionHandle,
                                "/api_session_definition",
                                strlen("/api_session_definition"),
-                               NULL );
+                               NULL,
+                               lengthDef );
    assert_true( errcode == PSO_NULL_POINTER );
 
+   errcode = psoGetDefinition( sessionHandle,
+                               "/api_session_definition",
+                               strlen("/api_session_definition"),
+                               retDef,
+                               0 );
+   assert_true( errcode == PSO_INVALID_LENGTH );
+
+   errcode = psoGetDefinition( sessionHandle,
+                               "/api_session_definition",
+                               strlen("/api_session_definition"),
+                               retDef,
+                               sizeof(psoObjectDefinition)-1 );
+   assert_true( errcode == PSO_INVALID_LENGTH );
+   
    /* End of invalid args. This call should succeed. */
    errcode = psoGetDefinition( sessionHandle,
                                "/api_session_definition",
                                strlen("/api_session_definition"),
-                               &returnedDef );
+                               retDef,
+                               sizeof(psoObjectDefinition) );
    assert_true( errcode == PSO_OK );
+
+   errcode = psoGetDefinition( sessionHandle,
+                               "/api_session_definition",
+                               strlen("/api_session_definition"),
+                               retDef,
+                               lengthDef );
+   assert_true( errcode == PSO_OK );
+
+   assert_true( memcmp( def, retDef, lengthDef ) == 0 );
 
    /* Close the process and try to act on the session */
 
@@ -113,10 +154,25 @@ int main( int argc, char * argv[] )
    errcode = psoGetDefinition( sessionHandle,
                                "/api_session_definition",
                                strlen("/api_session_definition"),
-                               &returnedDef );
+                               retDef,
+                               lengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
+}
 
-   return 0;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

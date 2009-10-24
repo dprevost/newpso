@@ -20,35 +20,90 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/Session.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
+#include "Nucleus/Session.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_null_session( void ** state )
 {
    PSO_HANDLE sessionHandle;
    int errcode;
    
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoaCloseSession( (psoaSession *) sessionHandle );
+   expect_assert_failure( psoaCloseSession( NULL ) );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
+{
+   PSO_HANDLE sessionHandle;
+   int errcode;
+   psoaSession * pSession;
+   bool ok;
+   psonSession * pCleanup;
+   
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   psoExit();
+   errcode = psoInitSession( &sessionHandle );
+   assert_true( errcode == PSO_OK );
+
+   pSession = (psoaSession*) sessionHandle;
+
+   pCleanup = pSession->pCleanup;
+
+   errcode = psoaCloseSession( pSession );
+   assert_true( errcode == PSO_OK );
+
+   /*
+    * We need to do this otherwise psoExit will crash when trying to
+    * cleanup its sessions (not all is cleaned when bypassing psoExitSession).
+    */
+   ok = psonProcessRemoveSession( g_processInstance->pCleanup, 
+                                  pCleanup, 
+                                  &pSession->context );
+   assert_true( ok );
    
-   return 0;
+   psoExit();
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_null_session, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,         setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

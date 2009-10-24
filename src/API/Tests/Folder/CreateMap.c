@@ -42,12 +42,13 @@ void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle, folderHandle;
    int errcode;
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
    psoFieldDefinition fields[1] = {
       { "Field_1", PSO_VARCHAR, {10} }
    };
    PSO_HANDLE dataDefHandle, keyDefHandle;
-   
+   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
+
    errcode = psoInit( "10701", "CreateMap" );
    assert_true( errcode == PSO_OK );
    
@@ -65,63 +66,40 @@ void test_pass( void ** state )
                             &folderHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "Definition",
-                               strlen("Definition"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "Definition",
-                              strlen("Definition"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)fields,
-                              sizeof(psoFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-
    /* Invalid arguments to tested function. */
 
    errcode = psoFolderCreateMap( NULL,
                                  "api_folder_create",
                                  strlen("api_folder_create"),
                                  &def,
-                                 dataDefHandle,
-                                 keyDefHandle );
+                                 &keyDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoFolderCreateMap( sessionHandle,
                                  "api_folder_create",
                                  strlen("api_folder_create"),
                                  &def,
-                                 dataDefHandle,
-                                 keyDefHandle );
+                                 &keyDef );
    assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    errcode = psoFolderCreateMap( folderHandle,
                                  NULL,
                                  strlen("api_folder_create"),
                                  &def,
-                                 dataDefHandle,
-                                 keyDefHandle );
+                                 &keyDef );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    errcode = psoFolderCreateMap( folderHandle,
                                  "api_folder_create",
                                  0,
                                  &def,
-                                 dataDefHandle,
-                                 keyDefHandle );
+                                 &keyDef );
    assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoFolderCreateMap( folderHandle,
                                  "api_folder_create",
                                  strlen("api_folder_create"),
                                  NULL,
-                                 dataDefHandle,
                                  keyDefHandle );
    assert_true( errcode == PSO_NULL_POINTER );
    
@@ -130,8 +108,7 @@ void test_pass( void ** state )
                                  "api_folder_create",
                                  strlen("api_folder_create"),
                                  &def,
-                                 dataDefHandle,
-                                 keyDefHandle );
+                                 &keyDef );
    assert_true( errcode == PSO_WRONG_OBJECT_TYPE );
    def.type = PSO_HASH_MAP;
 
@@ -139,33 +116,15 @@ void test_pass( void ** state )
                                  "api_folder_create",
                                  strlen("api_folder_create"),
                                  &def,
-                                 NULL,
-                                 keyDefHandle );
-   assert_true( errcode == PSO_NULL_HANDLE );
-
-   errcode = psoFolderCreateMap( folderHandle,
-                                 "api_folder_create",
-                                 strlen("api_folder_create"),
-                                 &def,
-                                 dataDefHandle,
                                  NULL );
-   assert_true( errcode == PSO_NULL_HANDLE );
-
-   errcode = psoFolderCreateMap( folderHandle,
-                                 "api_folder_create",
-                                 strlen("api_folder_create"),
-                                 &def,
-                                 keyDefHandle,
-                                 dataDefHandle );
-   assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
+   assert_true( errcode == PSO_NULL_POINTER );
 
    /* End of invalid args. This call should succeed. */
    errcode = psoFolderCreateMap( folderHandle,
                                  "api_folder_create",
                                  strlen("api_folder_create"),
                                  &def,
-                                 dataDefHandle,
-                                 keyDefHandle );
+                                 &keyDef );
    assert_true( errcode == PSO_OK );
 
    /* Close the folder and try to act on it */
@@ -176,8 +135,7 @@ void test_pass( void ** state )
                                  "api_folder_create2",
                                  strlen("api_folder_create2"),
                                  &def,
-                                 dataDefHandle,
-                                 keyDefHandle );
+                                 &keyDef );
    assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    /* Reopen the folder, close the process and try to act on the session */
@@ -193,8 +151,7 @@ void test_pass( void ** state )
                                  "api_folder_create3",
                                  strlen("api_folder_create3"),
                                  &def,
-                                 dataDefHandle,
-                                 keyDefHandle );
+                                 &keyDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 }
 

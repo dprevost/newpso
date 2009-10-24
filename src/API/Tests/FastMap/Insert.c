@@ -69,29 +69,11 @@ void test_pass( void ** state )
                               strlen("/api_fast_map_insert") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "api_fastmap_insert",
-                              strlen("api_fastmap_insert"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_fastmap_insert",
-                               strlen("api_fastmap_insert"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_fast_map_insert/test",
                            strlen("/api_fast_map_insert/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCommit( sessionHandle );

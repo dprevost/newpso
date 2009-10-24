@@ -28,6 +28,7 @@
 #include <photon/psoPhotonODBC.h>
 #include "Nucleus/Definitions.h"
 #include "API/Session.h"
+#include "Nucleus/HashMap.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -44,32 +45,13 @@ struct psoaDataDefinition
    
    psonDataDefinition * pMemDefinition;
    
-   char * name;
+   psonHashTxItem * pHashItem;
    
-   uint32_t nameLength;
-   
-   /*
-    * If this is non-NULL, we are used by an API object and if we are
-    * closed, we must set this location to NULL to avoid memory violation.
-    */
-//   struct psoaDataDefinition ** ppApiObject;
 };
 
 typedef struct psoaDataDefinition psoaDataDefinition;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-/*
- * This function is not included in the published API.
- *
- * This function can be dangerous. Handles to data definition are 
- * not counted for performance reasons -> this might destroy a
- * definition which is used by someone else...
- */
-PHOTON_API_EXPORT
-int psoaDataDefDestroy( PSO_HANDLE   sessionHandle,
-                        const char * definitionName,
-                        psoUint32    nameLengthInBytes );
 
 PHOTON_EXPORT
 int psoaDataDefGetDef( PSO_HANDLE                definitionHandle,

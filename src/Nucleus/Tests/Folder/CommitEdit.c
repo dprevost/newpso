@@ -32,10 +32,8 @@ psonTreeNode node;
 void setup_test()
 {
    bool ok;
-   psoObjectDefinition mapDef = { PSO_FAST_MAP, 0, 0 };
-   psonKeyDefinition key;
-
-   psonDataDefinition fields;
+   psoObjectDefinition mapDef = { PSO_FAST_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoKeyDefinition key = { PSO_DEF_USER_DEFINED, 0, '\0' };
 
    pFolder = initFolderTest( &context );
 
@@ -46,15 +44,14 @@ void setup_test()
    ok = psonFolderInit( pFolder, 0, 1, 0, &node, &context );
    assert( ok );
    
-   ok = psonFolderInsertObject( pFolder,
-                                "test2",
-                                5,
-                                &mapDef,
-                                &fields,
-                                &key,
-                                1,
-                                0,
-                                &context );
+   ok = psonFolderInsertMap( pFolder,
+                             "test2",
+                             5,
+                             &mapDef,
+                             &key,
+                             1,
+                             0,
+                             &context );
    assert( ok );
    
    ok = psonFolderEditObject( pFolder,

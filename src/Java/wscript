@@ -1,0 +1,78 @@
+#! /usr/bin/env python
+# encoding: utf-8
+# :mode=python:  - For jedit
+
+# Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
+#  
+# This file is free software; as a special exception the author gives
+# unlimited permission to copy and/or distribute it, with or without 
+# modifications, as long as this notice is preserved.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+def build(bld):
+   
+   bld.env.append_value('JAVACFLAGS', ['-Xlint:unchecked'])
+
+   java_debug = bld.new_task_gen( features    = 'javac seq',
+                                  source_root = 'java_src' )
+
+   java_release = java_debug.clone('release')
+
+   bld.new_task_gen( features    = 'javac seq',
+                     source_root = 'java_test',
+                     classpath   = [ bld.env['CLASSPATH'] + ':' + bld.srcnode.abspath(bld.env) + 'src/Java/java_src'] )
+   
+   perf_debug = bld.new_task_gen( features    = 'javac seq',
+                                  source_root = 'java_perf',
+                                  classpath   = [ bld.env['CLASSPATH'] + ':' + bld.srcnode.abspath(bld.env) + 'src/Java/java_src'] )
+   perf_release = perf_debug.clone('release')
+
+
+   '''  classpath   = bld.env['CLASSPATH'] '''
+   
+   
+   '''   bld.new_task_gen( features    = 'javac seq',
+                     source_root = 'java_test' )
+   '''
+   ''',
+                     sourcepath  = ['java_src/photon', 'java_src/serializer'] )
+   #'org/photon' )
+   '''
+   '''bld.new_task_gen( features = 'jar seq',
+                     basedir  = 'java_src',
+                     destfile = 'foo.jar')
+   '''
+   #jaropts = '-C default/src/ .', # can be used to give files
+   #classpath = '..:.', # can be used to set a custom classpath
+   #)
+   jni_lib = bld.new_task_gen( features     = 'cc cshlib',
+                               includes     = 'include .. ../include',
+                               target       = 'photon_jni',
+                               uselib_local = 'photon Common Nucleus',
+                               lib          = bld.env['CMOCKERY'],
+                               uselib       = 'JAVA' )
+   jni_lib.find_sources_in_dirs('jni')
+
+   jni_lib_release = jni_lib.clone('release')
+
+   jni_test = bld.new_task_gen( features     = 'cc cshlib',
+                                includes     = 'include .. ../include',
+                                target       = 'photon_jni_test',
+                                uselib_local = 'photon Common Nucleus',
+                                lib          = bld.env['CMOCKERY'],
+                                uselib       = 'JAVA' )
+   jni_test.find_sources_in_dirs('jni_test')
+
+   '''
+   java -cp /usr/share/java/junit4.jar:java_test:java_src org.photon.ObjectTypeTest
+   javah org.photon.FieldType
+   find_sources_in_dirs
+   
+   javah -classpath ../../build/default/src/Java/java_src org.photon.Queue
+   
+   javadoc -sourcepath java_src -d doc org.photon org.photon.serializer
+   '''

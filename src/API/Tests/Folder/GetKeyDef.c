@@ -48,6 +48,15 @@ void test_pass( void ** state )
    psoKeyFieldDefinition keyDef = { "Key1", PSO_KEY_VARCHAR, 80 };
    PSO_HANDLE dataDefHandle, keyDefHandle;
    PSO_HANDLE returnedDef;
+   psoKeyDefinition * pKeyDefinition;
+   
+   pKeyDefinition = malloc( offsetof( psoKeyDefinition, definition) +
+                           sizeof(psoKeyFieldDefinition) );
+   assert_false( pKeyDefinition == NULL );
+
+   pKeyDefinition->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   pKeyDefinition->definitionLength = sizeof(psoKeyFieldDefinition);
+   memcpy( pKeyDefinition->definition, &keyDef, sizeof(psoKeyFieldDefinition) );
    
    errcode = psoInit( "10701", "GetKeyDef" );
    assert_true( errcode == PSO_OK );
@@ -60,30 +69,11 @@ void test_pass( void ** state )
                               strlen("/api_folder_getdef") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_folder_getdef",
-                               strlen("api_folder_getdef"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)&dataDef,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "api_folder_getdef",
-                              strlen("api_folder_getdef"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_folder_getdef/map1",
                            strlen("/api_folder_getdef/map1"),
                            &def,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFolderOpen( sessionHandle,

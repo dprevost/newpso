@@ -52,6 +52,15 @@ void test_pass( void ** state )
    };
    PSO_HANDLE keyDefHandle, dataDefHandle;
    const char * data1 = "My Data1";
+   psoKeyDefinition * pKeyDefinition;
+   
+   pKeyDefinition = malloc( offsetof( psoKeyDefinition, definition) +
+                           sizeof(psoKeyFieldDefinition) );
+   assert_false( pKeyDefinition == NULL );
+
+   pKeyDefinition->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   pKeyDefinition->definitionLength = sizeof(psoKeyFieldDefinition);
+   memcpy( pKeyDefinition->definition, &keyDef, sizeof(psoKeyFieldDefinition) );
    
    memset( junk, 0, 12 );
    
@@ -68,30 +77,11 @@ void test_pass( void ** state )
                               strlen("/api_hashmap_open") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "API_Hashmap_OpenPass",
-                              strlen("API_Hashmap_OpenPass"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   
-   errcode = psoDataDefCreate( sessionHandle,
-                               "API_Hashmap_OpenPass",
-                               strlen("API_Hashmap_OpenPass"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_hashmap_open/test",
                            strlen("/api_hashmap_open/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */

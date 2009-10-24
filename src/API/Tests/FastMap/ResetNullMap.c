@@ -57,29 +57,11 @@ int main( int argc, char * argv[] )
                               strlen("/api_fastmap_reset_null_map") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "api_fastmap_reset_null_map",
-                              strlen("api_fastmap_reset_null_map"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_fastmap_reset_null_map",
-                               strlen("api_fastmap_reset_null_map"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_fastmap_reset_null_map/test",
                            strlen("/api_fastmap_reset_null_map/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapEdit( sessionHandle,

@@ -15,7 +15,6 @@
 nucleus_list = [
         'BlockGroup.c',
         'Cursor.c',
-        'Definitions.c',
         'Engine.c',
         'FastMap.c',
         'Folder.c',

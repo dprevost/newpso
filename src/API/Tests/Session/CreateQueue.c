@@ -20,13 +20,25 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle;
    int errcode;
@@ -36,24 +48,10 @@ int main( int argc, char * argv[] )
    };
    PSO_HANDLE dataDefHandle;
    
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
-   assert_true( errcode == PSO_OK );
-
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_session_create_object",
-                               strlen("api_session_create_object"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
@@ -61,66 +59,46 @@ int main( int argc, char * argv[] )
    errcode = psoCreateQueue( NULL,
                              "/api_session_create_object",
                              strlen("/api_session_create_object"),
-                             &def,
-                             NULL );
+                             &def );
    assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoCreateQueue( sessionHandle,
                              NULL,
                              strlen("/api_session_create_object"),
-                             &def,
-                             NULL );
+                             &def );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    errcode = psoCreateQueue( sessionHandle,
                              "/api_session_create_object",
                              0,
-                             &def,
-                             NULL );
-   assert_true( errcode == INVALID_LENGTH );
+                             &def );
+   assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoCreateQueue( sessionHandle,
                              "/api_session_create_object",
                              strlen("/api_session_create_object"),
-                             NULL,
-                             dataDefHandle );
+                             NULL );
    assert_true( errcode == PSO_NULL_POINTER );
-
-   errcode = psoCreateQueue( sessionHandle,
-                             "/api_session_create_object",
-                             strlen("/api_session_create_object"),
-                             &def,
-                             NULL );
-   assert_true( errcode == PSO_NULL_HANDLE );
 
    def.type = PSO_FOLDER;
    errcode = psoCreateQueue( sessionHandle,
                              "/api_session_create_object",
                              strlen("/api_session_create_object"),
-                             &def,
-                             dataDefHandle );
-   if ( errcode != PSO_WRONG_OBJECT_TYPE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+                             &def );
+   assert_true( errcode == PSO_WRONG_OBJECT_TYPE );
    def.type = PSO_HASH_MAP;
    errcode = psoCreateQueue( sessionHandle,
                              "/api_session_create_object",
                              strlen("/api_session_create_object"),
-                             &def,
-                             dataDefHandle );
-   if ( errcode != PSO_WRONG_OBJECT_TYPE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+                             &def );
+   assert_true( errcode == PSO_WRONG_OBJECT_TYPE );
    def.type = PSO_QUEUE;
 
    /* End of invalid args. This call should succeed. */
    errcode = psoCreateQueue( sessionHandle,
                              "/api_session_create_object",
                              strlen("/api_session_create_object"),
-                             &def,
-                             dataDefHandle );
+                             &def );
    assert_true( errcode == PSO_OK );
 
    /* Close the process and try to act on the session */
@@ -130,11 +108,24 @@ int main( int argc, char * argv[] )
    errcode = psoCreateQueue( sessionHandle,
                              "/api_session_create_object",
                              strlen("/api_session_create_object"),
-                             &def,
-                             dataDefHandle );
+                             &def );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
+}
 
-   return 0;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

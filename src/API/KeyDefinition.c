@@ -29,39 +29,60 @@
 int psoKeyDefClose( PSO_HANDLE definitionHandle )
 {
    psoaKeyDefinition * pDefinition;
+   int errcode = PSO_OK;
 
+#if 0
    pDefinition = (psoaKeyDefinition *) definitionHandle;
    if ( pDefinition == NULL ) return PSO_NULL_HANDLE;
    
    if ( pDefinition->definitionType != PSOA_DEF_KEY ) return PSO_WRONG_TYPE_HANDLE;
 
-   /*
-    * Memory might still be around even after it is released, so we make 
-    * sure future access with the handle fails by setting the type wrong!
-    */
-   pDefinition->definitionType = 0; 
-   free( pDefinition );
-   
-   return PSO_OK;
+   if ( ! pDefinition->pSession->terminated ) {
+
+      if ( ! psonHashMapRelease( pDefinition->pSession->pDataDefMap,
+                                 pDefinition->pHashItem,
+                                 &pDefinition->pSession->context ) ) {
+         errcode = PSO_OBJECT_CANNOT_GET_LOCK;
+         psocSetError( &pDefinition->pSession->context.errorHandler, 
+                       g_psoErrorHandle, errcode );
+         return errcode;
+      }
+
+      /*
+       * Memory might still be around even after it is released, so we 
+       * make sure future access with the handle fails by setting the 
+       * type wrong.
+       */
+      pDefinition->definitionType = 0; 
+      pDefinition->pHashItem = NULL;
+      free( pDefinition );
+   }
+   else {
+      errcode = PSO_SESSION_IS_TERMINATED;
+   }
+#endif
+
+   return errcode;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 int psoKeyDefCreate( PSO_HANDLE               sessionHandle,
-                      const char             * definitionName,
-                      psoUint32                nameLengthInBytes,
-                      enum psoDefinitionType   type,
-                      const unsigned char    * dataDef,
-                      psoUint32                dataDefLength,
-                      PSO_HANDLE             * definitionHandle )
+                     const char             * definitionName,
+                     psoUint32                nameLengthInBytes,
+                     enum psoDefinitionType   type,
+                     const unsigned char    * dataDef,
+                     psoUint32                dataDefLength,
+                     PSO_HANDLE             * definitionHandle )
 {
    int errcode = PSO_OK;
+   
+#if 0
    psoaSession* pSession;
    bool ok = true;
    psonKeyDefinition * pMemDefinition = NULL;
    uint32_t recLength;
    psoaKeyDefinition * pDefinition = NULL;
-   psonHashTxItem * pHashItem = NULL;
 
    pSession = (psoaSession*) sessionHandle;
    if ( pSession == NULL ) return PSO_NULL_HANDLE;
@@ -125,7 +146,7 @@ int psoKeyDefCreate( PSO_HANDLE               sessionHandle,
          ok = psonHashMapGet( pSession->pKeyDefMap,
                               definitionName,
                               nameLengthInBytes,
-                              &pHashItem,
+                              &pDefinition->pHashItem,
                               (uint32_t) -1,
                               &pSession->context );
          PSO_POST_CONDITION( ok == true || ok == false );
@@ -140,10 +161,8 @@ int psoKeyDefCreate( PSO_HANDLE               sessionHandle,
    free( pMemDefinition );
    pDefinition->pSession = pSession;
    pDefinition->definitionType = PSOA_DEF_KEY;
-   GET_PTR( pMemDefinition, pHashItem->dataOffset, psonKeyDefinition );
+   GET_PTR( pMemDefinition, pDefinition->pHashItem->dataOffset, psonKeyDefinition );
    pDefinition->pMemDefinition = pMemDefinition;
-   pDefinition->name = (char *)pHashItem->key;
-   pDefinition->nameLength = pHashItem->keyLength;
    
    *definitionHandle = (PSO_HANDLE) pDefinition;
 
@@ -161,6 +180,57 @@ error_handler:
    if ( ! ok ) {
       errcode = psocGetLastError( &pSession->context.errorHandler );
    }
+#endif
+
+   return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+PHOTON_API_EXPORT
+int psoKeyDefDestroy( PSO_HANDLE   sessionHandle,
+                      const char * definitionName,
+                      psoUint32    nameLengthInBytes )
+{
+   int errcode = PSO_OK;
+
+#if 0
+   psoaSession* pSession;
+   bool ok = true;
+
+   pSession = (psoaSession*) sessionHandle;
+   if ( pSession == NULL ) return PSO_NULL_HANDLE;
+
+   if ( pSession->type != PSOA_SESSION ) return PSO_WRONG_TYPE_HANDLE;
+
+   if ( definitionName == NULL ) {
+      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_NULL_POINTER );
+      return PSO_NULL_POINTER;
+   }
+   if ( nameLengthInBytes == 0 ) {
+      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_INVALID_LENGTH );
+      return PSO_INVALID_LENGTH;
+   }
+
+   if ( ! pSession->terminated ) {
+      ok = psonHashMapDeleteZero( pSession->pKeyDefMap,
+                                  definitionName,
+                                  nameLengthInBytes,
+                                  &pSession->context );
+      PSO_POST_CONDITION( ok == true || ok == false );
+   }
+   else {
+      errcode = PSO_SESSION_IS_TERMINATED;
+   }
+
+   if ( errcode != 0 ) {
+      psocSetError( &pSession->context.errorHandler, 
+         g_psoErrorHandle, errcode );
+   }
+   if ( ! ok ) {
+      errcode = psocGetLastError( &pSession->context.errorHandler );
+   }
+#endif
 
    return errcode;
 }
@@ -168,9 +238,9 @@ error_handler:
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 int psoKeyDefGet( PSO_HANDLE               definitionHandle,
-                   enum psoDefinitionType * type,
-                   unsigned char          * dataDef,
-                   psoUint32                dataDefLength )
+                  enum psoDefinitionType * type,
+                  unsigned char          * dataDef,
+                  psoUint32                dataDefLength )
 {
    psoaKeyDefinition * pDefinition;
 
@@ -204,7 +274,7 @@ int psoKeyDefGet( PSO_HANDLE               definitionHandle,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 int psoKeyDefGetLength( PSO_HANDLE   definitionHandle,
-                         psoUint32  * dataDefLength )
+                        psoUint32  * dataDefLength )
 {
    psoaKeyDefinition * pDefinition;
 
@@ -226,16 +296,17 @@ int psoKeyDefGetLength( PSO_HANDLE   definitionHandle,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 int psoKeyDefOpen( PSO_HANDLE   sessionHandle,
-                    const char * definitionName,
-                    psoUint32    nameLengthInBytes,
-                    PSO_HANDLE * definitionHandle )
+                   const char * definitionName,
+                   psoUint32    nameLengthInBytes,
+                   PSO_HANDLE * definitionHandle )
 {
    int errcode = PSO_OK;
+
+#if 0
    psoaSession* pSession;
    bool ok = true;
    psonKeyDefinition * pMemDefinition = NULL;
    psoaKeyDefinition * pDefinition = NULL;
-   psonHashTxItem * pHashItem;
 
    pSession = (psoaSession*) sessionHandle;
    if ( pSession == NULL ) return PSO_NULL_HANDLE;
@@ -267,7 +338,7 @@ int psoKeyDefOpen( PSO_HANDLE   sessionHandle,
       ok = psonHashMapGet( pSession->pKeyDefMap,
                            definitionName,
                            nameLengthInBytes,
-                           &pHashItem,
+                           &pDefinition->pHashItem,
                            (uint32_t) -1,
                            &pSession->context );
       PSO_POST_CONDITION( ok == true || ok == false );
@@ -280,10 +351,8 @@ int psoKeyDefOpen( PSO_HANDLE   sessionHandle,
 
    pDefinition->pSession = pSession;
    pDefinition->definitionType = PSOA_DEF_KEY;
-   GET_PTR( pMemDefinition, pHashItem->dataOffset, psonKeyDefinition );
+   GET_PTR( pMemDefinition, pDefinition->pHashItem->dataOffset, psonKeyDefinition );
    pDefinition->pMemDefinition = pMemDefinition;
-   pDefinition->name = (char *)pHashItem->key;
-   pDefinition->nameLength = pHashItem->keyLength;
    
    *definitionHandle = (PSO_HANDLE) pDefinition;
 
@@ -300,60 +369,7 @@ error_handler:
    if ( ! ok ) {
       errcode = psocGetLastError( &pSession->context.errorHandler );
    }
-
-   return errcode;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-/*
- * This function is not included in the published API.
- *
- * This function can be dangerous. Handles to key definition are 
- * not counted for performance reasons -> this might destroy a
- * definition which is used by someone else...
- */
-PHOTON_API_EXPORT
-int psoaKeyDefDestroy( PSO_HANDLE   sessionHandle,
-                       const char * definitionName,
-                       psoUint32    nameLengthInBytes )
-{
-   int errcode = PSO_OK;
-   psoaSession* pSession;
-   bool ok = true;
-
-   pSession = (psoaSession*) sessionHandle;
-   if ( pSession == NULL ) return PSO_NULL_HANDLE;
-
-   if ( pSession->type != PSOA_SESSION ) return PSO_WRONG_TYPE_HANDLE;
-
-   if ( definitionName == NULL ) {
-      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_NULL_POINTER );
-      return PSO_NULL_POINTER;
-   }
-   if ( nameLengthInBytes == 0 ) {
-      psocSetError( &pSession->context.errorHandler, g_psoErrorHandle, PSO_INVALID_LENGTH );
-      return PSO_INVALID_LENGTH;
-   }
-
-   if ( ! pSession->terminated ) {
-      ok = psonHashMapDelete( pSession->pKeyDefMap,
-                              definitionName,
-                              nameLengthInBytes,
-                              &pSession->context );
-      PSO_POST_CONDITION( ok == true || ok == false );
-   }
-   else {
-      errcode = PSO_SESSION_IS_TERMINATED;
-   }
-
-   if ( errcode != 0 ) {
-      psocSetError( &pSession->context.errorHandler, 
-         g_psoErrorHandle, errcode );
-   }
-   if ( ! ok ) {
-      errcode = psocGetLastError( &pSession->context.errorHandler );
-   }
+#endif
 
    return errcode;
 }
@@ -399,8 +415,8 @@ int psoaKeyDefGetDef( PSO_HANDLE                definitionHandle,
    *type = pDefinition->pMemDefinition->type;
    *keyDef = pDefinition->pMemDefinition->definition,
    *keyDefLength = pDefinition->pMemDefinition->definitionLength;
-   *name = pDefinition->name;
-   *nameLength = pDefinition->nameLength;
+   *name = (char *)pDefinition->pHashItem->key;
+   *nameLength = pDefinition->pHashItem->keyLength;
    
    return PSO_OK;
 }

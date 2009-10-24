@@ -24,8 +24,7 @@ psonFastMap * pHashMap;
 psonSessionContext context;
 psonTxStatus status;
 psoObjectDefinition def = { PSO_FAST_MAP, 0, 0 };
-psonKeyDefinition keyDef;
-psonDataDefinition fields;
+psoKeyDefinition keyDef;
 psonTreeNode mapNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -62,27 +61,7 @@ void test_null_context( void ** state )
                                            SET_OFFSET(pHashMap),
                                            &def,
                                            &keyDef,
-                                           &fields,
                                            NULL ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_null_datadef( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonFastMapInit( pHashMap, 
-                                           0, 
-                                           1, 
-                                           0, 
-                                           &mapNode, 
-                                           SET_OFFSET(pHashMap),
-                                           &def,
-                                           &keyDef,
-                                           NULL,
-                                           &context ) );
 #endif
    return;
 }
@@ -100,7 +79,6 @@ void test_null_definition( void ** state )
                                            SET_OFFSET(pHashMap),
                                            NULL,
                                            &keyDef,
-                                           &fields,
                                            &context ) );
 #endif
    return;
@@ -119,7 +97,6 @@ void test_null_hashitem( void ** state )
                                            PSON_NULL_OFFSET,
                                            &def,
                                            &keyDef,
-                                           &fields,
                                            &context ) );
 #endif
    return;
@@ -138,7 +115,6 @@ void test_null_keydef( void ** state )
                                            SET_OFFSET(pHashMap),
                                            &def,
                                            NULL,
-                                           &fields,
                                            &context ) );
 #endif
    return;
@@ -157,7 +133,6 @@ void test_null_map( void ** state )
                                            SET_OFFSET(pHashMap),
                                            &def,
                                            &keyDef,
-                                           &fields,
                                            &context ) );
 #endif
    return;
@@ -176,7 +151,6 @@ void test_null_parent( void ** state )
                                            SET_OFFSET(pHashMap),
                                            &def,
                                            &keyDef,
-                                           &fields,
                                            &context ) );
 #endif
    return;
@@ -195,7 +169,6 @@ void test_null_node( void ** state )
                                            SET_OFFSET(pHashMap),
                                            &def,
                                            &keyDef,
-                                           &fields,
                                            &context ) );
 #endif
    return;
@@ -214,7 +187,6 @@ void test_zero_blocks( void ** state )
                                            SET_OFFSET(pHashMap),
                                            &def,
                                            &keyDef,
-                                           &fields,
                                            &context ) );
 #endif
    return;
@@ -235,7 +207,6 @@ void test_pass( void ** state )
                          SET_OFFSET(pHashMap),
                          &def,
                          &keyDef,
-                         &fields,
                          &context );
    assert_true( ok );
    
@@ -251,7 +222,6 @@ int main()
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
       unit_test_setup_teardown( test_null_context,    setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_datadef,    setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_definition, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_hashitem,   setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_keydef,     setup_test, teardown_test ),

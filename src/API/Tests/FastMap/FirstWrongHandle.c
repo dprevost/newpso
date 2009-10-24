@@ -59,29 +59,11 @@ int main( int argc, char * argv[] )
                               strlen("/api_fast_map_first_wrong_handle") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "api_fastmap_first_wrong_handle",
-                              strlen("api_fastmap_first_wrong_handle"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_fastmap_first_wrong_handle",
-                               strlen("api_fastmap_first_wrong_handle"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_fast_map_first_wrong_handle/test",
                            strlen("/api_fast_map_first_wrong_handle/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoFastMapEdit( sessionHandle,

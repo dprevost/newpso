@@ -23,28 +23,40 @@
 
 psonFolder * pTopFolder;
 psonSessionContext context;
-psonKeyDefinition * retKeyDef = NULL;
-psonDataDefinition * retDataDef = NULL;
-psoObjectDefinition retDef;
-psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
-psonKeyDefinition keyDef;
-psonDataDefinition fieldDef;
+psoKeyDefinition * retKeyDef = NULL;
+psoObjectDefinition * retDef = NULL;
+
+psoObjectDefinition * def;
+psoKeyDefinition * keyDef;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void setup_test()
 {
    bool ok;
-   
-   pTopFolder = initTopFolderTest( &context );
+   def = (psoObjectDefinition *) malloc(
+      offsetof(psoObjectDefinition, dataDef) + 50 );
+   assert( def != NULL );
+   def->type = PSO_HASH_MAP;
+   def->minNumOfDataRecords = 0;
+   def->minNumBlocks = 1;
+   def->dataDefType = PSO_DEF_USER_DEFINED;
+   def->dataDefLength = 50;
 
-   ok = psonTopFolderCreateObject( pTopFolder,
-                                   "Test1",
-                                   strlen("Test1"),
-                                   &def,
-                                   &fieldDef,
-                                   &keyDef,
-                                   &context );
+   keyDef = malloc( offsetof( psoKeyDefinition, definition) + 20 );
+   assert( keyDef != NULL );
+
+   keyDef->type = PSO_DEF_USER_DEFINED;
+   keyDef->definitionLength = 20;
+
+   pTopFolder = initTopFolderTest( &context );
+   
+   ok = psonTopFolderCreateMap( pTopFolder,
+                                "Test1",
+                                strlen("Test1"),
+                                def,
+                                keyDef,
+                                &context );
    assert( ok );
 }
 
@@ -52,6 +64,11 @@ void setup_test()
 
 void teardown_test()
 {
+   if ( def != NULL ) free( def );
+   def = NULL;
+   if ( keyDef != NULL ) free( keyDef );
+   keyDef = NULL;
+   
    if (g_pBaseAddr) free(g_pBaseAddr);
    g_pBaseAddr = NULL;
 }
@@ -65,25 +82,8 @@ void test_null_context( void ** state )
                                                "Test1",
                                                strlen("Test1"),
                                                &retDef,
-                                               &retDataDef,
                                                &retKeyDef,
                                                NULL ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_null_datadef( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonTopFolderGetDef( pTopFolder,
-                                               "Test1",
-                                               strlen("Test1"),
-                                               &retDef,
-                                               NULL,
-                                               &retKeyDef,
-                                               &context ) );
 #endif
    return;
 }
@@ -97,7 +97,6 @@ void test_null_def( void ** state )
                                                "Test1",
                                                strlen("Test1"),
                                                NULL,
-                                               &retDataDef,
                                                &retKeyDef,
                                                &context ) );
 #endif
@@ -113,7 +112,6 @@ void test_null_folder( void ** state )
                                                "Test1",
                                                strlen("Test1"),
                                                &retDef,
-                                               &retDataDef,
                                                &retKeyDef,
                                                &context ) );
 #endif
@@ -129,7 +127,6 @@ void test_null_key_def( void ** state )
                                                "Test1",
                                                strlen("Test1"),
                                                &retDef,
-                                               &retDataDef,
                                                NULL,
                                                &context ) );
 #endif
@@ -145,7 +142,6 @@ void test_null_name( void ** state )
                                                NULL,
                                                strlen("Test1"),
                                                &retDef,
-                                               &retDataDef,
                                                &retKeyDef,
                                                &context ) );
 #endif
@@ -163,13 +159,15 @@ void test_pass( void ** state )
                              "Test1",
                              strlen("Test1"),
                              &retDef,
-                             &retDataDef,
                              &retKeyDef,
                              &context );
    assert_true( ok );
    
-   assert_memory_equal( retKeyDef, &keyDef, sizeof(psonKeyDefinition) );
-   assert_memory_equal( retDataDef, &fieldDef, sizeof(psonDataDefinition) );
+//   fprintf(stderr, "%d\n", def->type
+   assert_memory_equal( retKeyDef, keyDef, 
+      offsetof(psoKeyDefinition,definition) + 20 );
+   assert_memory_equal( retDef, def, 
+      offsetof(psoObjectDefinition,dataDef) + 50 );
    
 #endif
    return;
@@ -183,7 +181,6 @@ int main()
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
       unit_test_setup_teardown( test_null_context, setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_datadef, setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_def,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_folder,  setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_key_def, setup_test, teardown_test ),

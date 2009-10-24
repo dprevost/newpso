@@ -33,9 +33,8 @@ psonTreeNode mapNode;
 void setup_test()
 {
    bool ok;
-   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0 };
-   psonKeyDefinition keyDef;
-   psonDataDefinition fields;
+   psoObjectDefinition def = { PSO_FAST_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoKeyDefinition keyDef = { PSO_DEF_USER_DEFINED, 0, '\0' };
    
    initHashMapCopyTest( &pOldMap, &pNewMap, &context );
 
@@ -48,7 +47,7 @@ void setup_test()
    
    ok = psonFastMapInit( pOldMap, 0, 1, 0, &mapNode,
                          SET_OFFSET(pOldMap), &def, &keyDef, 
-                         &fields, &context );
+                         &context );
    assert( ok );
    
    ok = psonFastMapInsert( pOldMap,

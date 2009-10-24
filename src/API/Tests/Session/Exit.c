@@ -20,23 +20,64 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_open_objs( void ** state )
+{
+   PSO_HANDLE sessionHandle, objHandle;
+   int errcode;
+   
+   errcode = psoInit( "10701", NULL );
+   assert_true( errcode == PSO_OK );
+   
+   errcode = psoInitSession( &sessionHandle );
+   assert_true( errcode == PSO_OK );
+   
+   errcode = psoCreateFolder( sessionHandle, "test1", 5 );
+   assert_true( errcode == PSO_OK );
+   errcode = psoFolderOpen( sessionHandle, "test1", 5, &objHandle );
+   assert_true( errcode == PSO_OK );
+
+   errcode = psoExitSession( sessionHandle );
+   assert_true( errcode == PSO_OK );
+
+   errcode = psoInitSession( &sessionHandle );
+   assert_true( errcode == PSO_OK );
+
+   /* */
+   errcode = psoCreateFolder( sessionHandle, "test1", 5 );
+   assert_true( errcode == PSO_OK );
+   
+   errcode = psoExitSession( sessionHandle );
+   assert_true( errcode == PSO_OK );
+   
+   psoExit();
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle;
    int errcode;
    
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -57,11 +98,23 @@ int main( int argc, char * argv[] )
    assert_true( errcode == PSO_OK );
 
    psoExit();
-   
-   errcode = psoExitSession( sessionHandle );
-   assert_true( errcode == PSO_SESSION_IS_TERMINATED );
+}
 
-   return 0;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_open_objs, setup_test, teardown_test ),
+      unit_test_setup_teardown( test_pass,      setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

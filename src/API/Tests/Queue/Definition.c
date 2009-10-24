@@ -20,10 +20,7 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/Queue.h"
-
-const bool expectedToPass = true;
 
 struct dummy {
    char c;
@@ -33,16 +30,34 @@ struct dummy {
    unsigned char bin[1];
 };
 
+#include "API/Tests/quasar-run.h"
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    struct dummy * data1 = NULL;
    size_t lenData;
-
-   psoObjectDefinition queueDef = { PSO_QUEUE, 0, 0 };
+   uint32_t lengthDef;
+   
+   psoObjectDefinition * queueDef;
+   psoObjectDefinition * retDef;
 
    psoFieldDefinition fields[5] = {
       { "field1", PSO_TINYINT,   {0} },
@@ -52,22 +67,27 @@ int main( int argc, char * argv[] )
       { "field5", PSO_LONGVARBINARY, {0} }
    };
    
-   psoFieldDefinition retFields[5];
-   psoObjectDefinition retDef;
-   PSO_HANDLE dataDefHandle, retDataDefHandle;
+   lengthDef = offsetof(psoObjectDefinition, dataDef) + 
+      5*sizeof(psoFieldDefinition);
+
+   queueDef = (psoObjectDefinition*) malloc( lengthDef );
+   assert_false( queueDef == NULL );
+   retDef = (psoObjectDefinition*) malloc( lengthDef );
+   assert_false( retDef == NULL );
    
-   memset( &retDef, 0, sizeof(psoObjectDefinition) );
-   memset( &retFields, 0, 5*sizeof(psoFieldDefinition) );
+   memset( queueDef, 0, lengthDef );
+   queueDef->type = PSO_QUEUE;
+   queueDef->minNumBlocks = 1;
+   queueDef->dataDefType = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   queueDef->dataDefLength = 5*sizeof(psoFieldDefinition);
+   memcpy( queueDef->dataDef, fields, 5*sizeof(psoFieldDefinition) );
+   
+   memset( retDef, 0, lengthDef );
 
    lenData = offsetof(struct dummy, bin) + 10;
    data1 = (struct dummy *)malloc( lenData );
    
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -78,20 +98,10 @@ int main( int argc, char * argv[] )
                               strlen("/api_queue_definition") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_queue_definition",
-                               strlen("api_queue_definition"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_definition/test",
                              strlen("/api_queue_definition/test"),
-                             &queueDef,
-                             dataDefHandle );
+                             queueDef );
    assert_true( errcode == PSO_OK );
 
    errcode = psoQueueOpen( sessionHandle,
@@ -100,32 +110,58 @@ int main( int argc, char * argv[] )
                            &objHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoQueuePush( objHandle, data1, lenData, NULL );
+   errcode = psoQueuePush( objHandle, data1, lenData );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
 
-   errcode = psoQueueDefinition( NULL, &retDataDefHandle );
+   errcode = psoQueueDefinition( NULL, retDef, lengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
-   errcode = psoQueueDefinition( objHandle, NULL );
+   errcode = psoQueueDefinition( objHandle, NULL, lengthDef );
    assert_true( errcode == PSO_NULL_POINTER );
 
+   errcode = psoQueueDefinition( objHandle, retDef, 0 );
+   assert_true( errcode == PSO_INVALID_LENGTH );
+
+   errcode = psoQueueDefinition( objHandle, retDef, sizeof(psoObjectDefinition)-1 );
+   assert_true( errcode == PSO_INVALID_LENGTH );
+
    /* End of invalid args. This call should succeed. */
-   errcode = psoQueueDefinition( objHandle, &retDataDefHandle );
+   // Limit condition
+   errcode = psoQueueDefinition( objHandle, retDef, sizeof(psoObjectDefinition) );
    assert_true( errcode == PSO_OK );
+
+   errcode = psoQueueDefinition( objHandle, retDef, lengthDef );
+   assert_true( errcode == PSO_OK );
+
+   assert_true( memcmp( queueDef, retDef, lengthDef ) == 0 );
 
    /* Close the session and try to act on the object */
 
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoQueueDefinition( objHandle, &retDataDefHandle );
+   errcode = psoQueueDefinition( objHandle, retDef, lengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
    
-   return 0;
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

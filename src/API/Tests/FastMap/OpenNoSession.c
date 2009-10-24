@@ -54,29 +54,11 @@ int main( int argc, char * argv[] )
                               strlen("/api_fast_map_open_nosession") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "api_fastmap_open_nosession",
-                              strlen("api_fastmap_open_nosession"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_fastmap_open_nosession",
-                               strlen("api_fastmap_open_nosession"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_fast_map_open_nosession/test",
                            strlen("/api_fast_map_open_nosession/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    /* Close the session and try to act on the object */

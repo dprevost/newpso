@@ -24,8 +24,7 @@ psonHashMap * pHashMap;
 psonSessionContext context;
 psonTxStatus status;
 psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
-psonKeyDefinition keyDef;
-psonDataDefinition fields;
+psoKeyDefinition keyDef;
 psonTreeNode mapNode;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -59,26 +58,7 @@ void test_null_context( void ** state )
                                            &mapNode, 
                                            &def, 
                                            &keyDef,
-                                           &fields,
                                            NULL ) );
-#endif
-   return;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void test_null_datadef( void ** state )
-{
-#if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonHashMapInit( pHashMap, 
-                                           0, 
-                                           1, 
-                                           0, 
-                                           &mapNode, 
-                                           &def, 
-                                           &keyDef,
-                                           NULL,
-                                           &context ) );
 #endif
    return;
 }
@@ -95,7 +75,6 @@ void test_null_definition( void ** state )
                                            &mapNode, 
                                            NULL, 
                                            &keyDef,
-                                           &fields,
                                            &context ) );
 #endif
    return;
@@ -113,7 +92,6 @@ void test_null_hash( void ** state )
                                            &mapNode, 
                                            &def, 
                                            &keyDef,
-                                           &fields,
                                            &context ) );
 #endif
    return;
@@ -131,7 +109,6 @@ void test_null_keydef( void ** state )
                                            &mapNode, 
                                            &def, 
                                            NULL,
-                                           &fields,
                                            &context ) );
 #endif
    return;
@@ -149,7 +126,6 @@ void test_null_node( void ** state )
                                            NULL, 
                                            &def, 
                                            &keyDef,
-                                           &fields,
                                            &context ) );
 #endif
    return;
@@ -167,7 +143,6 @@ void test_null_parent( void ** state )
                                            &mapNode, 
                                            &def, 
                                            &keyDef,
-                                           &fields,
                                            &context ) );
 #endif
    return;
@@ -185,7 +160,6 @@ void test_zero_blocks( void ** state )
                                            &mapNode, 
                                            &def, 
                                            &keyDef,
-                                           &fields,
                                            &context ) );
 #endif
    return;
@@ -205,7 +179,6 @@ void test_pass( void ** state )
                          &mapNode, 
                          &def, 
                          &keyDef,
-                         &fields,
                          &context );
    assert_true( ok );
    
@@ -221,7 +194,6 @@ int main()
 #if defined(PSO_UNIT_TESTS)
    const UnitTest tests[] = {
       unit_test_setup_teardown( test_null_context,     setup_test, teardown_test ),
-      unit_test_setup_teardown( test_null_datadef,     setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_definition,  setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_hash,        setup_test, teardown_test ),
       unit_test_setup_teardown( test_null_keydef,      setup_test, teardown_test ),

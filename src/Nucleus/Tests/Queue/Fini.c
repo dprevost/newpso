@@ -30,8 +30,7 @@ psonTreeNode queueNode;
 void setup_test()
 {
    bool ok;
-   psoObjectDefinition def = { PSO_QUEUE, 0, 0 };
-   psonDataDefinition fields;
+   psoObjectDefinition def = { PSO_QUEUE, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
    
    pQueue = initQueueTest( &context );
 
@@ -41,7 +40,7 @@ void setup_test()
 
    ok = psonQueueInit( pQueue, 
                        0, 1, &queueNode,
-                       &def, &fields, &context );
+                       &def, &context );
    assert( ok );
 }
 

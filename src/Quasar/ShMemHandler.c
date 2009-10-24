@@ -43,8 +43,8 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    psoObjectDefinition defMap = { PSO_HASH_MAP, 0, 0 };
    psonFolder * pTree, * pFolder;
    psonHashMap * pHashMap;
-   psonDataDefinition dummyDataDefinition;
-   psonKeyDefinition  dummyKeyDefinition;
+//   psonDataDefinition dummyDataDefinition;
+//   psonKeyDefinition  dummyKeyDefinition;
    
    psonFolderItem folderItem;
    psonTreeNode * pNode;
@@ -70,25 +70,25 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) return false;
 
-   ok = psonTopFolderCreateObject( pTree,
-                                   "system/Data_Definition",
-                                   strlen("system/Data_Definition"),
-                                   &defMap,
-                                   &dummyDataDefinition,
-                                   &dummyKeyDefinition,
-                                   &pHandler->context );
+#if 0
+   ok = psonTopFolderCreateMap( pTree,
+                                "system/Data_Definition",
+                                strlen("system/Data_Definition"),
+                                &defMap,
+                                &dummyKeyDefinition,
+                                &pHandler->context );
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) return false;
 
-   ok = psonTopFolderCreateObject( pTree,
-                                   "system/Key_Definition",
-                                   strlen("system/Key_Definition"),
-                                   &defMap,
-                                   &dummyDataDefinition,
-                                   &dummyKeyDefinition,
-                                   &pHandler->context );
+   ok = psonTopFolderCreateMap( pTree,
+                                "system/Key_Definition",
+                                strlen("system/Key_Definition"),
+                                &defMap,
+                                &dummyKeyDefinition,
+                                &pHandler->context );
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) return false;
+#endif
 
    /*
     * Setting the field "isSystemObject" should only be done after all
@@ -128,6 +128,7 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) return false;
 
+#if 0
    ok = psonTopFolderOpenObject( pTree,
                                  "system/Data_Definition",
                                  strlen("system/Data_Definition"),
@@ -211,6 +212,7 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    ok = psonTopFolderCloseObject( &folderItem, &pHandler->context );
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) return false;
+#endif
 
    ok = psonTxCommit( (psonTx*)pHandler->context.pTransaction, 
                        &pHandler->context );

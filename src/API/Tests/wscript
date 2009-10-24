@@ -18,9 +18,13 @@ subdirs_list = [
         'Api',
         'CommonObject',
         'Connector',
-        'DataDefinition',
         'Folder',
-        'HashMap' ]
+        'HashMap',
+        'Lifo',
+        'ListReaders',
+        'Process',
+        'Queue',
+        'Session' ]
 
 def build(bld):
    

@@ -20,57 +20,61 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle;
    int errcode;
-   psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
-   psoFieldDefinition fields[1] = {
-      { "Field_1", PSO_VARCHAR, {10} }
-   };
-   psoKeyFieldDefinition keyDef = { "Key1", PSO_KEY_VARCHAR, 100 };
-   PSO_HANDLE dataDefHandle, keyDefHandle, returnedDef;
+   uint32_t lengthDef;
+   psoKeyDefinition * keyDef = NULL;
+   psoObjectDefinition hashMapDef = { PSO_HASH_MAP, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoKeyDefinition * retDef;
+
+   psoKeyFieldDefinition fields[1] = { "MyKey", PSO_KEY_LONGVARCHAR, 0 };
+
+   lengthDef = offsetof(psoKeyDefinition, definition) + 
+      sizeof(psoKeyFieldDefinition);
+
+   keyDef = (psoKeyDefinition*) malloc( lengthDef );
+   assert_false( keyDef == NULL );
+   retDef = (psoKeyDefinition*) malloc( lengthDef );
+   assert_false( retDef == NULL );
    
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   memset( keyDef, 0, lengthDef );
+   keyDef->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   keyDef->definitionLength = sizeof(psoKeyFieldDefinition);
+   memcpy( keyDef->definition, fields, sizeof(psoKeyFieldDefinition) );
+   
+   memset( retDef, 0, lengthDef );
+
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_session_key_definition",
-                               strlen("api_session_key_definition"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "api_session_key_definition",
-                              strlen("api_session_key_definition"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_session_key_definition",
                            strlen("/api_session_key_definition"),
-                           &def,
-                           dataDefHandle,
-                           keyDefHandle );
+                           &hashMapDef,
+                           keyDef );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
@@ -78,33 +82,63 @@ int main( int argc, char * argv[] )
    errcode = psoGetKeyDefinition( NULL,
                                   "/api_session_key_definition",
                                   strlen("/api_session_key_definition"),
-                                  &returnedDef );
+                                  retDef,
+                                  lengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
    errcode = psoGetKeyDefinition( sessionHandle,
                                   NULL,
                                   strlen("/api_session_key_definition"),
-                                  &returnedDef );
+                                  retDef,
+                                  lengthDef );
    assert_true( errcode == PSO_INVALID_OBJECT_NAME );
 
    errcode = psoGetKeyDefinition( sessionHandle,
                                   "/api_session_key_definition",
                                   0,
-                                  &returnedDef );
-   assert_true( errcode == INVALID_LENGTH );
+                                  retDef,
+                                  lengthDef );
+   assert_true( errcode == PSO_INVALID_LENGTH );
 
    errcode = psoGetKeyDefinition( sessionHandle,
                                   "/api_session_key_definition",
                                   strlen("/api_session_key_definition"),
-                                  NULL );
+                                  NULL,
+                                  lengthDef );
    assert_true( errcode == PSO_NULL_POINTER );
 
-   /* End of invalid args. This call should succeed. */
    errcode = psoGetKeyDefinition( sessionHandle,
                                   "/api_session_key_definition",
                                   strlen("/api_session_key_definition"),
-                                  &returnedDef );
+                                  retDef,
+                                  0 );
+   assert_true( errcode == PSO_INVALID_LENGTH );
+                                        
+   errcode = psoGetKeyDefinition( sessionHandle,
+                                  "/api_session_key_definition",
+                                  strlen("/api_session_key_definition"),
+                                  retDef,
+                                  sizeof(psoKeyDefinition)-1 );
+   assert_true( errcode == PSO_INVALID_LENGTH );
+
+   /* End of invalid args. This call should succeed. */
+   // Test limit condition
+   errcode = psoGetKeyDefinition( sessionHandle,
+                                  "/api_session_key_definition",
+                                  strlen("/api_session_key_definition"),
+                                  retDef,
+                                  sizeof(psoKeyDefinition) );
+   fprintf( stderr, "%d\n", errcode );
    assert_true( errcode == PSO_OK );
+
+   errcode = psoGetKeyDefinition( sessionHandle,
+                                  "/api_session_key_definition",
+                                  strlen("/api_session_key_definition"),
+                                  retDef,
+                                  lengthDef );
+   assert_true( errcode == PSO_OK );
+
+   assert_true( memcmp( keyDef, retDef, lengthDef ) == 0 );
 
    /* Close the process and try to act on the session */
 
@@ -113,10 +147,25 @@ int main( int argc, char * argv[] )
    errcode = psoGetKeyDefinition( sessionHandle,
                                   "/api_session_key_definition",
                                   strlen("/api_session_key_definition"),
-                                  &returnedDef );
+                                  retDef,
+                                  lengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
+}
 
-   return 0;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

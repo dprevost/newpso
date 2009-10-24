@@ -60,25 +60,15 @@ void setup_test()
    ok = psonFolderInit( pFolder, 0, 1, 0, &node, &context );
    assert( ok );
    
-   ok = psonFolderInsertObject( pFolder,
+   ok = psonFolderInsertFolder( pFolder,
                                 "test2",
                                 5,
-                                &def,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert( ok );
    
-   ok = psonFolderInsertObject( pFolder,
+   ok = psonFolderInsertFolder( pFolder,
                                 "test3",
                                 5,
-                                &def,
-                                NULL,
-                                NULL,
-                                1,
-                                0,
                                 &context );
    assert( ok );
 }

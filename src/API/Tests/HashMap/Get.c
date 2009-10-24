@@ -53,6 +53,15 @@ void test_pass( void ** state )
       { "Field_1", PSO_VARCHAR, {10} }
    };
    PSO_HANDLE keyDefHandle, dataDefHandle;
+   psoKeyDefinition * pKeyDefinition;
+   
+   pKeyDefinition = malloc( offsetof( psoKeyDefinition, definition) +
+                           sizeof(psoKeyFieldDefinition) );
+   assert_false( pKeyDefinition == NULL );
+
+   pKeyDefinition->type = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   pKeyDefinition->definitionLength = sizeof(psoKeyFieldDefinition);
+   memcpy( pKeyDefinition->definition, &keyDef, sizeof(psoKeyFieldDefinition) );
 
    errcode = psoInit( "10701", "Get" );
    assert_true( errcode == PSO_OK );
@@ -65,30 +74,11 @@ void test_pass( void ** state )
                               strlen("/api_hashmap_get") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoKeyDefCreate( sessionHandle,
-                              "API_Hashmap_Get",
-                              strlen("API_Hashmap_Get"),
-                              PSO_DEF_PHOTON_ODBC_SIMPLE,
-                              (unsigned char *)&keyDef,
-                              sizeof(psoKeyFieldDefinition),
-                              &keyDefHandle );
-   assert_true( errcode == PSO_OK );
-   
-   errcode = psoDataDefCreate( sessionHandle,
-                               "API_Hashmap_Get",
-                               strlen("API_Hashmap_Get"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateMap( sessionHandle,
                            "/api_hashmap_get/test",
                            strlen("/api_hashmap_get/test"),
                            &mapDef,
-                           dataDefHandle,
-                           keyDefHandle );
+                           pKeyDefinition );
    assert_true( errcode == PSO_OK );
 
    errcode = psoHashMapOpen( sessionHandle,

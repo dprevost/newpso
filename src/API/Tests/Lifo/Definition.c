@@ -20,10 +20,8 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/Lifo.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 struct dummy {
    char c;
@@ -35,14 +33,30 @@ struct dummy {
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    struct dummy * data1 = NULL;
    size_t lenData;
+   uint32_t lengthDef;
 
-   psoObjectDefinition lifoDef = { PSO_LIFO, 0, 0, 0 };
+   psoObjectDefinition * queueDef;
+   psoObjectDefinition * retDef;
 
    psoFieldDefinition fields[5] = {
       { "field1", PSO_TINYINT,       {0} },
@@ -52,22 +66,27 @@ int main( int argc, char * argv[] )
       { "field5", PSO_LONGVARBINARY, {0} }
    };
    
-   psoFieldDefinition retFields[5];
-   psoObjectDefinition retDef;
-   PSO_HANDLE dataDefHandle, retDataDefHandle;
+   lengthDef = offsetof(psoObjectDefinition, dataDef) + 
+      5*sizeof(psoFieldDefinition);
+
+   queueDef = (psoObjectDefinition*) malloc( lengthDef );
+   assert_false( queueDef == NULL );
+   retDef = (psoObjectDefinition*) malloc( lengthDef );
+   assert_false( retDef == NULL );
    
-   memset( &retDef, 0, sizeof(psoObjectDefinition) );
-   memset( &retFields, 0, 5*sizeof(psoFieldDefinition) );
+   memset( queueDef, 0, lengthDef );
+   queueDef->type = PSO_LIFO;
+   queueDef->minNumBlocks = 1;
+   queueDef->dataDefType = PSO_DEF_PHOTON_ODBC_SIMPLE;
+   queueDef->dataDefLength = 5*sizeof(psoFieldDefinition);
+   memcpy( queueDef->dataDef, fields, 5*sizeof(psoFieldDefinition) );
+   
+   memset( retDef, 0, lengthDef );
 
    lenData = offsetof(struct dummy, bin) + 10;
    data1 = (struct dummy *)malloc( lenData );
    
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -78,20 +97,10 @@ int main( int argc, char * argv[] )
                               strlen("/api_lifo_definition") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_lifo_definition",
-                               strlen("api_lifo_definition"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateQueue( sessionHandle,
                              "/api_lifo_definition/test",
                              strlen("/api_lifo_definition/test"),
-                             &lifoDef,
-                             dataDefHandle );
+                             queueDef );
    assert_true( errcode == PSO_OK );
 
    errcode = psoLifoOpen( sessionHandle,
@@ -100,32 +109,58 @@ int main( int argc, char * argv[] )
                           &objHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoLifoPush( objHandle, data1, lenData, NULL );
+   errcode = psoLifoPush( objHandle, data1, lenData );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
 
-   errcode = psoLifoDefinition( NULL, &retDataDefHandle );
+   errcode = psoLifoDefinition( NULL, retDef, lengthDef );
    assert_true( errcode == PSO_NULL_HANDLE );
 
-   errcode = psoLifoDefinition( objHandle, NULL );
+   errcode = psoLifoDefinition( objHandle, NULL, lengthDef );
    assert_true( errcode == PSO_NULL_POINTER );
 
+   errcode = psoLifoDefinition( objHandle, retDef, 0 );
+   assert_true( errcode == PSO_INVALID_LENGTH );
+
+   errcode = psoLifoDefinition( objHandle, retDef, sizeof(psoObjectDefinition)-1 );
+   assert_true( errcode == PSO_INVALID_LENGTH );
+
    /* End of invalid args. This call should succeed. */
-   errcode = psoLifoDefinition( objHandle, &retDataDefHandle );
+   // Limit condition
+   errcode = psoLifoDefinition( objHandle, retDef, sizeof(psoObjectDefinition) );
    assert_true( errcode == PSO_OK );
+
+   errcode = psoLifoDefinition( objHandle, retDef, lengthDef );
+   assert_true( errcode == PSO_OK );
+
+   assert_true( memcmp( queueDef, retDef, lengthDef ) == 0 );
 
    /* Close the session and try to act on the object */
 
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoLifoDefinition( objHandle, &retDataDefHandle );
+   errcode = psoLifoDefinition( objHandle, retDef, lengthDef );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
    
-   return 0;
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

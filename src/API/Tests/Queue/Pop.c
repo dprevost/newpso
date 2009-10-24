@@ -20,14 +20,26 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
 #include "API/Queue.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle, objHandle;
    PSO_HANDLE objHandle2, sessionHandle2;
@@ -41,12 +53,7 @@ int main( int argc, char * argv[] )
    };
    PSO_HANDLE dataDefHandle;
 
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -59,20 +66,10 @@ int main( int argc, char * argv[] )
                               strlen("/api_queue_pop") );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_queue_pop",
-                               strlen("api_queue_pop"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    errcode = psoCreateQueue( sessionHandle,
                              "/api_queue_pop/test",
                              strlen("/api_queue_pop/test"),
-                             &defQueue,
-                             dataDefHandle );
+                             &defQueue );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCommit( sessionHandle );
@@ -89,7 +86,7 @@ int main( int argc, char * argv[] )
                            &objHandle2 );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoQueuePush( objHandle, data1, strlen(data1), NULL );
+   errcode = psoQueuePush( objHandle, data1, strlen(data1) );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCommit( sessionHandle );
@@ -113,7 +110,7 @@ int main( int argc, char * argv[] )
                           buffer,
                           2,
                           &length );
-   assert_true( errcode == INVALID_LENGTH );
+   assert_true( errcode == PSO_INVALID_LENGTH );
    
    errcode = psoQueuePop( objHandle,
                           buffer,
@@ -127,9 +124,7 @@ int main( int argc, char * argv[] )
                           200,
                           &length );
    assert_true( errcode == PSO_OK );
-   if ( memcmp( buffer, data1, strlen(data1) ) != 0 ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( memcmp( buffer, data1, strlen(data1) ) == 0 );
    
    /*
     * Additional stuff to check while the Pop is uncommitted:
@@ -141,10 +136,7 @@ int main( int argc, char * argv[] )
                                buffer,
                                200,
                                &length );
-   if ( errcode != PSO_ITEM_IS_IN_USE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_ITEM_IS_IN_USE );
    errcode = psoQueueGetFirst( objHandle2,
                                buffer,
                                200,
@@ -154,10 +146,7 @@ int main( int argc, char * argv[] )
                           buffer,
                           200,
                           &length );
-   if ( errcode != PSO_ITEM_IS_IN_USE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_ITEM_IS_IN_USE );
    
    /*
     * Additional stuff to check after the commit:
@@ -202,8 +191,22 @@ int main( int argc, char * argv[] )
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
    
-   return 0;
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

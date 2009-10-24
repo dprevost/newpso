@@ -20,26 +20,32 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle, folderHandle;
    int errcode;
-   psoObjectDefinition definition;
-   psoFieldDefinition fields[2];
-   PSO_HANDLE dataDefHandle;
+   psoObjectDefinition definition = { PSO_QUEUE, 0, 0, PSO_DEF_USER_DEFINED, 0, '\0' };
+   psoObjectDefinition defDummy;
    
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -56,44 +62,21 @@ int main( int argc, char * argv[] )
                             &folderHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoDataDefCreate( sessionHandle,
-                               "api_queue_create",
-                               strlen("api_queue_create"),
-                               PSO_DEF_PHOTON_ODBC_SIMPLE,
-                               (unsigned char *)fields,
-                               sizeof(psoFieldDefinition),
-                               &dataDefHandle );
-   assert_true( errcode == PSO_OK );
-
    /* Invalid definition. */
    
-   memset( &definition, 0, sizeof(psoObjectDefinition) );
-   memset( fields, 0, 2*sizeof(psoFieldDefinition) );
+   memset( &defDummy, 0, sizeof(psoObjectDefinition) );
    
    errcode = psoFolderCreateQueue( folderHandle,
                                    "aqcr",
                                    strlen("aqcr"),
-                                   &definition,
-                                   dataDefHandle );
-   if ( errcode != PSO_WRONG_OBJECT_TYPE ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+                                   &defDummy );
+   assert_true( errcode == PSO_WRONG_OBJECT_TYPE );
 
-   definition.type = PSO_QUEUE;   
-   errcode = psoFolderCreateQueue( folderHandle,
-                                   "aqcr",
-                                   strlen("aqcr"),
-                                   &definition,
-                                   NULL );
-   assert_true( errcode == PSO_NULL_HANDLE );
-   
    /* End of invalid args. This call should succeed. */
    errcode = psoFolderCreateQueue( folderHandle,
                                    "aqcr",
                                    strlen("aqcr"),
-                                   &definition,
-                                   dataDefHandle );
+                                   &definition );
    assert_true( errcode == PSO_OK );
 
    /* Close the folder and try to act on it */
@@ -103,8 +86,7 @@ int main( int argc, char * argv[] )
    errcode = psoFolderCreateQueue( folderHandle,
                                    "aqcr2",
                                    strlen("aqcr2"),
-                                   &definition,
-                                   dataDefHandle );
+                                   &definition );
    assert_true( errcode == PSO_WRONG_TYPE_HANDLE );
 
    /* Reopen the folder, close the process and try to act on the session */
@@ -119,11 +101,24 @@ int main( int argc, char * argv[] )
    errcode = psoFolderCreateQueue( folderHandle,
                                    "aqcr3",
                                    strlen("aqcr3"),
-                                   &definition,
-                                   dataDefHandle );
+                                   &definition );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
+}
 
-   return 0;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

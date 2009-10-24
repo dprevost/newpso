@@ -20,24 +20,31 @@
 
 #include "Common/Common.h"
 #include <photon/photon.h>
-#include "Tests/PrintError.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main( int argc, char * argv[] )
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle;
    PSO_HANDLE objHandle, sessionHandle2;
    int errcode;
    
-   if ( argc > 1 ) {
-      errcode = psoInit( argv[1], argv[0] );
-   }
-   else {
-      errcode = psoInit( "10701", argv[0] );
-   }
+   errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
    errcode = psoInitSession( &sessionHandle );
@@ -49,10 +56,7 @@ int main( int argc, char * argv[] )
    errcode = psoDestroyObject( sessionHandle,
                                "/api_session_destroy_pass",
                                strlen("/api_session_destroy_pass") );
-   if ( errcode != PSO_NO_SUCH_OBJECT ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_OBJECT );
 
    errcode = psoCreateFolder( sessionHandle,
                               "/api_session_destroy_pass",
@@ -83,10 +87,7 @@ int main( int argc, char * argv[] )
    errcode = psoDestroyObject( sessionHandle,
                                "/api_session_destroy_pass",
                                0 );
-   if ( errcode != PSO_INVALID_LENGTH) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_INVALID_LENGTH);
 
    /* End of invalid args. This call should succeed. */
    errcode = psoDestroyObject( sessionHandle,
@@ -99,10 +100,7 @@ int main( int argc, char * argv[] )
                             "/api_session_destroy_pass",
                             strlen("/api_session_destroy_pass"),
                             &objHandle );
-   if ( errcode != PSO_OBJECT_IS_DELETED ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_OBJECT_IS_DELETED );
 
    /* Open with a different session - should work */
    errcode = psoFolderOpen( sessionHandle2,
@@ -121,10 +119,7 @@ int main( int argc, char * argv[] )
    errcode = psoDestroyObject( sessionHandle,
                                "/api_session_destroy_pass",
                                strlen("/api_session_destroy_pass") );
-   if ( errcode != PSO_NO_SUCH_OBJECT ) {
-      fprintf( stderr, "err: %d\n", errcode );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( errcode == PSO_NO_SUCH_OBJECT );
 
    errcode = psoCreateFolder( sessionHandle,
                               "/api_session_destroy_pass",
@@ -145,8 +140,22 @@ int main( int argc, char * argv[] )
                                "/api_session_destroy_pass",
                                strlen("/api_session_destroy_pass") );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
+}
 
-   return 0;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

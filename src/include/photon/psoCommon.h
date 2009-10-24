@@ -128,32 +128,45 @@ typedef enum psoIteratorType psoIteratorType;
  *
  * Definitions can be divided in two categories, one where all the data fields
  * have a fixed length (the last field can vary in size). This is ideal for
- * mapping a data record (or key) to C and COBOL and can also be used by C
-
- and one where the
+ * mapping a data record (or key) to C and COBOL and can also be used by C++
+ * and one where the
  * length of a data field is unknown (a Java string, for example). 
  *
- * Photon fully supports the first type natively by providing 
+ * Note: do not change the values of the enum. These values are used,
+ * hardcoded in other languages (DefinitionType.java, for example).
+ *
  */
 enum psoDefinitionType
 {
    /** First type (for boundary checking) */
    PSO_DEF_FIRST_TYPE = 1,
 
-   /** No type (no key type for queues, for example) */
-   PSO_DEF_NONE,
-   
    /** User-defined */
-   PSO_DEF_USER_DEFINED,
+   PSO_DEF_USER_DEFINED = 2,
+   
+   /**
+    * Default Java serialization.
+    *
+    * Minor issue: a lot of work is required to read objects serialized
+    * this way from programs written in Python or C++ 
+    */
+   PSO_DEF_JAVA = 3,
+   
    /**
     * A simplified version of ODBC. 
     * 
     * The fields must all have a fixed length except for the last one. 
     * This condition makes it easy to map the data record with a C struct.
     */
-   PSO_DEF_PHOTON_ODBC_SIMPLE,
+   PSO_DEF_PHOTON_ODBC_SIMPLE = 4,
+   
    /** Google Protocol Buffer */
-   PSO_DEF_PROTO_BUF,
+   PSO_DEF_PROTO_BUF = 5,
+   
+   /*
+    * New types should be added here.
+    */
+   
    /** Last type (for boundary checking) */
    PSO_DEF_LAST_TYPE
 };
@@ -198,9 +211,46 @@ struct psoObjectDefinition
     * the minimum number of blocks needed from it..
     */
    size_t minNumBlocks;
+   
+   /**
+    * Type of definition of the data fields.
+    */
+   enum psoDefinitionType dataDefType;
+
+   /**
+    * Length of the data definition (dataDef). 
+    *
+    * Set it to zero if dataDef is NULL.
+    */
+   psoUint32 dataDefLength;
+    
+   /**
+    * Definition of the data fields.
+    *
+    * This definition can be used as a comment to describe the content
+    * of the object. It can also be used to pack and unpack the items
+    * (serialized objects) contain in the object container.
+    * 
+    * It can be NULL if not needed.
+    */
+   unsigned char dataDef[1];
+
 };
 
 typedef struct psoObjectDefinition psoObjectDefinition;
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+struct psoKeyDefinition
+{
+   enum psoDefinitionType type;
+   
+   uint32_t definitionLength;
+   
+   unsigned char definition[1];
+};
+
+typedef struct psoKeyDefinition psoKeyDefinition;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

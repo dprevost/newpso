@@ -73,6 +73,7 @@ struct psonFolder
    
    struct psonHashTx hashObj;
    
+   psoObjectDefinition definition;
    /*
     * This field cannot be set or modified by the API. It is set to false
     * by the "constructor". Quasar will set it to true when creating a new
@@ -109,6 +110,7 @@ bool psonAPIFolderCreateFolder( psonFolder         * pFolder,
 /**
  * Creates an immediate child of the folder.
  */
+#if 0
 bool psonAPIFolderCreateObject( psonFolder          * pFolder,
                                 const char          * objectName,
                                 uint32_t              nameLengthInBytes,
@@ -116,6 +118,26 @@ bool psonAPIFolderCreateObject( psonFolder          * pFolder,
                                 psonDataDefinition  * pDataDefinition,
                                 psonKeyDefinition   * pKeyDefinition,
                                 psonSessionContext  * pContext );
+#endif
+
+/**
+ * Creates an immediate child of the folder.
+ */
+bool psonAPIFolderCreateMap( psonFolder          * pFolder,
+                             const char          * objectName,
+                             uint32_t              nameLengthInBytes,
+                             psoObjectDefinition * pDefinition,
+                             psoKeyDefinition    * pKeyDefinition,
+                             psonSessionContext  * pContext );
+
+/**
+ * Creates an immediate child of the folder.
+ */
+bool psonAPIFolderCreateQueue( psonFolder          * pFolder,
+                               const char          * objectName,
+                               uint32_t              nameLengthInBytes,
+                               psoObjectDefinition * pDefinition,
+                               psonSessionContext  * pContext );
 
 /**
  * Destroy an immediate child of the folder.
@@ -125,13 +147,12 @@ bool psonAPIFolderDestroyObject( psonFolder         * pFolder,
                                  uint32_t             nameLengthInBytes,
                                  psonSessionContext * pContext );
 
-bool psonAPIFolderGetDefinition( psonFolder          * pFolder,
-                                 const char          * objectName,
-                                 uint32_t              strLength,
-                                 psoObjectDefinition * pDefinition,
-                                 psonDataDefinition ** ppDataDefinition,
-                                 psonKeyDefinition  ** ppKeyDefinition,
-                                 psonSessionContext  * pContext );
+bool psonAPIFolderGetDefinition( psonFolder           * pFolder,
+                                 const char           * objectName,
+                                 uint32_t               strLength,
+                                 psoObjectDefinition ** ppDefinition,
+                                 psoKeyDefinition    ** ppKeyDefinition,
+                                 psonSessionContext   * pContext );
 
 bool psonAPIFolderGetFirst( psonFolder         * pFolder,
                             psonFolderItem     * pItem,
@@ -188,13 +209,12 @@ bool psonFolderFindObject( psonFolder         * pFolder,
                            psonHashTxItem    ** ppFoundFolder,
                            psonSessionContext * pContext );
 
-bool psonFolderGetDefinition( psonFolder          * pFolder,
-                              const char          * objectName,
-                              uint32_t              strLength,
-                              psoObjectDefinition * pDefinition,
-                              psonDataDefinition ** ppDataDefinition,
-                              psonKeyDefinition  ** ppKeyDefinition,
-                              psonSessionContext  * pContext );
+bool psonFolderGetDefinition( psonFolder           * pFolder,
+                              const char           * objectName,
+                              uint32_t               strLength,
+                              psoObjectDefinition ** pDefinition,
+                              psoKeyDefinition    ** ppKeyDefinition,
+                              psonSessionContext   * pContext );
 
 bool psonFolderGetDefLength( psonFolder          * pFolder,
                              const char          * objectName,
@@ -223,15 +243,27 @@ bool psonFolderInit( psonFolder         * pFolder,
                      psonTreeNode       * pNode,
                      psonSessionContext * pContext );
 
-bool psonFolderInsertObject( psonFolder          * pFolder,
+bool psonFolderInsertFolder( psonFolder          * pFolder,
                              const char          * objectName,
                              uint32_t              strLength,
-                             psoObjectDefinition * pDefinition,
-                             psonDataDefinition  * pDataDefinition,
-                             psonKeyDefinition   * pKeyDefinition,
-                             size_t                numBlocks,
-                             size_t                expectedNumOfChilds,
                              psonSessionContext  * pContext );
+
+bool psonFolderInsertMap( psonFolder          * pFolder,
+                          const char          * objectName,
+                          uint32_t              strLength,
+                          psoObjectDefinition * pDefinition,
+                          psoKeyDefinition    * pKeyDefinition,
+                          size_t                numBlocks,
+                          size_t                expectedNumOfChilds,
+                          psonSessionContext  * pContext );
+
+bool psonFolderInsertQueue( psonFolder          * pFolder,
+                            const char          * objectName,
+                            uint32_t              strLength,
+                            psoObjectDefinition * pDefinition,
+                            size_t                numBlocks,
+                            size_t                expectedNumOfChilds,
+                            psonSessionContext  * pContext );
 
 bool psonFolderRelease( psonFolder         * pFolder,
                         psonFolderItem     * pItem,
@@ -273,6 +305,19 @@ bool psonTopFolderCreateFolder( psonFolder         * pFolder,
                                 uint32_t             nameLengthInBytes,
                                 psonSessionContext * pContext );
 
+bool psonTopFolderCreateQueue( psonFolder          * pFolder,
+                               const char          * objectName,
+                               uint32_t              nameLengthInBytes,
+                               psoObjectDefinition * pDefinition,
+                               psonSessionContext  * pContext );
+
+bool psonTopFolderCreateMap( psonFolder          * pFolder,
+                             const char          * objectName,
+                             uint32_t              nameLengthInBytes,
+                             psoObjectDefinition * pDefinition,
+                             psoKeyDefinition    * pKeyDefinition,
+                             psonSessionContext  * pContext );
+
 bool psonTopFolderCreateObject( psonFolder          * pFolder,
                                 const char          * objectName,
                                 uint32_t              nameLengthInBytes,
@@ -293,20 +338,12 @@ bool psonTopFolderEditObject( psonFolder         * pFolder,
                               psonFolderItem     * pFolderItem,
                               psonSessionContext * pContext );
 
-bool psonTopFolderGetDef( psonFolder          * pFolder,
-                          const char          * objectName,
-                          uint32_t              nameLengthInBytes,
-                          psoObjectDefinition * pDefinition,
-                          psonDataDefinition ** ppDataDefinition,
-                          psonKeyDefinition  ** ppKeyDefinition,
-                          psonSessionContext  * pContext );
-
-bool psonTopFolderGetDefLength( psonFolder         * pFolder,
-                                const char         * objectName,
-                                uint32_t             nameLengthInBytes,
-                                uint32_t           * pDataDefLength,
-                                uint32_t           * pKeyDefLength,
-                                psonSessionContext * pContext );
+bool psonTopFolderGetDef( psonFolder           * pFolder,
+                          const char           * objectName,
+                          uint32_t               nameLengthInBytes,
+                          psoObjectDefinition ** pDefinition,
+                          psoKeyDefinition    ** ppKeyDefinition,
+                          psonSessionContext   * pContext );
 
 bool psonTopFolderGetStatus( psonFolder         * pFolder,
                              const char         * objectName,

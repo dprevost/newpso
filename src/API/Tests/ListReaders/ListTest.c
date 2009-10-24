@@ -20,15 +20,27 @@
 
 #include "Common/Common.h"
 #include "API/ListReaders.h"
-#include "Tests/PrintError.h"
-
-const bool expectedToPass = true;
+#include "API/Tests/quasar-run.h"
 
 #define MAX_READERS 50000
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int main()
+void setup_test()
+{
+   assert( startQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void teardown_test()
+{
+   assert( stopQuasar() );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void test_pass( void ** state )
 {
    int i;
    unsigned int sum1 = 0, sum2 = 0;
@@ -42,13 +54,9 @@ int main()
    psoaListReadersInit( &list );
    
    readers = (psoaReader *)malloc( MAX_READERS*sizeof(psoaReader) );
-   if ( readers == NULL ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_false( readers == NULL );
    readerIsIn = (int *)malloc( MAX_READERS*sizeof(int) );
-   if ( readerIsIn == NULL ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_false( readerIsIn == NULL );
 
    for ( i = 0; i < MAX_READERS; ++i ) {
       readers[i].address = (void *) &readers[i];
@@ -60,31 +68,18 @@ int main()
       }
    }
    
-   if ( sum1 != list.currentSize ) {
-      fprintf( stderr, "%d "PSO_SIZE_T_FORMAT"\n", sum1, list.currentSize );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( sum1 == list.currentSize );
    
    /* Test our loop */
-   if ( psoaListReadersPeakFirst( &list, &dummy ) != true ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( psoaListReadersPeakFirst( &list, &dummy ) == true );
    first = dummy;
    do {
-      if ( dummy->address != (void*) dummy ) {
-         ERROR_EXIT( expectedToPass, NULL, ; );
-      }
+      assert_true( dummy->address == (void*) dummy );
       sum2++;
    } while ( psoaListReadersPeakNext( &list, dummy, &dummy ) );
    
-   if ( sum2 != list.currentSize ) {
-      fprintf( stderr, "%d "PSO_SIZE_T_FORMAT"\n", sum2, list.currentSize );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( sum2 != sum1 ) {
-      fprintf( stderr, "%d %d\n", sum2, sum1 );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( sum2 == list.currentSize );
+   assert_true( sum2 == sum1 );
    
    /* inverse our selection ! (to test removals) */
    for ( i = 0; i < MAX_READERS; ++i ) {
@@ -98,36 +93,41 @@ int main()
       }
    }
 
-   if ( (MAX_READERS-sum1) != list.currentSize ) {
-      fprintf( stderr, "%d "PSO_SIZE_T_FORMAT"\n", sum1, list.currentSize );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( (MAX_READERS-sum1) == list.currentSize );
 
    /* Retest our loop */
    sum2 = 0;
-   if ( psoaListReadersPeakFirst( &list, &dummy ) != true ) {
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   if ( dummy == first ) {
-      /* 
-       * We cannot have the same first on the two loops since the 
-       * selection was inversed.
-       */
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
+   assert_true( psoaListReadersPeakFirst( &list, &dummy ) == true );
+
+   /* 
+    * We cannot have the same first on the two loops since the 
+    * selection was inversed.
+    */
+   assert_false( dummy == first );
+
    do {
-      if ( dummy->address != (void*) dummy ) {
-         ERROR_EXIT( expectedToPass, NULL, ; );
-      }
+      assert_true( dummy->address == (void*) dummy );
       sum2++;
    } while ( psoaListReadersPeakNext( &list, dummy, &dummy ) );
    
-   if ( sum2 != list.currentSize ) {
-      fprintf( stderr, "%d "PSO_SIZE_T_FORMAT"\n", sum2, list.currentSize );
-      ERROR_EXIT( expectedToPass, NULL, ; );
-   }
-   
-   return 0;
+   assert_true( sum2 == list.currentSize );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+int main()
+{
+   int rc = 0;
+#if defined(PSO_UNIT_TESTS)
+   const UnitTest tests[] = {
+      unit_test_setup_teardown( test_pass, setup_test, teardown_test ),
+   };
+
+   rc = run_tests(tests);
+   
+#endif
+   return rc;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+

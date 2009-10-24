@@ -100,8 +100,6 @@ int psoFolderCreateFolder( PSO_HANDLE   folderHandle,
  *            counting the null terminator.
  * \param[in] definition The basic information needed to create the object:
  *            the type of object to create, etc.
- * \param[in] dataDefHandle Handle to the definition of the data fields.
- *            It can be set to NULL when creating a Folder.
  *
  * \return 0 on success or a ::psoErrors on error.
  */
@@ -109,8 +107,7 @@ PHOTON_EXPORT
 int psoFolderCreateQueue( PSO_HANDLE            folderHandle,
                           const char          * objectName,
                           psoUint32             nameLengthInBytes,
-                          psoObjectDefinition * definition,
-                          PSO_HANDLE            dataDefHandle );
+                          psoObjectDefinition * definition );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -143,8 +140,7 @@ int psoFolderCreateMap( PSO_HANDLE            folderHandle,
                         const char          * objectName,
                         psoUint32             nameLengthInBytes,
                         psoObjectDefinition * definition,
-                        PSO_HANDLE            dataDefHandle,
-                        PSO_HANDLE            keyDefHandle );
+                        psoKeyDefinition    * keyDefinition );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -170,37 +166,21 @@ int psoFolderDestroyObject( PSO_HANDLE   folderHandle,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 /**
- * \brief Retrieve the data definition of the named object.
+ * \brief Retrieve the definition of the named object.
  *
- * To avoid memory leaks, you must close the handle that will be 
- * returned by this function (see ::psoDataDefClose).
+ * The definition includes a buffer of variable length. To retrieve the
+ * length needed for \em definition you can use ::psoFolderGetDefLength.
  *
- * The handle might be set to NULL by this function if the object is a folder.
- *
- * \param[in]  folderHandle Handle to the current folder.
- * \param[in]  objectName The name of the object. 
- * \param[in]  nameLengthInBytes The length of \em objectName (in bytes) not
- *             counting the null terminator.
- * \param[out] dataDefHandle Handle to the definition of the data fields.
- *
- * \return 0 on success or a ::psoErrors on error.
- */
-PHOTON_EXPORT
-int psoFolderGetDataDefinition( PSO_HANDLE   folderHandle,
-                                const char * objectName,
-                                psoUint32    nameLengthInBytes,
-                                PSO_HANDLE * dataDefHandle );
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-/**
- * \brief Retrieve the object definition of the named object.
+ * Note: if the actual definition length is larger than the provided 
+ * buffer, the retrieved definition will be truncated.
  *
  * \param[in]  folderHandle Handle to the current folder.
  * \param[in]  objectName The name of the object. 
- * \param[in]  nameLengthInBytes The length of \em objectName (in bytes) not
- *             counting the null terminator.
- * \param[out] definition The definition of the object.
+ * \param[in]  nameLengthInBytes The length of \em objectName (in bytes).
+ * \param[out] definition  A user-provided buffer where the definition
+ *             will be copied.
+ * \param[in]  length The length of the \em definition buffer. It must be
+ *             equal or greater than sizeof(psoObjectDefinition).
  *
  * \return 0 on success or a ::psoErrors on error.
  */
@@ -208,7 +188,26 @@ PHOTON_EXPORT
 int psoFolderGetDefinition( PSO_HANDLE            folderHandle,
                             const char          * objectName,
                             psoUint32             nameLengthInBytes,
-                            psoObjectDefinition * definition );
+                            psoObjectDefinition * definition,
+                            psoUint32             length );
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+/**
+ * \brief Retrieve the total length of the definition of the named object.
+ *
+ * \param[in]  folderHandle Handle to the current folder.
+ * \param[in]  objectName The name of the object. 
+ * \param[in]  nameLengthInBytes The length of \em objectName (in bytes).
+ * \param[out] length The length of the definition.
+ *
+ * \return 0 on success or a ::psoErrors on error.
+ */
+PHOTON_EXPORT
+int psoFolderGetDefLength( PSO_HANDLE   folderHandle,
+                           const char * objectName,
+                           psoUint32    nameLengthInBytes,
+                           psoUint32  * length );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -236,26 +235,47 @@ int psoFolderGetFirst( PSO_HANDLE       objectHandle,
 /**
  * \brief Retrieve the key definition of the named object.
  *
- * To avoid memory leaks, you must close the handle that will be 
- * returned by this function (see ::psoKeyDefClose).
+ * The definition includes a buffer of variable length. To retrieve the
+ * length needed for \em definition you can use ::psoFolderGetKeyDefLength.
  *
- * The handle might be set to NULL by this function if the object does
- * not have keys (folders and queues, for example).
+ * Note: if the actual definition length is larger than the provided 
+ * buffer, the retrieved definition will be truncated.
  *
  * \param[in]  folderHandle Handle to the current folder.
  * \param[in]  objectName The name of the object. 
  * \param[in]  nameLengthInBytes The length of \em objectName (in bytes) not
  *             counting the null terminator.
- * \param[out] keyDefHandle Handle to the key definition(or NULL for folders,
- *             queues, etc.).
+ * \param[out] definition  A user-provided buffer where the definition
+ *             will be copied.
+ * \param[in]  length The length of the \em definition buffer. It must be
+ *             equal or greater than sizeof(psoKeyDefinition).
  *
  * \return 0 on success or a ::psoErrors on error.
  */
 PHOTON_EXPORT
-int psoFolderGetKeyDefinition( PSO_HANDLE   folderHandle,
-                               const char * objectName,
-                               psoUint32    nameLengthInBytes,
-                               PSO_HANDLE * keyDefHandle );
+int psoFolderGetKeyDefinition( PSO_HANDLE         folderHandle,
+                               const char       * objectName,
+                               psoUint32          nameLengthInBytes,
+                               psoKeyDefinition * definition,
+                               psoUint32          length );
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+/**
+ * \brief Retrieve the total length of the key definition of the named object.
+ *
+ * \param[in]  folderHandle Handle to the current folder.
+ * \param[in]  objectName The name of the object. 
+ * \param[in]  nameLengthInBytes The length of \em objectName (in bytes).
+ * \param[out] length The length of the key definition.
+ *
+ * \return 0 on success or a ::psoErrors on error.
+ */
+PHOTON_EXPORT
+int psoFolderGetKeyDefLength( PSO_HANDLE   folderHandle,
+                              const char * objectName,
+                              psoUint32    nameLengthInBytes,
+                              psoUint32  * length );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
