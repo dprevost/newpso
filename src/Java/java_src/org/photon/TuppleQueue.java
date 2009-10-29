@@ -38,9 +38,19 @@ public class TuppleQueue<O> extends BaseQueue implements Iterable<O>, Iterator<O
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
    public TuppleQueue( Constructor<O> ctr ) {
-      super();
+//      super();
 
-      this.ctr = ctr;
+      int mod = ctr.getModifiers();
+      if ( ! Modifier.isPublic( mod ) ) {
+         // throw an exception
+         System.out.println( "Invalid modifier" );
+      }
+      // String newMethodDescriptor = Type.getMethodDescriptor(targetMethod);
+      
+      System.out.println( ctr.toGenericString() );
+      System.out.println( ctr.getParameterTypes()[2] );
+//      System.out.println( ctr.getTypeParameters()[2] );
+//      this.ctr = ctr;
    }
    
    // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
@@ -51,7 +61,17 @@ public class TuppleQueue<O> extends BaseQueue implements Iterable<O>, Iterator<O
       
       super (session, name );
 
-      this.ctr = validateConstructor( ctr );
+      int mod = ctr.getModifiers();
+      if ( ! Modifier.isPublic( mod ) ) {
+         // throw an exception
+         System.out.println( "Invalid modifier" );
+      }
+      // String newMethodDescriptor = Type.getMethodDescriptor(targetMethod);
+      
+      System.out.println( ctr.toGenericString() );
+
+//      this.ctr = validateConstructor( ctr );
+      
       
 //      if ( serializer.getType() != definition.getDataType() ) {
 //         close();

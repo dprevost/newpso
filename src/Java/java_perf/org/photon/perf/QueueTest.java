@@ -20,6 +20,7 @@ package org.photon.perf;
 
 import java.lang.*;
 import java.util.*;
+import java.lang.reflect.*;
 import org.photon.*;
 import org.photon.serializer.*;
 
@@ -37,6 +38,7 @@ public class QueueTest {
       Session session;
       JavaSerializer<Order> s;
       org.photon.Queue<Order, JavaSerializer<Order>> queue;
+      TuppleQueue<Order> tuppleQueue;
 
       try {
          Photon.init( "10701", "Test-Java" );
@@ -78,6 +80,16 @@ public class QueueTest {
             elapsedTime );
 
          queue.close();
+
+         Constructor<Order> ctr = Order.class.getConstructor( String.class,
+                                                              String.class,
+                                                              int.class,
+                                                              float.class,
+                                                              long.class,
+                                                              String.class );
+ 
+         tuppleQueue = new TuppleQueue<Order>( ctr );
+
          session.destroyObject( "/JavaPerfQueue1" );
          session.commit();
 
