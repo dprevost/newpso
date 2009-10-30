@@ -34,14 +34,17 @@
 #include <wx/treectrl.h>
 #include <wx/sizer.h>
 #include <wx/panel.h>
-#include <wx/richtext/richtextctrl.h>
 #include <wx/splitter.h>
 #include <wx/statbox.h>
 #include <wx/frame.h>
+#include <wx/listctrl.h>
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 class MyTree;
+class MyMemoryFile;
+class MyMemoryHeader;
+class MyListCtrl;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -72,9 +75,13 @@ protected:
    wxMenu* m_menu3;
    wxSplitterWindow* m_splitter2;
    wxPanel* m_panel1;
-   MyTree * m_treeCtrl5;
+   MyTree * m_treeCtrl;
    wxPanel* m_panel2;
-   wxRichTextCtrl* m_richText2;
+
+   MyListCtrl * m_listCtrl;
+
+   MyMemoryFile * m_memFile;
+   MyMemoryHeader * m_header;
 
    DECLARE_EVENT_TABLE()
 };

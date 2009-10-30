@@ -21,7 +21,10 @@
 #include "Tools/Debugger/frame.h"
 #include "Tools/Debugger/tree.h"
 #include "Tools/Debugger/app.h"
-#include "Tools/Debugger/richText.h"
+#include "Tools/Debugger/listCtrl.h"
+#include "Tools/Debugger/memoryFile.h"
+#include "Tools/Debugger/memoryHeader.h"
+#include "Common/ErrorHandler.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -36,14 +39,16 @@ END_EVENT_TABLE()
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 MyFrame::MyFrame( wxWindow       * parent,
-                    wxWindowID       id,
-                    const wxString & title,
-                    const wxPoint  & pos,
-                    const wxSize   & size,
-                    long             style ) 
+                  wxWindowID       id,
+                  const wxString & title,
+                  const wxPoint  & pos,
+                  const wxSize   & size,
+                  long             style ) 
    : wxFrame( parent, id, title, pos, size, style )
 {
  //  this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+   
+   psocInitErrorDefs();
    
    m_menubar1 = new wxMenuBar( 0 );
 
@@ -77,8 +82,8 @@ MyFrame::MyFrame( wxWindow       * parent,
    wxBoxSizer* bSizer3;
    bSizer3 = new wxBoxSizer( wxVERTICAL );
    
-   m_treeCtrl5 = new MyTree( m_panel1, MY_TREE_ID );
-   bSizer3->Add( m_treeCtrl5, 0, wxEXPAND | wxALL, 5 );
+   m_treeCtrl = new MyTree( m_panel1, MY_TREE_ID );
+   bSizer3->Add( m_treeCtrl, 0, wxEXPAND | wxALL, 5 );
    
    m_panel1->SetSizer( bSizer3 );
    m_panel1->Layout();
@@ -89,8 +94,8 @@ MyFrame::MyFrame( wxWindow       * parent,
    wxBoxSizer* bSizer4;
    bSizer4 = new wxBoxSizer( wxVERTICAL );
    
-   m_richText2 = new MyRichText( m_panel2, wxID_ANY );
-   bSizer4->Add( m_richText2, 1, wxEXPAND | wxALL, 5 );
+   m_listCtrl = new MyListCtrl( m_panel2, wxID_ANY );
+   bSizer4->Add( m_listCtrl, 1, wxEXPAND | wxALL, 5 );
    
    m_panel2->SetSizer( bSizer4 );
    m_panel2->Layout();
@@ -104,15 +109,50 @@ MyFrame::MyFrame( wxWindow       * parent,
    
 }
 
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 MyFrame::~MyFrame()
 {
+   psocFiniErrorDefs();
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void MyFrame::OnOpen( wxCommandEvent & event )
+void MyFrame::OnOpen( wxCommandEvent & WXUNUSED(event) )
 {
-   wxBell();
+   int errcode;
+   
+   wxString filename = wxFileSelector( wxT("Select image file"),
+                                       wxT("/tmp"),
+                                       wxT(""),
+                                       wxT(""),
+                                       wxT("Photon mem files (*.pso)|*.pso|All files|*.*") );
+   if ( !filename )
+      return;
+
+   m_memFile = new MyMemoryFile( (const char *)filename.char_str() );
+   
+   errcode = m_memFile->open();
+   
+   m_header = new MyMemoryHeader( m_memFile->baseAddress() );
+   m_header->showHeader( *m_listCtrl );
+
+//   wxLogError(_T("Couldn't load image from '%s'."), filename.c_str());
+   fprintf( stderr, "filename = %s %d %p \n", (char *)filename.char_str(), 
+      errcode, m_memFile->baseAddress() );
+     
+//   m_memFile->baseAddress();
+   
+//    wxImage image;
+//    if ( !image.LoadFile(filename) )
+//    {
+//        wxLogError(_T("Couldn't load image from '%s'."), filename.c_str());
+
+//        return;
+//    }
+
+//    (new MyImageFrame(this, wxBitmap(image)))->Show();
+//#endif // wxUSE_FILEDLG
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

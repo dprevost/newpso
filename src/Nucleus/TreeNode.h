@@ -94,7 +94,7 @@ void psonTreeNodeFini( psonTreeNode       * pNode,
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    pNode->offset         = PSON_NULL_OFFSET;
-   pNode->apiType        = 0;
+   pNode->apiType        = (psoObjectType)0;
    pNode->txCounter      = 0;
    pNode->txStatusOffset = PSON_NULL_OFFSET;
    pNode->myParentOffset = PSON_NULL_OFFSET;
