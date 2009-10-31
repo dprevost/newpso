@@ -24,15 +24,45 @@
 
 #include <wx/treectrl.h>
 
+class MyListCtrl;
+class MyNode;
+class MyFolder;
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+class MyTreeItemData : public wxTreeItemData
+{
+public:
+   MyTreeItemData( MyNode * node );
+   
+   ~MyTreeItemData();
+   
+   void show( MyListCtrl * listCtrl );
+   
+private:
+   MyNode * m_node;
+};
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 class MyTree : public wxTreeCtrl
 {
 public:
    MyTree( wxWindow * parent, wxWindowID id );
+
+   void SetListCtrl( MyListCtrl * listCtrl ) { m_listCtrl = listCtrl; }
+   
+   void Populate( wxTreeItemId id, MyFolder * folder );
+   
 private:
 
+   MyListCtrl * m_listCtrl;
+
+   void PopulateBranch( wxTreeItemId id, MyFolder * folder );
+   
    void OnExpanding( wxTreeEvent & event );
+
+   void OnActivated( wxTreeEvent & event );
 
    DECLARE_EVENT_TABLE()
 };

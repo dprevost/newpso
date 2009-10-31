@@ -19,32 +19,26 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#ifndef PSO_DBG_MEMORY_HEADER_H
-#define PSO_DBG_MEMORY_HEADER_H
-
-#include "Nucleus/MemoryHeader.h"
+#ifndef PSO_DBG_NODE_H
+#define PSO_DBG_NODE_H
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 class MyListCtrl;
 
-class MyMemoryHeader
+class MyNode
 {
 public:
+   MyNode() {}
    
-   MyMemoryHeader( void * address );
+   virtual ~MyNode() {}
 
-   void showHeader( MyListCtrl & listCtrl );
+   virtual void show( MyListCtrl * listCtrl ) = 0;
 
-   void * GetTopFolder();
-   
-private:
-
-   struct psonMemoryHeader * pHeader;
 };
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#endif // PSO_DBG_FRAME_H
+#endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

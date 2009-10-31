@@ -1,3 +1,4 @@
+/* :mode=c++:  - For jedit, previous line for emacs */
 /*
  * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
@@ -18,40 +19,32 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include "Tools/Debugger/richText.h"
-#include "Tools/Debugger/app.h"
+#ifndef PSO_DBG_FOLDER_H
+#define PSO_DBG_FOLDER_H
+
+#include "Tools/Debugger/node.h"
+#include "Nucleus/Folder.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-BEGIN_EVENT_TABLE(MyRichText, wxRichTextCtrl)
-//   EVT_SPLITTER_DCLICK( MY_SPLITTER_ID, MyFrame::OnSplitterDclick )
-//   EVT_SPLITTER_UNSPLIT( MY_SPLITTER_ID, MyFrame::OnUnsplit )
-END_EVENT_TABLE()
-//
+class MyListCtrl;
 
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-MyRichText::MyRichText( wxWindow   * parent,
-                        wxWindowID   id )
-   : wxRichTextCtrl( parent, 
-                     id,
-                     wxEmptyString,
-                     wxDefaultPosition,
-                     wxDefaultSize,
-                     wxHSCROLL|wxNO_BORDER|wxVSCROLL )
+class MyFolder : public MyNode
 {
-}
+public:
+   MyFolder( void * addr );
+   
+   virtual ~MyFolder();
 
-MyRichText::~MyRichText()
-{
-}
+   void show( MyListCtrl * listCtrl );
+
+private:
+   psonFolder * m_folder;
+   
+};
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-//void MyFrame::OnOpen( wxCommandEvent & event )
-//{
-//   wxBell();
-//}
+#endif // PSO_DBG_FOLDER_H
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-

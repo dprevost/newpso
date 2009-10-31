@@ -20,11 +20,34 @@
 
 #include "Tools/Debugger/tree.h"
 #include "Tools/Debugger/app.h"
+#include "Tools/Debugger/node.h"
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+MyTreeItemData::MyTreeItemData( MyNode * node )
+   : m_node(node)
+{
+}
+   
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+MyTreeItemData::~MyTreeItemData()
+{
+   delete m_node;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void MyTreeItemData::show( MyListCtrl * listCtrl )
+{
+   m_node->show(listCtrl);
+}
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 BEGIN_EVENT_TABLE(MyTree, wxTreeCtrl)
-  EVT_TREE_ITEM_EXPANDING( MY_TREE_ID, MyTree::OnExpanding)
+  EVT_TREE_ITEM_EXPANDING(MY_TREE_ID, MyTree::OnExpanding)
+  EVT_TREE_ITEM_ACTIVATED(MY_TREE_ID, MyTree::OnActivated)
 END_EVENT_TABLE()
 
 // EVT_TREE_BEGIN_LABEL_EDIT( MY_TREE_ID, Veto )
@@ -32,14 +55,33 @@ END_EVENT_TABLE()
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 MyTree::MyTree( wxWindow * parent, wxWindowID id )
-   : wxTreeCtrl( parent, id, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE )
+   : wxTreeCtrl( parent, id, wxDefaultPosition, wxDefaultSize, 
+      wxTR_DEFAULT_STYLE | wxTR_HAS_BUTTONS )
 {
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void MyTree::OnActivated( wxTreeEvent & event )
+{
+   // show some info about this item
+   wxTreeItemId itemId = event.GetItem();
+   MyTreeItemData *item = (MyTreeItemData *)GetItemData(itemId);
+
+   if ( item != NULL )
+   {
+      item->show(m_listCtrl);
+   }
+fprintf( stderr, "activated\n" );
+
+//   wxLogMessage(wxT("OnItemActivated"));
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void MyTree::OnExpanding( wxTreeEvent & event )
 {
+fprintf( stderr, "expanding\n" );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

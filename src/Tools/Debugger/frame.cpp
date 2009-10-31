@@ -24,6 +24,7 @@
 #include "Tools/Debugger/listCtrl.h"
 #include "Tools/Debugger/memoryFile.h"
 #include "Tools/Debugger/memoryHeader.h"
+#include "Tools/Debugger/folder.h"
 #include "Common/ErrorHandler.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -107,6 +108,7 @@ MyFrame::MyFrame( wxWindow       * parent,
    this->Layout();
    sbSizer1->Fit( this );
    
+   m_treeCtrl->SetListCtrl( m_listCtrl );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -121,6 +123,7 @@ MyFrame::~MyFrame()
 void MyFrame::OnOpen( wxCommandEvent & WXUNUSED(event) )
 {
    int errcode;
+   void * pAddr;
    
    wxString filename = wxFileSelector( wxT("Select image file"),
                                        wxT("/tmp"),
@@ -137,7 +140,15 @@ void MyFrame::OnOpen( wxCommandEvent & WXUNUSED(event) )
    m_header = new MyMemoryHeader( m_memFile->baseAddress() );
    m_header->showHeader( *m_listCtrl );
 
-//   wxLogError(_T("Couldn't load image from '%s'."), filename.c_str());
+   pAddr = m_header->GetTopFolder();
+   MyFolder * folder = new MyFolder( pAddr );
+   
+   MyTreeItemData *item = new MyTreeItemData(folder);
+   
+   wxTreeItemId id = m_treeCtrl->AddRoot( _T("/"), -1, -1, item );
+   m_treeCtrl->Pooulate( id, folder );
+
+   //   wxLogError(_T("Couldn't load image from '%s'."), filename.c_str());
    fprintf( stderr, "filename = %s %d %p \n", (char *)filename.char_str(), 
       errcode, m_memFile->baseAddress() );
      

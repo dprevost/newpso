@@ -1,4 +1,3 @@
-/* :mode=c++:  - For jedit, previous line for emacs */
 /*
  * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
@@ -19,34 +18,25 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#ifndef PSO_DBG_RICHTEXT_H
-#define PSO_DBG_RICHTEXT_H
-
-#include <wx/string.h>
-#include <wx/richtext/richtextctrl.h>
+#include "Tools/Debugger/folder.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-class MyRichText : public wxRichTextCtrl
-{   
-public:
-
-   MyRichText( wxWindow   * parent,
-               wxWindowID   id = wxID_ANY );
-
-   ~MyRichText();
-
-
-protected:
-
-//   void OnOpen( wxCommandEvent & event );
-
-   DECLARE_EVENT_TABLE()
-};
+MyFolder::MyFolder( void * addr )
+{
+   m_folder = (psonFolder *)addr;
+}
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#endif // PSO_DBG_RICHTEXT_H
+MyFolder::~MyFolder()
+{
+}
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+void MyFolder::show( MyListCtrl * listCtrl )
+{
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

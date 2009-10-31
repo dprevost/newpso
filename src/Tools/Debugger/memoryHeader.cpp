@@ -82,33 +82,34 @@ void MyMemoryHeader::showHeader( MyListCtrl & listCtrl )
    
    tmp = listCtrl.InsertItem(i, _T("CPU Type:"), 0);
    listCtrl.SetItemData(tmp, i);
-//   buf.Empty();
    wxString buf1(pHeader->cpu_type, wxConvUTF8);
-//str = (const char *) (pHeader->cpu_type);
-  // buf = (wxChar*)str; // << (const char *) (pHeader->cpu_type);
-//   buf.Printf(_T("%s"), pHeader->cpu_type );
    listCtrl.SetItem(tmp, 1, buf1 );
    i++;
-fprintf( stderr, "%d\n", pHeader->cpu_type[0] );
 
    tmp = listCtrl.InsertItem(i, _T("C Compiler:"), 0);
    listCtrl.SetItemData(tmp, i);
-   buf.Printf(_T("%s"), pHeader->compiler );
-   listCtrl.SetItem(tmp, 1, buf );
+   wxString buf2(pHeader->compiler, wxConvUTF8);
+   listCtrl.SetItem(tmp, 1, buf2 );
    i++;
 
-   tmp = listCtrl.InsertItem(i, _T("C++ Compiler:"), 0);
+   tmp = listCtrl.InsertItem(i, _T("C Compiler Version:"), 0);
    listCtrl.SetItemData(tmp, i);
-   buf.Printf(_T("%s"), pHeader->cxxcompiler );
-   listCtrl.SetItem(tmp, 1, buf );
+   wxString buf3(pHeader->compilerVersion, wxConvUTF8);
+   listCtrl.SetItem(tmp, 1, buf3 );
    i++;
 
-//   char     compiler[20];
-//   char     cxxcompiler[20];
-//   char     compilerVersion[10];
-//   char     quasarVersion[10];
-//   char     creationTime[30];
-   
+   tmp = listCtrl.InsertItem(i, _T("Quasar Version:"), 0);
+   listCtrl.SetItemData(tmp, i);
+   wxString buf4(pHeader->quasarVersion, wxConvUTF8);
+   listCtrl.SetItem(tmp, 1, buf4 );
+   i++;
+
+   tmp = listCtrl.InsertItem(i, _T("Creation Date/Time:"), 0);
+   listCtrl.SetItemData(tmp, i);
+   wxString buf5(pHeader->creationTime, wxConvUTF8);
+   listCtrl.SetItem(tmp, 1, buf5 );
+   i++;
+
    // The txstatus of the top folder is the txstatus of this "pseudo" 
    // txitem object (not used in an hash object since the top is alone)
 //   psonHashTxItem topHashItem;
@@ -119,6 +120,17 @@ fprintf( stderr, "%d\n", pHeader->cpu_type[0] );
    listCtrl.SetColumnWidth( 1, wxLIST_AUTOSIZE );
 
    fprintf(stderr, "ok --------------\n" );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void * MyMemoryHeader::GetTopFolder()
+{
+   ptrdiff_t offset;
+   
+   offset = pHeader->topTreeNode.offset;
+   
+   return (void *)((char *)pHeader + offset);
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
