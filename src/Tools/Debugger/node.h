@@ -24,17 +24,41 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#include <wx/string.h>
+
 class MyListCtrl;
+struct psonSessionContext;
+struct psonMemObject;
+struct psonLinkedList;
+struct psocProcessLock;
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 class MyNode
 {
 public:
-   MyNode() {}
+   MyNode(psonSessionContext * context) : pContext(context) {}
    
    virtual ~MyNode() {}
 
-   virtual void show( MyListCtrl * listCtrl ) = 0;
+   virtual void Show( MyListCtrl * listCtrl ) = 0;
 
+   void ShowLinkedList( MyListCtrl            * listCtrl,
+                        struct psonLinkedList * list,
+                        wxString              & prefix );
+
+   void ShowMemObject( MyListCtrl           * listCtrl,
+                       struct psonMemObject * memObject );
+
+   void ShowLock( MyListCtrl             * listCtrl,
+                  struct psocProcessLock * lock,
+                  wxString               & prefix  );
+
+protected:
+   struct psonSessionContext * pContext;
+   
+   void GetObjectType( wxString & buf, int ident );
+   
 };
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

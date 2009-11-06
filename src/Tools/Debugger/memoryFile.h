@@ -34,9 +34,9 @@ public:
 
    ~MyMemoryFile();
 
-   bool open();
+   bool Open();
    
-   void * baseAddress() { return m_address; }
+   void * BaseAddress() { return m_address; }
    
 private:
 

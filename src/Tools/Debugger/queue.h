@@ -1,3 +1,4 @@
+/* :mode=c++:  - For jedit, previous line for emacs */
 /*
  * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
@@ -18,45 +19,36 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include "Tools/Debugger/memoryFile.h"
+#ifndef PSO_DBG_QUEUE_H
+#define PSO_DBG_QUEUE_H
+
+#include "Tools/Debugger/node.h"
+#include "Nucleus/Queue.h"
+#include <photon/photon.h>
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-MyMemoryFile::MyMemoryFile( const char * filename )
-   : m_address ( NULL )
+class MyListCtrl;
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+class MyQueue : public MyNode
 {
-   memset( &m_memFile, 0, sizeof m_memFile );
+public:
+   MyQueue( void * addr, psonSessionContext * context );
    
-   psocInitMemoryFile( &m_memFile, 1, filename );
-}
+   virtual ~MyQueue();
+
+   void Show( MyListCtrl * listCtrl );
+
+private:
+
+   psonQueue * m_queue;
+
+};
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-MyMemoryFile::~MyMemoryFile()
-{
-   psocFiniMemoryFile( &m_memFile );
-}
+#endif // PSO_DBG_QUEUE_H
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-bool MyMemoryFile::Open()
-{
-   psocMemoryFileStatus status;
-   psocErrorHandler errorHandler;
-
-   psocInitErrorHandler( &errorHandler );
-   psocBackStoreStatus( &m_memFile, &status );
-
-   if ( ! status.fileExist || status.actualLLength == 0 ) {
-//      fprintf( stderr, "
-      return false;
-   }
-   m_memFile.length = status.actualLLength;
-   
-   if ( ! psocOpenMemFile( &m_memFile, &m_address, &errorHandler ) ) return false;
-
-   return true;
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-

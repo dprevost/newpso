@@ -34,8 +34,9 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
    EVT_MENU(wxID_EXIT, MyFrame::OnQuit)
    EVT_SPLITTER_DCLICK( MY_SPLITTER_ID, MyFrame::OnSplitterDclick )
    EVT_SPLITTER_UNSPLIT( MY_SPLITTER_ID, MyFrame::OnUnsplit )
+   EVT_SIZE( MyFrame::OnSize)
 END_EVENT_TABLE()
-//
+
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -50,6 +51,7 @@ MyFrame::MyFrame( wxWindow       * parent,
  //  this->SetSizeHints( wxDefaultSize, wxDefaultSize );
    
    psocInitErrorDefs();
+   context = new (struct psonSessionContext );// malloc(sizeof
    
    m_menubar1 = new wxMenuBar( 0 );
 
@@ -67,30 +69,32 @@ MyFrame::MyFrame( wxWindow       * parent,
    
    this->SetMenuBar( m_menubar1 );
    
-   wxStaticBoxSizer* sbSizer1;
-   sbSizer1 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxEmptyString ), wxVERTICAL );
+//   wxStaticBoxSizer* sbSizer1;
+//   sbSizer1 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxEmptyString ), wxVERTICAL );
+   wxBoxSizer* sbSizer1;
+   sbSizer1 = new wxBoxSizer( wxVERTICAL );
    
-   m_splitter2 = new wxSplitterWindow( this,
+   m_splitter = new wxSplitterWindow( this,
                                        MY_SPLITTER_ID,
                                        wxDefaultPosition,
                                        wxDefaultSize,
                                        0 );
 
-   m_panel1 = new wxPanel( m_splitter2, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+   m_panel1 = new wxPanel( m_splitter, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
    m_panel1->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_APPWORKSPACE ) );
-   m_panel1->SetMinSize( wxSize( 300, 500 ) );
+   m_panel1->SetMinSize( wxSize( 150, 400 ) );
    
    wxBoxSizer* bSizer3;
    bSizer3 = new wxBoxSizer( wxVERTICAL );
    
-   m_treeCtrl = new MyTree( m_panel1, MY_TREE_ID );
+   m_treeCtrl = new MyTree( m_panel1, MY_TREE_ID, context );
    bSizer3->Add( m_treeCtrl, 0, wxEXPAND | wxALL, 5 );
    
    m_panel1->SetSizer( bSizer3 );
    m_panel1->Layout();
    bSizer3->Fit( m_panel1 );
-   m_panel2 = new wxPanel( m_splitter2, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-   m_panel2->SetMinSize( wxSize( 300, 500 ) );
+   m_panel2 = new wxPanel( m_splitter, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+   m_panel2->SetMinSize( wxSize( 200, 400 ) );
    
    wxBoxSizer* bSizer4;
    bSizer4 = new wxBoxSizer( wxVERTICAL );
@@ -101,13 +105,31 @@ MyFrame::MyFrame( wxWindow       * parent,
    m_panel2->SetSizer( bSizer4 );
    m_panel2->Layout();
    bSizer4->Fit( m_panel2 );
-   m_splitter2->SplitVertically( m_panel1, m_panel2, 658 );
-   sbSizer1->Add( m_splitter2, 1, wxEXPAND, 3 );
+   m_splitter->SplitVertically( m_panel1, m_panel2, 200 );
+   sbSizer1->Add( m_splitter, 1, wxEXPAND | wxALL, 3 );
    
    this->SetSizer( sbSizer1 );
    this->Layout();
    sbSizer1->Fit( this );
    
+   m_config = new wxConfig( _T("psodbg"),
+                            _T("Photon Software"),
+                            wxEmptyString,
+                            wxEmptyString,
+                            wxCONFIG_USE_LOCAL_FILE );
+   long x, y;
+   if ( ! m_config->Read( _T("x_size"), &x, 700L ) )
+      m_config->Write( _T("x_size"), x );
+   if ( ! m_config->Read( _T("y_size"), &y, 500L ) )
+      m_config->Write( _T("y_size"), y );
+
+   //bool 	Read (const wxString &key, long *l, long defaultVal) const 
+   SetSize( x, y );
+
+//   this->Layout();
+//   sbSizer1->Fit( this );
+
+   //config->Read("LastPrompt", &str) 
    m_treeCtrl->SetListCtrl( m_listCtrl );
 }
 
@@ -115,6 +137,7 @@ MyFrame::MyFrame( wxWindow       * parent,
 
 MyFrame::~MyFrame()
 {
+   delete m_config;
    psocFiniErrorDefs();
 }
 
@@ -125,8 +148,8 @@ void MyFrame::OnOpen( wxCommandEvent & WXUNUSED(event) )
    int errcode;
    void * pAddr;
    
-   wxString filename = wxFileSelector( wxT("Select image file"),
-                                       wxT("/tmp"),
+   wxString filename = wxFileSelector( wxT("Select memory file"),
+                                       wxT("/tmp/photon_001"),
                                        wxT(""),
                                        wxT(""),
                                        wxT("Photon mem files (*.pso)|*.pso|All files|*.*") );
@@ -135,22 +158,24 @@ void MyFrame::OnOpen( wxCommandEvent & WXUNUSED(event) )
 
    m_memFile = new MyMemoryFile( (const char *)filename.char_str() );
    
-   errcode = m_memFile->open();
+   errcode = m_memFile->Open();
    
-   m_header = new MyMemoryHeader( m_memFile->baseAddress() );
+   m_header = new MyMemoryHeader( m_memFile->BaseAddress() );
+
+   g_pBaseAddr = (unsigned char *) m_memFile->BaseAddress();
    m_header->showHeader( *m_listCtrl );
 
    pAddr = m_header->GetTopFolder();
-   MyFolder * folder = new MyFolder( pAddr );
+   MyFolder * folder = new MyFolder( pAddr, context );
    
    MyTreeItemData *item = new MyTreeItemData(folder);
    
    wxTreeItemId id = m_treeCtrl->AddRoot( _T("/"), -1, -1, item );
-   m_treeCtrl->Pooulate( id, folder );
+   m_treeCtrl->Populate( id, folder );
 
    //   wxLogError(_T("Couldn't load image from '%s'."), filename.c_str());
    fprintf( stderr, "filename = %s %d %p \n", (char *)filename.char_str(), 
-      errcode, m_memFile->baseAddress() );
+      errcode, m_memFile->BaseAddress() );
      
 //   m_memFile->baseAddress();
    
@@ -175,6 +200,17 @@ void MyFrame::OnQuit( wxCommandEvent & event )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+void MyFrame::OnSize( wxSizeEvent & event )
+{
+   wxSize size = event.GetSize();
+
+   m_config->Write( _T("x_size"), size.GetWidth() );
+   m_config->Write( _T("y_size"), size.GetHeight() );
+   Layout();
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 void MyFrame::OnUnsplit( wxSplitterEvent & event )
 {
    int width, height;
@@ -182,11 +218,11 @@ void MyFrame::OnUnsplit( wxSplitterEvent & event )
    GetClientSize( &width, &height);
    fprintf( stderr, "%d %d\n", width, height );
    if ( width > 0 ) {
-      m_splitter2->SplitVertically( m_panel1, m_panel2, width/2 );
+      m_splitter->SplitVertically( m_panel1, m_panel2, width/2 );
       fprintf( stderr, "%d \n", width/2 );
    }
    else
-      m_splitter2->SplitVertically( m_panel1, m_panel2, 300 );
+      m_splitter->SplitVertically( m_panel1, m_panel2, 300 );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

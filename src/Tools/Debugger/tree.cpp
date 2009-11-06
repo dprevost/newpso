@@ -21,6 +21,9 @@
 #include "Tools/Debugger/tree.h"
 #include "Tools/Debugger/app.h"
 #include "Tools/Debugger/node.h"
+#include "Tools/Debugger/folder.h"
+#include "Tools/Debugger/queue.h"
+
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -38,9 +41,9 @@ MyTreeItemData::~MyTreeItemData()
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-void MyTreeItemData::show( MyListCtrl * listCtrl )
+void MyTreeItemData::Show( MyListCtrl * listCtrl )
 {
-   m_node->show(listCtrl);
+   m_node->Show(listCtrl);
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -48,15 +51,17 @@ void MyTreeItemData::show( MyListCtrl * listCtrl )
 BEGIN_EVENT_TABLE(MyTree, wxTreeCtrl)
   EVT_TREE_ITEM_EXPANDING(MY_TREE_ID, MyTree::OnExpanding)
   EVT_TREE_ITEM_ACTIVATED(MY_TREE_ID, MyTree::OnActivated)
+  EVT_TREE_SEL_CHANGED(MY_TREE_ID, MyTree::OnSelChanged)
 END_EVENT_TABLE()
 
 // EVT_TREE_BEGIN_LABEL_EDIT( MY_TREE_ID, Veto )
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-MyTree::MyTree( wxWindow * parent, wxWindowID id )
+MyTree::MyTree( wxWindow * parent, wxWindowID id, struct psonSessionContext * context )
    : wxTreeCtrl( parent, id, wxDefaultPosition, wxDefaultSize, 
-      wxTR_DEFAULT_STYLE | wxTR_HAS_BUTTONS )
+                wxTR_DEFAULT_STYLE | wxTR_HAS_BUTTONS ),
+     pContext( context )
 {
 }
 
@@ -64,17 +69,13 @@ MyTree::MyTree( wxWindow * parent, wxWindowID id )
 
 void MyTree::OnActivated( wxTreeEvent & event )
 {
-   // show some info about this item
    wxTreeItemId itemId = event.GetItem();
    MyTreeItemData *item = (MyTreeItemData *)GetItemData(itemId);
 
    if ( item != NULL )
    {
-      item->show(m_listCtrl);
+      item->Show(m_listCtrl);
    }
-fprintf( stderr, "activated\n" );
-
-//   wxLogMessage(wxT("OnItemActivated"));
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -82,6 +83,85 @@ fprintf( stderr, "activated\n" );
 void MyTree::OnExpanding( wxTreeEvent & event )
 {
 fprintf( stderr, "expanding\n" );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void MyTree::OnSelChanged( wxTreeEvent & event )
+{
+   wxTreeItemId itemId = event.GetItem();
+   SetItemBold( itemId );
+   
+   MyTreeItemData *item = (MyTreeItemData *)GetItemData(itemId);
+
+   if ( item != NULL )
+   {
+      item->Show(m_listCtrl);
+   }
+
+   itemId = event.GetOldItem();
+   SetItemBold( itemId, false );
+
+   //   SetItemTextColour( itemId, *wxBLUE );
+//fprintf( stderr, "changed %p\n", itemId );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void MyTree::Populate( wxTreeItemId id, MyFolder * folder )
+{
+//   SetItemBold( id );
+   PopulateBranch( id, folder );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void MyTree::PopulateBranch( wxTreeItemId id, MyFolder * folder )
+{
+   char name [PSO_MAX_NAME_LENGTH+1];
+   bool found;
+   struct MyObject obj;
+   MyTreeItemData * item;
+   wxTreeItemId childId;
+   
+   found = folder->GetFirst( obj );
+   while( found ) {
+      if ( obj.length >= PSO_MAX_NAME_LENGTH ) {
+         fprintf( stderr, "Length error\n" );
+         return;
+      }
+      memcpy( name, obj.name, obj.length );
+      name[obj.length] = 0;
+      
+      switch ( obj.type ) {
+      
+      case PSO_FOLDER:
+         {
+            MyFolder * pFolder = new MyFolder( obj.addr, pContext );
+            item = new MyTreeItemData(pFolder);
+            wxString bufFolder( name, wxConvUTF8);
+            childId = AppendItem( id, bufFolder, -1, -1, item );
+//            SetItemBold( childId );
+            SetItemTextColour( childId, *wxRED ); // wxGREEN );
+            PopulateBranch( childId, pFolder );
+         }
+         break;
+      
+      case PSO_LIFO:
+      case PSO_QUEUE:
+         MyQueue * pQueue = new MyQueue( obj.addr, pContext );
+         item = new MyTreeItemData(pQueue);
+         wxString bufQueue( name, wxConvUTF8);
+         childId = AppendItem( id, bufQueue, -1, -1, item );
+//         SetItemBold( childId );
+         SetItemTextColour( childId, *wxBLUE );
+         break;
+   
+      }
+      fprintf( stderr, "ok %d\n", obj.type );
+      found = folder->GetNext( obj );
+   }
+   Expand( id );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

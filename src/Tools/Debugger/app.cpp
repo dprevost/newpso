@@ -28,10 +28,10 @@ IMPLEMENT_APP(MyApp)
 bool MyApp::OnInit()
 {
     MyFrame *frame = new MyFrame( NULL,
-                                  wxID_ANY,
+                                  MY_FRAME,
                                   wxT("PSO Debugger"),
                                   wxDefaultPosition,
-                                  wxSize( 800,500 ),
+                                  wxDefaultSize,
                                   wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
     frame->Show(true);
 

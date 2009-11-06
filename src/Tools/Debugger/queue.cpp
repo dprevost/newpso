@@ -18,44 +18,26 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include "Tools/Debugger/memoryFile.h"
+#include "Tools/Debugger/queue.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-MyMemoryFile::MyMemoryFile( const char * filename )
-   : m_address ( NULL )
+MyQueue::MyQueue( void * addr, psonSessionContext * context )
+   : MyNode         ( context )
 {
-   memset( &m_memFile, 0, sizeof m_memFile );
-   
-   psocInitMemoryFile( &m_memFile, 1, filename );
+   m_queue = (psonQueue *)addr;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-MyMemoryFile::~MyMemoryFile()
+MyQueue::~MyQueue()
 {
-   psocFiniMemoryFile( &m_memFile );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-bool MyMemoryFile::Open()
+void MyQueue::Show( MyListCtrl * listCtrl )
 {
-   psocMemoryFileStatus status;
-   psocErrorHandler errorHandler;
-
-   psocInitErrorHandler( &errorHandler );
-   psocBackStoreStatus( &m_memFile, &status );
-
-   if ( ! status.fileExist || status.actualLLength == 0 ) {
-//      fprintf( stderr, "
-      return false;
-   }
-   m_memFile.length = status.actualLLength;
-   
-   if ( ! psocOpenMemFile( &m_memFile, &m_address, &errorHandler ) ) return false;
-
-   return true;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

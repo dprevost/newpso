@@ -19,7 +19,9 @@ debugger_list = [
         'listCtrl.cpp',
         'memoryFile.cpp',
         'memoryHeader.cpp',
+        'node.cpp',
         'pso.cpp',
+        'queue.cpp',
         'tree.cpp' ]
 
 def build(bld):

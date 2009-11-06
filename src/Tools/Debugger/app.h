@@ -33,6 +33,7 @@ public:
 
 enum {
    MY_TREE_ID = (wxID_HIGHEST + 1),
-   MY_SPLITTER_ID
+   MY_SPLITTER_ID,
+   MY_FRAME
 };
 

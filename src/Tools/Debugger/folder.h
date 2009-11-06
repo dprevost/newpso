@@ -24,23 +24,41 @@
 
 #include "Tools/Debugger/node.h"
 #include "Nucleus/Folder.h"
+#include <photon/photon.h>
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 class MyListCtrl;
 
+struct MyObject
+{
+   enum psoObjectType type;
+   void * addr;
+   char * name;
+   size_t length;
+};
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 class MyFolder : public MyNode
 {
 public:
-   MyFolder( void * addr );
+   MyFolder( void * addr, psonSessionContext * context );
    
    virtual ~MyFolder();
 
-   void show( MyListCtrl * listCtrl );
+   void Show( MyListCtrl * listCtrl );
+
+   bool GetFirst( struct MyObject & obj );
+   
+   bool GetNext( struct MyObject & obj );
 
 private:
+
    psonFolder * m_folder;
-   
+
+   ptrdiff_t previousOffset;
+
 };
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

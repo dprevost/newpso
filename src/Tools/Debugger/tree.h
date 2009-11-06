@@ -27,6 +27,7 @@
 class MyListCtrl;
 class MyNode;
 class MyFolder;
+struct psonSessionContext;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -37,7 +38,7 @@ public:
    
    ~MyTreeItemData();
    
-   void show( MyListCtrl * listCtrl );
+   void Show( MyListCtrl * listCtrl );
    
 private:
    MyNode * m_node;
@@ -48,7 +49,7 @@ private:
 class MyTree : public wxTreeCtrl
 {
 public:
-   MyTree( wxWindow * parent, wxWindowID id );
+   MyTree( wxWindow * parent, wxWindowID id, struct psonSessionContext * context );
 
    void SetListCtrl( MyListCtrl * listCtrl ) { m_listCtrl = listCtrl; }
    
@@ -57,12 +58,16 @@ public:
 private:
 
    MyListCtrl * m_listCtrl;
+   
+   struct psonSessionContext * pContext;
 
    void PopulateBranch( wxTreeItemId id, MyFolder * folder );
    
    void OnExpanding( wxTreeEvent & event );
 
    void OnActivated( wxTreeEvent & event );
+
+   void OnSelChanged( wxTreeEvent & event );
 
    DECLARE_EVENT_TABLE()
 };
