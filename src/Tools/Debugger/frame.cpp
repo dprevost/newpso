@@ -27,6 +27,8 @@
 #include "Tools/Debugger/folder.h"
 #include "Common/ErrorHandler.h"
 
+#include "bitmaps/open.xpm"
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
@@ -34,7 +36,8 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
    EVT_MENU(wxID_EXIT, MyFrame::OnQuit)
    EVT_SPLITTER_DCLICK( MY_SPLITTER_ID, MyFrame::OnSplitterDclick )
    EVT_SPLITTER_UNSPLIT( MY_SPLITTER_ID, MyFrame::OnUnsplit )
-   EVT_SIZE( MyFrame::OnSize)
+//   EVT_SIZE( MyFrame::OnSize)
+   EVT_COMBOBOX(wxID_ANY,MyFrame::OnComboBoxUpdate)
 END_EVENT_TABLE()
 
 
@@ -48,11 +51,31 @@ MyFrame::MyFrame( wxWindow       * parent,
                   long             style ) 
    : wxFrame( parent, id, title, pos, size, style )
 {
+   long x, y, sash;
+   long min_panel1 = 150, min_panel2 = 300;
+   wxArrayString   m_arrItems;
+  
+    m_arrItems.Add( wxT("Header") );
+    m_arrItems.Add( wxT("Objects") );
+    m_arrItems.Add( wxT("Data") );
+    m_arrItems.Add( wxT("Processes") );
  //  this->SetSizeHints( wxDefaultSize, wxDefaultSize );
    
    psocInitErrorDefs();
    context = new (struct psonSessionContext );// malloc(sizeof
-   
+
+   m_config = new wxConfig( _T("psodbg"),
+                            _T("Photon Software"),
+                            wxEmptyString,
+                            wxEmptyString,
+                            wxCONFIG_USE_LOCAL_FILE );
+   if ( ! m_config->Read( _T("x_size"), &x, 700L ) )
+      m_config->Write( _T("x_size"), x );
+   if ( ! m_config->Read( _T("y_size"), &y, 500L ) )
+      m_config->Write( _T("y_size"), y );
+   if ( ! m_config->Read( _T("sash_pos"), &sash, 200L ) )
+      m_config->Write( _T("sash_pos"), sash );
+
    m_menubar1 = new wxMenuBar( 0 );
 
    m_menu1 = new wxMenu();
@@ -68,21 +91,52 @@ MyFrame::MyFrame( wxWindow       * parent,
    m_menubar1->Append( m_menu3, wxT("View") );
    
    this->SetMenuBar( m_menubar1 );
-   
-//   wxStaticBoxSizer* sbSizer1;
-//   sbSizer1 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxEmptyString ), wxVERTICAL );
+
+   wxToolBar * toolBar = CreateToolBar();
+   toolBar->AddTool(wxID_OPEN, wxBitmap(open_xpm), wxNullBitmap, false, -1, -1, (wxObject *) NULL, _("Open"));
+//   toolBar->AddTool(wxID_SAVEAS, wxBitmap(save_xpm), wxNullBitmap, false, -1, -1, (wxObject *) NULL, _("Save"));
+   toolBar->AddSeparator();
+   toolBar->AddTool(wxID_OPEN, wxBitmap(open_xpm), wxNullBitmap, 
+      false, -1, -1, (wxObject *) NULL, _("Open"));
+
+   wxComboBox * odc = new wxComboBox( this,
+                                      wxID_ANY,
+                                      wxEmptyString,
+                                      wxDefaultPosition,
+                                      wxDefaultSize,
+                                      m_arrItems,
+                                      wxCB_SORT|wxCB_READONLY // wxNO_BORDER|wxCB_READONLY
+                                  );
+   toolBar->AddControl( odc );
+   toolBar->Realize();
+#if 0
+wxComboBox::wxComboBox  	(  	wxWindow *   	 parent,
+		wxWindowID  	id,
+		const wxString &  	value = wxEmptyString,
+		const wxPoint &  	pos = wxDefaultPosition,
+		const wxSize &  	size = wxDefaultSize,
+		int  	n = 0,
+		const wxString  	choices[] = NULL,
+		long  	style = 0,
+		const wxValidator &  	validator = wxDefaultValidator,
+		const wxString &  	name = wxComboBoxNameStr
+
+    odc->SetValue(wxT("Dot Dash"));
+    odc->SetText(wxT("Dot Dash (Testing SetText)"));
+#endif
+
    wxBoxSizer* sbSizer1;
    sbSizer1 = new wxBoxSizer( wxVERTICAL );
    
    m_splitter = new wxSplitterWindow( this,
-                                       MY_SPLITTER_ID,
-                                       wxDefaultPosition,
-                                       wxDefaultSize,
-                                       0 );
+                                      MY_SPLITTER_ID,
+                                      wxDefaultPosition,
+                                      wxDefaultSize,
+                                      0 );
 
    m_panel1 = new wxPanel( m_splitter, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
    m_panel1->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_APPWORKSPACE ) );
-   m_panel1->SetMinSize( wxSize( 150, 400 ) );
+   m_panel1->SetMinSize( wxSize( min_panel1, 400 ) );
    
    wxBoxSizer* bSizer3;
    bSizer3 = new wxBoxSizer( wxVERTICAL );
@@ -94,42 +148,28 @@ MyFrame::MyFrame( wxWindow       * parent,
    m_panel1->Layout();
    bSizer3->Fit( m_panel1 );
    m_panel2 = new wxPanel( m_splitter, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-   m_panel2->SetMinSize( wxSize( 200, 400 ) );
+   m_panel2->SetMinSize( wxSize( min_panel2, 400 ) );
    
    wxBoxSizer* bSizer4;
    bSizer4 = new wxBoxSizer( wxVERTICAL );
    
    m_listCtrl = new MyListCtrl( m_panel2, wxID_ANY );
-   bSizer4->Add( m_listCtrl, 1, wxEXPAND | wxALL, 5 );
+   bSizer4->Add( m_listCtrl, 1, wxEXPAND | wxALL, 0 );
    
    m_panel2->SetSizer( bSizer4 );
    m_panel2->Layout();
    bSizer4->Fit( m_panel2 );
    m_splitter->SplitVertically( m_panel1, m_panel2, 200 );
-   sbSizer1->Add( m_splitter, 1, wxEXPAND | wxALL, 3 );
+   
+   sbSizer1->Add( m_splitter, 1, wxEXPAND | wxALL, 0 );
    
    this->SetSizer( sbSizer1 );
    this->Layout();
    sbSizer1->Fit( this );
-   
-   m_config = new wxConfig( _T("psodbg"),
-                            _T("Photon Software"),
-                            wxEmptyString,
-                            wxEmptyString,
-                            wxCONFIG_USE_LOCAL_FILE );
-   long x, y;
-   if ( ! m_config->Read( _T("x_size"), &x, 700L ) )
-      m_config->Write( _T("x_size"), x );
-   if ( ! m_config->Read( _T("y_size"), &y, 500L ) )
-      m_config->Write( _T("y_size"), y );
 
-   //bool 	Read (const wxString &key, long *l, long defaultVal) const 
    SetSize( x, y );
+   m_splitter->SetSashPosition(sash);
 
-//   this->Layout();
-//   sbSizer1->Fit( this );
-
-   //config->Read("LastPrompt", &str) 
    m_treeCtrl->SetListCtrl( m_listCtrl );
 }
 
@@ -137,8 +177,25 @@ MyFrame::MyFrame( wxWindow       * parent,
 
 MyFrame::~MyFrame()
 {
+   int width, height, sash;
+   
+   GetSize( &width, &height );
+
+   sash = m_splitter->GetSashPosition();
+
+   m_config->Write( _T("x_size"), width );
+   m_config->Write( _T("y_size"), height );
+   m_config->Write( _T("sash_pos"), sash );
+   
    delete m_config;
    psocFiniErrorDefs();
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void MyFrame::OnComboBoxUpdate( wxCommandEvent & WXUNUSED(event) )
+{
+// GetValue() 
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -177,18 +234,6 @@ void MyFrame::OnOpen( wxCommandEvent & WXUNUSED(event) )
    fprintf( stderr, "filename = %s %d %p \n", (char *)filename.char_str(), 
       errcode, m_memFile->BaseAddress() );
      
-//   m_memFile->baseAddress();
-   
-//    wxImage image;
-//    if ( !image.LoadFile(filename) )
-//    {
-//        wxLogError(_T("Couldn't load image from '%s'."), filename.c_str());
-
-//        return;
-//    }
-
-//    (new MyImageFrame(this, wxBitmap(image)))->Show();
-//#endif // wxUSE_FILEDLG
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -196,17 +241,6 @@ void MyFrame::OnOpen( wxCommandEvent & WXUNUSED(event) )
 void MyFrame::OnQuit( wxCommandEvent & event )
 {
    Close(true);
-}
-
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
-
-void MyFrame::OnSize( wxSizeEvent & event )
-{
-   wxSize size = event.GetSize();
-
-   m_config->Write( _T("x_size"), size.GetWidth() );
-   m_config->Write( _T("y_size"), size.GetHeight() );
-   Layout();
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

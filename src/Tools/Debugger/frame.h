@@ -66,10 +66,10 @@ public:
 
 protected:
 
+   void OnComboBoxUpdate( wxCommandEvent & event );
    void OnOpen( wxCommandEvent & event );
    void OnQuit( wxCommandEvent & event );
    void OnSplitterDclick( wxSplitterEvent & event ) { event.Veto(); }
-   void OnSize( wxSizeEvent & event );
    void OnUnsplit( wxSplitterEvent & event );
 
    wxMenuBar* m_menubar1;
