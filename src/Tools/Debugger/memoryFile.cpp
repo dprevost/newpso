@@ -18,24 +18,44 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include "app.h"
-#include "frame.h"
+#include "Tools/Debugger/memoryFile.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-IMPLEMENT_APP(MyApp)
-
-bool MyApp::OnInit()
+MyMemoryFile::MyMemoryFile( const char * filename )
+   : m_address ( NULL )
 {
-    MyFrame *frame = new MyFrame( NULL,
-                                  MY_FRAME,
-                                  wxT("PSO Debugger"),
-                                  wxDefaultPosition,
-                                  wxDefaultSize,
-                                  wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
-    frame->Show(true);
+   memset( &m_memFile, 0, sizeof m_memFile );
+   
+   psocInitMemoryFile( &m_memFile, 1, filename );
+}
 
-    return true;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+MyMemoryFile::~MyMemoryFile()
+{
+   psocFiniMemoryFile( &m_memFile );
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+bool MyMemoryFile::Open()
+{
+   psocMemoryFileStatus status;
+   psocErrorHandler errorHandler;
+
+   psocInitErrorHandler( &errorHandler );
+   psocBackStoreStatus( &m_memFile, &status );
+
+   if ( ! status.fileExist || status.actualLLength == 0 ) {
+//      fprintf( stderr, "
+      return false;
+   }
+   m_memFile.length = status.actualLLength;
+   
+   if ( ! psocOpenMemFile( &m_memFile, &m_address, &errorHandler ) ) return false;
+
+   return true;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -1,3 +1,4 @@
+/* :mode=c++:  - For jedit, previous line for emacs */
 /*
  * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
@@ -18,25 +19,29 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include "app.h"
-#include "frame.h"
+/*
+ * This module acts a bit like a controler in the MVC model. However,
+ * the whole program is simple so there is no need to apply this
+ * architecture (MVC) to the letter...
+ */
+#ifndef PSO_DBG_PSO_H
+#define PSO_DBG_PSO_H
+
+#include <photon/pso.h>
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-IMPLEMENT_APP(MyApp)
-
-bool MyApp::OnInit()
+class pso
 {
-    MyFrame *frame = new MyFrame( NULL,
-                                  MY_FRAME,
-                                  wxT("PSO Debugger"),
-                                  wxDefaultPosition,
-                                  wxDefaultSize,
-                                  wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
-    frame->Show(true);
+public:
+   pso();
+   
+   int OnOpen();
 
-    return true;
-}
+};
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#endif // PSO_DBG_PSO_H
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

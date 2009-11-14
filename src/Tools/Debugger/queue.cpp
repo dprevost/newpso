@@ -18,24 +18,26 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include "app.h"
-#include "frame.h"
+#include "Tools/Debugger/queue.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-IMPLEMENT_APP(MyApp)
-
-bool MyApp::OnInit()
+MyQueue::MyQueue( void * addr, psonSessionContext * context )
+   : MyNode         ( context )
 {
-    MyFrame *frame = new MyFrame( NULL,
-                                  MY_FRAME,
-                                  wxT("PSO Debugger"),
-                                  wxDefaultPosition,
-                                  wxDefaultSize,
-                                  wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
-    frame->Show(true);
+   m_queue = (psonQueue *)addr;
+}
 
-    return true;
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+MyQueue::~MyQueue()
+{
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+void MyQueue::Show( MyListCtrl * listCtrl )
+{
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

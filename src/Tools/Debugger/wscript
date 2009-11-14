@@ -14,7 +14,14 @@
 
 debugger_list = [
         'app.cpp',
+        'folder.cpp',
         'frame.cpp',
+        'listCtrl.cpp',
+        'memoryFile.cpp',
+        'memoryHeader.cpp',
+        'node.cpp',
+        'pso.cpp',
+        'queue.cpp',
         'tree.cpp' ]
 
 def build(bld):
@@ -25,6 +32,7 @@ def build(bld):
       includes     = '../.. ../../include',
       uselib_local = 'Common Nucleus',
       uselib       = 'WX',
+      lib          = bld.env['CMOCKERY'],
       target       = 'psodbg')
 
    debugger_exe_release = debugger_exe.clone('release')

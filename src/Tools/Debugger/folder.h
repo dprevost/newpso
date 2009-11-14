@@ -1,3 +1,4 @@
+/* :mode=c++:  - For jedit, previous line for emacs */
 /*
  * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
@@ -18,25 +19,50 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include "app.h"
-#include "frame.h"
+#ifndef PSO_DBG_FOLDER_H
+#define PSO_DBG_FOLDER_H
+
+#include "Tools/Debugger/node.h"
+#include "Nucleus/Folder.h"
+#include <photon/photon.h>
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-IMPLEMENT_APP(MyApp)
+class MyListCtrl;
 
-bool MyApp::OnInit()
+struct MyObject
 {
-    MyFrame *frame = new MyFrame( NULL,
-                                  MY_FRAME,
-                                  wxT("PSO Debugger"),
-                                  wxDefaultPosition,
-                                  wxDefaultSize,
-                                  wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
-    frame->Show(true);
-
-    return true;
-}
+   enum psoObjectType type;
+   void * addr;
+   char * name;
+   size_t length;
+};
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+class MyFolder : public MyNode
+{
+public:
+   MyFolder( void * addr, psonSessionContext * context );
+   
+   virtual ~MyFolder();
+
+   void Show( MyListCtrl * listCtrl );
+
+   bool GetFirst( struct MyObject & obj );
+   
+   bool GetNext( struct MyObject & obj );
+
+private:
+
+   psonFolder * m_folder;
+
+   ptrdiff_t previousOffset;
+
+};
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+#endif // PSO_DBG_FOLDER_H
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -66,7 +66,6 @@ struct psonMemoryHeader
    
    char     cpu_type[20];
    char     compiler[20];
-   char     cxxcompiler[20];
    char     compilerVersion[10];
    char     quasarVersion[10];
    char     creationTime[30];

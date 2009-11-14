@@ -1,3 +1,4 @@
+/* :mode=c++:  - For jedit, previous line for emacs */
 /*
  * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
@@ -18,25 +19,32 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include "app.h"
-#include "frame.h"
+#ifndef PSO_DBG_MEMORY_HEADER_H
+#define PSO_DBG_MEMORY_HEADER_H
+
+#include "Nucleus/MemoryHeader.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-IMPLEMENT_APP(MyApp)
+class MyListCtrl;
 
-bool MyApp::OnInit()
+class MyMemoryHeader
 {
-    MyFrame *frame = new MyFrame( NULL,
-                                  MY_FRAME,
-                                  wxT("PSO Debugger"),
-                                  wxDefaultPosition,
-                                  wxDefaultSize,
-                                  wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
-    frame->Show(true);
+public:
+   
+   MyMemoryHeader( void * address );
 
-    return true;
-}
+   void showHeader( MyListCtrl & listCtrl );
+
+   void * GetTopFolder();
+   
+private:
+
+   struct psonMemoryHeader * pHeader;
+};
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#endif // PSO_DBG_FRAME_H
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

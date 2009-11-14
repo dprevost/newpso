@@ -19,61 +19,50 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#ifndef PSO_DBG_TREE_H
-#define PSO_DBG_TREE_H
+#ifndef PSO_DBG_NODE_H
+#define PSO_DBG_NODE_H
 
-#include <wx/treectrl.h>
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+#include <wx/string.h>
 
 class MyListCtrl;
-class MyNode;
-class MyFolder;
 struct psonSessionContext;
+struct psonMemObject;
+struct psonLinkedList;
+struct psocProcessLock;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-class MyTreeItemData : public wxTreeItemData
+class MyNode
 {
 public:
-   MyTreeItemData( MyNode * node );
+   MyNode(psonSessionContext * context) : pContext(context) {}
    
-   ~MyTreeItemData();
-   
-   void Show( MyListCtrl * listCtrl );
-   
-private:
-   MyNode * m_node;
-};
+   virtual ~MyNode() {}
 
-/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+   virtual void Show( MyListCtrl * listCtrl ) = 0;
 
-class MyTree : public wxTreeCtrl
-{
-public:
-   MyTree( wxWindow * parent, wxWindowID id, struct psonSessionContext * context );
+   void ShowLinkedList( MyListCtrl            * listCtrl,
+                        struct psonLinkedList * list,
+                        wxString              & prefix );
 
-   void SetListCtrl( MyListCtrl * listCtrl ) { m_listCtrl = listCtrl; }
-   
-   void Populate( wxTreeItemId id, MyFolder * folder );
-   
-private:
+   void ShowMemObject( MyListCtrl           * listCtrl,
+                       struct psonMemObject * memObject );
 
-   MyListCtrl * m_listCtrl;
-   
+   void ShowLock( MyListCtrl             * listCtrl,
+                  struct psocProcessLock * lock,
+                  wxString               & prefix  );
+
+protected:
    struct psonSessionContext * pContext;
-
-   void PopulateBranch( wxTreeItemId id, MyFolder * folder );
    
-   void OnExpanding( wxTreeEvent & event );
-
-   void OnActivated( wxTreeEvent & event );
-
-   void OnSelChanged( wxTreeEvent & event );
-
-   DECLARE_EVENT_TABLE()
+   void GetObjectType( wxString & buf, int ident );
+   
 };
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#endif // PSO_DBG_TREE_H
+#endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -1,3 +1,4 @@
+/* :mode=c++:  - For jedit, previous line for emacs */
 /*
  * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
  *
@@ -18,25 +19,36 @@
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-#include "app.h"
-#include "frame.h"
+#ifndef PSO_DBG_QUEUE_H
+#define PSO_DBG_QUEUE_H
+
+#include "Tools/Debugger/node.h"
+#include "Nucleus/Queue.h"
+#include <photon/photon.h>
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-IMPLEMENT_APP(MyApp)
+class MyListCtrl;
 
-bool MyApp::OnInit()
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
+class MyQueue : public MyNode
 {
-    MyFrame *frame = new MyFrame( NULL,
-                                  MY_FRAME,
-                                  wxT("PSO Debugger"),
-                                  wxDefaultPosition,
-                                  wxDefaultSize,
-                                  wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
-    frame->Show(true);
+public:
+   MyQueue( void * addr, psonSessionContext * context );
+   
+   virtual ~MyQueue();
 
-    return true;
-}
+   void Show( MyListCtrl * listCtrl );
+
+private:
+
+   psonQueue * m_queue;
+
+};
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+#endif // PSO_DBG_QUEUE_H
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
