@@ -26,8 +26,9 @@
 #include "Tools/Debugger/memoryHeader.h"
 #include "Tools/Debugger/folder.h"
 #include "Common/ErrorHandler.h"
+#include <wx/odcombo.h>
 
-#include "bitmaps/open.xpm"
+//#include "bitmaps/open.xpm"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -92,39 +93,6 @@ MyFrame::MyFrame( wxWindow       * parent,
    
    this->SetMenuBar( m_menubar1 );
 
-   wxToolBar * toolBar = CreateToolBar();
-   toolBar->AddTool(wxID_OPEN, wxBitmap(open_xpm), wxNullBitmap, false, -1, -1, (wxObject *) NULL, _("Open"));
-//   toolBar->AddTool(wxID_SAVEAS, wxBitmap(save_xpm), wxNullBitmap, false, -1, -1, (wxObject *) NULL, _("Save"));
-   toolBar->AddSeparator();
-   toolBar->AddTool(wxID_OPEN, wxBitmap(open_xpm), wxNullBitmap, 
-      false, -1, -1, (wxObject *) NULL, _("Open"));
-
-   wxComboBox * odc = new wxComboBox( this,
-                                      wxID_ANY,
-                                      wxEmptyString,
-                                      wxDefaultPosition,
-                                      wxDefaultSize,
-                                      m_arrItems,
-                                      wxCB_SORT|wxCB_READONLY // wxNO_BORDER|wxCB_READONLY
-                                  );
-   toolBar->AddControl( odc );
-   toolBar->Realize();
-#if 0
-wxComboBox::wxComboBox  	(  	wxWindow *   	 parent,
-		wxWindowID  	id,
-		const wxString &  	value = wxEmptyString,
-		const wxPoint &  	pos = wxDefaultPosition,
-		const wxSize &  	size = wxDefaultSize,
-		int  	n = 0,
-		const wxString  	choices[] = NULL,
-		long  	style = 0,
-		const wxValidator &  	validator = wxDefaultValidator,
-		const wxString &  	name = wxComboBoxNameStr
-
-    odc->SetValue(wxT("Dot Dash"));
-    odc->SetText(wxT("Dot Dash (Testing SetText)"));
-#endif
-
    wxBoxSizer* sbSizer1;
    sbSizer1 = new wxBoxSizer( wxVERTICAL );
    
@@ -161,6 +129,28 @@ wxComboBox::wxComboBox  	(  	wxWindow *   	 parent,
    bSizer4->Fit( m_panel2 );
    m_splitter->SplitVertically( m_panel1, m_panel2, 200 );
    
+////////////////////
+   wxPanel * top_panel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+
+   wxOwnerDrawnComboBox * combo =
+      new wxOwnerDrawnComboBox( top_panel,
+                                wxID_ANY,
+                                wxEmptyString,
+                                wxDefaultPosition,
+                                wxDefaultSize,
+                                m_arrItems,
+                                wxCB_READONLY|wxCC_STD_BUTTON );
+   wxBoxSizer* top_sizer = new wxBoxSizer( wxHORIZONTAL );
+
+   top_sizer->Add( combo, 0, wxALL, 5 );
+   top_panel->SetSize( -1 , 200 );
+   top_panel->SetSizer( top_sizer );
+   top_panel->Layout();
+   top_sizer->Fit( top_panel );
+   combo->SetValue( wxT("Header") );
+   combo->SetBackgroundColour( top_panel->GetBackgroundColour() );
+
+   sbSizer1->Add( top_panel, 0, wxALL, 0 );
    sbSizer1->Add( m_splitter, 1, wxEXPAND | wxALL, 0 );
    
    this->SetSizer( sbSizer1 );
