@@ -209,6 +209,40 @@ int psoQueuePop( PSO_HANDLE   objectHandle,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+/** 
+ * Remove the first item from the beginning of a FIFO queue and return it 
+ * to the caller.
+ *
+ * If no items are available, this call will wait until a new item is
+ * ready for retrieval.
+ *
+ * Data items which were added by another session and are not yet committed 
+ * will not be seen by this function. Likewise, destroyed data items (even if
+ * not yet committed) are invisible.
+ *
+ * The removals only become permanent after a call to ::psoCommit.
+ *
+ * \param[in]   objectHandle The handle to the queue (see ::psoQueueOpen).
+ * \param[in]   waitPeriodInSecs Maximum time this call will wait for a new
+ *              item before returning on error.
+ * \param[out]  buffer The buffer provided by the user to hold the content of
+ *              the data item. Memory allocation for this buffer is the
+ *              responsability of the caller.
+ * \param[in]   bufferLength The length of \em buffer (in bytes).
+ * \param[out]  returnedLength The actual number of bytes copied in the 
+ *              data buffer.
+ *
+ * \return 0 on success or a ::psoErrors on error.
+ */
+PHOTON_EXPORT
+int psoQueuePopWait( PSO_HANDLE   objectHandle,
+                     psoUint32    waitPeriodInSecs,
+                     void       * buffer,
+                     psoUint32    bufferLength,
+                     psoUint32  * returnedLength );
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 /**
  * Insert a data element at the end of the FIFO queue.
  *

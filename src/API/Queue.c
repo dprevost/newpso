@@ -437,6 +437,97 @@ error_handler:
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
+int psoQueuePopWait( PSO_HANDLE   queueHandle,
+                     uint32_t     waitPeriodInSecs,
+                     void       * buffer,
+                     uint32_t     bufferLength,
+                     uint32_t   * returnedLength )
+{
+   psoaQueue * pQueue;
+   psonQueue * pMemQueue;
+   int errcode = PSO_OK;
+   bool ok = true;
+   uint32_t version;
+   
+   pQueue = (psoaQueue *) queueHandle;
+   if ( pQueue == NULL ) return PSO_NULL_HANDLE;
+   
+   if ( pQueue->object.type != PSOA_QUEUE ) return PSO_WRONG_TYPE_HANDLE;
+
+   if ( buffer == NULL || returnedLength == NULL ) {
+      errcode = PSO_NULL_POINTER;
+      goto error_handler;
+   }
+   *returnedLength = 0;
+   
+   if ( pQueue->object.pSession->terminated ) {
+      errcode = PSO_SESSION_IS_TERMINATED;
+      goto error_handler;
+   }
+
+   pMemQueue = (psonQueue *) pQueue->object.pMyMemObject;
+
+   /* Reinitialize the iterator, if needed */
+   if ( pQueue->iterator != NULL ) {
+      ok = psonQueueRelease( pMemQueue,
+                             pQueue->iterator,
+                             &pQueue->object.pSession->context );
+      PSO_POST_CONDITION( ok == true || ok == false );
+      if ( ! ok ) goto error_handler;
+
+      pQueue->iterator = NULL;
+   }
+
+   ok = psonQueueRemove( pMemQueue,
+                         &pQueue->iterator,
+                         PSON_QUEUE_FIRST,
+                         bufferLength,
+                         &pQueue->object.pSession->context );
+   PSO_POST_CONDITION( ok == true || ok == false );
+
+   if ( ! ok ) {
+      int ms = pQueue->object.pSession->sleepPeriod.tv_sec  * 1000 +   
+               pQueue->object.pSession->sleepPeriod.tv_usec / 1000;
+      if ( ms == 0 ) ms = 1; // division by zero
+      int iterations = waitPeriodInSecs/ms;
+      int i;
+      volatile uint32_t version = pMemQueue->memObject.committedChanges;
+
+      for ( i = 0; i < iterations; ++i ) {
+         psocLockSleep( &pQueue->object.pSession->sleepPeriod );
+         if ( version != pMemQueue->memObject.committedChanges ) {
+            ok = psonQueueRemove( pMemQueue,
+                                  &pQueue->iterator,
+                                  PSON_QUEUE_FIRST,
+                                  bufferLength,
+                                  &pQueue->object.pSession->context );
+            if ( ok ) break;
+            version = pMemQueue->memObject.committedChanges;
+         }
+      }
+      if ( ! ok ) goto error_handler;
+   }
+
+   *returnedLength = pQueue->iterator->dataLength;
+   memcpy( buffer, pQueue->iterator->data, *returnedLength );
+
+   return PSO_OK;
+
+error_handler:
+   if ( errcode != PSO_OK ) {
+      psocSetError( &pQueue->object.pSession->context.errorHandler, 
+         g_psoErrorHandle, errcode );
+   }
+   
+   if ( ! ok ) {
+      errcode = psocGetLastError( &pQueue->object.pSession->context.errorHandler );
+   }
+
+   return errcode;
+}
+
+/* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
+
 int psoQueuePush( PSO_HANDLE   queueHandle,
                   const void * data,
                   uint32_t     dataLength )

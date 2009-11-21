@@ -54,6 +54,8 @@ void psonQueueCommitAdd( psonQueue          * pQueue,
    psonTxStatusClearTx( &pQueueItem->txStatus, pContext );
    pQueueNode->txCounter--;
 
+   pQueue->memObject.committedChanges++;
+
    PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
 

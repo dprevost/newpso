@@ -56,17 +56,14 @@ typedef struct psoaSession
 
    struct psonSession* pCleanup;
 
-   /** Pointer to the hashmap holding the data definitions */
-//   struct psonHashMap * pDataDefMap;
-
-   /** Pointer to the hashmap holding the key definitions */
-//   struct psonHashMap * pKeyDefMap;
-   
    bool terminated;
    
    int numberOfObjects;
    
    int numberOfEdits;
+   
+   // Amount of time spent in sleep mode for our "timers".
+   struct timeval sleepPeriod;
    
    psoaListReaders listReaders;
    

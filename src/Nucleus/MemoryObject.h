@@ -57,6 +57,13 @@ struct psonMemObject
    /** The lock... obviously */
    psocProcessLock lock;
 
+   /**
+    * Counter for committed changes.
+    *
+    * This counter is useful to detect changes to the object.
+    */
+   uint32_t committedChanges;
+
    /** Total number of blocks for the current object */
    size_t totalBlocks;
    

@@ -106,6 +106,8 @@ psonMemObjectInit( psonMemObject      * pMemObj,
    }
     
    pMemObj->objType = objType;
+   pMemObj->committedChanges = 0;
+
    psonLinkedListInit( &pMemObj->listBlockGroup, pContext );
    
    psonBlockGroupInit( pGroup,

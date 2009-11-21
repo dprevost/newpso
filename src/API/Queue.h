@@ -75,6 +75,12 @@ int psoaQueueRemove( psoaQueue      * pQueue,
                      unsigned char ** data,
                      uint32_t       * length );
 
+/** Wait until data is available on the queue. */
+PHOTON_API_EXPORT
+int psoaQueueWait( psoaQueue      * pQueue,
+                   unsigned char ** data,
+                   uint32_t       * length );
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 END_C_DECLS
