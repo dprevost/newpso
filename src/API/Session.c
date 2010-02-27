@@ -34,6 +34,8 @@
 #include "Nucleus/Folder.h"
 #include "Nucleus/HashMap.h"
 
+#include "API/tls.h"
+
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void psoaFastMapResetReader( void * map );
