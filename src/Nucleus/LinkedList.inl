@@ -39,14 +39,14 @@ bool psonLinkedListGetFirst( psonLinkedList     * pList,
    }
    
    /* Get the pointer to the first node */
-   *ppItem = GET_PTR_FAST( pList->head.nextOffset, psonLinkNode );
+   *ppItem = GET_PTR_FAST(g_pBaseAddr,  pList->head.nextOffset, psonLinkNode );
 
    /* Reset the next offset of the head and the previous offset
     * of the item after the item we are removing.
     */
    pList->head.nextOffset = (*ppItem)->nextOffset;
-   GET_PTR_FAST( (*ppItem)->nextOffset, psonLinkNode)->previousOffset = 
-      SET_OFFSET( &pList->head );
+   GET_PTR_FAST(g_pBaseAddr,  (*ppItem)->nextOffset, psonLinkNode)->previousOffset = 
+      SET_OFFSET(g_pBaseAddr,  &pList->head );
 
    --pList->currentSize;
 
@@ -77,14 +77,14 @@ bool psonLinkedListGetLast( psonLinkedList     * pList,
    }
    
    /* Get the pointer to the last node */
-   *ppItem = GET_PTR_FAST( pList->head.previousOffset, psonLinkNode );
+   *ppItem = GET_PTR_FAST(g_pBaseAddr,  pList->head.previousOffset, psonLinkNode );
 
    /* Reset the previous offset of the head and the next offset
     * of the item before the item we are removing.
     */   
    pList->head.previousOffset = (*ppItem)->previousOffset;
-   GET_PTR_FAST( (*ppItem)->previousOffset, psonLinkNode)->nextOffset = 
-      SET_OFFSET( &pList->head );
+   GET_PTR_FAST(g_pBaseAddr,  (*ppItem)->previousOffset, psonLinkNode)->nextOffset = 
+      SET_OFFSET(g_pBaseAddr,  &pList->head );
 
    --pList->currentSize;
 
@@ -112,14 +112,14 @@ psonLinkedListPutLast( psonLinkedList     * pList,
    PSO_PRE_CONDITION( pNewItem->nextOffset     == PSON_NULL_OFFSET );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   tmpOffset = SET_OFFSET( pNewItem );
+   tmpOffset = SET_OFFSET(g_pBaseAddr,  pNewItem );
 
-   pNewItem->nextOffset     = SET_OFFSET( &pList->head );
+   pNewItem->nextOffset     = SET_OFFSET(g_pBaseAddr,  &pList->head );
    /* The order of the next two is important - don't change it! */
    pNewItem->previousOffset   = pList->head.previousOffset;
    pList->head.previousOffset = tmpOffset;
 
-   GET_PTR_FAST( pNewItem->previousOffset, psonLinkNode )->nextOffset = 
+   GET_PTR_FAST(g_pBaseAddr,  pNewItem->previousOffset, psonLinkNode )->nextOffset = 
       tmpOffset;
    
    pList->currentSize++;
@@ -148,15 +148,15 @@ psonLinkedListPutFirst( psonLinkedList     * pList,
    PSO_PRE_CONDITION( pNewItem->nextOffset     == PSON_NULL_OFFSET );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   tmpOffset = SET_OFFSET( pNewItem );
+   tmpOffset = SET_OFFSET(g_pBaseAddr,  pNewItem );
 
-   pNewItem->previousOffset = SET_OFFSET( &pList->head );
+   pNewItem->previousOffset = SET_OFFSET(g_pBaseAddr,  &pList->head );
 
    /* The order of the next two is important - don't change it! */
    pNewItem->nextOffset = pList->head.nextOffset;   
    pList->head.nextOffset = tmpOffset;
 
-   GET_PTR_FAST( pNewItem->nextOffset, psonLinkNode )->previousOffset = 
+   GET_PTR_FAST(g_pBaseAddr,  pNewItem->nextOffset, psonLinkNode )->previousOffset = 
       tmpOffset;
    
    pList->currentSize++;
@@ -184,10 +184,10 @@ psonLinkedListRemoveItem( psonLinkedList     * pList,
    PSO_PRE_CONDITION( pList->currentSize > 0 );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR_FAST( pRemovedItem->nextOffset, psonLinkNode )->previousOffset = 
+   GET_PTR_FAST(g_pBaseAddr,  pRemovedItem->nextOffset, psonLinkNode )->previousOffset = 
       pRemovedItem->previousOffset;
 
-   GET_PTR_FAST( pRemovedItem->previousOffset, psonLinkNode )->nextOffset = 
+   GET_PTR_FAST(g_pBaseAddr,  pRemovedItem->previousOffset, psonLinkNode )->nextOffset = 
       pRemovedItem->nextOffset;
 
    --pList->currentSize;
@@ -215,7 +215,7 @@ bool psonLinkedListPeakFirst( psonLinkedList     * pList,
       return false;
    }
    
-   *ppItem = GET_PTR_FAST( pList->head.nextOffset, psonLinkNode );
+   *ppItem = GET_PTR_FAST(g_pBaseAddr,  pList->head.nextOffset, psonLinkNode );
 
    PSO_POST_CONDITION( *ppItem != NULL );
 
@@ -243,7 +243,7 @@ bool psonLinkedListPeakLast( psonLinkedList     * pList,
       return false;
    }
    
-   *ppItem = GET_PTR_FAST( pList->head.previousOffset, psonLinkNode );
+   *ppItem = GET_PTR_FAST(g_pBaseAddr,  pList->head.previousOffset, psonLinkNode );
 
    PSO_POST_CONDITION( *ppItem != NULL );
 
@@ -271,7 +271,7 @@ bool psonLinkedListPeakNext( psonLinkedList     * pList,
    PSO_PRE_CONDITION( pCurrent->nextOffset     != PSON_NULL_OFFSET );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   pNext = GET_PTR_FAST( pCurrent->nextOffset, psonLinkNode );
+   pNext = GET_PTR_FAST(g_pBaseAddr,  pCurrent->nextOffset, psonLinkNode );
    if ( pNext == &pList->head ) {
       PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
@@ -305,7 +305,7 @@ bool psonLinkedListPeakPrevious( psonLinkedList     * pList,
    PSO_PRE_CONDITION( pCurrent->nextOffset     != PSON_NULL_OFFSET );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   pPrevious = GET_PTR_FAST( pCurrent->previousOffset, psonLinkNode );
+   pPrevious = GET_PTR_FAST(g_pBaseAddr,  pCurrent->previousOffset, psonLinkNode );
    if ( pPrevious == &pList->head ) {
       PSO_TRACE_EXIT_NUCLEUS( pContext, false );
       return false;
@@ -346,14 +346,14 @@ psonLinkedListReplaceItem( psonLinkedList     * pList,
    PSO_PRE_CONDITION( pList->currentSize > 0 );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   tmpOffset = SET_OFFSET( pNewItem );
+   tmpOffset = SET_OFFSET(g_pBaseAddr,  pNewItem );
    pNewItem->nextOffset     = pOldItem->nextOffset;
    pNewItem->previousOffset = pOldItem->previousOffset;
 
-   GET_PTR_FAST( pOldItem->nextOffset, psonLinkNode )->previousOffset = 
+   GET_PTR_FAST(g_pBaseAddr,  pOldItem->nextOffset, psonLinkNode )->previousOffset = 
       tmpOffset;
 
-   GET_PTR_FAST( pOldItem->previousOffset, psonLinkNode )->nextOffset = 
+   GET_PTR_FAST(g_pBaseAddr,  pOldItem->previousOffset, psonLinkNode )->nextOffset = 
       tmpOffset;
 
    PSO_TRACE_EXIT_NUCLEUS( pContext, true );

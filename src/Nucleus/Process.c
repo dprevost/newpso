@@ -71,7 +71,7 @@ bool psonProcessAddSession( psonProcess        * process,
        * add the previouslock otherwise... the unlock will fail (segv).
        */
       if ( pContext->lockOffsets != NULL ) {
-         pContext->lockOffsets[*pContext->numLocks] = SET_OFFSET(&process->memObject);
+         pContext->lockOffsets[*pContext->numLocks] = SET_OFFSET(g_pBaseAddr, &process->memObject);
          (*pContext->numLocks)++;
       }
       psonUnlock( &process->memObject, pContext );
@@ -95,7 +95,7 @@ void psonProcessDump( psonProcess        * process,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonProcess (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      process, SET_OFFSET(process) );
+      process, SET_OFFSET(g_pBaseAddr, process) );
    if ( process == NULL ) return;
 
    psonMemObjectDump( &process->memObject, indent + 2, pContext );

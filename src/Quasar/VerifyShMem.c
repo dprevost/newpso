@@ -77,9 +77,9 @@ void qsrValidate( psonMemoryHeader   * pMemoryAddress,
    strftime( timeBuf, 30, "%H:%M:%S", &formattedTime );
    fprintf( fp, "Current time: %s\n\n", timeBuf );
    
-   GET_PTR( processMgr, pMemoryAddress->processMgrOffset, struct psonProcessManager );
-   GET_PTR( topFolder, pMemoryAddress->treeMgrOffset, psonFolder );
-   GET_PTR( memAllocator, pMemoryAddress->allocatorOffset, psonMemAlloc );
+   GET_PTR(g_pBaseAddr,  processMgr, pMemoryAddress->processMgrOffset, struct psonProcessManager );
+   GET_PTR(g_pBaseAddr,  topFolder, pMemoryAddress->treeMgrOffset, psonFolder );
+   GET_PTR(g_pBaseAddr,  memAllocator, pMemoryAddress->allocatorOffset, psonMemAlloc );
 
    /* allocate the bitmap */
    bitmapLength = offsetof( psonMemBitmap, bitmap ) + 

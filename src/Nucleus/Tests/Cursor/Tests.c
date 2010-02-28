@@ -85,15 +85,15 @@ void test1( void ** state )
 
    ok = psonCursorGetFirst( pCursor, &pItem, &context );
    assert_true( ok );
-   assert_true( pItem->itemOffset == SET_OFFSET((unsigned char *)0x2) );
+   assert_true( pItem->itemOffset == SET_OFFSET(g_pBaseAddr, (unsigned char *)0x2) );
 
    ok = psonCursorGetNext( pCursor, pItem, &pItem, &context );
    assert_true( ok );
-   assert_true( pItem->itemOffset == SET_OFFSET((unsigned char *)0x3) );
+   assert_true( pItem->itemOffset == SET_OFFSET(g_pBaseAddr, (unsigned char *)0x3) );
 
    ok = psonCursorGetPrevious( pCursor, pItem, &pItem, &context );
    assert_true( ok );
-   assert_true( pItem->itemOffset == SET_OFFSET((unsigned char *)0x2) );
+   assert_true( pItem->itemOffset == SET_OFFSET(g_pBaseAddr, (unsigned char *)0x2) );
    
    /* Add a third element  */
    ok = psonCursorInsertFirst( pCursor,
@@ -104,11 +104,11 @@ void test1( void ** state )
 
    ok = psonCursorGetPrevious( pCursor, pItem, &pItem, &context );
    assert_true( ok );
-   assert_true( pItem->itemOffset == SET_OFFSET((unsigned char *)0x1) );
+   assert_true( pItem->itemOffset == SET_OFFSET(g_pBaseAddr, (unsigned char *)0x1) );
 
    ok = psonCursorGetLast( pCursor, &pItem, &context );
    assert_true( ok );
-   assert_true( pItem->itemOffset == SET_OFFSET((unsigned char *)0x3) );
+   assert_true( pItem->itemOffset == SET_OFFSET(g_pBaseAddr, (unsigned char *)0x3) );
 
    /* Number of items */
    psonCursorSize( pCursor, &numItems, &context );

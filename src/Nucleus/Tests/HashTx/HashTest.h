@@ -86,7 +86,7 @@ psonHashTx* initHashTest( psonSessionContext * pContext )
                                 2,
                                 pContext );
    assert( errcode == PSO_OK );
-   g_memObjOffset = SET_OFFSET(&pDummy->memObject);
+   g_memObjOffset = SET_OFFSET(g_pBaseAddr, &pDummy->memObject);
    
    /*
     * We do not initialize hash - otherwise we would not be able
@@ -142,7 +142,7 @@ void initHashCopyTest( psonHashTx          ** ppOldHash,
    assert( errcode == PSO_OK );
    
    errcode = psonHashTxInit( &pDummy1->hashObj, 
-                           SET_OFFSET(&pDummy1->memObject), 
+                           SET_OFFSET(g_pBaseAddr, &pDummy1->memObject), 
                            10,
                            pContext );
    assert( errcode == 0 );
@@ -159,13 +159,13 @@ void initHashCopyTest( psonHashTx          ** ppOldHash,
 
    if ( sameLength ) {
       errcode = psonHashTxInit( &pDummy2->hashObj, 
-                              SET_OFFSET(&pDummy2->memObject), 
+                              SET_OFFSET(g_pBaseAddr, &pDummy2->memObject), 
                               10,
                               pContext );
    }
    else {
       errcode = psonHashTxInit( &pDummy2->hashObj, 
-                              SET_OFFSET(&pDummy2->memObject), 
+                              SET_OFFSET(g_pBaseAddr, &pDummy2->memObject), 
                               100,
                               pContext );
    }

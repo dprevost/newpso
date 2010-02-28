@@ -51,9 +51,9 @@ bool MyFolder::GetFirst( struct MyObject & obj )
 
    found = psonHashTxGetFirst( &m_folder->hashObj, &offset, pContext );
    if ( found ) {
-      GET_PTR( pItem, offset, psonHashTxItem );
-      GET_PTR( pNode, pItem->dataOffset, psonTreeNode );
-      GET_PTR( pObject, pNode->offset, void );
+      GET_PTR(g_pBaseAddr,  pItem, offset, psonHashTxItem );
+      GET_PTR(g_pBaseAddr,  pNode, pItem->dataOffset, psonTreeNode );
+      GET_PTR(g_pBaseAddr,  pObject, pNode->offset, void );
       
       obj.addr = pObject;
       obj.type = pNode->apiType;
@@ -86,9 +86,9 @@ bool MyFolder::GetNext( struct MyObject & obj )
                               pContext );
 
    if ( found ) {
-      GET_PTR( pItem, offset, psonHashTxItem );
-      GET_PTR( pNode, pItem->dataOffset, psonTreeNode );
-      GET_PTR( pObject, pNode->offset, void );
+      GET_PTR(g_pBaseAddr,  pItem, offset, psonHashTxItem );
+      GET_PTR(g_pBaseAddr,  pNode, pItem->dataOffset, psonTreeNode );
+      GET_PTR(g_pBaseAddr,  pObject, pNode->offset, void );
       
       obj.addr = pObject;
       obj.type = pNode->apiType;

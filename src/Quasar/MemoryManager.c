@@ -118,7 +118,7 @@ bool qsrCreateMem( qsrMemoryManager   * pManager,
    /* The memory allocator starts after the header */
    pStart = (unsigned char*)pManager->pMemoryAddress + PSON_BLOCK_SIZE;
    
-   (*ppHeader)->allocatorOffset = SET_OFFSET( pStart );
+   (*ppHeader)->allocatorOffset = SET_OFFSET(g_pBaseAddr,  pStart );
    pAlloc = (psonMemAlloc *) pStart;
    
    errcode = psonMemAllocInit( pAlloc,
@@ -159,23 +159,23 @@ bool qsrCreateMem( qsrMemoryManager   * pManager,
                      PSON_NULL_OFFSET,
                      pContext );
 
-   pFolder->nodeOffset = SET_OFFSET(&(*ppHeader)->topTreeNode);
+   pFolder->nodeOffset = SET_OFFSET(g_pBaseAddr, &(*ppHeader)->topTreeNode);
 
    errcode = psonHashTxInit( &pFolder->hashObj, 
-                             SET_OFFSET(&pFolder->memObject),
+                             SET_OFFSET(g_pBaseAddr, &pFolder->memObject),
                              25, 
                              pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
       return false;
    }
-   (*ppHeader)->treeMgrOffset = SET_OFFSET( ptr );
-   (*ppHeader)->topHashItem.dataOffset = SET_OFFSET(&(*ppHeader)->topTreeNode);
-   (*ppHeader)->topTreeNode.offset = SET_OFFSET( ptr );
+   (*ppHeader)->treeMgrOffset = SET_OFFSET(g_pBaseAddr,  ptr );
+   (*ppHeader)->topHashItem.dataOffset = SET_OFFSET(g_pBaseAddr, &(*ppHeader)->topTreeNode);
+   (*ppHeader)->topTreeNode.offset = SET_OFFSET(g_pBaseAddr,  ptr );
    (*ppHeader)->topTreeNode.apiType = PSO_FOLDER;
    (*ppHeader)->topTreeNode.txCounter = 0;
    (*ppHeader)->topTreeNode.txStatusOffset = 
-      SET_OFFSET( &pManager->pHeader->topHashItem.txStatus );
+      SET_OFFSET(g_pBaseAddr,  &pManager->pHeader->topHashItem.txStatus );
    (*ppHeader)->topTreeNode.myParentOffset = PSON_NULL_OFFSET;
    
 
@@ -198,7 +198,7 @@ bool qsrCreateMem( qsrMemoryManager   * pManager,
       /* The error is set in the function itself */
       return false;
    }
-   (*ppHeader)->processMgrOffset = SET_OFFSET( processManager );
+   (*ppHeader)->processMgrOffset = SET_OFFSET(g_pBaseAddr,  processManager );
 
    /* And finish with setting up the version (and eventually some "magic */
    /* cookie" to identify the file?) */

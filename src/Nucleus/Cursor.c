@@ -33,7 +33,7 @@ void psonCursorDump( psonCursor         * pCursor,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonCursor (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pCursor, SET_OFFSET(pCursor) );
+      pCursor, SET_OFFSET(g_pBaseAddr, pCursor) );
    if ( pCursor == NULL ) return;
 
    psonMemObjectDump( &pCursor->memObject, indent + 2, pContext );
@@ -72,7 +72,7 @@ void psonCursorEmpty( psonCursor         * pCursor,
          
       case PSON_HASH_TX_ITEM:
          psonHashMapRelease( (psonHashMap *) pCursorItem->parent,
-                             GET_PTR_FAST(pCursorItem->itemOffset, psonHashTxItem),
+                             GET_PTR_FAST(g_pBaseAddr, pCursorItem->itemOffset, psonHashTxItem),
                              pContext );
          break;
          
@@ -334,7 +334,7 @@ bool psonCursorInsertFirst( psonCursor         * pCursor,
    
    psonLinkNodeInit( &pCursorItem->node, pContext );
       
-   pCursorItem->itemOffset = SET_OFFSET(pItem);
+   pCursorItem->itemOffset = SET_OFFSET(g_pBaseAddr, pItem);
    pCursorItem->itemType = itemType;
 
    psonLinkedListPutFirst( &pCursor->listOfElements,
@@ -373,7 +373,7 @@ bool psonCursorInsertLast( psonCursor         * pCursor,
    
    psonLinkNodeInit( &pCursorItem->node, pContext );
       
-   pCursorItem->itemOffset = SET_OFFSET(pItem);
+   pCursorItem->itemOffset = SET_OFFSET(g_pBaseAddr, pItem);
    pCursorItem->itemType = itemType;
 
    psonLinkedListPutLast( &pCursor->listOfElements,

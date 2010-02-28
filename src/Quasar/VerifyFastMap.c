@@ -74,8 +74,8 @@ qsrVerifyFastMap( qsrVerifyStruct   * pVerify,
     */
    qsrPopulateBitmap( pVerify, &pHashMap->memObject, pContext );
 
-   GET_PTR( pNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR( txHashMapStatus, pNode->txStatusOffset, psonTxStatus );
+   GET_PTR(g_pBaseAddr,  pNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(g_pBaseAddr,  txHashMapStatus, pNode->txStatusOffset, psonTxStatus );
 
    if ( txHashMapStatus->txOffset != PSON_NULL_OFFSET ) {
       /*
@@ -134,7 +134,7 @@ qsrVerifyFastMap( qsrVerifyStruct   * pVerify,
    if ( bTestObject ) {
       rc2 = qsrVerifyHash( pVerify, 
                            &pHashMap->hashObj, 
-                           SET_OFFSET(&pHashMap->memObject),
+                           SET_OFFSET(g_pBaseAddr, &pHashMap->memObject),
                            pContext );
       if ( rc2 > QSR_REC_START_ERRORS ) {
          pVerify->spaces -= 2;

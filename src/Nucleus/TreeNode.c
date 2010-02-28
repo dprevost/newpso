@@ -39,7 +39,7 @@ void psonTreeNodeDump( psonTreeNode       * pNode,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonTreeNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pNode, SET_OFFSET(pNode) );
+      pNode, SET_OFFSET(g_pBaseAddr, pNode) );
    if ( pNode == NULL ) return;
 
    DO_INDENT( pContext, indent + 2 );

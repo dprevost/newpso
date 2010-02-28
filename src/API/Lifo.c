@@ -115,7 +115,7 @@ int psoLifoDefinition( PSO_HANDLE            objectHandle,
    if ( ! pLifo->object.pSession->terminated ) {
       pMemLifo = (psonQueue *) pLifo->object.pMyMemObject;
       
-      GET_PTR( pMyDefinition, pMemLifo->dataDefOffset, psoObjectDefinition );
+      GET_PTR(g_pBaseAddr,  pMyDefinition, pMemLifo->dataDefOffset, psoObjectDefinition );
       myLength = offsetof(psoObjectDefinition, dataDef) + 
          pMyDefinition->dataDefLength;
       if ( myLength >= length ) {
@@ -166,7 +166,7 @@ int psoLifoDefLength( PSO_HANDLE   objectHandle,
    if ( ! pLifo->object.pSession->terminated ) {
       pMemLifo = (psonQueue *) pLifo->object.pMyMemObject;
       
-      GET_PTR( pMyDefinition, pMemLifo->dataDefOffset, psoObjectDefinition );
+      GET_PTR(g_pBaseAddr,  pMyDefinition, pMemLifo->dataDefOffset, psoObjectDefinition );
       *pLength = offsetof(psoObjectDefinition, dataDef) + 
          pMyDefinition->dataDefLength;
    }
@@ -627,7 +627,7 @@ int psoaLifoGetDef( PSO_HANDLE             objectHandle,
    if ( ! pLifo->object.pSession->terminated ) {
       pMemLifo = (psonQueue *) pLifo->object.pMyMemObject;
       
-      GET_PTR( pMyDefinition, pMemLifo->dataDefOffset, psoObjectDefinition );
+      GET_PTR(g_pBaseAddr,  pMyDefinition, pMemLifo->dataDefOffset, psoObjectDefinition );
       
       *ppDefinition = pMyDefinition;
    }

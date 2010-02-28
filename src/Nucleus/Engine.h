@@ -63,31 +63,32 @@ extern unsigned char* g_pBaseAddr;
 
 extern psocErrMsgHandle g_psoErrorHandle;
 
-#define SET_OFFSET(ptr) ( (ptrdiff_t) ( (unsigned char*)(ptr) - \
-       g_pBaseAddr ) )
+#define SET_OFFSET(BASE_ADDRESS,PTR) ( \
+   (ptrdiff_t) ( (unsigned char*)(PTR) - (unsigned char*)(BASE_ADDRESS) ) )
 
 /* Only use this macro when you know, for a fact, that the offset cannot
  * be the PSON_NULL_OFFSET (for example, in the LinkedList "class", the links
  * are never set to PSON_NULL_OFFSET...). 
  */
-#define GET_PTR_FAST(off,class) ( (class*) (           \
-       (unsigned char*) g_pBaseAddr + (ptrdiff_t) (off) ))
+#define GET_PTR_FAST(BASE_ADDRESS,OFF,TYPE) ( \
+   (TYPE *) ( (unsigned char*)BASE_ADDRESS + (ptrdiff_t) (OFF) ) )
 
-#define GET_PTR_OPT(target,offset,type) { \
-   target = (type*) ( (unsigned char*) g_pBaseAddr + (ptrdiff_t) offset ); \
+#define GET_PTR_OPT(BASE_ADDRESS,TARGET,OFFSET,TYPE) { \
+   TARGET = (TYPE *) ( (unsigned char*) (BASE_ADDRESS) + (ptrdiff_t) (OFFSET) ); \
 }
 
-#define GET_PTR_DBG(target,offset,type) { \
-   ptrdiff_t off = offset; \
-   PSO_INV_CONDITION( off != 0 ); \
-   PSO_INV_CONDITION( off != PSON_NULL_OFFSET ); \
-   target = (type*) ( (unsigned char*) g_pBaseAddr + (ptrdiff_t) off ); \
+#define GET_PTR_DBG(BASE_ADDRESS,TARGET,OFFSET,TYPE) { \
+   PSO_INV_CONDITION( (OFFSET) != 0 ); \
+   PSO_INV_CONDITION( (OFFSET) != PSON_NULL_OFFSET ); \
+   TARGET = (TYPE *) ( (unsigned char*) (BASE_ADDRESS) + (ptrdiff_t) (OFFSET) ); \
 }
 
 #if defined(USE_DBC)
-#  define GET_PTR(target,offset,type) GET_PTR_DBG(target,offset,type)
+#  define GET_PTR(BASE_ADDRESS,TARGET,OFFSET,TYPE) \
+   GET_PTR_DBG(BASE_ADDRESS,TARGET,OFFSET,TYPE)
 #else
-#  define GET_PTR(target,offset,type) GET_PTR_OPT(target,offset,type)
+#  define GET_PTR(BASE_ADDRESS,TARGET,OFFSET,TYPE) \
+   GET_PTR_OPT(BASE_ADDRESS,TARGET,OFFSET,TYPE)
 #endif
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

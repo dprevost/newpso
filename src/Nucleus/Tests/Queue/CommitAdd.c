@@ -36,9 +36,9 @@ void setup_test()
    
    pQueue = initQueueTest( &context );
 
-   psonTxStatusInit( &status, SET_OFFSET(context.pTransaction), &context );
-   psonTreeNodeInit( &queueNode, SET_OFFSET( pQueue ), PSO_QUEUE,
-                     SET_OFFSET(&status), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &status, SET_OFFSET(g_pBaseAddr, context.pTransaction), &context );
+   psonTreeNodeInit( &queueNode, SET_OFFSET(g_pBaseAddr,  pQueue ), PSO_QUEUE,
+                     SET_OFFSET(g_pBaseAddr, &status), PSON_NULL_OFFSET, &context );
 
    ok = psonQueueInit( pQueue, 
                        0, 1, &queueNode,
@@ -77,7 +77,7 @@ void teardown_test()
 void test_null_context( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonQueueCommitAdd( pQueue, SET_OFFSET( pItem ), NULL ) );
+   expect_assert_failure( psonQueueCommitAdd( pQueue, SET_OFFSET(g_pBaseAddr,  pItem ), NULL ) );
 #endif
    return;
 }
@@ -97,7 +97,7 @@ void test_null_offset( void ** state )
 void test_null_queue( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   expect_assert_failure( psonQueueCommitAdd( NULL, SET_OFFSET( pItem ), &context ) );
+   expect_assert_failure( psonQueueCommitAdd( NULL, SET_OFFSET(g_pBaseAddr,  pItem ), &context ) );
 #endif
    return;
 }
@@ -107,7 +107,7 @@ void test_null_queue( void ** state )
 void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   psonQueueCommitAdd( pQueue, SET_OFFSET( pItem ), &context );
+   psonQueueCommitAdd( pQueue, SET_OFFSET(g_pBaseAddr,  pItem ), &context );
 #endif
    return;
 }

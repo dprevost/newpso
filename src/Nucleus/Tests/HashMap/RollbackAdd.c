@@ -38,9 +38,9 @@ void setup_test()
 
    pHashMap = initHashMapTest( &context );
 
-   psonTxStatusInit( &status, SET_OFFSET(context.pTransaction), &context );
-   psonTreeNodeInit( &mapNode, SET_OFFSET( pHashMap ), PSO_HASH_MAP,
-                     SET_OFFSET(&status), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &status, SET_OFFSET(g_pBaseAddr, context.pTransaction), &context );
+   psonTreeNodeInit( &mapNode, SET_OFFSET(g_pBaseAddr,  pHashMap ), PSO_HASH_MAP,
+                     SET_OFFSET(g_pBaseAddr, &status), PSON_NULL_OFFSET, &context );
    
    ok = psonHashMapInit( pHashMap, 0, 1, 0, &mapNode,
                          &def, &keyDef,
@@ -83,7 +83,7 @@ void test_null_context( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonHashMapRollbackAdd( pHashMap, 
-                                                  SET_OFFSET(pItem),
+                                                  SET_OFFSET(g_pBaseAddr, pItem),
                                                   NULL ) );
 #endif
    return;
@@ -95,7 +95,7 @@ void test_null_hash( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonHashMapRollbackAdd( NULL, 
-                                                  SET_OFFSET(pItem),
+                                                  SET_OFFSET(g_pBaseAddr, pItem),
                                                   &context ) );
 #endif
    return;
@@ -118,7 +118,7 @@ void test_null_item( void ** state )
 void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
-   psonHashMapRollbackAdd( pHashMap, SET_OFFSET(pItem), &context );
+   psonHashMapRollbackAdd( pHashMap, SET_OFFSET(g_pBaseAddr, pItem), &context );
 #endif
    return;
 }

@@ -29,7 +29,7 @@ void psonMemObjectDump( psonMemObject      * pMemObj,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonMemObject (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pMemObj, SET_OFFSET(pMemObj) );
+      pMemObj, SET_OFFSET(g_pBaseAddr, pMemObj) );
    if ( pMemObj == NULL ) return;
    
    psonMemObjIdentifierDump( pMemObj->objType, indent + 2, pContext );
@@ -111,7 +111,7 @@ psonMemObjectInit( psonMemObject      * pMemObj,
    psonLinkedListInit( &pMemObj->listBlockGroup, pContext );
    
    psonBlockGroupInit( pGroup,
-                       SET_OFFSET(pMemObj),
+                       SET_OFFSET(g_pBaseAddr, pMemObj),
                        numBlocks,
                        objType,
                        pContext );
@@ -279,14 +279,14 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
                   if ( remainingChunks > 1 ) {
                      ptr = (unsigned char*) newNode + 
                         (remainingChunks-1) * PSON_ALLOCATION_UNIT; 
-                     *((ptrdiff_t *)ptr) = SET_OFFSET(newNode);
+                     *((ptrdiff_t *)ptr) = SET_OFFSET(g_pBaseAddr, newNode);
                   }
                }
 
                currentGroup->freeBytes -= requestedChunks*PSON_ALLOCATION_UNIT;
                /* Set the bitmap of chunks of the current block group. */
                psonSetBufferAllocated( &currentGroup->bitmap, 
-                                       SET_OFFSET(currentNode), 
+                                       SET_OFFSET(g_pBaseAddr, currentNode), 
                                        requestedChunks*PSON_ALLOCATION_UNIT,
                                        pContext );
                               
@@ -345,7 +345,7 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
    }
    if ( currentGroup != NULL ) {
       psonBlockGroupInit( currentGroup, 
-                          SET_OFFSET( currentGroup ), 
+                          SET_OFFSET(g_pBaseAddr,  currentGroup ), 
                           i, 
                           pMemObj->objType,
                           pContext );
@@ -391,14 +391,14 @@ unsigned char* psonMalloc( psonMemObject*      pMemObj,
             if ( remainingChunks > 1 ) {
                ptr = (unsigned char*) newNode + 
                   (remainingChunks-1) * PSON_ALLOCATION_UNIT; 
-               *((ptrdiff_t *)ptr) = SET_OFFSET(newNode);
+               *((ptrdiff_t *)ptr) = SET_OFFSET(g_pBaseAddr, newNode);
             }
          }
 
          currentGroup->freeBytes -= requestedChunks*PSON_ALLOCATION_UNIT;
          /* Set the bitmap */
          psonSetBufferAllocated( &currentGroup->bitmap, 
-                                 SET_OFFSET(currentNode), 
+                                 SET_OFFSET(g_pBaseAddr, currentNode), 
                                  requestedChunks*PSON_ALLOCATION_UNIT,
                                  pContext );
                               
@@ -457,8 +457,8 @@ void psonFree( psonMemObject*      pMemObj,
          (unsigned char*)dummy - offsetof(psonBlockGroup,node));
 
       offset = currentGroup->bitmap.baseAddressOffset;
-      if ( ptr >= GET_PTR_FAST( offset, unsigned char) && 
-           ptr < GET_PTR_FAST( offset+ (currentGroup->numBlocks << PSON_BLOCK_SHIFT), 
+      if ( ptr >= GET_PTR_FAST(g_pBaseAddr,  offset, unsigned char) && 
+           ptr < GET_PTR_FAST(g_pBaseAddr,  offset+ (currentGroup->numBlocks << PSON_BLOCK_SHIFT), 
                           unsigned char ) ) {
          goodGroup = currentGroup;
          break;
@@ -479,16 +479,16 @@ void psonFree( psonMemObject*      pMemObj,
     */
    p = ptr - PSON_ALLOCATION_UNIT;
    otherBufferisFree = psonIsBufferFree( &goodGroup->bitmap,
-                                         SET_OFFSET(p),
+                                         SET_OFFSET(g_pBaseAddr, p),
                                          pContext );
    if ( otherBufferisFree ) {
       /* Find the start of that free group of chunks */
       if ( psonIsBufferFree( &goodGroup->bitmap, 
-                             SET_OFFSET( ptr - 2*PSON_ALLOCATION_UNIT ),
+                             SET_OFFSET(g_pBaseAddr,  ptr - 2*PSON_ALLOCATION_UNIT ),
                              pContext ) ) {
          /* The free group has more than one chunk */
          offset = *((ptrdiff_t*)p);
-         GET_PTR( p, offset, unsigned char);
+         GET_PTR(g_pBaseAddr,  p, offset, unsigned char);
       }
       
       /*
@@ -519,7 +519,7 @@ void psonFree( psonMemObject*      pMemObj,
     */
    otherNode = (psonFreeBufferNode*)( ptr + numBytes);
    otherBufferisFree = psonIsBufferFree( &goodGroup->bitmap, 
-                                         SET_OFFSET(otherNode),
+                                         SET_OFFSET(g_pBaseAddr, otherNode),
                                          pContext );
    if ( otherBufferisFree ) {
       ((psonFreeBufferNode*)p)->numBuffers += otherNode->numBuffers;
@@ -549,7 +549,7 @@ void psonFree( psonMemObject*      pMemObj,
    }
    else {
       /* Set the bitmap */
-      psonSetBufferFree( &goodGroup->bitmap, SET_OFFSET(ptr),
+      psonSetBufferFree( &goodGroup->bitmap, SET_OFFSET(g_pBaseAddr, ptr),
                          numBytes,
                          pContext );
       /*
@@ -561,7 +561,7 @@ void psonFree( psonMemObject*      pMemObj,
          /* Warning - we reuse ptr here */
           ptr = p + 
              (((psonFreeBufferNode*)p)->numBuffers-1) * PSON_ALLOCATION_UNIT; 
-          *((ptrdiff_t *)ptr) = SET_OFFSET(p);
+          *((ptrdiff_t *)ptr) = SET_OFFSET(g_pBaseAddr, p);
       }
    }
    PSO_TRACE_EXIT_NUCLEUS( pContext, true );

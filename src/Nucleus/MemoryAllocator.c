@@ -204,7 +204,7 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
       return errcode;
    }
    
-   psonEndBlockSet( SET_OFFSET(pAlloc), 
+   psonEndBlockSet( SET_OFFSET(g_pBaseAddr, pAlloc), 
                     neededBlocks, 
                     false,   /* isInLimbo */
                     false,
@@ -235,7 +235,7 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
                       pContext );
    psonSetBufferAllocated( pBitmap, 0, 
       (neededBlocks+1) << PSON_BLOCK_SHIFT, pContext );
-   pAlloc->bitmapOffset = SET_OFFSET( pBitmap );
+   pAlloc->bitmapOffset = SET_OFFSET(g_pBaseAddr,  pBitmap );
    
    /* Initialize the linked list */
    psonLinkedListInit( &pAlloc->freeList, pContext );
@@ -246,7 +246,7 @@ psonMemAllocInit( psonMemAlloc       * pAlloc,
    psonLinkNodeInit( &pNode->node, pContext );
    psonLinkedListPutFirst( &pAlloc->freeList, &pNode->node, pContext );
    
-   psonEndBlockSet( SET_OFFSET(pNode), pNode->numBuffers, false, true, pContext );
+   psonEndBlockSet( SET_OFFSET(g_pBaseAddr, pNode), pNode->numBuffers, false, true, pContext );
    
    PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return PSO_OK;
@@ -392,7 +392,7 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
       return NULL;
    }
    
-   GET_PTR( pBitmap, pAlloc->bitmapOffset, psonMemBitmap );
+   GET_PTR(g_pBaseAddr,  pBitmap, pAlloc->bitmapOffset, psonMemBitmap );
    
    pNode = FindBuffer( pAlloc, requestedBlocks, pContext );
    if ( pNode != NULL ) {
@@ -412,11 +412,11 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
                                     pContext );
          
          /* Reset the psonEndBlock struct */
-         psonEndBlockSet( SET_OFFSET(pNewNode), 
+         psonEndBlockSet( SET_OFFSET(g_pBaseAddr, pNewNode), 
                           newNumBlocks, 
                           false,
                           psonMemAllocLastBlock( pAlloc,
-                                                 SET_OFFSET(pNewNode),
+                                                 SET_OFFSET(g_pBaseAddr, pNewNode),
                                                  newNumBlocks ),
                           pContext );
       }
@@ -425,11 +425,11 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
        */
       identifier = (psonMemObjIdent *) pNode;
       *identifier = PSON_IDENT_ALLOCATED;
-      psonEndBlockSet( SET_OFFSET(pNode), 
+      psonEndBlockSet( SET_OFFSET(g_pBaseAddr, pNode), 
                        requestedBlocks, 
                        false,
                        psonMemAllocLastBlock( pAlloc,
-                                              SET_OFFSET(pNode),
+                                              SET_OFFSET(g_pBaseAddr, pNode),
                                               requestedBlocks ),
                        pContext );
       
@@ -439,7 +439,7 @@ unsigned char * psonMallocBlocks( psonMemAlloc       * pAlloc,
       if ( allocType == PSON_ALLOC_API_OBJ ) pAlloc->numApiObjects++;
       
       /* Set the bitmap */
-      psonSetBufferAllocated( pBitmap, SET_OFFSET(pNode), 
+      psonSetBufferAllocated( pBitmap, SET_OFFSET(g_pBaseAddr, pNode), 
                               requestedBlocks << PSON_BLOCK_SHIFT,
                               pContext );
    }
@@ -498,7 +498,7 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
       return;
    }
 
-   GET_PTR( pBitmap, pAlloc->bitmapOffset, psonMemBitmap );
+   GET_PTR(g_pBaseAddr,  pBitmap, pAlloc->bitmapOffset, psonMemBitmap );
    newNode = (psonFreeBufferNode*)ptr;
    newNode->numBuffers = numBlocks;
 
@@ -523,7 +523,7 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
        */
       psocReadMemoryBarrier();
 
-      GET_PTR( previousNode, endBlock->firstBlockOffset, psonFreeBufferNode );
+      GET_PTR(g_pBaseAddr,  previousNode, endBlock->firstBlockOffset, psonFreeBufferNode );
       otherBufferisFree = psonIsBufferFree( pBitmap,
                                             endBlock->firstBlockOffset,
                                             pContext );
@@ -576,7 +576,7 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
       
    while ( ! endBlock->lastBlock ) {
       otherBufferisFree = psonIsBufferFree( pBitmap,
-                                            SET_OFFSET(otherNode),
+                                            SET_OFFSET(g_pBaseAddr, otherNode),
                                             pContext );
       if ( otherBufferisFree ) {
          newNode->numBuffers += otherNode->numBuffers;
@@ -625,15 +625,15 @@ void psonFreeBlocks( psonMemAlloc       * pAlloc,
 
    /* Set the bitmap */
    psonSetBufferFree( pBitmap,
-                      SET_OFFSET(newNode),
+                      SET_OFFSET(g_pBaseAddr, newNode),
                       newNode->numBuffers << PSON_BLOCK_SHIFT,
                       pContext );
 
-   psonEndBlockSet( SET_OFFSET(newNode), 
+   psonEndBlockSet( SET_OFFSET(g_pBaseAddr, newNode), 
                     newNode->numBuffers, 
                     false, /* limbo flag */
                     psonMemAllocLastBlock( pAlloc,
-                                           SET_OFFSET(newNode),
+                                           SET_OFFSET(g_pBaseAddr, newNode),
                                            newNode->numBuffers ),
                     pContext );
    
@@ -669,7 +669,7 @@ void psonMemAllocDump( psonMemAlloc       * pAlloc,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonMemAlloc (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pAlloc, SET_OFFSET(pAlloc) );
+      pAlloc, SET_OFFSET(g_pBaseAddr, pAlloc) );
    if ( pAlloc == NULL ) return;
 
    psonMemObjectDump( &pAlloc->memObj, indent + 2, pContext );

@@ -29,7 +29,7 @@ void psonMemBitmapDump( psonMemBitmap      * pBitmap,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonMemBitmap (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pBitmap, SET_OFFSET(pBitmap) );
+      pBitmap, SET_OFFSET(g_pBaseAddr, pBitmap) );
    if ( pBitmap == NULL ) return;
 
    DO_INDENT( pContext, indent + 2 );

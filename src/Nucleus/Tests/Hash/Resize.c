@@ -165,7 +165,7 @@ void test_pass( void ** state )
                         &bucket,
                         &context );
       assert_true( ok );
-      GET_PTR( pData, pItem->dataOffset, unsigned char );
+      GET_PTR(g_pBaseAddr,  pData, pItem->dataOffset, unsigned char );
       assert_true( memcmp( data, pData, strlen(data) ) == 0 );
       assert_true( pItem->dataLength == strlen(data) );
       

@@ -160,7 +160,7 @@ int psoDataDefCreate( PSO_HANDLE               sessionHandle,
    free( pMemDefinition );
    pDefinition->pSession = pSession;
    pDefinition->definitionType = PSOA_DEF_DATA;
-   GET_PTR( pMemDefinition, pDefinition->pHashItem->dataOffset, psonDataDefinition );
+   GET_PTR(g_pBaseAddr,  pMemDefinition, pDefinition->pHashItem->dataOffset, psonDataDefinition );
    pDefinition->pMemDefinition = pMemDefinition;
    
    *definitionHandle = (PSO_HANDLE) pDefinition;
@@ -350,7 +350,7 @@ int psoDataDefOpen( PSO_HANDLE   sessionHandle,
 
    pDefinition->pSession = pSession;
    pDefinition->definitionType = PSOA_DEF_DATA;
-   GET_PTR( pMemDefinition, pDefinition->pHashItem->dataOffset, psonDataDefinition );
+   GET_PTR(g_pBaseAddr,  pMemDefinition, pDefinition->pHashItem->dataOffset, psonDataDefinition );
    pDefinition->pMemDefinition = pMemDefinition;
 
    *definitionHandle = (PSO_HANDLE) pDefinition;

@@ -45,9 +45,9 @@ qsrCheckFolderContent( qsrVerifyStruct   * pVerify,
 
    found = psonHashTxGetFirst( &pFolder->hashObj, &offset, pContext );
    while ( found ) {
-      GET_PTR( pItem, offset, psonHashTxItem );
-      GET_PTR( pNode, pItem->dataOffset, psonTreeNode );
-      GET_PTR( pObject, pNode->offset, void );
+      GET_PTR(g_pBaseAddr,  pItem, offset, psonHashTxItem );
+      GET_PTR(g_pBaseAddr,  pNode, pItem->dataOffset, psonTreeNode );
+      GET_PTR(g_pBaseAddr,  pObject, pNode->offset, void );
       
       memset( message, 0, PSO_MAX_NAME_LENGTH*4+30 );
       strcpy( message, "Object name: " );
@@ -160,8 +160,8 @@ qsrVerifyFolder( qsrVerifyStruct    * pVerify,
 
    qsrPopulateBitmap( pVerify, &pFolder->memObject, pContext );
 
-   GET_PTR( pNode, pFolder->nodeOffset, psonTreeNode );
-   GET_PTR( txFolderStatus, pNode->txStatusOffset, psonTxStatus );
+   GET_PTR(g_pBaseAddr,  pNode, pFolder->nodeOffset, psonTreeNode );
+   GET_PTR(g_pBaseAddr,  txFolderStatus, pNode->txStatusOffset, psonTxStatus );
 
    if ( txFolderStatus->txOffset != PSON_NULL_OFFSET ) {
       /*
@@ -221,7 +221,7 @@ qsrVerifyFolder( qsrVerifyStruct    * pVerify,
    if ( bTestObject ) {
       rc2 = qsrVerifyHashTx( pVerify, 
                               &pFolder->hashObj, 
-                              SET_OFFSET(&pFolder->memObject),
+                              SET_OFFSET(g_pBaseAddr, &pFolder->memObject),
                               pContext );
       if ( rc2 > QSR_REC_START_ERRORS ) {
          pVerify->spaces -= 2;

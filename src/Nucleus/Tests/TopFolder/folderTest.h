@@ -102,16 +102,16 @@ psonFolder* initTopFolderTest( psonSessionContext* pContext )
    assert( errcode == PSO_OK );
 
    psonTxStatusInit( &objTxStatus, 
-                     SET_OFFSET(pContext->pTransaction),
+                     SET_OFFSET(g_pBaseAddr, pContext->pTransaction),
                      pContext );
    objTxStatus.status = PSON_TXS_ADDED;
 
-   psonTreeNodeInit( &topnode, SET_OFFSET( pFolder ), PSO_FOLDER,
-                     SET_OFFSET( &objTxStatus ), PSON_NULL_OFFSET, pContext );
-   pFolder->nodeOffset = SET_OFFSET( &topnode );
+   psonTreeNodeInit( &topnode, SET_OFFSET(g_pBaseAddr,  pFolder ), PSO_FOLDER,
+                     SET_OFFSET(g_pBaseAddr,  &objTxStatus ), PSON_NULL_OFFSET, pContext );
+   pFolder->nodeOffset = SET_OFFSET(g_pBaseAddr,  &topnode );
 
    errcode = psonHashTxInit( &pFolder->hashObj, 
-                             SET_OFFSET(&pFolder->memObject),
+                             SET_OFFSET(g_pBaseAddr, &pFolder->memObject),
                              25, 
                              pContext );
    assert( errcode == PSO_OK );

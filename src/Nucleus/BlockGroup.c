@@ -30,7 +30,7 @@ void psonBlockGroupDump( psonBlockGroup     * pGroup,
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, 
       "psonBlockGroup (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pGroup, SET_OFFSET(pGroup) );
+      pGroup, SET_OFFSET(g_pBaseAddr, pGroup) );
    if ( pGroup == NULL ) return;
 
    psonMemObjIdentifierDump( pGroup->objType, indent + 2, pContext );
@@ -124,8 +124,8 @@ void psonBlockGroupInit( psonBlockGroup     * pGroup,
                       pContext );
    
    /* Is the blockGroup struct at the beginning of the group ? */
-   groupOffset = SET_OFFSET(pGroup);
-   if ( SET_OFFSET(pGroup) == firstBlockOffset ) {
+   groupOffset = SET_OFFSET(g_pBaseAddr, pGroup);
+   if ( SET_OFFSET(g_pBaseAddr, pGroup) == firstBlockOffset ) {
       /* 
        * Yes, we are. This blockGroup is therefore NOT the blockGroup 
        * initially allocated when an object is first allocated.
@@ -160,7 +160,7 @@ void psonBlockGroupInit( psonBlockGroup     * pGroup,
     * So we have one free buffer, starting at offset "currentLength"
     * + firstBlockOffset with length "maxFreeBytes". Insert it in our freeList.
     */
-   GET_PTR( firstNode, firstBlockOffset+currentLength, psonFreeBufferNode );
+   GET_PTR(g_pBaseAddr,  firstNode, firstBlockOffset+currentLength, psonFreeBufferNode );
    psonLinkNodeInit( &firstNode->node, pContext );
    firstNode->numBuffers = pGroup->maxFreeBytes/PSON_ALLOCATION_UNIT;
 

@@ -53,14 +53,14 @@ bool psonSeqSetCopy( psonSeqSet         * pOldSet,
    }
 
 //   psonTreeNodeInit( &pNewSet->nodeObject,
-//                     SET_OFFSET(&pHashItem->txStatus),
+//                     SET_OFFSET(g_pBaseAddr, &pHashItem->txStatus),
 //                     pOldSet->nodeObject.myNameLength,
-//                     SET_OFFSET(origName),
+//                     SET_OFFSET(g_pBaseAddr, origName),
 //                     pOldSet->nodeObject.myParentOffset,
-//                     SET_OFFSET(pHashItem) );
+//                     SET_OFFSET(g_pBaseAddr, pHashItem) );
    
    errcode = psonHashInit( &pNewSet->hashObj,
-                           SET_OFFSET(&pNewSet->memObject),
+                           SET_OFFSET(g_pBaseAddr, &pNewSet->memObject),
                            pOldSet->hashObj.numberOfItems,
                            pContext );
    if ( errcode != PSO_OK ) {
@@ -82,8 +82,8 @@ bool psonSeqSetCopy( psonSeqSet         * pOldSet,
       return false;
    }
    pNewSet->latestVersion = pOldSet->latestVersion;
-   pOldSet->editVersion = SET_OFFSET( pHashItem );
-   pNewSet->editVersion = SET_OFFSET( pHashItem );
+   pOldSet->editVersion = SET_OFFSET(g_pBaseAddr,  pHashItem );
+   pNewSet->editVersion = SET_OFFSET(g_pBaseAddr,  pHashItem );
    
    PSO_TRACE_EXIT_NUCLEUS( pContext, true );
    return true;
@@ -136,7 +136,7 @@ void psonSeqSetDump( psonSeqSet * pSeqSet, int indent )
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonSeqSet (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pSeqSet, SET_OFFSET(pSeqSet) );
+      pSeqSet, SET_OFFSET(g_pBaseAddr, pSeqSet) );
    if ( pSeqSet == NULL ) return;
 
    psonMemObjectDump( &pSeqSet->memObject, indent + 2 );
@@ -243,7 +243,7 @@ bool psonSeqSetGet( psonSeqSet         * pSeqSet,
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR( txSeqSetStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR(g_pBaseAddr,  txSeqSetStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
    
    if ( txSeqSetStatus->status & PSON_TXS_DESTROYED || 
       txSeqSetStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
@@ -314,7 +314,7 @@ bool psonSeqSetGetFirst( psonSeqSet         * pSeqSet,
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR( txSeqSetStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR(g_pBaseAddr,  txSeqSetStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
 
    if ( txSeqSetStatus->status & PSON_TXS_DESTROYED || 
       txSeqSetStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
@@ -376,7 +376,7 @@ bool psonSeqSetGetNext( psonSeqSet         * pSeqSet,
    PSO_PRE_CONDITION( pItem->pHashItem  != NULL );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
-   GET_PTR( txSeqSetStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR(g_pBaseAddr,  txSeqSetStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
 
    if ( txSeqSetStatus->status & PSON_TXS_DESTROYED || 
       txSeqSetStatus->status & PSON_TXS_DESTROYED_COMMITTED ) {
@@ -473,14 +473,14 @@ bool psonSeqSetInit( psonSeqSet          * pSeqSet,
    }
 
 //   psonTreeNodeInit( &pSeqSet->nodeObject,
-//                     SET_OFFSET(pTxStatus),
+//                     SET_OFFSET(g_pBaseAddr, pTxStatus),
 //                     origNameLength,
-//                     SET_OFFSET(origName),
+//                     SET_OFFSET(g_pBaseAddr, origName),
 //                     parentOffset,
 //                     hashItemOffset );
 
    errcode = psonHashInit( &pSeqSet->hashObj, 
-                           SET_OFFSET(&pSeqSet->memObject),
+                           SET_OFFSET(g_pBaseAddr, &pSeqSet->memObject),
                            expectedNumOfItems, 
                            pContext );
    if ( errcode != PSO_OK ) {
@@ -491,8 +491,8 @@ bool psonSeqSetInit( psonSeqSet          * pSeqSet,
       return false;
    }
    
-   pSeqSet->dataDefOffset = SET_OFFSET(pDataDefinition);
-   pSeqSet->keyDefOffset  = SET_OFFSET(pKeyDefinition);
+   pSeqSet->dataDefOffset = SET_OFFSET(g_pBaseAddr, pDataDefinition);
+   pSeqSet->keyDefOffset  = SET_OFFSET(g_pBaseAddr, pKeyDefinition);
    pSeqSet->latestVersion = hashItemOffset;
    pSeqSet->editVersion   = PSON_NULL_OFFSET;
    pSeqSet->flags = pDefinition->flags;
@@ -539,7 +539,7 @@ bool psonSeqSetInsert( psonSeqSet         * pSeqSet,
       pHashItem->dataDefOffset = PSON_NULL_OFFSET;
    }
    else {
-      pHashItem->dataDefOffset = SET_OFFSET(pDefinition);
+      pHashItem->dataDefOffset = SET_OFFSET(g_pBaseAddr, pDefinition);
    }
       
    PSO_TRACE_EXIT_NUCLEUS( pContext, true );
@@ -560,7 +560,7 @@ void psonSeqSetRelease( psonSeqSet         * pSeqSet,
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR( txSeqSetStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR(g_pBaseAddr,  txSeqSetStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
 
    txSeqSetStatus->usageCounter--;
 
@@ -622,7 +622,7 @@ bool psonSeqSetReplace( psonSeqSet        * pSeqSet,
       pHashItem->dataDefOffset = PSON_NULL_OFFSET;
    }
    else {
-      pHashItem->dataDefOffset = SET_OFFSET(pDefinition);
+      pHashItem->dataDefOffset = SET_OFFSET(g_pBaseAddr, pDefinition);
    }
    
    PSO_TRACE_EXIT_NUCLEUS( pContext, true );
@@ -644,7 +644,7 @@ void psonSeqSetStatus( psonSeqSet  * pSeqSet,
    PSO_PRE_CONDITION( pSeqSet->memObject.objType == PSON_IDENT_MAP );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
-   GET_PTR( txStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
+   GET_PTR(g_pBaseAddr,  txStatus, pSeqSet->nodeObject.txStatusOffset, psonTxStatus );
 
    pStatus->status = txStatus->status;
    pStatus->numDataItem = pSeqSet->hashObj.numberOfItems;

@@ -84,7 +84,7 @@ void initHashCopyTest( psonHash          ** ppOldHash,
    assert( errcode == PSO_OK );
    
    errcode = psonHashInit( &pDummy1->hashObj, 
-                           SET_OFFSET(&pDummy1->memObject), 
+                           SET_OFFSET(g_pBaseAddr, &pDummy1->memObject), 
                            10,
                            pContext );
    assert( errcode == 0 );
@@ -101,14 +101,14 @@ void initHashCopyTest( psonHash          ** ppOldHash,
 
    if ( sameLength ) {
       errcode = psonHashInit( &pDummy2->hashObj, 
-                              SET_OFFSET(&pDummy2->memObject), 
+                              SET_OFFSET(g_pBaseAddr, &pDummy2->memObject), 
                               10,
                               pContext );
       assert( errcode == 0 );
    }
    else {
       errcode = psonHashInit( &pDummy2->hashObj, 
-                              SET_OFFSET(&pDummy2->memObject), 
+                              SET_OFFSET(g_pBaseAddr, &pDummy2->memObject), 
                               100,
                               pContext );
       assert( errcode == 0 );
@@ -240,7 +240,7 @@ void test_pass( void ** state )
                         &bucket,
                         &context );
    assert_true( found );
-   GET_PTR( pData, pNewItem->dataOffset, unsigned char );
+   GET_PTR(g_pBaseAddr,  pData, pNewItem->dataOffset, unsigned char );
    assert_false( pData == NULL );
    assert_true( pNewItem->dataLength == strlen(data2) );
    assert_true( memcmp( pData, data2, pNewItem->dataLength) == 0 );

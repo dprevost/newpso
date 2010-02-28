@@ -115,7 +115,7 @@ bool psonLock( psonMemObject      * pMemObj,
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
    if ( pContext->lockOffsets != NULL ) {
-      psonSessionAddLock( pContext, SET_OFFSET( pMemObj ) );
+      psonSessionAddLock( pContext, SET_OFFSET(g_pBaseAddr,  pMemObj ) );
    }
    
    ok = psocTryAcquireProcessLock ( &pMemObj->lock,
@@ -124,7 +124,7 @@ bool psonLock( psonMemObject      * pMemObj,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) {
       if ( pContext->lockOffsets != NULL ) {
-         psonSessionRemoveLock( pContext, SET_OFFSET( pMemObj ) );
+         psonSessionRemoveLock( pContext, SET_OFFSET(g_pBaseAddr,  pMemObj ) );
       }
    }
    
@@ -143,7 +143,7 @@ void psonLockNoFailure( psonMemObject      * pMemObj,
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    if ( pContext->lockOffsets != NULL ) {
-      psonSessionAddLock( pContext, SET_OFFSET( pMemObj ) );
+      psonSessionAddLock( pContext, SET_OFFSET(g_pBaseAddr,  pMemObj ) );
    }
    
    psocAcquireProcessLock ( &pMemObj->lock, pContext->pidLocker );
@@ -168,7 +168,7 @@ void psonUnlock( psonMemObject      * pMemObj,
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
    if ( pContext->lockOffsets != NULL ) {
-      psonSessionRemoveLock( pContext, SET_OFFSET( pMemObj ) );
+      psonSessionRemoveLock( pContext, SET_OFFSET(g_pBaseAddr,  pMemObj ) );
    }
    
    psocReleaseProcessLock ( &pMemObj->lock );

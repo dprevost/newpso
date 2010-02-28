@@ -34,9 +34,9 @@ void setup_test()
    pHashMap = initHashMapTest( &context );
    assert( pHashMap );
 
-   psonTxStatusInit( &status, SET_OFFSET( context.pTransaction ), &context );
-   psonTreeNodeInit( &mapNode, SET_OFFSET( pHashMap ), PSO_FAST_MAP,
-                     SET_OFFSET( &status ), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &status, SET_OFFSET(g_pBaseAddr,  context.pTransaction ), &context );
+   psonTreeNodeInit( &mapNode, SET_OFFSET(g_pBaseAddr,  pHashMap ), PSO_FAST_MAP,
+                     SET_OFFSET(g_pBaseAddr,  &status ), PSON_NULL_OFFSET, &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -58,7 +58,7 @@ void test_null_context( void ** state )
                                            1, 
                                            0, 
                                            &mapNode, 
-                                           SET_OFFSET(pHashMap),
+                                           SET_OFFSET(g_pBaseAddr, pHashMap),
                                            &def,
                                            &keyDef,
                                            NULL ) );
@@ -76,7 +76,7 @@ void test_null_definition( void ** state )
                                            1, 
                                            0, 
                                            &mapNode, 
-                                           SET_OFFSET(pHashMap),
+                                           SET_OFFSET(g_pBaseAddr, pHashMap),
                                            NULL,
                                            &keyDef,
                                            &context ) );
@@ -112,7 +112,7 @@ void test_null_keydef( void ** state )
                                            1, 
                                            0, 
                                            &mapNode, 
-                                           SET_OFFSET(pHashMap),
+                                           SET_OFFSET(g_pBaseAddr, pHashMap),
                                            &def,
                                            NULL,
                                            &context ) );
@@ -130,7 +130,7 @@ void test_null_map( void ** state )
                                            1, 
                                            0, 
                                            &mapNode, 
-                                           SET_OFFSET(pHashMap),
+                                           SET_OFFSET(g_pBaseAddr, pHashMap),
                                            &def,
                                            &keyDef,
                                            &context ) );
@@ -148,7 +148,7 @@ void test_null_parent( void ** state )
                                            1, 
                                            0, 
                                            &mapNode, 
-                                           SET_OFFSET(pHashMap),
+                                           SET_OFFSET(g_pBaseAddr, pHashMap),
                                            &def,
                                            &keyDef,
                                            &context ) );
@@ -166,7 +166,7 @@ void test_null_node( void ** state )
                                            1, 
                                            0, 
                                            NULL, 
-                                           SET_OFFSET(pHashMap),
+                                           SET_OFFSET(g_pBaseAddr, pHashMap),
                                            &def,
                                            &keyDef,
                                            &context ) );
@@ -184,7 +184,7 @@ void test_zero_blocks( void ** state )
                                            0, 
                                            0, 
                                            &mapNode, 
-                                           SET_OFFSET(pHashMap),
+                                           SET_OFFSET(g_pBaseAddr, pHashMap),
                                            &def,
                                            &keyDef,
                                            &context ) );
@@ -204,7 +204,7 @@ void test_pass( void ** state )
                          1, 
                          0, 
                          &mapNode, 
-                         SET_OFFSET(pHashMap),
+                         SET_OFFSET(g_pBaseAddr, pHashMap),
                          &def,
                          &keyDef,
                          &context );

@@ -41,7 +41,7 @@ void setup_test()
    pGroup = (psonBlockGroup*) (ptr + 100);
    
    psonBlockGroupInit( pGroup, 
-                      SET_OFFSET(ptr),
+                      SET_OFFSET(g_pBaseAddr, ptr),
                       10,
                       PSON_IDENT_QUEUE,
                       &context );   

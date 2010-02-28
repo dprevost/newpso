@@ -137,8 +137,8 @@ qsrVerifyQueue( qsrVerifyStruct   * pVerify,
     */
    qsrPopulateBitmap( pVerify, &pQueue->memObject, pContext );
 
-   GET_PTR( pNode, pQueue->nodeOffset, psonTreeNode );
-   GET_PTR( txQueueStatus, pNode->txStatusOffset, psonTxStatus );
+   GET_PTR(g_pBaseAddr,  pNode, pQueue->nodeOffset, psonTreeNode );
+   GET_PTR(g_pBaseAddr,  txQueueStatus, pNode->txStatusOffset, psonTxStatus );
 
    if ( txQueueStatus->txOffset != PSON_NULL_OFFSET ) {
       /*

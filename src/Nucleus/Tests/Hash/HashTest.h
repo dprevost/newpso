@@ -86,7 +86,7 @@ psonHash* initHashTest( psonSessionContext * pContext )
                                 2,
                                 pContext );
    assert( errcode == PSO_OK );
-   g_memObjOffset = SET_OFFSET(&pDummy->memObject);
+   g_memObjOffset = SET_OFFSET(g_pBaseAddr, &pDummy->memObject);
    
    /*
     * We do not initialize hash - otherwise we would not be able

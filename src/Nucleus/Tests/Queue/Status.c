@@ -36,9 +36,9 @@ void setup_test()
    
    pQueue = initQueueTest( &context );
 
-   psonTxStatusInit( &txStatus, SET_OFFSET(context.pTransaction), &context );
-   psonTreeNodeInit( &queueNode, SET_OFFSET( pQueue ), PSO_QUEUE,
-                     SET_OFFSET( &txStatus ), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &txStatus, SET_OFFSET(g_pBaseAddr, context.pTransaction), &context );
+   psonTreeNodeInit( &queueNode, SET_OFFSET(g_pBaseAddr,  pQueue ), PSO_QUEUE,
+                     SET_OFFSET(g_pBaseAddr,  &txStatus ), PSON_NULL_OFFSET, &context );
 
    ok = psonQueueInit( pQueue, 
                        0, 1, &queueNode,

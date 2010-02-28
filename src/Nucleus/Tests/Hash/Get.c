@@ -175,7 +175,7 @@ void test_pass( void ** state )
                         &bucket,
                         &context );
    assert_true( found );
-   GET_PTR( pData, pItem->dataOffset, unsigned char );
+   GET_PTR(g_pBaseAddr,  pData, pItem->dataOffset, unsigned char );
    assert_false( pData == NULL );
    assert_false( pItem->dataLength == 0 );
    assert_false( bucket == (size_t) -1 );

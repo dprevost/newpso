@@ -28,7 +28,7 @@
 #include <photon/psoPhotonODBC.h>
 
 #include <photon/Process.h>
-#include <photon/psm.h>
+#include <photon/ShMem.h>
 #include <photon/Session.h>
 #include <photon/DataDefinition.h>
 #include <photon/KeyDefinition.h>

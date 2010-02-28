@@ -123,7 +123,7 @@ int psoCreateFolder( PSO_HANDLE   sessionHandle,
    }
    
    if ( ! pSession->terminated ) {
-      GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
+      GET_PTR(g_pBaseAddr,  pTree, pSession->pHeader->treeMgrOffset, psonFolder )
       ok = psonTopFolderCreateFolder( pTree,
                                       objectName,
                                       nameLengthInBytes,
@@ -185,7 +185,7 @@ int psoCreateQueue( PSO_HANDLE            sessionHandle,
    }
    
    if ( ! pSession->terminated ) {
-      GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
+      GET_PTR(g_pBaseAddr,  pTree, pSession->pHeader->treeMgrOffset, psonFolder )
       ok = psonTopFolderCreateQueue( pTree,
                                      objectName,
                                      nameLengthInBytes,
@@ -256,7 +256,7 @@ int psoCreateMap( PSO_HANDLE            sessionHandle,
    }
    
    if ( ! pSession->terminated ) {
-      GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
+      GET_PTR(g_pBaseAddr,  pTree, pSession->pHeader->treeMgrOffset, psonFolder )
       ok = psonTopFolderCreateMap( pTree,
                                    objectName,
                                    nameLengthInBytes,
@@ -307,7 +307,7 @@ int psoDestroyObject( PSO_HANDLE   sessionHandle,
    }
    
    if ( ! pSession->terminated ) {
-      GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
+      GET_PTR(g_pBaseAddr,  pTree, pSession->pHeader->treeMgrOffset, psonFolder )
       ok = psonTopFolderDestroyObject( pTree,
                                        objectName,
                                        nameLengthInBytes,
@@ -485,7 +485,7 @@ int psoGetDefinition( PSO_HANDLE            sessionHandle,
       goto error_handler;
    }
 
-   GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
+   GET_PTR(g_pBaseAddr,  pTree, pSession->pHeader->treeMgrOffset, psonFolder )
    ok = psonTopFolderGetDef( pTree, 
                              objectName,
                              nameLengthInBytes,
@@ -564,7 +564,7 @@ int psoGetDefLength( PSO_HANDLE   sessionHandle,
    }
    *pLength = 0;
 
-   GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
+   GET_PTR(g_pBaseAddr,  pTree, pSession->pHeader->treeMgrOffset, psonFolder )
    ok = psonTopFolderGetDef( pTree, 
                              objectName,
                              nameLengthInBytes,
@@ -618,7 +618,7 @@ int psoGetInfo( PSO_HANDLE   sessionHandle,
    
    if ( ! pSession->terminated ) {
       pHead = g_processInstance->pHeader;
-      GET_PTR( pAlloc, pSession->pHeader->allocatorOffset, psonMemAlloc )
+      GET_PTR(g_pBaseAddr,  pAlloc, pSession->pHeader->allocatorOffset, psonMemAlloc )
       ok = psonMemAllocStats( pAlloc, pInfo, &pSession->context );
       PSO_POST_CONDITION( ok == true || ok == false );
       if ( ok ) {
@@ -693,7 +693,7 @@ int psoGetKeyDefinition( PSO_HANDLE         sessionHandle,
       goto error_handler;
    }
 
-   GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
+   GET_PTR(g_pBaseAddr,  pTree, pSession->pHeader->treeMgrOffset, psonFolder )
    ok = psonTopFolderGetDef( pTree, 
                              objectName,
                              nameLengthInBytes,
@@ -772,7 +772,7 @@ int psoGetKeyDefLength( PSO_HANDLE   sessionHandle,
    }
    *pLength = 0;
 
-   GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
+   GET_PTR(g_pBaseAddr,  pTree, pSession->pHeader->treeMgrOffset, psonFolder )
    ok = psonTopFolderGetDef( pTree, 
                              objectName,
                              nameLengthInBytes,
@@ -837,7 +837,7 @@ int psoGetStatus( PSO_HANDLE     sessionHandle,
    memset( pStatus, 0, sizeof(psoObjStatus) );
 
    if ( ! pSession->terminated ) {
-      GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
+      GET_PTR(g_pBaseAddr,  pTree, pSession->pHeader->treeMgrOffset, psonFolder )
       ok = psonTopFolderGetStatus( pTree, 
                                    objectName,
                                    nameLengthInBytes,
@@ -902,7 +902,7 @@ int psoInitSession( PSO_HANDLE psmHandle, PSO_HANDLE * sessionHandle )
       goto error_handler;
    }
 
-   GET_PTR( pSession->context.pAllocator, pSession->pHeader->allocatorOffset, void );
+   GET_PTR(g_pBaseAddr,  pSession->context.pAllocator, pSession->pHeader->allocatorOffset, void );
    
    psoaListReadersInit( &pSession->listReaders );
    pSession->terminated = false;
@@ -1152,7 +1152,7 @@ int psoaSessionGetDef( PSO_HANDLE             sessionHandle,
       goto error_handler;
    }
    
-   GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
+   GET_PTR(g_pBaseAddr,  pTree, pSession->pHeader->treeMgrOffset, psonFolder )
    ok = psonTopFolderGetDef( pTree, 
                              objectName,
                              nameLengthInBytes,
@@ -1219,7 +1219,7 @@ int psoaSessionGetKeyDef( PSO_HANDLE          sessionHandle,
       goto error_handler;
    }
    
-   GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder )
+   GET_PTR(g_pBaseAddr,  pTree, pSession->pHeader->treeMgrOffset, psonFolder )
    ok = psonTopFolderGetDef( pTree, 
                              objectName,
                              nameLengthInBytes,
@@ -1269,7 +1269,7 @@ int psoaSessionOpenObj( psoaSession             * pSession,
    PSO_PRE_CONDITION( nameLengthInBytes > 0 );
    
    if ( ! pSession->terminated ) {
-      GET_PTR( pTree, pSession->pHeader->treeMgrOffset, psonFolder );
+      GET_PTR(g_pBaseAddr,  pTree, pSession->pHeader->treeMgrOffset, psonFolder );
       if ( editMode == PSOA_UPDATE_RO ) {
          ok = psonTopFolderEditObject( pTree,
                                        objectName,
@@ -1289,7 +1289,7 @@ int psoaSessionOpenObj( psoaSession             * pSession,
          PSO_POST_CONDITION( ok == true || ok == false );
       }
       if ( ok ) {
-         GET_PTR( pNode, pObject->folderItem.pHashItem->dataOffset,
+         GET_PTR(g_pBaseAddr,  pNode, pObject->folderItem.pHashItem->dataOffset,
                           psonTreeNode );
 
          ok = psonSessionAddObj( pSession->pCleanup,

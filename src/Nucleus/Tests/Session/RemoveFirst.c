@@ -39,7 +39,7 @@ void setup_test()
    assert( ok );
 
    
-   objOffset = SET_OFFSET( pSession ); /* Dummy offset */
+   objOffset = SET_OFFSET(g_pBaseAddr,  pSession ); /* Dummy offset */
    
    ok = psonSessionAddObj( pSession,
                            objOffset, 

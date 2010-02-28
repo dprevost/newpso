@@ -131,7 +131,7 @@ int psoHashMapDefinition( PSO_HANDLE            objectHandle,
 
    pMemHashMap = (psonHashMap *) pHashMap->object.pMyMemObject;
 
-   GET_PTR( pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
+   GET_PTR(g_pBaseAddr,  pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
    myLength = offsetof(psoObjectDefinition, dataDef) + 
       pMyDefinition->dataDefLength;
    if ( myLength >= length ) {
@@ -185,7 +185,7 @@ int psoHashMapDefLength( PSO_HANDLE   objectHandle,
 
    pMemHashMap = (psonHashMap *) pHashMap->object.pMyMemObject;
 
-   GET_PTR( pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
+   GET_PTR(g_pBaseAddr,  pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
    *pLength = offsetof(psoObjectDefinition, dataDef) + pMyDefinition->dataDefLength;
    
    PSO_TRACE_EXIT_API( pContext, true );
@@ -325,7 +325,7 @@ int psoHashMapGet( PSO_HANDLE   objectHandle,
    if ( ! ok ) goto error_handler;
 
    *returnedLength = pHashMap->iterator.pHashItem->dataLength;
-   GET_PTR( ptr, pHashMap->iterator.pHashItem->dataOffset, void );
+   GET_PTR(g_pBaseAddr,  ptr, pHashMap->iterator.pHashItem->dataOffset, void );
    memcpy( buffer, ptr, *returnedLength );
 
    PSO_TRACE_EXIT_API( &pHashMap->object.pSession->context, true );
@@ -407,7 +407,7 @@ int psoHashMapGetFirst( PSO_HANDLE   objectHandle,
    if ( ! ok ) goto error_handler;
 
    *retDataLength = pHashMap->iterator.pHashItem->dataLength;
-   GET_PTR( ptr, pHashMap->iterator.pHashItem->dataOffset, void );
+   GET_PTR(g_pBaseAddr,  ptr, pHashMap->iterator.pHashItem->dataOffset, void );
    memcpy( buffer, ptr, *retDataLength );
    *retKeyLength = pHashMap->iterator.pHashItem->keyLength;
    memcpy( key, pHashMap->iterator.pHashItem->key, *retKeyLength );
@@ -485,7 +485,7 @@ int psoHashMapGetNext( PSO_HANDLE   objectHandle,
    if ( ! ok ) goto error_handler;
    
    *retDataLength = pHashMap->iterator.pHashItem->dataLength;
-   GET_PTR( ptr, pHashMap->iterator.pHashItem->dataOffset, void );
+   GET_PTR(g_pBaseAddr,  ptr, pHashMap->iterator.pHashItem->dataOffset, void );
    memcpy( buffer, ptr, *retDataLength );
    *retKeyLength = pHashMap->iterator.pHashItem->keyLength;
    memcpy( key, pHashMap->iterator.pHashItem->key, *retKeyLength );
@@ -613,7 +613,7 @@ int psoHashMapKeyDefinition( PSO_HANDLE         objectHandle,
 
    pMemHashMap = (psonHashMap *) pHashMap->object.pMyMemObject;
 
-   GET_PTR( pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
+   GET_PTR(g_pBaseAddr,  pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
    myLength = offsetof(psoKeyDefinition, definition) + 
       pMyDefinition->definitionLength;
    if ( myLength >= length ) {
@@ -667,7 +667,7 @@ int psoHashMapKeyDefLength( PSO_HANDLE   objectHandle,
 
    pMemHashMap = (psonHashMap *) pHashMap->object.pMyMemObject;
 
-   GET_PTR( pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
+   GET_PTR(g_pBaseAddr,  pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
    *pLength = offsetof(psoKeyDefinition, definition) + 
       pMyDefinition->definitionLength;
    
@@ -927,7 +927,7 @@ int psoaHashMapFirst( psoaHashMap    * pHashMap,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 
-   GET_PTR( *pData, pHashMap->iterator.pHashItem->dataOffset, void );
+   GET_PTR(g_pBaseAddr,  *pData, pHashMap->iterator.pHashItem->dataOffset, void );
    *pDataLength = pHashMap->iterator.pHashItem->dataLength;
    *pKeyLength = pHashMap->iterator.pHashItem->keyLength;
    *pKey = pHashMap->iterator.pHashItem->key;
@@ -977,7 +977,7 @@ int psoaHashMapGetDef( PSO_HANDLE             objectHandle,
    
    pMemHashMap = (psonHashMap *) pHashMap->object.pMyMemObject;
 
-   GET_PTR( pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
+   GET_PTR(g_pBaseAddr,  pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
 
    *ppDefinition = pMyDefinition;
    
@@ -1021,7 +1021,7 @@ int psoaHashMapGetKeyDef( PSO_HANDLE          objectHandle,
    
    pMemHashMap = (psonHashMap *) pHashMap->object.pMyMemObject;
 
-   GET_PTR( pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
+   GET_PTR(g_pBaseAddr,  pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
 
    *ppDefinition = pMyDefinition;
 
@@ -1074,7 +1074,7 @@ int psoaHashMapNext( psoaHashMap    * pHashMap,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
    
-   GET_PTR( *pData, pHashMap->iterator.pHashItem->dataOffset, void );
+   GET_PTR(g_pBaseAddr,  *pData, pHashMap->iterator.pHashItem->dataOffset, void );
    *pDataLength = pHashMap->iterator.pHashItem->dataLength;
    *pKeyLength = pHashMap->iterator.pHashItem->keyLength;
    *pKey = pHashMap->iterator.pHashItem->key;
@@ -1145,7 +1145,7 @@ int psoaHashMapRetrieve( psoaHashMap    * pHashMap,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 
-   GET_PTR( *pData, pHashItem->dataOffset, void );
+   GET_PTR(g_pBaseAddr,  *pData, pHashItem->dataOffset, void );
    *pLength = pHashItem->dataLength;
 
    PSO_TRACE_EXIT_API( &pHashMap->object.pSession->context, true );

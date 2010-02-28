@@ -136,7 +136,7 @@ void psonEndBlockSet( ptrdiff_t            firstBlockOffset,
    psonEndBlockGroup* endBlock;
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
-   GET_PTR( endBlock, 
+   GET_PTR(g_pBaseAddr,  endBlock, 
             firstBlockOffset + (numBlocks <<  PSON_BLOCK_SHIFT) -
                PSON_ALLOCATION_UNIT,
             psonEndBlockGroup );

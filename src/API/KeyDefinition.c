@@ -161,7 +161,7 @@ int psoKeyDefCreate( PSO_HANDLE               sessionHandle,
    free( pMemDefinition );
    pDefinition->pSession = pSession;
    pDefinition->definitionType = PSOA_DEF_KEY;
-   GET_PTR( pMemDefinition, pDefinition->pHashItem->dataOffset, psonKeyDefinition );
+   GET_PTR(g_pBaseAddr,  pMemDefinition, pDefinition->pHashItem->dataOffset, psonKeyDefinition );
    pDefinition->pMemDefinition = pMemDefinition;
    
    *definitionHandle = (PSO_HANDLE) pDefinition;
@@ -351,7 +351,7 @@ int psoKeyDefOpen( PSO_HANDLE   sessionHandle,
 
    pDefinition->pSession = pSession;
    pDefinition->definitionType = PSOA_DEF_KEY;
-   GET_PTR( pMemDefinition, pDefinition->pHashItem->dataOffset, psonKeyDefinition );
+   GET_PTR(g_pBaseAddr,  pMemDefinition, pDefinition->pHashItem->dataOffset, psonKeyDefinition );
    pDefinition->pMemDefinition = pMemDefinition;
    
    *definitionHandle = (PSO_HANDLE) pDefinition;

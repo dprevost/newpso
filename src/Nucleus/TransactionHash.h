@@ -62,7 +62,7 @@ void txHashEmpty( psonTx * pTx )
 {
    psonMemObject ** pArray;
    
-   GET_PTR( pArray, pTx->listOfLocks.arrayOffset, psonMemObject * );
+   GET_PTR(g_pBaseAddr,  pArray, pTx->listOfLocks.arrayOffset, psonMemObject * );
 
    memset( pArray, 0, 
       sizeof(void *) * g_psonArrayLengths[pTx->listOfLocks.lengthIndex] );
@@ -80,7 +80,7 @@ bool txHashGetFirst( psonTx         * pTx,
    psonMemObject ** pArray;
    size_t i;
 
-   GET_PTR( pArray, pTx->listOfLocks.arrayOffset, psonMemObject * );
+   GET_PTR(g_pBaseAddr,  pArray, pTx->listOfLocks.arrayOffset, psonMemObject * );
 
    if ( pTx->listOfLocks.numberOfItems == 0 ) return false;
 
@@ -107,7 +107,7 @@ bool txHashGetNext( psonTx         * pTx,
    psonMemObject ** pArray;
    size_t i;
 
-   GET_PTR( pArray, pTx->listOfLocks.arrayOffset, psonMemObject * );
+   GET_PTR(g_pBaseAddr,  pArray, pTx->listOfLocks.arrayOffset, psonMemObject * );
 
    for ( i = oldRowNumber+1; i < g_psonArrayLengths[pTx->listOfLocks.lengthIndex]; ++i ) {
       if ( pArray[i] != NULL ) {
@@ -156,7 +156,7 @@ bool txHashInit( psonTx             * pTx,
 
    memset( pArray, 0, length );
       
-   pTx->listOfLocks.arrayOffset = SET_OFFSET(pArray);
+   pTx->listOfLocks.arrayOffset = SET_OFFSET(g_pBaseAddr, pArray);
    pTx->listOfLocks.numberOfItems = 0;
 
    return true;
@@ -180,7 +180,7 @@ bool txHashInsert( psonTx             * pTx,
       if ( !ok ) return ok;
    }
 
-   GET_PTR( pArray, pTx->listOfLocks.arrayOffset, psonMemObject * );
+   GET_PTR(g_pBaseAddr,  pArray, pTx->listOfLocks.arrayOffset, psonMemObject * );
    
    keyFound = txHashFindKey( pTx, pArray, &key, &rowNumber );
 
@@ -266,7 +266,7 @@ bool txHashDelete( psonTx        * pTx,
    psonMemObject ** pArray;
    bool keyFound = false;
    
-   GET_PTR( pArray, pTx->listOfLocks.arrayOffset, psonMemObject * );
+   GET_PTR(g_pBaseAddr,  pArray, pTx->listOfLocks.arrayOffset, psonMemObject * );
    
    keyFound = txHashFindKey( pTx, pArray, &key, &rowNumber );
 
@@ -371,7 +371,7 @@ bool txHashResize( psonTx             * pTx,
    psonMemObject ** pArray, **ptr;
    size_t newSize;
    
-   GET_PTR( pArray, pTx->listOfLocks.arrayOffset, psonMemObject * );
+   GET_PTR(g_pBaseAddr,  pArray, pTx->listOfLocks.arrayOffset, psonMemObject * );
 
    newSize = g_psonArrayLengths[pTx->listOfLocks.lengthIndex+1];
 
@@ -399,7 +399,7 @@ bool txHashResize( psonTx             * pTx,
    len = g_psonArrayLengths[pTx->listOfLocks.lengthIndex];
    
    pTx->listOfLocks.lengthIndex++;
-   pTx->listOfLocks.arrayOffset = SET_OFFSET( ptr );
+   pTx->listOfLocks.arrayOffset = SET_OFFSET(g_pBaseAddr,  ptr );
 
    psonFree( &pTx->memObject, (unsigned char *)pArray, len, pContext );
 

@@ -37,9 +37,9 @@ void setup_test()
 
    pFolder = initFolderTest( &context );
 
-   psonTxStatusInit( &status, SET_OFFSET(context.pTransaction), &context );
-   psonTreeNodeInit( &node, SET_OFFSET(pFolder), PSO_FOLDER,
-                     SET_OFFSET(&status), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &status, SET_OFFSET(g_pBaseAddr, context.pTransaction), &context );
+   psonTreeNodeInit( &node, SET_OFFSET(g_pBaseAddr, pFolder), PSO_FOLDER,
+                     SET_OFFSET(g_pBaseAddr, &status), PSON_NULL_OFFSET, &context );
    
    ok = psonFolderInit( pFolder, 0, 1, 0, &node, &context );
    assert( ok );
@@ -174,8 +174,8 @@ void test_pass( void ** state )
                               &folderItem,
                               &context );
    assert_true( ok );
-   GET_PTR( pMapNode, folderItem.pHashItem->dataOffset, psonTreeNode );
-   GET_PTR( txItemStatus, pMapNode->txStatusOffset, psonTxStatus );
+   GET_PTR(g_pBaseAddr,  pMapNode, folderItem.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR(g_pBaseAddr,  txItemStatus, pMapNode->txStatusOffset, psonTxStatus );
    assert_true( txItemStatus->parentCounter == 1 );
    assert_true( status.usageCounter == 1 );
    
@@ -205,8 +205,8 @@ void test_pass( void ** state )
                               &folderItem,
                               &context );
    assert_true( ok );
-   GET_PTR( pMapNode, folderItem.pHashItem->dataOffset, psonTreeNode );
-   GET_PTR( txItemStatus, pMapNode->txStatusOffset, psonTxStatus );
+   GET_PTR(g_pBaseAddr,  pMapNode, folderItem.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR(g_pBaseAddr,  txItemStatus, pMapNode->txStatusOffset, psonTxStatus );
    assert_true( txItemStatus->parentCounter == 1 );
    assert_true( status.usageCounter == 2 );
    assert_true( node.txCounter == 4 );

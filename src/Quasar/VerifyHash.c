@@ -78,7 +78,7 @@ qsrVerifyHash( qsrVerifyStruct    * pVerify,
          "Hash::arrayOffset is invalid - aborting the hash verification" );
       return QSR_REC_UNRECOVERABLE_ERROR;
    }
-   GET_PTR( pArray, pHash->arrayOffset, ptrdiff_t );
+   GET_PTR(g_pBaseAddr,  pArray, pHash->arrayOffset, ptrdiff_t );
 
    if ( pHash->lengthIndex >= PSON_PRIME_NUMBER_ARRAY_LENGTH ) {
       qsrEcho( pVerify, 
@@ -102,14 +102,14 @@ qsrVerifyHash( qsrVerifyStruct    * pVerify,
                   pArray[i] = PSON_NULL_OFFSET;
                }
                else {
-                  GET_PTR( previousItem, previousOffset, psonHashItem );
+                  GET_PTR(g_pBaseAddr,  previousItem, previousOffset, psonHashItem );
                   previousItem->nextItem = PSON_NULL_OFFSET;
                }
             }
             break; /* of the while loop */
          }
 
-         GET_PTR( pItem, currentOffset, psonHashItem );
+         GET_PTR(g_pBaseAddr,  pItem, currentOffset, psonHashItem );
          nextOffset = pItem->nextItem;
          
          if ( pItem->keyLength == 0 ) {
@@ -153,7 +153,7 @@ qsrVerifyHash( qsrVerifyStruct    * pVerify,
                pArray[i] = nextOffset;
             }
             else {
-               GET_PTR(previousItem, previousOffset, psonHashItem );
+               GET_PTR(g_pBaseAddr, previousItem, previousOffset, psonHashItem );
                previousItem->nextItem = nextOffset;
             }
             
@@ -195,7 +195,7 @@ qsrVerifyHash( qsrVerifyStruct    * pVerify,
       currentOffset = pArray[i];
       
       while ( currentOffset != PSON_NULL_OFFSET ) {
-         GET_PTR( pItem, currentOffset, psonHashItem );
+         GET_PTR(g_pBaseAddr,  pItem, currentOffset, psonHashItem );
          nextOffset = pItem->nextItem;
          
          bucket = fnv_buf( (void *)pItem->key, pItem->keyLength, FNV1_INIT) %
@@ -211,7 +211,7 @@ qsrVerifyHash( qsrVerifyStruct    * pVerify,
                else {
                   tmpOffset = pArray[bucket];
                   do {
-                     GET_PTR( pItem, tmpOffset, psonHashItem );
+                     GET_PTR(g_pBaseAddr,  pItem, tmpOffset, psonHashItem );
                      tmpOffset = pItem->nextItem;
                   } while ( tmpOffset != PSON_NULL_OFFSET );
                   pItem->nextItem = currentOffset;
@@ -232,7 +232,7 @@ qsrVerifyHash( qsrVerifyStruct    * pVerify,
       currentOffset = pArray[i];
       
       while ( currentOffset != PSON_NULL_OFFSET ) {
-         GET_PTR( pItem, currentOffset, psonHashItem );
+         GET_PTR(g_pBaseAddr,  pItem, currentOffset, psonHashItem );
          nextOffset = pItem->nextItem;
          
          bucket = fnv_buf( (void *)pItem->key, pItem->keyLength, FNV1_INIT) %
@@ -247,7 +247,7 @@ qsrVerifyHash( qsrVerifyStruct    * pVerify,
                else {
                   tmpOffset = pArray[bucket];
                   do {
-                     GET_PTR( pItem, tmpOffset, psonHashItem );
+                     GET_PTR(g_pBaseAddr,  pItem, tmpOffset, psonHashItem );
                      tmpOffset = pItem->nextItem;
                   } while ( tmpOffset != PSON_NULL_OFFSET );
                   pItem->nextItem = currentOffset;

@@ -35,7 +35,7 @@ void setup_test()
    
    pSession = initSessionTest( &context );
 
-   objOffset = SET_OFFSET( pSession ); /* Dummy offset */
+   objOffset = SET_OFFSET(g_pBaseAddr,  pSession ); /* Dummy offset */
 
    ok = psonSessionInit( pSession, pApiSession, &context );
    assert( ok );

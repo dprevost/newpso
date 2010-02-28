@@ -38,7 +38,7 @@ void setup_test()
    pBitmap = (psonMemBitmap*) ptr;
    
    psonMemBitmapInit( pBitmap, 
-                      SET_OFFSET(ptr),
+                      SET_OFFSET(g_pBaseAddr, ptr),
                       10*PSON_BLOCK_SIZE,
                       8,
                       &context );

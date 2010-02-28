@@ -32,7 +32,7 @@ void psonDataDefinitionDump( psonDataDefinition * pDataDefinition,
 
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonDataDefinition (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pDataDefinition, SET_OFFSET(pDataDefinition) );
+      pDataDefinition, SET_OFFSET(g_pBaseAddr, pDataDefinition) );
    if ( pDataDefinition == NULL ) return;
 
    switch( pDataDefinition->type ) {
@@ -102,7 +102,7 @@ void psonKeyDefinitionDump( psonKeyDefinition  * pKeyDefinition,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonKeyDefinition (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pKeyDefinition, SET_OFFSET(pKeyDefinition) );
+      pKeyDefinition, SET_OFFSET(g_pBaseAddr, pKeyDefinition) );
    if ( pKeyDefinition == NULL ) return;
 
    DO_INDENT( pContext, indent );

@@ -39,9 +39,9 @@ void setup_test()
 
    pHashMap = initHashMapTest( &context );
 
-   psonTxStatusInit( &status, SET_OFFSET(context.pTransaction), &context );
-   psonTreeNodeInit( &mapNode, SET_OFFSET( pHashMap ), PSO_HASH_MAP,
-                     SET_OFFSET(&status), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &status, SET_OFFSET(g_pBaseAddr, context.pTransaction), &context );
+   psonTreeNodeInit( &mapNode, SET_OFFSET(g_pBaseAddr,  pHashMap ), PSO_HASH_MAP,
+                     SET_OFFSET(g_pBaseAddr, &status), PSON_NULL_OFFSET, &context );
    
    ok = psonHashMapInit( pHashMap, 0, 1, 0, &mapNode,
                          &def, &keyDef,
@@ -161,7 +161,7 @@ void test_pass( void ** state )
                              20,
                              &context );
    assert_true( ok );
-   GET_PTR( ptr, item.pHashItem->dataOffset, char );
+   GET_PTR(g_pBaseAddr,  ptr, item.pHashItem->dataOffset, char );
    assert_true( memcmp( data, ptr, 7 ) == 0 );
    
 #endif
