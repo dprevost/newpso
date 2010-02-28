@@ -117,8 +117,8 @@ int psoaProcessInit( psoaProcess * process,
                              &context );
    if ( errcode != PSO_OK ) goto the_exit;
 
-   GET_PTR(g_pBaseAddr,  context.pAllocator, process->pHeader->allocatorOffset, void );
-   GET_PTR(g_pBaseAddr,  pCleanupManager, process->pHeader->processMgrOffset, psonProcMgr );
+   GET_PTR( context.pBaseAddress, context.pAllocator, process->pHeader->allocatorOffset, void );
+   GET_PTR( context.pBaseAddress, pCleanupManager, process->pHeader->processMgrOffset, psonProcMgr );
 
    ok = psonProcMgrAddProcess( pCleanupManager,
                                getpid(), 
@@ -168,12 +168,14 @@ void psoaProcessFini()
    
    memset( &context, 0, sizeof(psonSessionContext) );
    context.pidLocker = getpid();
-   GET_PTR(g_pBaseAddr,  context.pAllocator, process->pHeader->allocatorOffset, void );
+   context.pBaseAddress = (unsigned char *)process->pHeader;
+   
+   GET_PTR( context.pBaseAddress, context.pAllocator, process->pHeader->allocatorOffset, void );
    psocInitErrorHandler( &context.errorHandler );
 
    psocAcquireThreadLock( &g_ProcessMutex );
    
-   GET_PTR(g_pBaseAddr,  processManager, process->pHeader->processMgrOffset, psonProcMgr );
+   GET_PTR( context.pBaseAddress, processManager, process->pHeader->processMgrOffset, psonProcMgr );
 
    psonProcessNoMoreSessionAllowed( process->pCleanup,
                                     &context );
@@ -263,7 +265,8 @@ int psoaOpenMemory( psoaProcess        * process,
    }
    
    g_pBaseAddr = (unsigned char * ) ptr;
-   process->pHeader = (psonMemoryHeader*) g_pBaseAddr;
+   process->pHeader = (psonMemoryHeader*) ptr;
+   pContext->pBaseAddress = (unsigned char * ) ptr;
 
    if ( process->pHeader->version != PSON_MEMORY_VERSION ) {
       process->pHeader = NULL;

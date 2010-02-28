@@ -51,9 +51,9 @@ int psoaCommonObjOpen( psoaCommonObject   * pObject,
                                  nameLengthInBytes,
                                  pObject );
    if ( errcode == 0 ) {
-      GET_PTR(g_pBaseAddr,  pNode, pObject->folderItem.pHashItem->dataOffset,
+      GET_PTR(pObject->pSession->context.pBaseAddress,  pNode, pObject->folderItem.pHashItem->dataOffset,
                        psonTreeNode );
-      GET_PTR(g_pBaseAddr,  pObject->pMyMemObject, pNode->offset, void );
+      GET_PTR(pObject->pSession->context.pBaseAddress,  pObject->pMyMemObject, pNode->offset, void );
    }
    
    return errcode;

@@ -594,7 +594,7 @@ int psoFolderGetFirst( PSO_HANDLE       objectHandle,
    if ( ! ok ) goto error_handler;
 
    memset( pEntry, 0, sizeof( psoFolderEntry ) );
-   GET_PTR(g_pBaseAddr,  pNode, pFolder->iterator.pHashItem->dataOffset, 
+   GET_PTR( pFolder->object.pSession->context.pBaseAddress, pNode, pFolder->iterator.pHashItem->dataOffset, 
                          psonTreeNode );
    pEntry->type = pNode->apiType;
    pEntry->status = pFolder->iterator.status;
@@ -837,7 +837,7 @@ int psoFolderGetNext( PSO_HANDLE       objectHandle,
    if ( ! ok ) goto error_handler;
    
    memset( pEntry, 0, sizeof( psoFolderEntry ) );
-   GET_PTR(g_pBaseAddr,  pNode, pFolder->iterator.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR( pFolder->object.pSession->context.pBaseAddress, pNode, pFolder->iterator.pHashItem->dataOffset, psonTreeNode );
    pEntry->type = pNode->apiType;
    pEntry->status = pFolder->iterator.status;
    pEntry->nameLengthInBytes = pFolder->iterator.pHashItem->keyLength;

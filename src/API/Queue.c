@@ -115,7 +115,7 @@ int psoQueueDefinition( PSO_HANDLE            queueHandle,
    if ( ! pQueue->object.pSession->terminated ) {
       pMemQueue = (psonQueue *) pQueue->object.pMyMemObject;
 
-      GET_PTR(g_pBaseAddr,  pMyDefinition, pMemQueue->dataDefOffset, psoObjectDefinition );
+      GET_PTR( pQueue->object.pSession->context.pBaseAddress, pMyDefinition, pMemQueue->dataDefOffset, psoObjectDefinition );
       myLength = offsetof(psoObjectDefinition, dataDef) + 
          pMyDefinition->dataDefLength;
       if ( myLength >= length ) {
@@ -166,7 +166,7 @@ int psoQueueDefLength( PSO_HANDLE   queueHandle,
    if ( ! pQueue->object.pSession->terminated ) {
       pMemQueue = (psonQueue *) pQueue->object.pMyMemObject;
 
-      GET_PTR(g_pBaseAddr,  pMyDefinition, pMemQueue->dataDefOffset, psoObjectDefinition );
+      GET_PTR( pQueue->object.pSession->context.pBaseAddress, pMyDefinition, pMemQueue->dataDefOffset, psoObjectDefinition );
       *pLength = offsetof(psoObjectDefinition, dataDef) + 
          pMyDefinition->dataDefLength;
    }
@@ -768,7 +768,7 @@ int psoaQueueGetDef( PSO_HANDLE             queueHandle,
    if ( ! pQueue->object.pSession->terminated ) {
       pMemQueue = (psonQueue *) pQueue->object.pMyMemObject;
 
-      GET_PTR(g_pBaseAddr,  pMyDefinition, pMemQueue->dataDefOffset, psoObjectDefinition );
+      GET_PTR( pQueue->object.pSession->context.pBaseAddress, pMyDefinition, pMemQueue->dataDefOffset, psoObjectDefinition );
       
       *ppDefinition = pMyDefinition;
    }

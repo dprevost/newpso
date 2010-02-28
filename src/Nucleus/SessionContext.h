@@ -58,9 +58,9 @@ struct psonSessionContext
    /** Offset to the currently locked object, if any.*/
    ptrdiff_t lockObject;
 
-   void* pTransaction;
+   void * pTransaction;
 
-   void* pSession;
+   void * pSession;
 
    ptrdiff_t * lockOffsets;
    int       * numLocks;
@@ -69,7 +69,12 @@ struct psonSessionContext
     * For requesting/freeing memory pages from the global allocator (used
     * by the allocator of the MemObject).
     */
-   void *pAllocator;
+   void * pAllocator;
+   
+   /** 
+    * Base address of the shared memory as seen from the process
+    */
+   unsigned char * pBaseAddress;
    
    int traceFlags;
    
@@ -93,6 +98,7 @@ void psonInitSessionContext( psonSessionContext * pContext )
    pContext->lockObject   = PSON_NULL_OFFSET;
    pContext->pTransaction = NULL;
    pContext->pAllocator   = NULL;
+   pContext->pBaseAddress = NULL;
    pContext->traceFlags   = 0;
    pContext->indent       = 0;
    pContext->tracefp      = stderr;

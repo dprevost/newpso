@@ -110,7 +110,8 @@ void qsrValidate( psonMemoryHeader   * pMemoryAddress,
    context.pAllocator = (void *) memAllocator;
    context.lockOffsets = lockOffsets;
    context.numLocks = &numLocks;
-   
+   context.pBaseAddress = g_pBaseAddr;
+
    valid = qsrVerifyFolder( &verifyStruct, topFolder, &context );
    switch ( valid ) {
    case QSR_REC_OK:

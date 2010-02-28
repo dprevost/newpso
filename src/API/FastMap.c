@@ -134,7 +134,7 @@ int psoFastMapDefinition( PSO_HANDLE            objectHandle,
 
    pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
 
-   GET_PTR(g_pBaseAddr,  pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
+   GET_PTR(pContext->pBaseAddress,  pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
    myLength = offsetof(psoObjectDefinition, dataDef) + 
       pMyDefinition->dataDefLength;
    if ( myLength >= length ) {
@@ -192,7 +192,7 @@ int psoFastMapDefLength( PSO_HANDLE   objectHandle,
    
    pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
 
-   GET_PTR(g_pBaseAddr,  pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
+   GET_PTR(pContext->pBaseAddress,  pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
    *pLength = offsetof(psoObjectDefinition, dataDef) + pMyDefinition->dataDefLength;
 
    PSO_TRACE_EXIT_API( pContext, true );
@@ -457,7 +457,7 @@ int psoFastMapGet( PSO_HANDLE   objectHandle,
    if ( ! ok ) goto error_handler;
 
    *returnedLength = pHashMap->iterator.pHashItem->dataLength;
-   GET_PTR(g_pBaseAddr,  ptr, pHashMap->iterator.pHashItem->dataOffset, void );
+   GET_PTR( pHashMap->object.pSession->context.pBaseAddress,  ptr, pHashMap->iterator.pHashItem->dataOffset, void );
    memcpy( buffer, ptr, *returnedLength );
 
    PSO_TRACE_EXIT_API( &pHashMap->object.pSession->context, true );
@@ -536,7 +536,7 @@ int psoFastMapGetFirst( PSO_HANDLE   objectHandle,
    if ( ! ok ) goto error_handler;
 
    *retDataLength = pHashMap->iterator.pHashItem->dataLength;
-   GET_PTR(g_pBaseAddr,  ptr, pHashMap->iterator.pHashItem->dataOffset, void );
+   GET_PTR( pHashMap->object.pSession->context.pBaseAddress,  ptr, pHashMap->iterator.pHashItem->dataOffset, void );
    memcpy( buffer, ptr, *retDataLength );
    *retKeyLength = pHashMap->iterator.pHashItem->keyLength;
    memcpy( key, pHashMap->iterator.pHashItem->key, *retKeyLength );
@@ -614,7 +614,7 @@ int psoFastMapGetNext( PSO_HANDLE   objectHandle,
    if ( ! ok ) goto error_handler;
    
    *retDataLength = pHashMap->iterator.pHashItem->dataLength;
-   GET_PTR(g_pBaseAddr,  ptr, pHashMap->iterator.pHashItem->dataOffset, void );
+   GET_PTR( pHashMap->object.pSession->context.pBaseAddress,  ptr, pHashMap->iterator.pHashItem->dataOffset, void );
    memcpy( buffer, ptr, *retDataLength );
    *retKeyLength = pHashMap->iterator.pHashItem->keyLength;
    memcpy( key, pHashMap->iterator.pHashItem->key, *retKeyLength );
@@ -738,7 +738,7 @@ int psoFastMapKeyDefinition( PSO_HANDLE         objectHandle,
 
    pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
 
-   GET_PTR(g_pBaseAddr,  pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
+   GET_PTR(pContext->pBaseAddress,  pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
    myLength = offsetof(psoKeyDefinition, definition) + 
       pMyDefinition->definitionLength;
    if ( myLength >= length ) {
@@ -792,7 +792,7 @@ int psoFastMapKeyDefLength( PSO_HANDLE   objectHandle,
    
    pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
 
-   GET_PTR(g_pBaseAddr,  pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
+   GET_PTR(pContext->pBaseAddress,  pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
    *pLength = offsetof(psoKeyDefinition, definition) + 
       pMyDefinition->definitionLength;
 
@@ -1060,7 +1060,7 @@ int psoaFastMapFirst( psoaFastMap    * pHashMap,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 
-   GET_PTR(g_pBaseAddr,  *pData, pHashMap->iterator.pHashItem->dataOffset, void );
+   GET_PTR( pHashMap->object.pSession->context.pBaseAddress,  *pData, pHashMap->iterator.pHashItem->dataOffset, void );
    *pDataLength = pHashMap->iterator.pHashItem->dataLength;
    *pKeyLength = pHashMap->iterator.pHashItem->keyLength;
    *pKey = pHashMap->iterator.pHashItem->key;
@@ -1113,7 +1113,7 @@ int psoaFastMapDefinition( PSO_HANDLE             objectHandle,
 
    pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
 
-   GET_PTR(g_pBaseAddr,  pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
+   GET_PTR(pContext->pBaseAddress,  pMyDefinition, pMemHashMap->dataDefOffset, psoObjectDefinition );
 
    *ppDefinition = pMyDefinition;
 
@@ -1157,7 +1157,7 @@ int psoaFastMapGetKeyDef( PSO_HANDLE          objectHandle,
 
    pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
 
-   GET_PTR(g_pBaseAddr,  pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
+   GET_PTR(pContext->pBaseAddress,  pMyDefinition, pMemHashMap->keyDefOffset, psoKeyDefinition );
 
    *ppDefinition = pMyDefinition;
    
@@ -1210,7 +1210,7 @@ int psoaFastMapNext( psoaFastMap    * pHashMap,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
    
-   GET_PTR(g_pBaseAddr,  *pData, pHashMap->iterator.pHashItem->dataOffset, void );
+   GET_PTR( pHashMap->object.pSession->context.pBaseAddress,  *pData, pHashMap->iterator.pHashItem->dataOffset, void );
    *pDataLength = pHashMap->iterator.pHashItem->dataLength;
    *pKeyLength = pHashMap->iterator.pHashItem->keyLength;
    *pKey = pHashMap->iterator.pHashItem->key;
@@ -1252,10 +1252,10 @@ void psoaFastMapResetReader( void * map )
    PSO_TRACE_ENTER_API( &pHashMap->object.pSession->context );
 
    pMemHashMap = (psonFastMap *) pHashMap->object.pMyMemObject;
-   pHashItemLatest = GET_PTR_FAST(g_pBaseAddr,  pMemHashMap->latestVersion, psonHashTxItem );
-   pNode = GET_PTR_FAST(g_pBaseAddr,  pHashItemLatest->dataOffset, 
+   pHashItemLatest = GET_PTR_FAST( pHashMap->object.pSession->context.pBaseAddress,  pMemHashMap->latestVersion, psonHashTxItem );
+   pNode = GET_PTR_FAST( pHashMap->object.pSession->context.pBaseAddress,  pHashItemLatest->dataOffset, 
                          psonTreeNode );
-   pMapLatest = GET_PTR_FAST(g_pBaseAddr,  pNode->offset, psonFastMap );
+   pMapLatest = GET_PTR_FAST( pHashMap->object.pSession->context.pBaseAddress,  pNode->offset, psonFastMap );
    if ( pMapLatest != pMemHashMap ) {
       if ( pHashMap->iterator.pHashItem != NULL ) {
          psonFastMapRelease( pMemHashMap,
@@ -1315,7 +1315,7 @@ int psoaFastMapRetrieve( psoaFastMap    * pHashMap,
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) goto error_handler;
 
-   GET_PTR(g_pBaseAddr,  *pData, pHashItem->dataOffset, void );
+   GET_PTR( pHashMap->object.pSession->context.pBaseAddress,  *pData, pHashItem->dataOffset, void );
    *pLength = pHashItem->dataLength;
 
    PSO_TRACE_EXIT_API( &pHashMap->object.pSession->context, true );
