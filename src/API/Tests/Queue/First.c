@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -22,6 +22,8 @@
 #include <photon/photon.h>
 #include "API/Queue.h"
 #include "API/Tests/quasar-run.h"
+
+PSO_HANDLE shmemHandle;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -54,7 +56,7 @@ void test_null_data( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -98,7 +100,7 @@ void test_null_handle( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -141,7 +143,7 @@ void test_null_length( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -185,7 +187,7 @@ void test_wrong_handle( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -229,7 +231,7 @@ void test_pass( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -24,6 +24,7 @@
 #include "API/Tests/quasar-run.h"
 
 psoKeyDefinition * pKeyDefinition;
+PSO_HANDLE shmemHandle;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -73,7 +74,7 @@ void test_no_first( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -137,7 +138,7 @@ void test_null_data( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -205,7 +206,7 @@ void test_null_datalength( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -273,7 +274,7 @@ void test_null_handle( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -341,7 +342,7 @@ void test_null_key( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -409,7 +410,7 @@ void test_null_keylength( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -477,7 +478,7 @@ void test_wrong_handle( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -545,7 +546,7 @@ void test_pass( void ** state )
    errcode = psoInit( "10701", "Next" );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,

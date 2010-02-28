@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -56,6 +56,7 @@ void teardown_test()
 void test_null_data( void ** state )
 {
    PSO_HANDLE objHandle, sessionHandle;
+   PSO_HANDLE shmemHandle;
    int errcode;
    const char * key  = "My Key";
    const char * data = "My Data";
@@ -71,7 +72,7 @@ void test_null_data( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -111,6 +112,7 @@ void test_null_data( void ** state )
 void test_null_datalength( void ** state )
 {
    PSO_HANDLE objHandle, sessionHandle;
+   PSO_HANDLE shmemHandle;
    int errcode;
    const char * key  = "My Key";
    const char * data = "My Data";
@@ -126,7 +128,7 @@ void test_null_datalength( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -166,6 +168,7 @@ void test_null_datalength( void ** state )
 void test_null_handle( void ** state )
 {
    PSO_HANDLE objHandle, sessionHandle;
+   PSO_HANDLE shmemHandle;
    int errcode;
    const char * key  = "My Key";
    const char * data = "My Data";
@@ -181,7 +184,7 @@ void test_null_handle( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -221,6 +224,7 @@ void test_null_handle( void ** state )
 void test_null_key( void ** state )
 {
    PSO_HANDLE objHandle, sessionHandle;
+   PSO_HANDLE shmemHandle;
    int errcode;
    const char * key  = "My Key";
    const char * data = "My Data";
@@ -236,7 +240,7 @@ void test_null_key( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -276,6 +280,7 @@ void test_null_key( void ** state )
 void test_null_keylength( void ** state )
 {
    PSO_HANDLE objHandle, sessionHandle;
+   PSO_HANDLE shmemHandle;
    int errcode;
    const char * key  = "My Key";
    const char * data = "My Data";
@@ -291,7 +296,7 @@ void test_null_keylength( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -331,6 +336,7 @@ void test_null_keylength( void ** state )
 void test_wrong_handle( void ** state )
 {
    PSO_HANDLE objHandle, sessionHandle;
+   PSO_HANDLE shmemHandle;
    int errcode;
    const char * key  = "My Key";
    const char * data = "My Data";
@@ -346,7 +352,7 @@ void test_wrong_handle( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,
@@ -386,6 +392,7 @@ void test_wrong_handle( void ** state )
 void test_pass( void ** state )
 {
    PSO_HANDLE objHandle, sessionHandle;
+   PSO_HANDLE shmemHandle;
    int errcode;
    const char * key  = "My Key";
    const char * data = "My Data";
@@ -401,7 +408,7 @@ void test_pass( void ** state )
    errcode = psoInit( "10701", "First" );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,

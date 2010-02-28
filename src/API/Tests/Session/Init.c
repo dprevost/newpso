@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -41,10 +41,11 @@ void teardown_test()
 void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle;
+   PSO_HANDLE shmemHandle;
    int errcode;
 
    /* internal process object not initialized */
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_PROCESS_NOT_INITIALIZED );
    
    errcode = psoInit( "10701", NULL );
@@ -52,18 +53,18 @@ void test_pass( void ** state )
    
    /* Invalid arguments to tested function. */
 
-   errcode = psoInitSession( NULL );
+   errcode = psoInitSession( shmemHandle, NULL );
    assert_true( errcode == PSO_NULL_HANDLE );
    
    /* End of invalid args. This call should succeed. */
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
    
    /* Close the process and try to act on the session */
 
    psoExit();
 
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_PROCESS_NOT_INITIALIZED );
 }
 

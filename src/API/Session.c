@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -22,6 +22,7 @@
 #include <photon/Session.h>
 #include "API/Session.h"
 #include "API/Process.h"
+#include "API/ShMem.h"
 #include "API/CommonObject.h"
 #include "API/DataDefinition.h"
 #include "API/KeyDefinition.h"
@@ -860,11 +861,16 @@ int psoGetStatus( PSO_HANDLE     sessionHandle,
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-int psoInitSession( PSO_HANDLE * sessionHandle )
+int psoInitSession( PSO_HANDLE psmHandle, PSO_HANDLE * sessionHandle )
 {
    psoErrors errcode = PSO_OK;
    psoaSession* pSession = NULL;
    bool ok;
+   psoaShMem * pShMem;
+   
+   pShMem = (psoaShMem *) psmHandle;
+//   if ( pShMem == NULL ) return PSO_NULL_HANDLE;   
+//   if ( pShMem->type != PSOA_SHMEM ) return PSO_WRONG_TYPE_HANDLE;
    
    if ( sessionHandle == NULL ) return PSO_NULL_HANDLE;
    

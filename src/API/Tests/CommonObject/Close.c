@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -25,6 +25,7 @@
 
 PSO_HANDLE sessionHandle;
 psoaCommonObject object;
+PSO_HANDLE shmemHandle;
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
@@ -37,7 +38,7 @@ void setup_test()
    errcode = psoInit( "10701", "Close" );
    assert( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,

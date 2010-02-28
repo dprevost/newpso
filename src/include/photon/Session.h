@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2006-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -457,7 +457,7 @@ int psoGetStatus(  PSO_HANDLE     sessionHandle,
  * \return 0 on success or a ::psoErrors on error.
  */
 PHOTON_EXPORT
-int psoInitSession( PSO_HANDLE * sessionHandle );
+int psoInitSession( PSO_HANDLE psmHandle , PSO_HANDLE * sessionHandle );
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

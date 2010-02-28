@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2006-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -28,6 +28,7 @@
 #include <photon/psoPhotonODBC.h>
 
 #include <photon/Process.h>
+#include <photon/psm.h>
 #include <photon/Session.h>
 #include <photon/DataDefinition.h>
 #include <photon/KeyDefinition.h>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -41,12 +41,13 @@ void teardown_test()
 void test_open_objs( void ** state )
 {
    PSO_HANDLE sessionHandle, objHandle;
+   PSO_HANDLE shmemHandle;
    int errcode;
    
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
    
    errcode = psoCreateFolder( sessionHandle, "test1", 5 );
@@ -57,7 +58,7 @@ void test_open_objs( void ** state )
    errcode = psoExitSession( sessionHandle );
    assert_true( errcode == PSO_OK );
 
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    /* */
@@ -75,12 +76,13 @@ void test_open_objs( void ** state )
 void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle;
+   PSO_HANDLE shmemHandle;
    int errcode;
    
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
    
    /* Invalid arguments to tested function. */
@@ -94,7 +96,7 @@ void test_pass( void ** state )
    
    /* Close the process and try to act on the session */
 
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    psoExit();

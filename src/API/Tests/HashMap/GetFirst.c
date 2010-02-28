@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -42,6 +42,7 @@ void teardown_test()
 void test_pass( void ** state )
 {
    PSO_HANDLE objHandle, sessionHandle;
+   PSO_HANDLE shmemHandle;
    int errcode;
    const char * key  = "My Key";
    const char * data = "My Data";
@@ -67,7 +68,7 @@ void test_pass( void ** state )
    errcode = psoInit( "10701", "GetFirst" );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -31,6 +31,7 @@
 enum psoaObjetType
 {
    PSOA_PROCESS = 0x111,
+   PSOA_SHMEM,
    PSOA_SESSION,
    PSOA_FOLDER,
    PSOA_HASH_MAP,

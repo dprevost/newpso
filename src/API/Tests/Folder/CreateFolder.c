@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -41,6 +41,7 @@ void teardown_test()
 void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle, folderHandle;
+   PSO_HANDLE shmemHandle;
    int errcode;
    psoFieldDefinition fields[1] = {
       { "Field_1", PSO_VARCHAR, {10} }
@@ -50,7 +51,7 @@ void test_pass( void ** state )
    errcode = psoInit( "10701", "CreateFolder" );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,

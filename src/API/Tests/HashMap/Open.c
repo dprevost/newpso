@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -43,6 +43,7 @@ void test_pass( void ** state )
 {
    PSO_HANDLE objHandle,  sessionHandle;
    PSO_HANDLE objHandle2, sessionHandle2;
+   PSO_HANDLE shmemHandle;
    int errcode;
    char junk[12];
    psoObjectDefinition mapDef = { PSO_HASH_MAP, 0, 0 };
@@ -67,9 +68,9 @@ void test_pass( void ** state )
    errcode = psoInit( "10701", "Open" );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
-   errcode = psoInitSession( &sessionHandle2 );
+   errcode = psoInitSession( shmemHandle, &sessionHandle2 );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,

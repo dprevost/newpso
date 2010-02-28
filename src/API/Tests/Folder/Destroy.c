@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -42,14 +42,15 @@ void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle, folderHandle;
    PSO_HANDLE objHandle, sessionHandle2;
+   PSO_HANDLE shmemHandle;
    int errcode;
    
    errcode = psoInit( "10701", "Destroy" );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
-   errcode = psoInitSession( &sessionHandle2 );
+   errcode = psoInitSession( shmemHandle, &sessionHandle2 );
    assert_true( errcode == PSO_OK );
 
    errcode = psoCreateFolder( sessionHandle,

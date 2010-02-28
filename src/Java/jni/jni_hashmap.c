@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2009-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -37,8 +37,9 @@ JNIEXPORT jlong JNICALL Java_org_photon_psoHashmap_initSession (
    jclass exc;
    char msg[100];
    PSO_HANDLE handle;
+   PSO_HANDLE shmemHandle;
    
-   errcode = psoInitSession( &handle );
+   errcode = psoInitSession( shmemHandle, &handle );
 
    // Normal return
    if ( errcode == PSO_OK ) return (size_t) handle;

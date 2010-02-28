@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+ * Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
  *
  * This file is part of Photon (photonsoftware.org).
  *
@@ -55,6 +55,7 @@ void teardown_test()
 void test_pass( void ** state )
 {
    PSO_HANDLE sessionHandle;
+   PSO_HANDLE shmemHandle;
    int errcode;
    psoObjectDefinition def = { PSO_HASH_MAP, 0, 0 };
    psoFieldDefinition fields[1] = {
@@ -75,7 +76,7 @@ void test_pass( void ** state )
    errcode = psoInit( "10701", NULL );
    assert_true( errcode == PSO_OK );
    
-   errcode = psoInitSession( &sessionHandle );
+   errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_OK );
 
    /* Invalid arguments to tested function. */
