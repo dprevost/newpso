@@ -35,16 +35,16 @@ void setup_test()
    ptr = malloc( allocatedLength );
    assert( ptr != NULL );
    
-   g_pBaseAddr = ptr;
-   pAlloc = (psonMemAlloc*)(g_pBaseAddr + PSON_BLOCK_SIZE);
+   context.pBaseAddress = ptr;
+   pAlloc = (psonMemAlloc*)(context.pBaseAddress + PSON_BLOCK_SIZE);
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void teardown_test()
 {
-   if ( g_pBaseAddr ) free(g_pBaseAddr);
-   g_pBaseAddr = NULL;
+   if ( context.pBaseAddress ) free(context.pBaseAddress);
+   context.pBaseAddress = NULL;
    pAlloc = NULL;
 }
 

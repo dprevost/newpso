@@ -33,12 +33,12 @@ void setup_test()
 
    ptr = malloc( PSON_BLOCK_SIZE*10 );
    assert( ptr != NULL );
-   g_pBaseAddr = ptr;
+   context.pBaseAddress = ptr;
    
    pBitmap = (psonMemBitmap*) ptr;
    
    psonMemBitmapInit( pBitmap, 
-                      SET_OFFSET(g_pBaseAddr, ptr),
+                      SET_OFFSET(context.pBaseAddress, ptr),
                       10*PSON_BLOCK_SIZE,
                       8,
                       &context );
@@ -50,7 +50,7 @@ void teardown_test()
 {
    if (ptr) free(ptr);
    ptr = NULL;
-   g_pBaseAddr = NULL;
+   context.pBaseAddress = NULL;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

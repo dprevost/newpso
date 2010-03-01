@@ -46,7 +46,7 @@ bool psonTopFolderCloseObject( psonFolderItem     * pFolderItem,
    PSO_PRE_CONDITION( pContext    != NULL );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR(g_pBaseAddr,  pChildNode, pFolderItem->pHashItem->dataOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, pChildNode, pFolderItem->pHashItem->dataOffset, psonTreeNode );
    
    /* Special case, the top folder */
    if ( pChildNode->myParentOffset == PSON_NULL_OFFSET ) {
@@ -54,12 +54,12 @@ bool psonTopFolderCloseObject( psonFolderItem     * pFolderItem,
       return true;
    }
    
-   GET_PTR(g_pBaseAddr,  parentFolder, pChildNode->myParentOffset, psonFolder );
-   GET_PTR(g_pBaseAddr,  parentNode, parentFolder->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  txFolderStatus, parentNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, parentFolder, pChildNode->myParentOffset, psonFolder );
+   GET_PTR(pContext->pBaseAddress, parentNode, parentFolder->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, txFolderStatus, parentNode->txStatusOffset, psonTxStatus );
    
    if ( psonLock( &parentFolder->memObject, pContext ) ) {
-      GET_PTR(g_pBaseAddr,  txItemStatus, pChildNode->txStatusOffset, psonTxStatus );
+      GET_PTR(pContext->pBaseAddress, txItemStatus, pChildNode->txStatusOffset, psonTxStatus );
       txItemStatus->parentCounter--;
       txFolderStatus->usageCounter--;
       
@@ -455,7 +455,7 @@ bool psonTopFolderEditObject( psonFolder         * pFolder,
          errcode = PSO_WRONG_OBJECT_TYPE;
          goto error_handler;
       }
-      pFolderItem->pHashItem = &((psonMemoryHeader *) g_pBaseAddr)->topHashItem;
+      pFolderItem->pHashItem = &((psonMemoryHeader *) pContext->pBaseAddress)->topHashItem;
    }
    else {
       /*
@@ -732,7 +732,7 @@ bool psonTopFolderOpenObject( psonFolder         * pFolder,
          errcode = PSO_WRONG_OBJECT_TYPE;
          goto error_handler;
       }
-      pFolderItem->pHashItem = &((psonMemoryHeader *) g_pBaseAddr)->topHashItem;
+      pFolderItem->pHashItem = &((psonMemoryHeader *) pContext->pBaseAddress)->topHashItem;
    }
    else {
       /*

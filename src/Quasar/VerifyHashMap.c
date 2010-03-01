@@ -40,7 +40,7 @@ qsrCheckHashMapContent( qsrVerifyStruct   * pVerify,
    
    found = psonHashTxGetFirst( &pHashMap->hashObj, &offset, pContext );
    while ( found ) {
-      GET_PTR(g_pBaseAddr,  pItem, offset, psonHashTxItem );
+      GET_PTR(pContext->pBaseAddress, pItem, offset, psonHashTxItem );
       txItemStatus = &pItem->txStatus;
 
       if ( txItemStatus->txOffset != PSON_NULL_OFFSET ) {
@@ -146,8 +146,8 @@ qsrVerifyHashMap( qsrVerifyStruct   * pVerify,
     */
    qsrPopulateBitmap( pVerify, &pHashMap->memObject, pContext );
 
-   GET_PTR(g_pBaseAddr,  pNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  txHashMapStatus, pNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, pNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, txHashMapStatus, pNode->txStatusOffset, psonTxStatus );
 
    if ( txHashMapStatus->txOffset != PSON_NULL_OFFSET ) {
       /*
@@ -206,7 +206,7 @@ qsrVerifyHashMap( qsrVerifyStruct   * pVerify,
    if ( bTestObject ) {
       rc2 = qsrVerifyHashTx( pVerify, 
                              &pHashMap->hashObj, 
-                             SET_OFFSET(g_pBaseAddr, &pHashMap->memObject),
+                             SET_OFFSET(pContext->pBaseAddress, &pHashMap->memObject),
                              pContext );
       if ( rc2 > QSR_REC_START_ERRORS ) {
          pVerify->spaces -= 2;

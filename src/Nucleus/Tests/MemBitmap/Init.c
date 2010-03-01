@@ -35,7 +35,7 @@ void setup_test()
 
    ptr = malloc( PSON_BLOCK_SIZE*10 );
    assert( ptr != NULL );
-   g_pBaseAddr = ptr;
+   context.pBaseAddress = ptr;
    
    pBitmap = (psonMemBitmap*) ptr;
 }
@@ -46,7 +46,7 @@ void teardown_test()
 {
    if (ptr) free(ptr);
    ptr = NULL;
-   g_pBaseAddr = NULL;
+   context.pBaseAddress = NULL;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -55,7 +55,7 @@ void test_null_bitmap( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonMemBitmapInit( NULL, 
-                                             SET_OFFSET(g_pBaseAddr, ptr),
+                                             SET_OFFSET(context.pBaseAddress, ptr),
                                              10*PSON_BLOCK_SIZE,
                                              8,
                                              &context ) );
@@ -69,7 +69,7 @@ void test_null_context( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonMemBitmapInit( pBitmap, 
-                                             SET_OFFSET(g_pBaseAddr, ptr),
+                                             SET_OFFSET(context.pBaseAddress, ptr),
                                              10*PSON_BLOCK_SIZE,
                                              8,
                                              NULL ) );
@@ -97,7 +97,7 @@ void test_poweroftwo7( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonMemBitmapInit( pBitmap, 
-                                             SET_OFFSET(g_pBaseAddr, ptr),
+                                             SET_OFFSET(context.pBaseAddress, ptr),
                                              10*PSON_BLOCK_SIZE,
                                              7,
                                              &context ) );
@@ -111,7 +111,7 @@ void test_poweroftwo9( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonMemBitmapInit( pBitmap, 
-                                             SET_OFFSET(g_pBaseAddr, ptr),
+                                             SET_OFFSET(context.pBaseAddress, ptr),
                                              10*PSON_BLOCK_SIZE,
                                              9,
                                              &context ) );
@@ -125,7 +125,7 @@ void test_zero_granu( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonMemBitmapInit( pBitmap, 
-                                             SET_OFFSET(g_pBaseAddr, ptr),
+                                             SET_OFFSET(context.pBaseAddress, ptr),
                                              10*PSON_BLOCK_SIZE,
                                              0,
                                              &context ) );
@@ -139,7 +139,7 @@ void test_zero_length( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonMemBitmapInit( pBitmap, 
-                                             SET_OFFSET(g_pBaseAddr, ptr),
+                                             SET_OFFSET(context.pBaseAddress, ptr),
                                              0,
                                              8,
                                              &context ) );
@@ -156,14 +156,14 @@ void test_pass( void ** state )
    psonSessionContext context;
    
    psonMemBitmapInit( pBitmap, 
-                      SET_OFFSET(g_pBaseAddr, ptr),
+                      SET_OFFSET(context.pBaseAddress, ptr),
                       10*PSON_BLOCK_SIZE,
                       8,
                       &context );
    
    assert_true( pBitmap->lengthInBits == 10*PSON_BLOCK_SIZE/8 );
    assert_true( pBitmap->allocGranularity == 8 );
-   assert_true( pBitmap->baseAddressOffset == SET_OFFSET(g_pBaseAddr, ptr) );
+   assert_true( pBitmap->baseAddressOffset == SET_OFFSET(context.pBaseAddress, ptr) );
    for ( i = 0; i < pBitmap->lengthInBits / 8; ++i ) {
       assert_true( pBitmap->bitmap[i] == 0 );
    }

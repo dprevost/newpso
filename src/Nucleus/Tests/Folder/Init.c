@@ -31,17 +31,17 @@ void setup_test()
 {
    pFolder = initFolderTest( &context );
 
-   psonTxStatusInit( &status, SET_OFFSET(g_pBaseAddr, context.pTransaction), &context );
-   psonTreeNodeInit( &node, SET_OFFSET(g_pBaseAddr, pFolder), PSO_FOLDER,
-                     SET_OFFSET(g_pBaseAddr, &status), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &status, SET_OFFSET(context.pBaseAddress, context.pTransaction), &context );
+   psonTreeNodeInit( &node, SET_OFFSET(context.pBaseAddress, pFolder), PSO_FOLDER,
+                     SET_OFFSET(context.pBaseAddress, &status), PSON_NULL_OFFSET, &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void teardown_test()
 {
-   free( g_pBaseAddr );
-   g_pBaseAddr = NULL;
+   free( context.pBaseAddress );
+   context.pBaseAddress = NULL;
    pFolder = NULL;
 }
 

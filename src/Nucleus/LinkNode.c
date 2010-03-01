@@ -30,7 +30,7 @@ void psonFreeBufferNodeDump( psonFreeBufferNode * pBuffer,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonFreeBufferNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pBuffer, SET_OFFSET(g_pBaseAddr, pBuffer) );
+      pBuffer, SET_OFFSET(pContext->pBaseAddress, pBuffer) );
    if ( pBuffer == NULL ) return;
 
    psonLinkNodeDump( &pBuffer->node, indent + 2, pContext );
@@ -53,7 +53,7 @@ void psonLinkNodeDump( psonLinkNode       * pNode,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonLinkNode (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pNode, SET_OFFSET(g_pBaseAddr, pNode) );
+      pNode, SET_OFFSET(pContext->pBaseAddress, pNode) );
    if ( pNode == NULL ) return;
 
    DO_INDENT( pContext, indent + 2 );

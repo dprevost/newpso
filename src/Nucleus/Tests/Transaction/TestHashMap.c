@@ -50,9 +50,9 @@ void test_pass( void ** state )
    pFolder = initFolderTest( &context );
    pTx = context.pTransaction;
    
-   psonTxStatusInit( &status, SET_OFFSET(g_pBaseAddr,  pTx ), &context );
-   psonTreeNodeInit( &node, SET_OFFSET(g_pBaseAddr, pFolder), PSO_FOLDER,
-                     SET_OFFSET(g_pBaseAddr, &status), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &status, SET_OFFSET(context.pBaseAddress, pTx ), &context );
+   psonTreeNodeInit( &node, SET_OFFSET(context.pBaseAddress, pFolder), PSO_FOLDER,
+                     SET_OFFSET(context.pBaseAddress, &status), PSON_NULL_OFFSET, &context );
    
    ok = psonFolderInit( pFolder, 0, 1, 0, &node, &context );
    assert_true( ok );
@@ -75,8 +75,8 @@ void test_pass( void ** state )
                              &item,
                              &context );
    assert_true( ok );
-   GET_PTR(g_pBaseAddr,  pMapNode, item.pHashItem->dataOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  pHashMap, pMapNode->offset, psonHashMap );
+   GET_PTR(context.pBaseAddress, pMapNode, item.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR(context.pBaseAddress, pHashMap, pMapNode->offset, psonHashMap );
 
    /* Test 1 */
    ok = psonHashMapInsert( pHashMap,

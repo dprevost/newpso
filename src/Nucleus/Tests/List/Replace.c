@@ -30,7 +30,7 @@ psonSessionContext context;
 void setup_test()
 {
    initTest( &context );
-   InitMem();
+   InitMem( &context );
    
    psonLinkNodeInit( &oldNode, &context );
    psonLinkNodeInit( &newNode, &context );
@@ -154,7 +154,7 @@ void test_pass( void ** state )
    psonSessionContext context;
    
    initTest( &context );
-   InitMem();
+   InitMem( &context );
    
    psonLinkNodeInit( &oldNode, &context );
    psonLinkNodeInit( &newNode, &context );

@@ -218,7 +218,7 @@ static bool findKey( psonHash            * pHash,
    *ppPreviousItem = NULL;
 
    while ( currentOffset != PSON_NULL_OFFSET ) {
-      GET_PTR(g_pBaseAddr,  pItem, currentOffset, psonHashItem );
+      GET_PTR(pContext->pBaseAddress, pItem, currentOffset, psonHashItem );
       nextOffset = pItem->nextItem;
      
       if ( keyLength == pItem->keyLength ) {
@@ -265,12 +265,12 @@ enum psoErrors psonHashCopy( psonHash           * pOldHash,
    PSO_INV_CONDITION( pNewHash->initialized == PSON_HASH_SIGNATURE );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR(g_pBaseAddr,  pOldArray, pOldHash->arrayOffset, ptrdiff_t );
+   GET_PTR(pContext->pBaseAddress, pOldArray, pOldHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pOldArray != NULL );
-   GET_PTR(g_pBaseAddr,  pNewArray, pNewHash->arrayOffset, ptrdiff_t );
+   GET_PTR(pContext->pBaseAddress, pNewArray, pNewHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pNewArray != NULL );
 
-   GET_PTR(g_pBaseAddr,  pMemObject, pNewHash->memObjOffset, psonMemObject );
+   GET_PTR(pContext->pBaseAddress, pMemObject, pNewHash->memObjOffset, psonMemObject );
 
    if ( pOldHash->lengthIndex == pNewHash->lengthIndex ) {
       /* Much simpler path... hashing is done for us */
@@ -279,7 +279,7 @@ enum psoErrors psonHashCopy( psonHash           * pOldHash,
          currentOffset = pOldArray[i];
          previousItem = NULL;
          while ( currentOffset != PSON_NULL_OFFSET ) {
-            GET_PTR(g_pBaseAddr,  pOldItem, currentOffset, psonHashItem );
+            GET_PTR(pContext->pBaseAddress, pOldItem, currentOffset, psonHashItem );
 
             itemLength = calculateItemLength( pOldItem->keyLength,
                                               pOldItem->dataLength );
@@ -297,14 +297,14 @@ enum psoErrors psonHashCopy( psonHash           * pOldHash,
              * PSON_NULL_OFFSET since the oldHash is for a read-only object).
              */
             memcpy( pNewItem, pOldItem, itemLength );
-            pNewItem->dataOffset = SET_OFFSET(g_pBaseAddr, pNewItem) + itemLength - 
+            pNewItem->dataOffset = SET_OFFSET(pContext->pBaseAddress, pNewItem) + itemLength - 
                                    pOldItem->dataLength;
             /* Set the chain */
             if ( previousItem == NULL ) {
-               pNewArray[i] = SET_OFFSET(g_pBaseAddr, pNewItem);
+               pNewArray[i] = SET_OFFSET(pContext->pBaseAddress, pNewItem);
             }
             else {
-               previousItem->nextItem = SET_OFFSET(g_pBaseAddr, pNewItem);
+               previousItem->nextItem = SET_OFFSET(pContext->pBaseAddress, pNewItem);
             }
             previousItem = pNewItem;
             
@@ -317,7 +317,7 @@ enum psoErrors psonHashCopy( psonHash           * pOldHash,
          currentOffset = pOldArray[i];
       
          while ( currentOffset != PSON_NULL_OFFSET ) {
-            GET_PTR(g_pBaseAddr,  pOldItem, currentOffset, psonHashItem );
+            GET_PTR(pContext->pBaseAddress, pOldItem, currentOffset, psonHashItem );
 
             itemLength = calculateItemLength( pOldItem->keyLength,
                                               pOldItem->dataLength );
@@ -335,7 +335,7 @@ enum psoErrors psonHashCopy( psonHash           * pOldHash,
              * PSON_NULL_OFFSET since the oldHash is for a read-only object).
              */
             memcpy( pNewItem, pOldItem, itemLength );
-            pNewItem->dataOffset = SET_OFFSET(g_pBaseAddr, pNewItem) + itemLength - 
+            pNewItem->dataOffset = SET_OFFSET(pContext->pBaseAddress, pNewItem) + itemLength - 
                                    pOldItem->dataLength;
 
             /* Set the chain */
@@ -343,16 +343,16 @@ enum psoErrors psonHashCopy( psonHash           * pOldHash,
                         g_psonArrayLengths[pNewHash->lengthIndex];
             pNewItem->bucket = newBucket;
             if ( pNewArray[newBucket] == PSON_NULL_OFFSET ) {
-               pNewArray[newBucket] = SET_OFFSET(g_pBaseAddr, pNewItem);
+               pNewArray[newBucket] = SET_OFFSET(pContext->pBaseAddress, pNewItem);
             }
             else {
                tempOffset = pNewArray[newBucket];
-               GET_PTR(g_pBaseAddr,  tempItem, tempOffset, psonHashItem );
+               GET_PTR(pContext->pBaseAddress, tempItem, tempOffset, psonHashItem );
                while ( tempItem->nextItem != PSON_NULL_OFFSET ) {
                   tempOffset = tempItem->nextItem;
-                  GET_PTR(g_pBaseAddr,  tempItem, tempOffset, psonHashItem );
+                  GET_PTR(pContext->pBaseAddress, tempItem, tempOffset, psonHashItem );
                }
-               tempItem->nextItem = SET_OFFSET(g_pBaseAddr, pNewItem);
+               tempItem->nextItem = SET_OFFSET(pContext->pBaseAddress, pNewItem);
             }
             
             /* Move to the next item in our bucket */
@@ -394,10 +394,10 @@ bool psonHashDelWithKey( psonHash            * pHash,
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_SIGNATURE );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
-   GET_PTR(g_pBaseAddr,  pArray, pHash->arrayOffset, ptrdiff_t );
+   GET_PTR(pContext->pBaseAddress, pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
 
-   GET_PTR(g_pBaseAddr,  pMemObject, pHash->memObjOffset, psonMemObject );
+   GET_PTR(pContext->pBaseAddress, pMemObject, pHash->memObjOffset, psonMemObject );
    
    keyFound = findKey( pHash, 
                        pArray, 
@@ -444,7 +444,7 @@ void psonHashDump( psonHash           * pHash,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonHash (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pHash, SET_OFFSET(g_pBaseAddr, pHash) );
+      pHash, SET_OFFSET(pContext->pBaseAddress, pHash) );
    if ( pHash == NULL ) return;
    
    DO_INDENT( pContext, indent + 2 );
@@ -523,16 +523,16 @@ void psonHashEmpty( psonHash           * pHash,
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_SIGNATURE );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
-   GET_PTR(g_pBaseAddr,  pArray, pHash->arrayOffset, ptrdiff_t );
+   GET_PTR(pContext->pBaseAddress, pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
 
-   GET_PTR(g_pBaseAddr,  pMemObject, pHash->memObjOffset, psonMemObject );
+   GET_PTR(pContext->pBaseAddress, pMemObject, pHash->memObjOffset, psonMemObject );
 
    for ( i = 0; i < g_psonArrayLengths[pHash->lengthIndex]; ++i ) {
       currentOffset = pArray[i];
       
       while ( currentOffset != PSON_NULL_OFFSET ) {
-         GET_PTR(g_pBaseAddr,  pItem, currentOffset, psonHashItem );
+         GET_PTR(pContext->pBaseAddress, pItem, currentOffset, psonHashItem );
          nextOffset = pItem->nextItem;
          
          psonFree( pMemObject, 
@@ -591,7 +591,7 @@ bool psonHashGet( psonHash            * pHash,
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_SIGNATURE );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
-   GET_PTR(g_pBaseAddr,  pArray, pHash->arrayOffset, ptrdiff_t );
+   GET_PTR(pContext->pBaseAddress, pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
 
    keyFound = findKey( pHash, pArray, pKey, keyLength, 
@@ -625,7 +625,7 @@ bool psonHashGetFirst( psonHash            * pHash,
    
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_SIGNATURE );
    
-   GET_PTR(g_pBaseAddr,  pArray, pHash->arrayOffset, ptrdiff_t );
+   GET_PTR(pContext->pBaseAddress, pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
 
    if ( pHash->numberOfItems == 0 ) {
@@ -641,7 +641,7 @@ bool psonHashGetFirst( psonHash            * pHash,
       currentOffset = pArray[i];
       
       if (currentOffset != PSON_NULL_OFFSET ) {
-         GET_PTR(g_pBaseAddr,  *ppItem, currentOffset, psonHashItem );
+         GET_PTR(pContext->pBaseAddress, *ppItem, currentOffset, psonHashItem );
          PSO_TRACE_EXIT_NUCLEUS( pContext, true );
          return true;
       }
@@ -674,12 +674,12 @@ bool psonHashGetNext( psonHash           * pHash,
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_SIGNATURE );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
-   GET_PTR(g_pBaseAddr,  pArray, pHash->arrayOffset, ptrdiff_t );
+   GET_PTR(pContext->pBaseAddress, pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
 
    if ( previousItem->nextItem != PSON_NULL_OFFSET ) {
       /* We found the next one in the linked list. */
-      GET_PTR(g_pBaseAddr,  *nextItem, previousItem->nextItem, psonHashItem );
+      GET_PTR(pContext->pBaseAddress, *nextItem, previousItem->nextItem, psonHashItem );
       PSO_TRACE_EXIT_NUCLEUS( pContext, true );
       return true;
    }
@@ -692,7 +692,7 @@ bool psonHashGetNext( psonHash           * pHash,
       currentOffset = pArray[i];
       
       if (currentOffset != PSON_NULL_OFFSET ) {
-         GET_PTR(g_pBaseAddr,  *nextItem, currentOffset, psonHashItem );
+         GET_PTR(pContext->pBaseAddress, *nextItem, currentOffset, psonHashItem );
          PSO_TRACE_EXIT_NUCLEUS( pContext, true );
          return true;
       }
@@ -722,7 +722,7 @@ enum psoErrors psonHashInit( psonHash           * pHash,
    pHash->totalDataSizeInBytes = 0;
    pHash->enumResize = PSON_HASH_NO_RESIZE;
    
-   GET_PTR(g_pBaseAddr,  pMemObject, memObjOffset, psonMemObject );
+   GET_PTR(pContext->pBaseAddress, pMemObject, memObjOffset, psonMemObject );
    /*
     * reservedSize... In real life what it means is that we cannot shrink 
     * the array to a point where we would need to increase it in order
@@ -752,7 +752,7 @@ enum psoErrors psonHashInit( psonHash           * pHash,
          ptr[i] = PSON_NULL_OFFSET;
       }
       
-      pHash->arrayOffset = SET_OFFSET(g_pBaseAddr,  ptr );
+      pHash->arrayOffset = SET_OFFSET(pContext->pBaseAddress, ptr );
       pHash->initialized = PSON_HASH_SIGNATURE;
       pHash->memObjOffset = memObjOffset;
    
@@ -792,7 +792,7 @@ enum psoErrors psonHashInsert( psonHash            * pHash,
 
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_SIGNATURE );
    
-   GET_PTR(g_pBaseAddr,  pArray, pHash->arrayOffset, ptrdiff_t );
+   GET_PTR(pContext->pBaseAddress, pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
 
    keyFound = findKey( pHash, pArray, pKey, keyLength, 
@@ -803,7 +803,7 @@ enum psoErrors psonHashInsert( psonHash            * pHash,
       return PSO_ITEM_ALREADY_PRESENT;
    }
    
-   GET_PTR(g_pBaseAddr,  pMemObject, pHash->memObjOffset, psonMemObject );
+   GET_PTR(pContext->pBaseAddress, pMemObject, pHash->memObjOffset, psonMemObject );
    
    /* The whole item is allocated in one step, header+data, to minimize */
    /* overheads of the memory allocator */
@@ -820,10 +820,10 @@ enum psoErrors psonHashInsert( psonHash            * pHash,
    /* keyLength must be set before calling getData() */   
    pItem->keyLength = keyLength;
    pItem->dataLength = dataLength;
-   pItem->dataOffset = SET_OFFSET(g_pBaseAddr, pItem) + itemLength - dataLength;
+   pItem->dataOffset = SET_OFFSET(pContext->pBaseAddress, pItem) + itemLength - dataLength;
    
    memcpy( pItem->key, pKey, keyLength );
-   memcpy( GET_PTR_FAST(g_pBaseAddr, pItem->dataOffset, unsigned char), pData, dataLength );
+   memcpy( GET_PTR_FAST(pContext->pBaseAddress, pItem->dataOffset, unsigned char), pData, dataLength );
 
    pHash->totalDataSizeInBytes += dataLength;
    pHash->numberOfItems++;
@@ -831,10 +831,10 @@ enum psoErrors psonHashInsert( psonHash            * pHash,
    pHash->enumResize = isItTimeToResize( pHash );
    
    if ( previousItem == NULL ) {
-      pArray[bucket] = SET_OFFSET(g_pBaseAddr, pItem);
+      pArray[bucket] = SET_OFFSET(pContext->pBaseAddress, pItem);
    }
    else {
-      previousItem->nextItem = SET_OFFSET(g_pBaseAddr, pItem);
+      previousItem->nextItem = SET_OFFSET(pContext->pBaseAddress, pItem);
    }
    
    *ppHashItem = pItem;
@@ -861,7 +861,7 @@ enum psoErrors psonHashResize( psonHash           * pHash,
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_SIGNATURE );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
-   GET_PTR(g_pBaseAddr,  pArray, pHash->arrayOffset, ptrdiff_t );
+   GET_PTR(pContext->pBaseAddress, pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
 
    if ( pHash->enumResize == PSON_HASH_NO_RESIZE ) {
@@ -869,7 +869,7 @@ enum psoErrors psonHashResize( psonHash           * pHash,
       return PSO_OK;
    }
    
-   GET_PTR(g_pBaseAddr,  pMemObject, pHash->memObjOffset, psonMemObject );
+   GET_PTR(pContext->pBaseAddress, pMemObject, pHash->memObjOffset, psonMemObject );
 
    newIndexLength = pHash->lengthIndex;
    if ( pHash->enumResize == PSON_HASH_TIME_TO_GROW ) {
@@ -903,7 +903,7 @@ enum psoErrors psonHashResize( psonHash           * pHash,
       currentOffset = pArray[i];
       
       while ( currentOffset != PSON_NULL_OFFSET ) {
-         GET_PTR(g_pBaseAddr,  pItem, currentOffset, psonHashItem );
+         GET_PTR(pContext->pBaseAddress, pItem, currentOffset, psonHashItem );
          nextOffset = pItem->nextItem;
          pItem->nextItem = PSON_NULL_OFFSET;
          
@@ -915,10 +915,10 @@ enum psoErrors psonHashResize( psonHash           * pHash,
          }
          else {
             newOffset = ptr[newBucket];
-            GET_PTR(g_pBaseAddr,  pNewItem, newOffset, psonHashItem );
+            GET_PTR(pContext->pBaseAddress, pNewItem, newOffset, psonHashItem );
             while ( pNewItem->nextItem != PSON_NULL_OFFSET ) {
                newOffset = pNewItem->nextItem;
-               GET_PTR(g_pBaseAddr,  pNewItem, newOffset, psonHashItem );
+               GET_PTR(pContext->pBaseAddress, pNewItem, newOffset, psonHashItem );
             }
             pNewItem->nextItem = currentOffset;
          }
@@ -931,7 +931,7 @@ enum psoErrors psonHashResize( psonHash           * pHash,
    len = g_psonArrayLengths[pHash->lengthIndex]*sizeof(ptrdiff_t);
 
    pHash->lengthIndex = newIndexLength;
-   pHash->arrayOffset = SET_OFFSET(g_pBaseAddr,  ptr );
+   pHash->arrayOffset = SET_OFFSET(pContext->pBaseAddress, ptr );
 
    psonFree( pMemObject,
              (unsigned char*)pArray,
@@ -978,7 +978,7 @@ psonHashUpdate( psonHash            * pHash,
    PSO_INV_CONDITION( pHash->initialized == PSON_HASH_SIGNATURE );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR(g_pBaseAddr,  pArray, pHash->arrayOffset, ptrdiff_t );
+   GET_PTR(pContext->pBaseAddress, pArray, pHash->arrayOffset, ptrdiff_t );
    PSO_INV_CONDITION( pArray != NULL );
 
    keyFound = findKey( pHash, pArray, pKey, keyLength,
@@ -998,14 +998,14 @@ psonHashUpdate( psonHash            * pHash,
        * recovery -> this a temp copy and it will be removed if the program
        * crashes.
        */
-      memcpy( GET_PTR_FAST(g_pBaseAddr, pOldItem->dataOffset, void), pData, dataLength );
+      memcpy( GET_PTR_FAST(pContext->pBaseAddress, pOldItem->dataOffset, void), pData, dataLength );
       pHash->totalDataSizeInBytes += (dataLength - pOldItem->dataLength);
       pOldItem->dataLength = dataLength;
 
       *ppHashItem = pOldItem;
    }
    else {
-      pMemObject = GET_PTR_FAST(g_pBaseAddr,  pHash->memObjOffset, psonMemObject );
+      pMemObject = GET_PTR_FAST(pContext->pBaseAddress, pHash->memObjOffset, psonMemObject );
       pNewItem = (psonHashItem*) psonMalloc( pMemObject,
                                              newItemLength,
                                              pContext );
@@ -1019,18 +1019,18 @@ psonHashUpdate( psonHash            * pHash,
       pNewItem->bucket = pOldItem->bucket;
       pNewItem->keyLength = keyLength;
       pNewItem->dataLength = dataLength;
-      pNewItem->dataOffset = SET_OFFSET(g_pBaseAddr, pNewItem) + newItemLength - dataLength;
+      pNewItem->dataOffset = SET_OFFSET(pContext->pBaseAddress, pNewItem) + newItemLength - dataLength;
    
       memcpy( pNewItem->key, pKey, keyLength );
-      memcpy( GET_PTR_FAST(g_pBaseAddr, pNewItem->dataOffset, unsigned char), pData, dataLength );
+      memcpy( GET_PTR_FAST(pContext->pBaseAddress, pNewItem->dataOffset, unsigned char), pData, dataLength );
 
       pHash->totalDataSizeInBytes += (dataLength - pOldItem->dataLength);
 
       if ( previousItem == NULL ) {
-         pArray[bucket] = SET_OFFSET(g_pBaseAddr, pNewItem);
+         pArray[bucket] = SET_OFFSET(pContext->pBaseAddress, pNewItem);
       }
       else {
-         previousItem->nextItem = SET_OFFSET(g_pBaseAddr, pNewItem);
+         previousItem->nextItem = SET_OFFSET(pContext->pBaseAddress, pNewItem);
       }
 
       *ppHashItem = pNewItem;

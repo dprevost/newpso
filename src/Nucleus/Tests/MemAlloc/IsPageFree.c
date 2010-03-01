@@ -37,10 +37,10 @@ void test_pass( void ** state )
    ptr = malloc( 51*PSON_BLOCK_SIZE );
    assert_false( ptr == NULL );
    
-   g_pBaseAddr = (unsigned char *)((((size_t)ptr - 1)/PSON_BLOCK_SIZE + 1)*PSON_BLOCK_SIZE);
-   pAlloc = (psonMemAlloc*)(g_pBaseAddr + PSON_BLOCK_SIZE);
-   psonMemAllocInit( pAlloc, g_pBaseAddr, 50*PSON_BLOCK_SIZE, &context );
-   GET_PTR(g_pBaseAddr,  pBitmap, pAlloc->bitmapOffset, psonMemBitmap );
+   context.pBaseAddress = (unsigned char *)((((size_t)ptr - 1)/PSON_BLOCK_SIZE + 1)*PSON_BLOCK_SIZE);
+   pAlloc = (psonMemAlloc*)(context.pBaseAddress + PSON_BLOCK_SIZE);
+   psonMemAllocInit( pAlloc, context.pBaseAddress, 50*PSON_BLOCK_SIZE, &context );
+   GET_PTR(context.pBaseAddress, pBitmap, pAlloc->bitmapOffset, psonMemBitmap );
    
    if ( (pBitmap->lengthInBits-1)/8+1 != 7 ) {
       fprintf( stderr, "Wrong bitmapLength, got "PSO_SIZE_T_FORMAT

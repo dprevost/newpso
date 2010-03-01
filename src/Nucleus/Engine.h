@@ -54,13 +54,6 @@ BEGIN_C_DECLS
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
-/** 
- *  The base address of the shared memory as seen for each process (each 
- *  process having their own copy of this global). This pointer is used
- *  everywhere to recover the real pointer addresses from our offsets
- */
-extern unsigned char* g_pBaseAddr;
-
 extern psocErrMsgHandle g_psoErrorHandle;
 
 #define SET_OFFSET(BASE_ADDRESS,PTR) ( \

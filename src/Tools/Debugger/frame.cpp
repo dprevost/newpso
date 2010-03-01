@@ -209,7 +209,7 @@ void MyFrame::OnOpen( wxCommandEvent & WXUNUSED(event) )
    
    m_header = new MyMemoryHeader( m_memFile->BaseAddress() );
 
-   g_pBaseAddr = (unsigned char *) m_memFile->BaseAddress();
+   context->pBaseAddress = (unsigned char *) m_memFile->BaseAddress();
    m_header->showHeader( *m_listCtrl );
 
    pAddr = m_header->GetTopFolder();

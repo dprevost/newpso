@@ -83,8 +83,8 @@ void setup_test()
 
 void teardown_test()
 {
-   free( g_pBaseAddr );
-   g_pBaseAddr = NULL;
+   free( context.pBaseAddress );
+   context.pBaseAddress = NULL;
    offsetFirstItem = PSON_NULL_OFFSET;
 }
 

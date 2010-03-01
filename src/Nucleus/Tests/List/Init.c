@@ -29,7 +29,7 @@ psonSessionContext context;
 void setup_test()
 {
    initTest( &context );
-   InitMem();
+   InitMem( &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

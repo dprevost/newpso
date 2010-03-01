@@ -264,7 +264,6 @@ int psoaOpenMemory( psoaProcess        * process,
       return PSO_ERROR_OPENING_MEMORY;
    }
    
-   g_pBaseAddr = (unsigned char * ) ptr;
    process->pHeader = (psonMemoryHeader*) ptr;
    pContext->pBaseAddress = (unsigned char * ) ptr;
 

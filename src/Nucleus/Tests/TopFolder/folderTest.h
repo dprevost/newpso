@@ -65,8 +65,8 @@ psonFolder* initFolderTest( psonSessionContext* pContext )
    /* Initialize the global allocator */
    ptr = malloc( allocatedLength );
    assert( ptr != NULL );
-   g_pBaseAddr = ptr;
-   pAlloc = (psonMemAlloc*)(g_pBaseAddr + PSON_BLOCK_SIZE);
+   pContext->pBaseAddress = ptr;
+   pAlloc = (psonMemAlloc*)(pContext->pBaseAddress + PSON_BLOCK_SIZE);
    psonMemAllocInit( pAlloc, ptr, allocatedLength, pContext );
    
    /* Allocate memory for the tx object and initialize it */
@@ -102,16 +102,16 @@ psonFolder* initTopFolderTest( psonSessionContext* pContext )
    assert( errcode == PSO_OK );
 
    psonTxStatusInit( &objTxStatus, 
-                     SET_OFFSET(g_pBaseAddr, pContext->pTransaction),
+                     SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction),
                      pContext );
    objTxStatus.status = PSON_TXS_ADDED;
 
-   psonTreeNodeInit( &topnode, SET_OFFSET(g_pBaseAddr,  pFolder ), PSO_FOLDER,
-                     SET_OFFSET(g_pBaseAddr,  &objTxStatus ), PSON_NULL_OFFSET, pContext );
-   pFolder->nodeOffset = SET_OFFSET(g_pBaseAddr,  &topnode );
+   psonTreeNodeInit( &topnode, SET_OFFSET(pContext->pBaseAddress, pFolder ), PSO_FOLDER,
+                     SET_OFFSET(pContext->pBaseAddress, &objTxStatus ), PSON_NULL_OFFSET, pContext );
+   pFolder->nodeOffset = SET_OFFSET(pContext->pBaseAddress, &topnode );
 
    errcode = psonHashTxInit( &pFolder->hashObj, 
-                             SET_OFFSET(g_pBaseAddr, &pFolder->memObject),
+                             SET_OFFSET(pContext->pBaseAddress, &pFolder->memObject),
                              25, 
                              pContext );
    assert( errcode == PSO_OK );

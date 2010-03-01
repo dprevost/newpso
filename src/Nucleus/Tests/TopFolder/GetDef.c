@@ -69,8 +69,8 @@ void teardown_test()
    if ( keyDef != NULL ) free( keyDef );
    keyDef = NULL;
    
-   if (g_pBaseAddr) free(g_pBaseAddr);
-   g_pBaseAddr = NULL;
+   if (context.pBaseAddress) free(context.pBaseAddress);
+   context.pBaseAddress = NULL;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -58,11 +58,11 @@ int main()
       ERROR_EXIT( expectedToPass, NULL, ; );
    }
    
-   g_pBaseAddr = ptr;
-   pAlloc = (psonMemAlloc*)(g_pBaseAddr + PSON_BLOCK_SIZE);
+   context.pBaseAddress = ptr;
+   pAlloc = (psonMemAlloc*)(context.pBaseAddress + PSON_BLOCK_SIZE);
    
    psonMemAllocInit( pAlloc, ptr, allocatedLength, &context );
-   GET_PTR(g_pBaseAddr,  pBitmap, pAlloc->bitmapOffset, psonMemBitmap );
+   GET_PTR(context.pBaseAddress, pBitmap, pAlloc->bitmapOffset, psonMemBitmap );
    if ( pBitmap->lengthInBits != 8*PSON_BLOCK_SIZE ) {
       ERROR_EXIT( expectedToPass, NULL, ; );
    }

@@ -36,9 +36,9 @@ void setup_test()
 
    pQueue = initQueueTest( &context );
 
-   psonTxStatusInit( &status, SET_OFFSET(g_pBaseAddr, context.pTransaction), &context );
-   psonTreeNodeInit( &queueNode, SET_OFFSET(g_pBaseAddr,  pQueue ), PSO_QUEUE,
-                     SET_OFFSET(g_pBaseAddr, &status), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &status, SET_OFFSET(context.pBaseAddress, context.pTransaction), &context );
+   psonTreeNodeInit( &queueNode, SET_OFFSET(context.pBaseAddress, pQueue ), PSO_QUEUE,
+                     SET_OFFSET(context.pBaseAddress, &status), PSON_NULL_OFFSET, &context );
 
    ok = psonQueueInit( pQueue, 
                        0, 1, &queueNode,
@@ -63,15 +63,15 @@ void setup_test()
    assert( ok );
 
    /* Must commit the insert before we attempt to remove */
-   psonQueueCommitAdd( pQueue, SET_OFFSET(g_pBaseAddr, pQueueItem), &context );
+   psonQueueCommitAdd( pQueue, SET_OFFSET(context.pBaseAddress, pQueueItem), &context );
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void teardown_test()
 {
-   if (g_pBaseAddr) free(g_pBaseAddr);
-   g_pBaseAddr = NULL;
+   if (context.pBaseAddress) free(context.pBaseAddress);
+   context.pBaseAddress = NULL;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

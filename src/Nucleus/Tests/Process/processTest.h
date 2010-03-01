@@ -64,8 +64,8 @@ psonProcess * initProcessTest( psonSessionContext* pContext )
    /* Initialize the global allocator */
    ptr = malloc( allocatedLength );
    assert( ptr != NULL );
-   g_pBaseAddr = ptr;
-   pAlloc = (psonMemAlloc*)(g_pBaseAddr + PSON_BLOCK_SIZE);
+   pContext->pBaseAddress = ptr;
+   pAlloc = (psonMemAlloc*)(pContext->pBaseAddress + PSON_BLOCK_SIZE);
    psonMemAllocInit( pAlloc, ptr, allocatedLength, pContext );
    
    /* Allocate memory for the tx object and initialize it */

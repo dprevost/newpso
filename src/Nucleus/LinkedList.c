@@ -29,7 +29,7 @@ void psonLinkedListDump( psonLinkedList     * pList,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonLinkedList (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pList, SET_OFFSET(g_pBaseAddr, pList) );
+      pList, SET_OFFSET(pContext->pBaseAddress, pList) );
    if ( pList == NULL ) return;
    
    DO_INDENT( pContext, indent + 2 );
@@ -86,7 +86,7 @@ void psonLinkedListInit( psonLinkedList     * pList,
 
    /* Make the list circular by pointing it back to itself. */
    pList->head.previousOffset = pList->head.nextOffset = 
-      SET_OFFSET(g_pBaseAddr,  &pList->head );
+      SET_OFFSET(pContext->pBaseAddress, &pList->head );
 
    pList->initialized = PSON_LIST_SIGNATURE;
 
@@ -108,7 +108,7 @@ void psonLinkedListReset( psonLinkedList     * pList,
 
    /* Make the list circular by pointing it back to itself. */
    pList->head.previousOffset = pList->head.nextOffset = 
-      SET_OFFSET(g_pBaseAddr,  &pList->head );
+      SET_OFFSET(pContext->pBaseAddress, &pList->head );
 
    PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
@@ -132,14 +132,14 @@ bool psonLinkedListIsValid( psonLinkedList     * pList,
 
    pItem = &pList->head;
    
-   GET_PTR(g_pBaseAddr,  pItem, pItem->nextOffset, psonLinkNode );
+   GET_PTR(pContext->pBaseAddress, pItem, pItem->nextOffset, psonLinkNode );
    while ( pItem != &pList->head ) {
       if ( pItem == pUnknown ) {
          valid = true;
          break;
       }
       
-      GET_PTR(g_pBaseAddr,  pItem, pItem->nextOffset, psonLinkNode );
+      GET_PTR(pContext->pBaseAddress, pItem, pItem->nextOffset, psonLinkNode );
    }
 
    PSO_TRACE_EXIT_NUCLEUS( pContext, valid );

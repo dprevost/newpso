@@ -53,8 +53,8 @@ void setup_test()
 
 void teardown_test()
 {
-   free( g_pBaseAddr );
-   g_pBaseAddr = NULL;
+   free( context.pBaseAddress );
+   context.pBaseAddress = NULL;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -199,7 +199,7 @@ void test_pass( void ** state )
                         &bucket,
                         &context );
    assert_true( found );
-   assert_true( memcmp( GET_PTR_FAST(g_pBaseAddr, pItem->dataOffset, void), data2, strlen(data2 )) == 0 );
+   assert_true( memcmp( GET_PTR_FAST(context.pBaseAddress, pItem->dataOffset, void), data2, strlen(data2 )) == 0 );
 
    /*
     * Test with different data length
@@ -221,7 +221,7 @@ void test_pass( void ** state )
                         &context );
    assert_true( found );
    assert_true( pItem->dataLength == strlen(data3) );
-   assert_true( memcmp( GET_PTR_FAST(g_pBaseAddr, pItem->dataOffset, void), data3, strlen(data3 )) == 0 );
+   assert_true( memcmp( GET_PTR_FAST(context.pBaseAddress, pItem->dataOffset, void), data3, strlen(data3 )) == 0 );
    
 #endif
    return;

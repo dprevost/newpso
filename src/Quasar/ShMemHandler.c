@@ -54,7 +54,7 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    psoFieldDefinition fields = { "Default", PSO_LONGVARBINARY, {0} };
    psoKeyFieldDefinition keys = { "Default", PSO_LONGVARBINARY, 0 };
 
-   GET_PTR(g_pBaseAddr,  pTree, pHandler->pMemHeader->treeMgrOffset, psonFolder )
+   GET_PTR(pHandler->context.pBaseAddress, pTree, pHandler->pMemHeader->treeMgrOffset, psonFolder )
 
    ok = psonTopFolderCreateFolder( pTree,
                                    "system",
@@ -103,8 +103,8 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) return false;
 
-   GET_PTR(g_pBaseAddr,  pNode, folderItem.pHashItem->dataOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  pFolder, pNode->offset, psonFolder );
+   GET_PTR(pHandler->context.pBaseAddress, pNode, folderItem.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR(pHandler->context.pBaseAddress, pFolder, pNode->offset, psonFolder );
    pFolder->isSystemObject = true;
    
    ok = psonTopFolderCloseObject( &folderItem, &pHandler->context );
@@ -120,8 +120,8 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) return false;
 
-   GET_PTR(g_pBaseAddr,  pNode, folderItem.pHashItem->dataOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  pFolder, pNode->offset, psonFolder );
+   GET_PTR(pHandler->context.pBaseAddress, pNode, folderItem.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR(pHandler->context.pBaseAddress, pFolder, pNode->offset, psonFolder );
    pFolder->isSystemObject = true;
    
    ok = psonTopFolderCloseObject( &folderItem, &pHandler->context );
@@ -138,8 +138,8 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) return false;
 
-   GET_PTR(g_pBaseAddr,  pNode, folderItem.pHashItem->dataOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  pHashMap, pNode->offset, psonHashMap );
+   GET_PTR(pHandler->context.pBaseAddress, pNode, folderItem.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR(pHandler->context.pBaseAddress, pHashMap, pNode->offset, psonHashMap );
    pHashMap->isSystemObject = true;
    pHandler->pMemHeader->dataDefMapOffset = pNode->offset;
 
@@ -180,8 +180,8 @@ bool qsrHandlerAddSystemObjects( qsrHandler * pHandler )
    PSO_POST_CONDITION( ok == true || ok == false );
    if ( ! ok ) return false;
 
-   GET_PTR(g_pBaseAddr,  pNode, folderItem.pHashItem->dataOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  pHashMap, pNode->offset, psonHashMap );
+   GET_PTR(pHandler->context.pBaseAddress, pNode, folderItem.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR(pHandler->context.pBaseAddress, pHashMap, pNode->offset, psonHashMap );
    pHashMap->isSystemObject = true;
    pHandler->pMemHeader->keyDefMapOffset = pNode->offset;
    
@@ -232,9 +232,9 @@ bool qsrHandlerCreateSession( qsrHandler * pHandler )
    void * pSession = (void *)pHandler;
    struct psonSession * pSessionCleanup;
 
-   GET_PTR(g_pBaseAddr,  pHandler->context.pAllocator, 
+   GET_PTR(pHandler->context.pBaseAddress, pHandler->context.pAllocator, 
             pHandler->pMemHeader->allocatorOffset, void );
-   GET_PTR(g_pBaseAddr,  pCleanupManager, 
+   GET_PTR(pHandler->context.pBaseAddress, pCleanupManager, 
             pHandler->pMemHeader->processMgrOffset, psonProcMgr );
 
    ok = psonProcMgrAddProcess( pCleanupManager,
@@ -519,10 +519,10 @@ void qsrHandleCrash( qsrHandler * pHandler, pid_t pid )
    context.lockValue = getpid();
    context.pAllocator = &pHandler->pMemHeader->allocator;
    
-//      GET_PTR(g_pBaseAddr,  m_pMemHeader->allocatorOffset, MemoryAllocator );
+//      GET_PTR(pHandler->context.pBaseAddress, m_pMemHeader->allocatorOffset, MemoryAllocator );
 
    psonProcessManager* pCleanupManager = 
-      GET_PTR(g_pBaseAddr,  m_pMemHeader->cleanupMgrOffset, psonProcessManager );
+      GET_PTR(pHandler->context.pBaseAddress, m_pMemHeader->cleanupMgrOffset, psonProcessManager );
 
    // Start by checking if we are not holding the lock to the 
    // cleanup manager, the memory allocator, etc...

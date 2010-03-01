@@ -73,8 +73,8 @@ psonHash* initHashTest( psonSessionContext * pContext )
    ptr = malloc( allocatedLength );
    assert(ptr != NULL );
    
-   g_pBaseAddr = ptr;
-   pAlloc = (psonMemAlloc*)(g_pBaseAddr + PSON_BLOCK_SIZE);
+   pContext->pBaseAddress = ptr;
+   pAlloc = (psonMemAlloc*)(pContext->pBaseAddress + PSON_BLOCK_SIZE);
    psonMemAllocInit( pAlloc, ptr, allocatedLength, pContext );
    
    /* Allocate memory for our dummy object + initialize it + blockGroup */
@@ -86,7 +86,7 @@ psonHash* initHashTest( psonSessionContext * pContext )
                                 2,
                                 pContext );
    assert( errcode == PSO_OK );
-   g_memObjOffset = SET_OFFSET(g_pBaseAddr, &pDummy->memObject);
+   g_memObjOffset = SET_OFFSET(pContext->pBaseAddress, &pDummy->memObject);
    
    /*
     * We do not initialize hash - otherwise we would not be able

@@ -96,7 +96,7 @@ void qsrPopulateBitmap( struct qsrVerifyStruct    * pVerify,
          (unsigned char*)dummy - offsetof(psonBlockGroup,node));
 
       psonSetBufferFree( pVerify->pBitmap, 
-         SET_OFFSET(g_pBaseAddr,  pGroup )/PSON_BLOCK_SIZE*PSON_BLOCK_SIZE, 
+         SET_OFFSET(pContext->pBaseAddress, pGroup )/PSON_BLOCK_SIZE*PSON_BLOCK_SIZE, 
          pGroup->numBlocks*PSON_BLOCK_SIZE,
          pContext );
       

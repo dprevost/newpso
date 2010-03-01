@@ -96,14 +96,14 @@ void psonClearLocks( psonTx             * pTx,
    PSO_PRE_CONDITION( pContext != NULL );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
-   ok = txHashGetFirst( pTx, &rowNumber, &pMemObj );
+   ok = txHashGetFirst( pTx, &rowNumber, &pMemObj, pContext );
    while ( ok ) {
       psocReleaseProcessLock( &pMemObj->lock );
 
-      ok = txHashGetNext( pTx, rowNumber, &rowNumber, &pMemObj );
+      ok = txHashGetNext( pTx, rowNumber, &rowNumber, &pMemObj, pContext );
    }
    
-   txHashEmpty( pTx );
+   txHashEmpty( pTx, pContext );
 
    PSO_TRACE_EXIT_NUCLEUS( pContext, true );
 }
@@ -291,7 +291,7 @@ bool psonTxCommit( psonTx             * pTx,
       pOps = (psonTxOps*) ((char*)pLinkNode - offsetof( psonTxOps, node ));
 
       /* We always lock the parent */
-      GET_PTR(g_pBaseAddr,  parentMemObject, pOps->parentOffset, psonMemObject );
+      GET_PTR(pContext->pBaseAddress, parentMemObject, pOps->parentOffset, psonMemObject );
       okLock = psonLockTx( pTx, parentMemObject, pContext );
       PSO_POST_CONDITION( okLock == true || okLock == false );
       if ( ! okLock ) {
@@ -303,9 +303,9 @@ bool psonTxCommit( psonTx             * pTx,
       if ( pOps->transType ==  PSON_TX_ADD_OBJECT || 
          pOps->transType == PSON_TX_REMOVE_OBJECT ) {
 
-         GET_PTR(g_pBaseAddr,  pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR(g_pBaseAddr,  pChildNode, pHashItem->dataOffset, psonTreeNode );
-         GET_PTR(g_pBaseAddr,  pChildMemObject, pChildNode->offset, psonMemObject );
+         GET_PTR(pContext->pBaseAddress, pHashItem, pOps->childOffset, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, pChildNode, pHashItem->dataOffset, psonTreeNode );
+         GET_PTR(pContext->pBaseAddress, pChildMemObject, pChildNode->offset, psonMemObject );
          
          okLock = psonLockTx( pTx, pChildMemObject, pContext );
          PSO_POST_CONDITION( okLock == true || okLock == false );
@@ -343,13 +343,13 @@ bool psonTxCommit( psonTx             * pTx,
       case PSON_TX_ADD_DATA:
 
          if ( pOps->parentType == PSON_IDENT_HASH_MAP ) {
-            GET_PTR(g_pBaseAddr,  pHashMap, pOps->parentOffset, psonHashMap );
+            GET_PTR(pContext->pBaseAddress, pHashMap, pOps->parentOffset, psonHashMap );
             parentMemObject = &pHashMap->memObject;
 
             psonHashMapCommitAdd( pHashMap, pOps->childOffset, pContext );
          }
          else if ( pOps->parentType == PSON_IDENT_QUEUE ) {
-            GET_PTR(g_pBaseAddr,  pQueue, pOps->parentOffset, psonQueue );
+            GET_PTR(pContext->pBaseAddress, pQueue, pOps->parentOffset, psonQueue );
             parentMemObject = &pQueue->memObject;
 
             psonQueueCommitAdd( pQueue, pOps->childOffset, pContext );
@@ -365,12 +365,12 @@ bool psonTxCommit( psonTx             * pTx,
 
          PSO_POST_CONDITION( pOps->parentType == PSON_IDENT_FOLDER );
 
-         GET_PTR(g_pBaseAddr,  parentFolder, pOps->parentOffset, psonFolder );
-         GET_PTR(g_pBaseAddr,  pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR(g_pBaseAddr,  pChildNode, pHashItem->dataOffset, psonTreeNode );
-         GET_PTR(g_pBaseAddr,  pChildMemObject, pChildNode->offset, psonMemObject );
+         GET_PTR(pContext->pBaseAddress, parentFolder, pOps->parentOffset, psonFolder );
+         GET_PTR(pContext->pBaseAddress, pHashItem, pOps->childOffset, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, pChildNode, pHashItem->dataOffset, psonTreeNode );
+         GET_PTR(pContext->pBaseAddress, pChildMemObject, pChildNode->offset, psonMemObject );
          pChildStatus = &pHashItem->txStatus;
-         GET_PTR(g_pBaseAddr,  parentNode, parentFolder->nodeOffset, psonTreeNode );
+         GET_PTR(pContext->pBaseAddress, parentNode, parentFolder->nodeOffset, psonTreeNode );
          
          psonTxStatusClearTx( pChildStatus, pContext );
          parentNode->txCounter--;
@@ -384,10 +384,10 @@ bool psonTxCommit( psonTx             * pTx,
 
          PSO_POST_CONDITION( pOps->parentType == PSON_IDENT_FOLDER );
 
-         GET_PTR(g_pBaseAddr,  parentFolder, pOps->parentOffset, psonFolder );
-         GET_PTR(g_pBaseAddr,  pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR(g_pBaseAddr,  pChildNode, pHashItem->dataOffset, psonTreeNode );
-         GET_PTR(g_pBaseAddr,  parentNode, parentFolder->nodeOffset, psonTreeNode );
+         GET_PTR(pContext->pBaseAddress, parentFolder, pOps->parentOffset, psonFolder );
+         GET_PTR(pContext->pBaseAddress, pHashItem, pOps->childOffset, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, pChildNode, pHashItem->dataOffset, psonTreeNode );
+         GET_PTR(pContext->pBaseAddress, parentNode, parentFolder->nodeOffset, psonTreeNode );
 
          pChildMemObject = NULL;
          psonFolderCommitEdit( parentFolder, pHashItem, pOps->childType, 
@@ -403,7 +403,7 @@ bool psonTxCommit( psonTx             * pTx,
              * it might not. We clear it just in case and do not check the
              * return code (which would tell us if the lock was taken or not).
              */
-            txHashDelete( pTx, pChildMemObject );
+            txHashDelete( pTx, pChildMemObject, pContext );
          }
          
          parentNode->txCounter--;
@@ -417,10 +417,10 @@ bool psonTxCommit( psonTx             * pTx,
 
          PSO_POST_CONDITION( pOps->parentType == PSON_IDENT_FOLDER );
 
-         GET_PTR(g_pBaseAddr,  parentFolder, pOps->parentOffset, psonFolder );
-         GET_PTR(g_pBaseAddr,  pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR(g_pBaseAddr,  pChildNode, pHashItem->dataOffset, psonTreeNode );
-         GET_PTR(g_pBaseAddr,  pChildMemObject, pChildNode->offset, psonMemObject );
+         GET_PTR(pContext->pBaseAddress, parentFolder, pOps->parentOffset, psonFolder );
+         GET_PTR(pContext->pBaseAddress, pHashItem, pOps->childOffset, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, pChildNode, pHashItem->dataOffset, psonTreeNode );
+         GET_PTR(pContext->pBaseAddress, pChildMemObject, pChildNode->offset, psonMemObject );
          pChildStatus = &pHashItem->txStatus;
 
          if ( pChildStatus->usageCounter > 0 || 
@@ -441,14 +441,14 @@ bool psonTxCommit( psonTx             * pTx,
                                     pHashItem,
                                     pContext );
 
-            okDelete = txHashDelete( pTx, pChildMemObject );
+            okDelete = txHashDelete( pTx, pChildMemObject, pContext );
          }
 
          break;
 
       case PSON_TX_REMOVE_DATA:
          if ( pOps->parentType == PSON_IDENT_HASH_MAP ) {
-            GET_PTR(g_pBaseAddr,  pHashMap, pOps->parentOffset, psonHashMap );
+            GET_PTR(pContext->pBaseAddress, pHashMap, pOps->parentOffset, psonHashMap );
             parentMemObject = &pHashMap->memObject;
 
             psonHashMapCommitRemove( pHashMap,
@@ -456,7 +456,7 @@ bool psonTxCommit( psonTx             * pTx,
                                      pContext );
          }
          else if ( pOps->parentType == PSON_IDENT_QUEUE ) {
-            GET_PTR(g_pBaseAddr,  pQueue, pOps->parentOffset, psonQueue );
+            GET_PTR(pContext->pBaseAddress, pQueue, pOps->parentOffset, psonQueue );
             parentMemObject = &pQueue->memObject;
 
             psonQueueCommitRemove( pQueue,
@@ -541,7 +541,7 @@ bool psonTxRollback( psonTx             * pTx,
       pOps = (psonTxOps*) ((char*)pLinkNode - offsetof( psonTxOps, node ));
 
       /* We always lock the parent */
-      GET_PTR(g_pBaseAddr,  parentMemObject, pOps->parentOffset, psonMemObject );
+      GET_PTR(pContext->pBaseAddress, parentMemObject, pOps->parentOffset, psonMemObject );
       okLock = psonLockTx( pTx, parentMemObject, pContext );
       PSO_POST_CONDITION( okLock == true || okLock == false );
       if ( ! okLock ) {
@@ -553,9 +553,9 @@ bool psonTxRollback( psonTx             * pTx,
       if ( pOps->transType ==  PSON_TX_ADD_OBJECT || 
          pOps->transType == PSON_TX_REMOVE_OBJECT ) {
 
-         GET_PTR(g_pBaseAddr,  pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR(g_pBaseAddr,  pChildNode, pHashItem->dataOffset, psonTreeNode );
-         GET_PTR(g_pBaseAddr,  pChildMemObject, pChildNode->offset, psonMemObject );
+         GET_PTR(pContext->pBaseAddress, pHashItem, pOps->childOffset, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, pChildNode, pHashItem->dataOffset, psonTreeNode );
+         GET_PTR(pContext->pBaseAddress, pChildMemObject, pChildNode->offset, psonMemObject );
          
          okLock = psonLockTx( pTx, pChildMemObject, pContext );
          PSO_POST_CONDITION( okLock == true || okLock == false );
@@ -591,7 +591,7 @@ bool psonTxRollback( psonTx             * pTx,
 
       case PSON_TX_ADD_DATA:
          if ( pOps->parentType == PSON_IDENT_HASH_MAP ) {
-            GET_PTR(g_pBaseAddr,  pHashMap, pOps->parentOffset, psonHashMap );
+            GET_PTR(pContext->pBaseAddress, pHashMap, pOps->parentOffset, psonHashMap );
             parentMemObject = &pHashMap->memObject;
 
             psonHashMapRollbackAdd( pHashMap, 
@@ -599,7 +599,7 @@ bool psonTxRollback( psonTx             * pTx,
                                     pContext );
          }
          else if ( pOps->parentType == PSON_IDENT_QUEUE ) {
-            GET_PTR(g_pBaseAddr,  pQueue, pOps->parentOffset, psonQueue );
+            GET_PTR(pContext->pBaseAddress, pQueue, pOps->parentOffset, psonQueue );
             parentMemObject = &pQueue->memObject;
 
             psonQueueRollbackAdd( pQueue, 
@@ -617,10 +617,10 @@ bool psonTxRollback( psonTx             * pTx,
 
          PSO_POST_CONDITION( pOps->parentType == PSON_IDENT_FOLDER );
 
-         GET_PTR(g_pBaseAddr,  parentFolder, pOps->parentOffset, psonFolder );
-         GET_PTR(g_pBaseAddr,  pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR(g_pBaseAddr,  pChildNode, pHashItem->dataOffset, psonTreeNode );
-         GET_PTR(g_pBaseAddr,  pChildMemObject, pChildNode->offset, psonMemObject );
+         GET_PTR(pContext->pBaseAddress, parentFolder, pOps->parentOffset, psonFolder );
+         GET_PTR(pContext->pBaseAddress, pHashItem, pOps->childOffset, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, pChildNode, pHashItem->dataOffset, psonTreeNode );
+         GET_PTR(pContext->pBaseAddress, pChildMemObject, pChildNode->offset, psonMemObject );
          pChildStatus = &pHashItem->txStatus;
 
          if ( pChildStatus->usageCounter > 0 || 
@@ -651,7 +651,7 @@ bool psonTxRollback( psonTx             * pTx,
             psonFolderRemoveObject( parentFolder,
                                     pHashItem,
                                     pContext );
-            okDelete = txHashDelete( pTx, pChildMemObject );
+            okDelete = txHashDelete( pTx, pChildMemObject, pContext );
          }
 
          break;
@@ -660,9 +660,9 @@ bool psonTxRollback( psonTx             * pTx,
 
          PSO_POST_CONDITION( pOps->parentType == PSON_IDENT_FOLDER );
 
-         GET_PTR(g_pBaseAddr,  parentFolder, pOps->parentOffset, psonFolder );
-         GET_PTR(g_pBaseAddr,  pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR(g_pBaseAddr,  parentNode, parentFolder->nodeOffset, psonTreeNode );
+         GET_PTR(pContext->pBaseAddress, parentFolder, pOps->parentOffset, psonFolder );
+         GET_PTR(pContext->pBaseAddress, pHashItem, pOps->childOffset, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, parentNode, parentFolder->nodeOffset, psonTreeNode );
          
          psonFolderRollbackEdit( parentFolder, pHashItem, pOps->childType, 
                                  &isRemoved, pContext );
@@ -678,9 +678,9 @@ bool psonTxRollback( psonTx             * pTx,
 
          PSO_POST_CONDITION( pOps->parentType == PSON_IDENT_FOLDER );
 
-         GET_PTR(g_pBaseAddr,  parentFolder, pOps->parentOffset, psonFolder );
-         GET_PTR(g_pBaseAddr,  pHashItem, pOps->childOffset, psonHashTxItem );
-         GET_PTR(g_pBaseAddr,  parentNode, parentFolder->nodeOffset, psonTreeNode );
+         GET_PTR(pContext->pBaseAddress, parentFolder, pOps->parentOffset, psonFolder );
+         GET_PTR(pContext->pBaseAddress, pHashItem, pOps->childOffset, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, parentNode, parentFolder->nodeOffset, psonTreeNode );
          pChildStatus = &pHashItem->txStatus;
 
          psonTxStatusClearTx( pChildStatus, pContext );
@@ -694,14 +694,14 @@ bool psonTxRollback( psonTx             * pTx,
       case PSON_TX_REMOVE_DATA:
 
          if ( pOps->parentType == PSON_IDENT_HASH_MAP ) {
-            GET_PTR(g_pBaseAddr,  pHashMap, pOps->parentOffset, psonHashMap );
+            GET_PTR(pContext->pBaseAddress, pHashMap, pOps->parentOffset, psonHashMap );
             parentMemObject = &pHashMap->memObject;
 
             psonHashMapRollbackRemove( pHashMap, 
                                        pOps->childOffset, pContext );
          }
          else if ( pOps->parentType == PSON_IDENT_QUEUE ) {
-            GET_PTR(g_pBaseAddr,  pQueue, pOps->parentOffset, psonQueue );
+            GET_PTR(pContext->pBaseAddress, pQueue, pOps->parentOffset, psonQueue );
             parentMemObject = &pQueue->memObject;
 
             psonQueueRollbackRemove( pQueue, 

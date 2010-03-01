@@ -71,8 +71,8 @@ initCursorTest( psonSessionContext * pContext )
       fprintf( stderr, "Abnormal error at line %d in cursorTest.h\n", __LINE__ );
       exit(1);
    }
-   g_pBaseAddr = ptr;
-   pAlloc = (psonMemAlloc*)(g_pBaseAddr + PSON_BLOCK_SIZE);
+   pContext->pBaseAddress = ptr;
+   pAlloc = (psonMemAlloc*)(pContext->pBaseAddress + PSON_BLOCK_SIZE);
    psonMemAllocInit( pAlloc, ptr, allocatedLength, pContext );
    
    /* Allocate memory for the tx object and initialize it */

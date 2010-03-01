@@ -35,9 +35,9 @@
 psocErrorHandler g_info;
 unsigned char    g_dum[MEM_SIZE];
 
-void InitMem()
+void InitMem( psonSessionContext * pContext )
 {
-   g_pBaseAddr = g_dum;
+   pContext->pBaseAddress = g_dum;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -63,7 +63,7 @@ int TestList( psonLinkedList* pList )
 
    /* Check the chain going forward. */ 
    while ( testSize > 0 ) {
-      GET_PTR(g_pBaseAddr,  pItem, pItem->nextOffset, psonLinkNode );
+      GET_PTR(g_dum, pItem, pItem->nextOffset, psonLinkNode );
       if ( pItem == &pList->head ) {
          fprintf( stderr, "Error 1\n" );
          return -1;
@@ -71,7 +71,7 @@ int TestList( psonLinkedList* pList )
       
       testSize--;
    }
-   GET_PTR(g_pBaseAddr,  pItem, pItem->nextOffset, psonLinkNode );
+   GET_PTR(g_dum, pItem, pItem->nextOffset, psonLinkNode );
    if ( pItem != &pList->head ) {
       fprintf( stderr, "Error 2\n" );
       return -2;
@@ -82,14 +82,14 @@ int TestList( psonLinkedList* pList )
    pItem =  (psonLinkNode*) &pList->head; 
 
    while ( testSize > 0 ) {
-      GET_PTR(g_pBaseAddr,  pItem, pItem->previousOffset, psonLinkNode );
+      GET_PTR(g_dum, pItem, pItem->previousOffset, psonLinkNode );
       if ( pItem == &pList->head ) {
          fprintf( stderr, "Error 3\n" );
          return -3;
       }
       testSize--;
    }
-   GET_PTR(g_pBaseAddr,  pItem, pItem->previousOffset, psonLinkNode );
+   GET_PTR(g_dum, pItem, pItem->previousOffset, psonLinkNode );
    if ( pItem != &pList->head ) {
       fprintf( stderr, "Error 4\n" );
       return -4;
@@ -127,12 +127,12 @@ void DumpList( psonLinkedList* pList )
    psonLinkNode* pItem = &pList->head;
 
    while ( testSize > 0 ) {
-      GET_PTR(g_pBaseAddr,  pItem, pItem->nextOffset, psonLinkNode );
+      GET_PTR(g_dum, pItem, pItem->nextOffset, psonLinkNode );
       fprintf( stderr, PSO_SIZE_T_FORMAT" = %p %p %p %p \n",
                testSize,
                pItem ,
-               GET_PTR_FAST(g_pBaseAddr, pItem->nextOffset,psonLinkNode ),
-               GET_PTR_FAST(g_pBaseAddr, pItem->previousOffset,psonLinkNode ),
+               GET_PTR_FAST(g_dum, pItem->nextOffset,psonLinkNode ),
+               GET_PTR_FAST(g_dum, pItem->previousOffset,psonLinkNode ),
                &pList->head );
       testSize--;
    }

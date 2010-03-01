@@ -39,14 +39,14 @@ void setup_test()
    initHashMapCopyTest( &pOldMap, &pNewMap, &context );
 
    psonTxStatusInit( &hashItem.txStatus, 
-                     SET_OFFSET(g_pBaseAddr,  context.pTransaction ), &context );
-   psonTreeNodeInit( &mapNode, SET_OFFSET(g_pBaseAddr,  pOldMap ), PSO_FAST_MAP,
-                     SET_OFFSET(g_pBaseAddr,  &hashItem.txStatus ),
+                     SET_OFFSET(context.pBaseAddress, context.pTransaction ), &context );
+   psonTreeNodeInit( &mapNode, SET_OFFSET(context.pBaseAddress, pOldMap ), PSO_FAST_MAP,
+                     SET_OFFSET(context.pBaseAddress, &hashItem.txStatus ),
                      PSON_NULL_OFFSET, &context );
-   hashItem.dataOffset = SET_OFFSET(g_pBaseAddr,  &mapNode );
+   hashItem.dataOffset = SET_OFFSET(context.pBaseAddress, &mapNode );
    
    ok = psonFastMapInit( pOldMap, 0, 1, 0, &mapNode,
-                         SET_OFFSET(g_pBaseAddr, pOldMap), &def, &keyDef, 
+                         SET_OFFSET(context.pBaseAddress, pOldMap), &def, &keyDef, 
                          &context );
    assert( ok );
    
@@ -70,8 +70,8 @@ void setup_test()
 
 void teardown_test()
 {
-   free( g_pBaseAddr );
-   g_pBaseAddr = NULL;
+   free( context.pBaseAddress );
+   context.pBaseAddress = NULL;
    pOldMap = pNewMap = NULL;
 }
 
@@ -148,7 +148,7 @@ void test_pass( void ** state )
                         20,
                         &context );
    assert_true( ok );
-   GET_PTR(g_pBaseAddr,  ptr, pItem->dataOffset, char );
+   GET_PTR(context.pBaseAddress, ptr, pItem->dataOffset, char );
    assert_memory_equal( data1, ptr, 8 );
 
    ok = psonFastMapGet( pNewMap,
@@ -158,7 +158,7 @@ void test_pass( void ** state )
                         20,
                         &context );
    assert_true( ok );
-   GET_PTR(g_pBaseAddr,  ptr, pItem->dataOffset, char );
+   GET_PTR(context.pBaseAddress, ptr, pItem->dataOffset, char );
    assert_memory_equal( data2, ptr, 8 );
 
 #endif

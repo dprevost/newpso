@@ -38,9 +38,9 @@ void setup_test()
 
    pHashMap = initHashMapTest( &context );
 
-   psonTxStatusInit( &status, SET_OFFSET(g_pBaseAddr, context.pTransaction), &context );
-   psonTreeNodeInit( &mapNode, SET_OFFSET(g_pBaseAddr,  pHashMap ), PSO_HASH_MAP,
-                     SET_OFFSET(g_pBaseAddr,  &status ), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &status, SET_OFFSET(context.pBaseAddress, context.pTransaction), &context );
+   psonTreeNodeInit( &mapNode, SET_OFFSET(context.pBaseAddress, pHashMap ), PSO_HASH_MAP,
+                     SET_OFFSET(context.pBaseAddress, &status ), PSON_NULL_OFFSET, &context );
    
    ok = psonHashMapInit( pHashMap, 
                          0, 1, 0, &mapNode,
@@ -65,7 +65,7 @@ void setup_test()
 
    assert( ok );
    
-   psonHashMapCommitAdd( pHashMap, SET_OFFSET(g_pBaseAddr, pItem), &context );
+   psonHashMapCommitAdd( pHashMap, SET_OFFSET(context.pBaseAddress, pItem), &context );
 
    ok = psonHashMapRelease( pHashMap,
                             pItem,
@@ -83,8 +83,8 @@ void setup_test()
 
 void teardown_test()
 {
-   free( g_pBaseAddr );
-   g_pBaseAddr = NULL;
+   free( context.pBaseAddress );
+   context.pBaseAddress = NULL;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -93,7 +93,7 @@ void test_null_context( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonHashMapCommitRemove( pHashMap, 
-                                                   SET_OFFSET(g_pBaseAddr,  pItem ),
+                                                   SET_OFFSET(context.pBaseAddress, pItem ),
                                                    NULL ) );
 #endif
    return;
@@ -105,7 +105,7 @@ void test_null_hash( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonHashMapCommitRemove( NULL, 
-                                                   SET_OFFSET(g_pBaseAddr,  pItem ),
+                                                   SET_OFFSET(context.pBaseAddress, pItem ),
                                                    &context ) );
 #endif
    return;
@@ -129,7 +129,7 @@ void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    psonHashMapCommitRemove( pHashMap, 
-                            SET_OFFSET(g_pBaseAddr,  pItem ),
+                            SET_OFFSET(context.pBaseAddress, pItem ),
                             &context );
 #endif
    return;

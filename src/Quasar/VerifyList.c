@@ -112,7 +112,7 @@ qsrVerifyList( qsrVerifyStruct       * pVerify,
     * pList->currentSize.
     */
    
-   headOffset = SET_OFFSET(g_pBaseAddr,  &pList->head );
+   headOffset = SET_OFFSET(pContext->pBaseAddress, &pList->head );
 
    // We loop forward until we come back to head or until we clearly have
    // a discontinuity in the chain.
@@ -135,7 +135,7 @@ qsrVerifyList( qsrVerifyStruct       * pVerify,
          }
       }
       previous = next;
-      GET_PTR(g_pBaseAddr,  next, next->nextOffset, psonLinkNode );
+      GET_PTR(pContext->pBaseAddress, next, next->nextOffset, psonLinkNode );
    }
 
    // Same as before but we loop backward.
@@ -158,7 +158,7 @@ qsrVerifyList( qsrVerifyStruct       * pVerify,
          }
       }
       previous = next;
-      GET_PTR(g_pBaseAddr,  next, next->previousOffset, psonLinkNode );
+      GET_PTR(pContext->pBaseAddress, next, next->previousOffset, psonLinkNode );
    }
    
    // So how did it go?... we have multiple possibilities here.
@@ -227,8 +227,8 @@ qsrVerifyList( qsrVerifyStruct       * pVerify,
        */
       previous = &pList->head;
       do {
-         GET_PTR(g_pBaseAddr,  next, previous->nextOffset, psonLinkNode );
-         next->previousOffset = SET_OFFSET(g_pBaseAddr,  previous );
+         GET_PTR(pContext->pBaseAddress, next, previous->nextOffset, psonLinkNode );
+         next->previousOffset = SET_OFFSET(pContext->pBaseAddress, previous );
          /* prepare for next round */
          previous = next;
          
@@ -248,8 +248,8 @@ qsrVerifyList( qsrVerifyStruct       * pVerify,
        */
       previous = &pList->head;
       do {
-         GET_PTR(g_pBaseAddr,  next, previous->previousOffset, psonLinkNode );
-         next->nextOffset = SET_OFFSET(g_pBaseAddr,  previous );
+         GET_PTR(pContext->pBaseAddress, next, previous->previousOffset, psonLinkNode );
+         next->nextOffset = SET_OFFSET(pContext->pBaseAddress, previous );
 
          /* prepare for next round */
          previous = next;
@@ -275,8 +275,8 @@ qsrVerifyList( qsrVerifyStruct       * pVerify,
        */
       previous = &pList->head;
       do {
-         GET_PTR(g_pBaseAddr,  next, previous->nextOffset, psonLinkNode );
-         next->previousOffset = SET_OFFSET(g_pBaseAddr,  previous );
+         GET_PTR(pContext->pBaseAddress, next, previous->nextOffset, psonLinkNode );
+         next->previousOffset = SET_OFFSET(pContext->pBaseAddress, previous );
          if ( kit.previousBreak == next )
             foundNode = true;
          /* prepare for next round */
@@ -294,12 +294,12 @@ qsrVerifyList( qsrVerifyStruct       * pVerify,
           * value of kit.previousBreakPrevious->previousOffset (we use it to 
           * recover the value of previous but we also need to reset it).
           */
-         GET_PTR(g_pBaseAddr,  previous, kit.previousBreakPrevious->previousOffset, psonLinkNode );
+         GET_PTR(pContext->pBaseAddress, previous, kit.previousBreakPrevious->previousOffset, psonLinkNode );
          
-         kit.previousBreak->nextOffset = SET_OFFSET(g_pBaseAddr,  kit.previousBreakPrevious );
-         kit.previousBreak->previousOffset = SET_OFFSET(g_pBaseAddr,  previous );
-         previous->nextOffset = SET_OFFSET(g_pBaseAddr,  kit.previousBreak );
-         kit.previousBreakPrevious->previousOffset = SET_OFFSET(g_pBaseAddr,  kit.previousBreak );
+         kit.previousBreak->nextOffset = SET_OFFSET(pContext->pBaseAddress, kit.previousBreakPrevious );
+         kit.previousBreak->previousOffset = SET_OFFSET(pContext->pBaseAddress, previous );
+         previous->nextOffset = SET_OFFSET(pContext->pBaseAddress, kit.previousBreak );
+         kit.previousBreakPrevious->previousOffset = SET_OFFSET(pContext->pBaseAddress, kit.previousBreak );
          
          pList->currentSize = kit.forwardChainLen + 1;
       }
@@ -322,8 +322,8 @@ qsrVerifyList( qsrVerifyStruct       * pVerify,
        */
       previous = &pList->head;
       do {
-         GET_PTR(g_pBaseAddr,  next, previous->previousOffset, psonLinkNode );
-         next->nextOffset = SET_OFFSET(g_pBaseAddr,  previous );
+         GET_PTR(pContext->pBaseAddress, next, previous->previousOffset, psonLinkNode );
+         next->nextOffset = SET_OFFSET(pContext->pBaseAddress, previous );
          if ( kit.nextBreak == next )
             foundNode = true;
          /* prepare for next round */
@@ -342,12 +342,12 @@ qsrVerifyList( qsrVerifyStruct       * pVerify,
           * value of kit.nextBreakPrevious->nextOffset (we use it to recover
           * the value of next but we also need to reset it).
           */
-         GET_PTR(g_pBaseAddr,  next, kit.nextBreakPrevious->nextOffset, psonLinkNode );
+         GET_PTR(pContext->pBaseAddress, next, kit.nextBreakPrevious->nextOffset, psonLinkNode );
          
-         kit.nextBreak->previousOffset = SET_OFFSET(g_pBaseAddr,  kit.nextBreakPrevious );
-         kit.nextBreak->nextOffset = SET_OFFSET(g_pBaseAddr,  next );
-         next->previousOffset = SET_OFFSET(g_pBaseAddr,  kit.nextBreak );
-         kit.nextBreakPrevious->nextOffset = SET_OFFSET(g_pBaseAddr,  kit.nextBreak );
+         kit.nextBreak->previousOffset = SET_OFFSET(pContext->pBaseAddress, kit.nextBreakPrevious );
+         kit.nextBreak->nextOffset = SET_OFFSET(pContext->pBaseAddress, next );
+         next->previousOffset = SET_OFFSET(pContext->pBaseAddress, kit.nextBreak );
+         kit.nextBreakPrevious->nextOffset = SET_OFFSET(pContext->pBaseAddress, kit.nextBreak );
          
          pList->currentSize = kit.backwardChainLen + 1;
       }
@@ -362,8 +362,8 @@ qsrVerifyList( qsrVerifyStruct       * pVerify,
        * No loop needed here - we are just missing the links of the
        * new node.
        */
-      kit.nextBreak->nextOffset = SET_OFFSET(g_pBaseAddr,  kit.previousBreakPrevious );
-      kit.nextBreak->previousOffset = SET_OFFSET(g_pBaseAddr,  kit.nextBreakPrevious );
+      kit.nextBreak->nextOffset = SET_OFFSET(pContext->pBaseAddress, kit.previousBreakPrevious );
+      kit.nextBreak->previousOffset = SET_OFFSET(pContext->pBaseAddress, kit.nextBreakPrevious );
       
       pList->currentSize = kit.forwardChainLen + kit.backwardChainLen - 1;
 

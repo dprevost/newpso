@@ -128,7 +128,7 @@ void psonSessionDump( psonSession        * pSession,
    
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonSession (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pSession, SET_OFFSET(g_pBaseAddr, pSession) );
+      pSession, SET_OFFSET(pContext->pBaseAddress, pSession) );
    if ( pSession == NULL ) return;
 
    psonMemObjectDump( &pSession->memObject, indent + 2, pContext );
@@ -310,14 +310,14 @@ bool psonSessionOpenCursor( psonSession        * pSession,
       pCursor = (psonCursor *) psonMallocBlocks( pContext->pAllocator, 
                                                  PSON_ALLOC_API_OBJ, 1, pContext );
       if ( pCursor != NULL ) {
-         ok = psonCursorInit( pCursor, SET_OFFSET(g_pBaseAddr, pSession), 1, pContext );
+         ok = psonCursorInit( pCursor, SET_OFFSET(pContext->pBaseAddress, pSession), 1, pContext );
          PSO_PRE_CONDITION( ok == true || ok == false );
 
          if ( ok ) {
             pCurrentBuffer = (psonCursorContext *) 
                psonMalloc( &pSession->memObject, sizeof(psonCursorContext), pContext );
             if ( pCurrentBuffer != NULL ) {
-               pCurrentBuffer->offset = SET_OFFSET(g_pBaseAddr, pCursor);
+               pCurrentBuffer->offset = SET_OFFSET(pContext->pBaseAddress, pCursor);
                pCurrentBuffer->cursor = pCursor;
                
                psonLinkNodeInit( &pCurrentBuffer->node, pContext );

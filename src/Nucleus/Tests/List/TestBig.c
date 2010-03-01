@@ -84,7 +84,7 @@ void test_pass( void ** state )
    dummyStruct*  pDummy;
    
    initTest( &context );
-   InitMem();
+   InitMem( &context );
 
    /* Initialize the array of dummy structs */
    memset( dummy, 0, sizeof(dummyStruct)*MAX_ELEMENTS );

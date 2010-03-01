@@ -44,9 +44,9 @@ void test_pass( void ** state )
    pFolder = initFolderTest( &context );
    pTx = context.pTransaction;
    
-   psonTxStatusInit( &status, SET_OFFSET(g_pBaseAddr,  pTx ), &context );
-   psonTreeNodeInit( &folderNode, SET_OFFSET(g_pBaseAddr,  pFolder ), PSO_QUEUE,
-                     SET_OFFSET(g_pBaseAddr, &status), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &status, SET_OFFSET(context.pBaseAddress, pTx ), &context );
+   psonTreeNodeInit( &folderNode, SET_OFFSET(context.pBaseAddress, pFolder ), PSO_QUEUE,
+                     SET_OFFSET(context.pBaseAddress, &status), PSON_NULL_OFFSET, &context );
    
    ok = psonFolderInit( pFolder, 0, 1, 0, &folderNode, &context );
    assert_true( ok );
@@ -69,8 +69,8 @@ void test_pass( void ** state )
                              &item,
                              &context );
    assert_true( ok );
-   GET_PTR(g_pBaseAddr,  pQueueNode, item.pHashItem->dataOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  pQueue, pQueueNode->offset, psonQueue );
+   GET_PTR(context.pBaseAddress, pQueueNode, item.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR(context.pBaseAddress, pQueue, pQueueNode->offset, psonQueue );
 
    /* Test 1 */
    ok = psonQueueInsert( pQueue,

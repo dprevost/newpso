@@ -40,12 +40,12 @@ void setup_test()
    pHashMap = initHashMapTest( &context );
    assert( pHashMap );
    
-   psonTxStatusInit( &status, SET_OFFSET(g_pBaseAddr,  context.pTransaction ), &context );
-   psonTreeNodeInit( &mapNode, SET_OFFSET(g_pBaseAddr,  pHashMap ), PSO_FAST_MAP,
-                     SET_OFFSET(g_pBaseAddr,  &status ), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &status, SET_OFFSET(context.pBaseAddress, context.pTransaction ), &context );
+   psonTreeNodeInit( &mapNode, SET_OFFSET(context.pBaseAddress, pHashMap ), PSO_FAST_MAP,
+                     SET_OFFSET(context.pBaseAddress, &status ), PSON_NULL_OFFSET, &context );
    
    ok = psonFastMapInit( pHashMap, 0, 1, 0, &mapNode,
-                         SET_OFFSET(g_pBaseAddr, pHashMap), &def, &keyDef, 
+                         SET_OFFSET(context.pBaseAddress, pHashMap), &def, &keyDef, 
                          &context );
    assert( ok );
    
@@ -71,8 +71,8 @@ void setup_test()
 
 void teardown_test()
 {
-   free( g_pBaseAddr );
-   g_pBaseAddr = NULL;
+   free( context.pBaseAddress );
+   context.pBaseAddress = NULL;
    pHashMap = NULL;
 }
 
@@ -190,7 +190,7 @@ void test_pass( void ** state )
                         20,
                         &context );
    assert_true( ok );
-   GET_PTR(g_pBaseAddr,  ptr, pItem->dataOffset, char );
+   GET_PTR(context.pBaseAddress, ptr, pItem->dataOffset, char );
    assert_true( memcmp( data2, ptr, strlen(data2)) == 0 );
    
 #endif

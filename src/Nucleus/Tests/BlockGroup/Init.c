@@ -34,7 +34,7 @@ void setup_test()
 
    ptr = malloc( PSON_BLOCK_SIZE*10 );
    assert( ptr != NULL );
-   g_pBaseAddr = ptr;
+   context.pBaseAddress = ptr;
    
    /* This "100" (non-zero) offset should mark this block group 
     * as the first block group of a MemObject.
@@ -48,7 +48,7 @@ void setup_test()
 void teardown_test()
 {
    if ( ptr) free(ptr);
-   g_pBaseAddr = NULL;
+   context.pBaseAddress = NULL;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -57,7 +57,7 @@ void test_invalid_type( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonBlockGroupInit( pGroup, 
-                                              SET_OFFSET(g_pBaseAddr, ptr),
+                                              SET_OFFSET(context.pBaseAddress, ptr),
                                               10,
                                               (psonMemObjIdent)(PSON_IDENT_LAST+200),
                                               &context ) );
@@ -71,7 +71,7 @@ void test_null_context( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonBlockGroupInit( pGroup, 
-                                              SET_OFFSET(g_pBaseAddr, ptr),
+                                              SET_OFFSET(context.pBaseAddress, ptr),
                                               10,
                                               PSON_IDENT_QUEUE,
                                               NULL ) );
@@ -85,7 +85,7 @@ void test_null_group( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonBlockGroupInit( NULL, 
-                                              SET_OFFSET(g_pBaseAddr, ptr),
+                                              SET_OFFSET(context.pBaseAddress, ptr),
                                               10,
                                               PSON_IDENT_QUEUE,
                                               &context ) );
@@ -113,7 +113,7 @@ void test_zero_blocks( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonBlockGroupInit( pGroup, 
-                                              SET_OFFSET(g_pBaseAddr, ptr),
+                                              SET_OFFSET(context.pBaseAddress, ptr),
                                               0,
                                               PSON_IDENT_QUEUE,
                                               &context ) );
@@ -128,7 +128,7 @@ void test_pass( void ** state )
 #if defined(PSO_UNIT_TESTS)
 
    psonBlockGroupInit( pGroup, 
-                      SET_OFFSET(g_pBaseAddr, ptr),
+                      SET_OFFSET(context.pBaseAddress, ptr),
                       10,
                       PSON_IDENT_QUEUE,
                       &context );
@@ -139,14 +139,14 @@ void test_pass( void ** state )
                 pGroup->maxFreeBytes < 10*PSON_BLOCK_SIZE );
    assert_true( pGroup->freeList.initialized == PSON_LIST_SIGNATURE );
    assert_false( pGroup->isDeletable );
-   assert_true( pGroup->bitmap.baseAddressOffset == SET_OFFSET(g_pBaseAddr, ptr) );
+   assert_true( pGroup->bitmap.baseAddressOffset == SET_OFFSET(context.pBaseAddress, ptr) );
    
    psonBlockGroupFini( pGroup, &context );
 
    /* A zero offset this time */
    pGroup = (psonBlockGroup*) ptr;
    psonBlockGroupInit( pGroup,
-                       SET_OFFSET(g_pBaseAddr, ptr),
+                       SET_OFFSET(context.pBaseAddress, ptr),
                        10,
                        PSON_IDENT_QUEUE,
                        &context );

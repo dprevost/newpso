@@ -39,7 +39,7 @@ void setup_test()
    assert( ok );
 
    
-   objOffset = SET_OFFSET(g_pBaseAddr,  pSession ); /* Dummy offset */
+   objOffset = SET_OFFSET(context.pBaseAddress, pSession ); /* Dummy offset */
    
    ok = psonSessionAddObj( pSession,
                            objOffset, 
@@ -54,8 +54,8 @@ void setup_test()
 
 void teardown_test()
 {
-   if (g_pBaseAddr) free(g_pBaseAddr);
-   g_pBaseAddr = NULL;
+   if (context.pBaseAddress) free(context.pBaseAddress);
+   context.pBaseAddress = NULL;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

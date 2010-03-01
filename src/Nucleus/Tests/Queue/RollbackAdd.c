@@ -36,9 +36,9 @@ void setup_test()
    
    pQueue = initQueueTest( &context );
 
-   psonTxStatusInit( &status, SET_OFFSET(g_pBaseAddr, context.pTransaction), &context );
-   psonTreeNodeInit( &queueNode, SET_OFFSET(g_pBaseAddr,  pQueue ), PSO_QUEUE,
-                     SET_OFFSET(g_pBaseAddr, &status), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &status, SET_OFFSET(context.pBaseAddress, context.pTransaction), &context );
+   psonTreeNodeInit( &queueNode, SET_OFFSET(context.pBaseAddress, pQueue ), PSO_QUEUE,
+                     SET_OFFSET(context.pBaseAddress, &status), PSON_NULL_OFFSET, &context );
 
    ok = psonQueueInit( pQueue, 
                        0, 1, &queueNode,
@@ -68,8 +68,8 @@ void setup_test()
 
 void teardown_test()
 {
-   if (g_pBaseAddr) free(g_pBaseAddr);
-   g_pBaseAddr = NULL;
+   if (context.pBaseAddress) free(context.pBaseAddress);
+   context.pBaseAddress = NULL;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
@@ -78,7 +78,7 @@ void test_null_context( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonQueueRollbackAdd( pQueue, 
-                                                SET_OFFSET(g_pBaseAddr,  pItem ),
+                                                SET_OFFSET(context.pBaseAddress, pItem ),
                                                 NULL ) );
 #endif
    return;
@@ -102,7 +102,7 @@ void test_null_queue( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psonQueueRollbackAdd( NULL,
-                                                SET_OFFSET(g_pBaseAddr,  pItem ),
+                                                SET_OFFSET(context.pBaseAddress, pItem ),
                                                 &context ) );
 #endif
    return;
@@ -114,7 +114,7 @@ void test_pass( void ** state )
 {
 #if defined(PSO_UNIT_TESTS)
    psonQueueRollbackAdd( pQueue, 
-                         SET_OFFSET(g_pBaseAddr,  pItem ),
+                         SET_OFFSET(context.pBaseAddress, pItem ),
                          &context );
 #endif
    return;

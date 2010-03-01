@@ -47,8 +47,8 @@ void psonHashMapCommitAdd( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR(g_pBaseAddr,  pHashItem, itemOffset, psonHashTxItem );
-   GET_PTR(g_pBaseAddr,  pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, pHashItem, itemOffset, psonHashTxItem );
+   GET_PTR(pContext->pBaseAddress, pMapNode, pHashMap->nodeOffset, psonTreeNode );
 
    pHashItem->txStatus.txOffset = PSON_NULL_OFFSET;
    pHashItem->txStatus.status = PSON_TXS_OK;
@@ -66,7 +66,7 @@ void psonHashMapCommitAdd( psonHashMap        * pHashMap,
     *       current function returns void. Let's someone else find that 
     *       we are getting low on memory...
     */
-   GET_PTR(g_pBaseAddr,  txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
    if ( (txHashMapStatus->usageCounter == 0) &&
                    (pMapNode->txCounter == 0 ) ) {
       if ( pHashMap->hashObj.enumResize != PSON_HASH_NO_RESIZE ) { 
@@ -92,8 +92,8 @@ void psonHashMapCommitRemove( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR(g_pBaseAddr,  pMapNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  pHashItem, itemOffset, psonHashTxItem );
+   GET_PTR(pContext->pBaseAddress, pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, pHashItem, itemOffset, psonHashTxItem );
    txItemStatus = &pHashItem->txStatus;
    /* 
     * If someone is using it, the usageCounter will be greater than zero.
@@ -119,7 +119,7 @@ void psonHashMapCommitRemove( psonHashMap        * pHashMap,
        *       we are getting low on memory...
        */
       if ( pHashMap->hashObj.enumResize != PSON_HASH_NO_RESIZE ) {
-         GET_PTR(g_pBaseAddr,  txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
+         GET_PTR(pContext->pBaseAddress, txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
          if ( (txHashMapStatus->usageCounter == 0) &&
             (pMapNode->txCounter == 0 ) ) {
             psonHashTxResize( &pHashMap->hashObj, pContext );
@@ -183,11 +183,11 @@ bool psonHashMapDelete( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
-   GET_PTR(g_pBaseAddr,  pMapNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
-      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(g_pBaseAddr, pContext->pTransaction), pContext ) 
+      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction), pContext ) 
          || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus, pContext ) ) {
          errcode = PSO_OBJECT_IS_DELETED;
          goto the_exit;
@@ -207,7 +207,7 @@ bool psonHashMapDelete( psonHashMap        * pHashMap,
          goto the_exit;
       }
       while ( pHashItem->nextSameKey != PSON_NULL_OFFSET ) {
-         GET_PTR(g_pBaseAddr,  pHashItem, pHashItem->nextSameKey, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, pHashItem, pHashItem->nextSameKey, psonHashTxItem );
       }
       
       txItemStatus = &pHashItem->txStatus;
@@ -229,15 +229,15 @@ bool psonHashMapDelete( psonHashMap        * pHashMap,
 
       ok = psonTxAddOps( (psonTx*)pContext->pTransaction,
                          PSON_TX_REMOVE_DATA,
-                         SET_OFFSET(g_pBaseAddr, pHashMap),
+                         SET_OFFSET(pContext->pBaseAddress, pHashMap),
                          PSON_IDENT_HASH_MAP,
-                         SET_OFFSET(g_pBaseAddr,  pHashItem),
+                         SET_OFFSET(pContext->pBaseAddress, pHashItem),
                          0,
                          pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
       if ( ! ok ) goto the_exit;
       
-      txItemStatus->txOffset = SET_OFFSET(g_pBaseAddr, pContext->pTransaction);
+      txItemStatus->txOffset = SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction);
       txItemStatus->status = PSON_TXS_DESTROYED;
       pMapNode->txCounter++;
 
@@ -289,11 +289,11 @@ bool psonHashMapDeleteZero( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
-   GET_PTR(g_pBaseAddr,  pMapNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
-      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(g_pBaseAddr, pContext->pTransaction), pContext ) 
+      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction), pContext ) 
          || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus, pContext ) ) {
          errcode = PSO_OBJECT_IS_DELETED;
          goto the_exit;
@@ -313,7 +313,7 @@ bool psonHashMapDeleteZero( psonHashMap        * pHashMap,
          goto the_exit;
       }
       while ( pHashItem->nextSameKey != PSON_NULL_OFFSET ) {
-         GET_PTR(g_pBaseAddr,  pHashItem, pHashItem->nextSameKey, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, pHashItem, pHashItem->nextSameKey, psonHashTxItem );
       }
       
       txItemStatus = &pHashItem->txStatus;
@@ -341,15 +341,15 @@ bool psonHashMapDeleteZero( psonHashMap        * pHashMap,
       
       ok = psonTxAddOps( (psonTx*)pContext->pTransaction,
                          PSON_TX_REMOVE_DATA,
-                         SET_OFFSET(g_pBaseAddr, pHashMap),
+                         SET_OFFSET(pContext->pBaseAddress, pHashMap),
                          PSON_IDENT_HASH_MAP,
-                         SET_OFFSET(g_pBaseAddr,  pHashItem),
+                         SET_OFFSET(pContext->pBaseAddress, pHashItem),
                          0,
                          pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
       if ( ! ok ) goto the_exit;
       
-      txItemStatus->txOffset = SET_OFFSET(g_pBaseAddr, pContext->pTransaction);
+      txItemStatus->txOffset = SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction);
       txItemStatus->status = PSON_TXS_DESTROYED;
       pMapNode->txCounter++;
 
@@ -385,7 +385,7 @@ void psonHashMapDump( psonHashMap        * pHashMap,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonHashMap (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pHashMap, SET_OFFSET(g_pBaseAddr, pHashMap) );
+      pHashMap, SET_OFFSET(pContext->pBaseAddress, pHashMap) );
    if ( pHashMap == NULL ) return;
 
    psonMemObjectDump( &pHashMap->memObject, indent + 2, pContext );
@@ -464,11 +464,11 @@ bool psonHashMapGet( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR(g_pBaseAddr,  pMapNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
-      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(g_pBaseAddr, pContext->pTransaction), pContext ) 
+      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction), pContext ) 
          || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus, pContext ) ) {
          errcode = PSO_OBJECT_IS_DELETED;
          goto the_exit;
@@ -486,7 +486,7 @@ bool psonHashMapGet( psonHashMap        * pHashMap,
       }
       while ( pHashItem->nextSameKey != PSON_NULL_OFFSET ) {
          previousItem = pHashItem;
-         GET_PTR(g_pBaseAddr,  pHashItem, pHashItem->nextSameKey, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, pHashItem, pHashItem->nextSameKey, psonHashTxItem );
       }
 
       /*
@@ -518,18 +518,18 @@ bool psonHashMapGet( psonHashMap        * pHashMap,
             errcode = PSO_NO_SUCH_ITEM;
             goto the_exit;
          }
-         if ( txItemStatus->txOffset == SET_OFFSET(g_pBaseAddr, pContext->pTransaction) &&
+         if ( txItemStatus->txOffset == SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction) &&
             txItemStatus->status & PSON_TXS_DESTROYED ) {
             errcode = PSO_ITEM_IS_DELETED;
             goto the_exit;
          }
-         if ( txItemStatus->txOffset != SET_OFFSET(g_pBaseAddr, pContext->pTransaction) &&
+         if ( txItemStatus->txOffset != SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction) &&
             txItemStatus->status & PSON_TXS_ADDED ) {
             errcode = PSO_ITEM_IS_IN_USE;
             goto the_exit;
          }
          if ( txItemStatus->status & PSON_TXS_REPLACED ) {
-            if ( txItemStatus->txOffset != SET_OFFSET(g_pBaseAddr, pContext->pTransaction) ) {
+            if ( txItemStatus->txOffset != SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction) ) {
                pHashItem = previousItem;
                txItemStatus = &pHashItem->txStatus;
             }
@@ -591,15 +591,15 @@ bool psonHashMapGetFirst( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR(g_pBaseAddr,  pMapNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
       found = psonHashTxGetFirst( &pHashMap->hashObj, 
                                   &firstItemOffset,
                                   pContext );
       while ( found ) {
-         GET_PTR(g_pBaseAddr,  pHashItem, firstItemOffset, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, pHashItem, firstItemOffset, psonHashTxItem );
          txItemStatus = &pHashItem->txStatus;
 
          /* 
@@ -615,11 +615,11 @@ bool psonHashMapGetFirst( psonHashMap        * pHashMap,
           */
          isOK = true;
          if ( txItemStatus->txOffset != PSON_NULL_OFFSET ) {
-            if ( txItemStatus->txOffset == SET_OFFSET(g_pBaseAddr, pContext->pTransaction) &&
+            if ( txItemStatus->txOffset == SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction) &&
                txItemStatus->status & PSON_TXS_DESTROYED ) {
                isOK = false;
             }
-            if ( txItemStatus->txOffset != SET_OFFSET(g_pBaseAddr, pContext->pTransaction) &&
+            if ( txItemStatus->txOffset != SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction) &&
                txItemStatus->status & PSON_TXS_ADDED ) {
                isOK = false;
             }
@@ -703,8 +703,8 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pItem->itemOffset != PSON_NULL_OFFSET );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
-   GET_PTR(g_pBaseAddr,  pMapNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    itemOffset       = pItem->itemOffset;
    previousHashItem = pItem->pHashItem;
@@ -715,7 +715,7 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
                                  &itemOffset,
                                  pContext );
       while ( found ) {
-         GET_PTR(g_pBaseAddr,  pHashItem, itemOffset, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, pHashItem, itemOffset, psonHashTxItem );
          txItemStatus = &pHashItem->txStatus;
 
          /* 
@@ -731,11 +731,11 @@ bool psonHashMapGetNext( psonHashMap        * pHashMap,
           */
          isOK = true;
          if ( txItemStatus->txOffset != PSON_NULL_OFFSET ) {
-            if ( txItemStatus->txOffset == SET_OFFSET(g_pBaseAddr, pContext->pTransaction) &&
+            if ( txItemStatus->txOffset == SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction) &&
                txItemStatus->status & PSON_TXS_DESTROYED ) {
                isOK = false;
             }
-            if ( txItemStatus->txOffset != SET_OFFSET(g_pBaseAddr, pContext->pTransaction) &&
+            if ( txItemStatus->txOffset != SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction) &&
                txItemStatus->status & PSON_TXS_ADDED ) {
                isOK = false;
             }
@@ -873,10 +873,10 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
       return false;
    }
 
-   pHashMap->nodeOffset = SET_OFFSET(g_pBaseAddr,  pNode );
+   pHashMap->nodeOffset = SET_OFFSET(pContext->pBaseAddress, pNode );
 
    errcode = psonHashTxInit( &pHashMap->hashObj, 
-                           SET_OFFSET(g_pBaseAddr, &pHashMap->memObject),
+                           SET_OFFSET(pContext->pBaseAddress, &pHashMap->memObject),
                            expectedNumOfItems, 
                            pContext );
    if ( errcode != PSO_OK ) {
@@ -900,7 +900,7 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
       return false;
    }
    memcpy( ptr, pDefinition, len );
-   pHashMap->dataDefOffset = SET_OFFSET(g_pBaseAddr, ptr);
+   pHashMap->dataDefOffset = SET_OFFSET(pContext->pBaseAddress, ptr);
    
    len = offsetof( psoKeyDefinition, definition ) + pKeyDefinition->definitionLength;
    if ( pKeyDefinition->definitionLength == 0 ) {
@@ -915,7 +915,7 @@ bool psonHashMapInit( psonHashMap         * pHashMap,
       return false;
    }
    memcpy( ptr, pKeyDefinition, len );
-   pHashMap->keyDefOffset  = SET_OFFSET(g_pBaseAddr, ptr);
+   pHashMap->keyDefOffset  = SET_OFFSET(pContext->pBaseAddress, ptr);
 
    pHashMap->isSystemObject = false;
 
@@ -948,11 +948,11 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR(g_pBaseAddr,  pMapNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
-      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(g_pBaseAddr, pContext->pTransaction), pContext ) 
+      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction), pContext ) 
          || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus, pContext ) ) {
          errcode = PSO_OBJECT_IS_DELETED;
          goto the_exit;
@@ -967,7 +967,7 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
       if ( found ) {
          /* Find the last one in the chain of items with same key */
          while ( previousHashItem->nextSameKey != PSON_NULL_OFFSET ) {
-            GET_PTR(g_pBaseAddr,  previousHashItem, previousHashItem->nextSameKey, psonHashTxItem );
+            GET_PTR(pContext->pBaseAddress, previousHashItem, previousHashItem->nextSameKey, psonHashTxItem );
          }
 
          /* 
@@ -993,9 +993,9 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
 
       ok = psonTxAddOps( (psonTx*)pContext->pTransaction,
                          PSON_TX_ADD_DATA,
-                         SET_OFFSET(g_pBaseAddr, pHashMap),
+                         SET_OFFSET(pContext->pBaseAddress, pHashMap),
                          PSON_IDENT_HASH_MAP,
-                         SET_OFFSET(g_pBaseAddr, pHashItem),
+                         SET_OFFSET(pContext->pBaseAddress, pHashItem),
                          0,
                          pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
@@ -1007,11 +1007,11 @@ bool psonHashMapInsert( psonHashMap        * pHashMap,
       }
       
       txItemStatus = &pHashItem->txStatus;
-      psonTxStatusInit( txItemStatus, SET_OFFSET(g_pBaseAddr, pContext->pTransaction), pContext );
+      psonTxStatusInit( txItemStatus, SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction), pContext );
       pMapNode->txCounter++;
       txItemStatus->status = PSON_TXS_ADDED;
       if ( previousHashItem != NULL ) {
-         previousHashItem->nextSameKey = SET_OFFSET(g_pBaseAddr, pHashItem);
+         previousHashItem->nextSameKey = SET_OFFSET(pContext->pBaseAddress, pHashItem);
       }
       
       psonUnlock( &pHashMap->memObject, pContext );
@@ -1091,8 +1091,8 @@ void psonHashMapReleaseNoLock( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR(g_pBaseAddr,  pMapNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    txItemStatus = &pHashItem->txStatus;
    
@@ -1154,11 +1154,11 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR(g_pBaseAddr,  pMapNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    if ( psonLock( &pHashMap->memObject, pContext ) ) {
-      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(g_pBaseAddr, pContext->pTransaction), pContext ) 
+      if ( ! psonTxStatusIsValid( txHashMapStatus, SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction), pContext ) 
          || psonTxStatusIsMarkedAsDestroyed( txHashMapStatus, pContext ) ) {
          errcode = PSO_OBJECT_IS_DELETED;
          goto the_exit;
@@ -1175,7 +1175,7 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
          goto the_exit;
       }
       while ( pHashItem->nextSameKey != PSON_NULL_OFFSET ) {
-         GET_PTR(g_pBaseAddr,  pHashItem, pHashItem->nextSameKey, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, pHashItem, pHashItem->nextSameKey, psonHashTxItem );
       }
 
       txItemStatus = &pHashItem->txStatus;
@@ -1196,9 +1196,9 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
 
       ok = psonTxAddOps( (psonTx*)pContext->pTransaction,
                          PSON_TX_REMOVE_DATA,
-                         SET_OFFSET(g_pBaseAddr, pHashMap),
+                         SET_OFFSET(pContext->pBaseAddress, pHashMap),
                          PSON_IDENT_HASH_MAP,
-                         SET_OFFSET(g_pBaseAddr, pHashItem),
+                         SET_OFFSET(pContext->pBaseAddress, pHashItem),
                          0,
                          pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
@@ -1210,9 +1210,9 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
       }
       ok = psonTxAddOps( (psonTx*)pContext->pTransaction,
                          PSON_TX_ADD_DATA,
-                         SET_OFFSET(g_pBaseAddr, pHashMap),
+                         SET_OFFSET(pContext->pBaseAddress, pHashMap),
                          PSON_IDENT_HASH_MAP,
-                         SET_OFFSET(g_pBaseAddr, pNewHashItem),
+                         SET_OFFSET(pContext->pBaseAddress, pNewHashItem),
                          0,
                          pContext );
       PSO_POST_CONDITION( ok == true || ok == false );
@@ -1225,14 +1225,14 @@ bool psonHashMapReplace( psonHashMap        * pHashMap,
       }
       
       txItemStatus = &pHashItem->txStatus;
-      psonTxStatusInit( txItemStatus, SET_OFFSET(g_pBaseAddr, pContext->pTransaction), pContext );
+      psonTxStatusInit( txItemStatus, SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction), pContext );
       txItemStatus->status = PSON_TXS_DESTROYED;
 
       txItemStatus = &pNewHashItem->txStatus;
-      psonTxStatusInit( txItemStatus, SET_OFFSET(g_pBaseAddr, pContext->pTransaction), pContext );
+      psonTxStatusInit( txItemStatus, SET_OFFSET(pContext->pBaseAddress, pContext->pTransaction), pContext );
       txItemStatus->status = PSON_TXS_REPLACED;
 
-      pHashItem->nextSameKey = SET_OFFSET(g_pBaseAddr, pNewHashItem);
+      pHashItem->nextSameKey = SET_OFFSET(pContext->pBaseAddress, pNewHashItem);
       pMapNode->txCounter += 2;
 
       psonUnlock( &pHashMap->memObject, pContext );
@@ -1276,8 +1276,8 @@ void psonHashMapRollbackAdd( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR(g_pBaseAddr,  pMapNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  pHashItem, itemOffset, psonHashTxItem );
+   GET_PTR(pContext->pBaseAddress, pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, pHashItem, itemOffset, psonHashTxItem );
    txItemStatus = &pHashItem->txStatus;
    /* 
     * A new entry that isn't yet committed cannot be accessed by some
@@ -1304,7 +1304,7 @@ void psonHashMapRollbackAdd( psonHashMap        * pHashMap,
        *       current function returns void. Let's someone else find that 
        *       we are getting low on memory...
        */
-      GET_PTR(g_pBaseAddr,  txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
+      GET_PTR(pContext->pBaseAddress, txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
       if ( (txHashMapStatus->usageCounter == 0) &&
                      (pMapNode->txCounter == 0 ) ) {
          if ( pHashMap->hashObj.enumResize != PSON_HASH_NO_RESIZE ) {
@@ -1333,8 +1333,8 @@ void psonHashMapRollbackRemove( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( itemOffset != PSON_NULL_OFFSET );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
 
-   GET_PTR(g_pBaseAddr,  pMapNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  pHashItem, itemOffset, psonHashTxItem );
+   GET_PTR(pContext->pBaseAddress, pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, pHashItem, itemOffset, psonHashTxItem );
    txItemStatus = &pHashItem->txStatus;
 
    /*
@@ -1356,7 +1356,7 @@ void psonHashMapRollbackRemove( psonHashMap        * pHashMap,
     *       current function returns void. Let's someone else find that 
     *       we are getting low on memory...
     */
-   GET_PTR(g_pBaseAddr,  txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, txHashMapStatus, pMapNode->txStatusOffset, psonTxStatus );
    if ( (txHashMapStatus->usageCounter == 0) &&
       (pMapNode->txCounter == 0 ) ) {
       if ( pHashMap->hashObj.enumResize != PSON_HASH_NO_RESIZE ) {
@@ -1384,8 +1384,8 @@ void psonHashMapStatus( psonHashMap        * pHashMap,
    PSO_PRE_CONDITION( pHashMap->memObject.objType == PSON_IDENT_HASH_MAP );
    PSO_TRACE_ENTER_NUCLEUS( pContext );
    
-   GET_PTR(g_pBaseAddr,  pMapNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  txStatus, pMapNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, pMapNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, txStatus, pMapNode->txStatusOffset, psonTxStatus );
 
    pStatus->status = txStatus->status;
    pStatus->numDataItem = pHashMap->hashObj.numberOfItems;
@@ -1397,7 +1397,7 @@ void psonHashMapStatus( psonHashMap        * pHashMap,
                                   &firstItemOffset,
                                   pContext );
       while ( found ) {
-         GET_PTR(g_pBaseAddr,  pHashItem, firstItemOffset, psonHashTxItem );
+         GET_PTR(pContext->pBaseAddress, pHashItem, firstItemOffset, psonHashTxItem );
          if ( pHashItem->dataLength > pStatus->maxDataLength ) {
             pStatus->maxDataLength = pHashItem->dataLength;
          }

@@ -33,7 +33,7 @@ void setup_test()
 
    ptr = malloc( PSON_BLOCK_SIZE*10 );
    assert( ptr != NULL );
-   g_pBaseAddr = ptr;
+   context.pBaseAddress = ptr;
    
    /* This "100" (non-zero) offset should mark this block group 
     * as the first block group of a MemObject.
@@ -41,7 +41,7 @@ void setup_test()
    pGroup = (psonBlockGroup*) (ptr + 100);
    
    psonBlockGroupInit( pGroup, 
-                      SET_OFFSET(g_pBaseAddr, ptr),
+                      SET_OFFSET(context.pBaseAddress, ptr),
                       10,
                       PSON_IDENT_QUEUE,
                       &context );   

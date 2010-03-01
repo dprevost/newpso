@@ -38,9 +38,9 @@ void test_pass( void ** state )
    /* Create "/" */
    pFolder1 = initFolderTest( &context );
 
-   psonTxStatusInit( &status, SET_OFFSET(g_pBaseAddr, context.pTransaction), &context );
-   psonTreeNodeInit( &node, SET_OFFSET(g_pBaseAddr,  pFolder1 ), PSO_FOLDER,
-                     SET_OFFSET(g_pBaseAddr,  &status ), PSON_NULL_OFFSET, &context );
+   psonTxStatusInit( &status, SET_OFFSET(context.pBaseAddress, context.pTransaction), &context );
+   psonTreeNodeInit( &node, SET_OFFSET(context.pBaseAddress, pFolder1 ), PSO_FOLDER,
+                     SET_OFFSET(context.pBaseAddress, &status ), PSON_NULL_OFFSET, &context );
    
    ok = psonFolderInit( pFolder1, 0, 1, 0, &node, &context );
    assert_true( ok );
@@ -75,8 +75,8 @@ void test_pass( void ** state )
                              &folderItem,
                              &context );
    assert_true( ok );
-   GET_PTR(g_pBaseAddr,  pDescriptor, folderItem.pHashItem->dataOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  pFolder2, pDescriptor->offset, psonFolder );
+   GET_PTR(context.pBaseAddress, pDescriptor, folderItem.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR(context.pBaseAddress, pFolder2, pDescriptor->offset, psonFolder );
 
    /* Create "/Test2/Test4" from "/Test2" */   
    ok = psonFolderInsertFolder( pFolder2,
@@ -119,7 +119,7 @@ void test_pass( void ** state )
                              &context );
    assert_true( ok );
    
-   GET_PTR(g_pBaseAddr,  pDescriptor, folderItem.pHashItem->dataOffset, psonTreeNode );
+   GET_PTR(context.pBaseAddress, pDescriptor, folderItem.pHashItem->dataOffset, psonTreeNode );
    
    /* Create "/Test2/Test4/Test5 from "/" */
    

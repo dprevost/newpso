@@ -86,7 +86,7 @@ void psonProcMgrDump( psonProcMgr        * pManager,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonProcMgr (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pManager, SET_OFFSET(g_pBaseAddr, pManager) );
+      pManager, SET_OFFSET(pContext->pBaseAddress, pManager) );
    if ( pManager == NULL ) return;
 
    psonMemObjectDump( &pManager->memObject, indent + 2, pContext );

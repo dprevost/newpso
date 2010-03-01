@@ -40,9 +40,9 @@ qsrCheckFastMapContent( qsrVerifyStruct   * pVerify,
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 enum qsrRecoverError 
-qsrVerifyFastMap( qsrVerifyStruct   * pVerify,
-                   psonFastMap            * pHashMap,
-                   psonSessionContext * pContext )
+qsrVerifyFastMap( qsrVerifyStruct    * pVerify,
+                  psonFastMap        * pHashMap,
+                  psonSessionContext * pContext )
 {
    psonTxStatus * txHashMapStatus;
    enum qsrRecoverError rc = QSR_REC_OK, rc2;
@@ -74,8 +74,8 @@ qsrVerifyFastMap( qsrVerifyStruct   * pVerify,
     */
    qsrPopulateBitmap( pVerify, &pHashMap->memObject, pContext );
 
-   GET_PTR(g_pBaseAddr,  pNode, pHashMap->nodeOffset, psonTreeNode );
-   GET_PTR(g_pBaseAddr,  txHashMapStatus, pNode->txStatusOffset, psonTxStatus );
+   GET_PTR(pContext->pBaseAddress, pNode, pHashMap->nodeOffset, psonTreeNode );
+   GET_PTR(pContext->pBaseAddress, txHashMapStatus, pNode->txStatusOffset, psonTxStatus );
 
    if ( txHashMapStatus->txOffset != PSON_NULL_OFFSET ) {
       /*
@@ -134,7 +134,7 @@ qsrVerifyFastMap( qsrVerifyStruct   * pVerify,
    if ( bTestObject ) {
       rc2 = qsrVerifyHash( pVerify, 
                            &pHashMap->hashObj, 
-                           SET_OFFSET(g_pBaseAddr, &pHashMap->memObject),
+                           SET_OFFSET(pContext->pBaseAddress, &pHashMap->memObject),
                            pContext );
       if ( rc2 > QSR_REC_START_ERRORS ) {
          pVerify->spaces -= 2;

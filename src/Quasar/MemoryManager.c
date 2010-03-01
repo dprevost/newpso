@@ -113,16 +113,16 @@ bool qsrCreateMem( qsrMemoryManager   * pManager,
    (*ppHeader)->running = 1;
 
    /* Sets the global base address */
-   g_pBaseAddr = (unsigned char *) pManager->pMemoryAddress;
+   pContext->pBaseAddress = (unsigned char *) pManager->pMemoryAddress;
    
    /* The memory allocator starts after the header */
    pStart = (unsigned char*)pManager->pMemoryAddress + PSON_BLOCK_SIZE;
    
-   (*ppHeader)->allocatorOffset = SET_OFFSET(g_pBaseAddr,  pStart );
+   (*ppHeader)->allocatorOffset = SET_OFFSET(pContext->pBaseAddress, pStart );
    pAlloc = (psonMemAlloc *) pStart;
    
    errcode = psonMemAllocInit( pAlloc,
-                               g_pBaseAddr,
+                               pContext->pBaseAddress,
                                pManager->memorySizeKB*1024,
                                pContext );
    if ( errcode != 0 ) {
@@ -159,23 +159,23 @@ bool qsrCreateMem( qsrMemoryManager   * pManager,
                      PSON_NULL_OFFSET,
                      pContext );
 
-   pFolder->nodeOffset = SET_OFFSET(g_pBaseAddr, &(*ppHeader)->topTreeNode);
+   pFolder->nodeOffset = SET_OFFSET(pContext->pBaseAddress, &(*ppHeader)->topTreeNode);
 
    errcode = psonHashTxInit( &pFolder->hashObj, 
-                             SET_OFFSET(g_pBaseAddr, &pFolder->memObject),
+                             SET_OFFSET(pContext->pBaseAddress, &pFolder->memObject),
                              25, 
                              pContext );
    if ( errcode != PSO_OK ) {
       psocSetError( &pContext->errorHandler, g_psoErrorHandle, errcode );
       return false;
    }
-   (*ppHeader)->treeMgrOffset = SET_OFFSET(g_pBaseAddr,  ptr );
-   (*ppHeader)->topHashItem.dataOffset = SET_OFFSET(g_pBaseAddr, &(*ppHeader)->topTreeNode);
-   (*ppHeader)->topTreeNode.offset = SET_OFFSET(g_pBaseAddr,  ptr );
+   (*ppHeader)->treeMgrOffset = SET_OFFSET(pContext->pBaseAddress, ptr );
+   (*ppHeader)->topHashItem.dataOffset = SET_OFFSET(pContext->pBaseAddress, &(*ppHeader)->topTreeNode);
+   (*ppHeader)->topTreeNode.offset = SET_OFFSET(pContext->pBaseAddress, ptr );
    (*ppHeader)->topTreeNode.apiType = PSO_FOLDER;
    (*ppHeader)->topTreeNode.txCounter = 0;
    (*ppHeader)->topTreeNode.txStatusOffset = 
-      SET_OFFSET(g_pBaseAddr,  &pManager->pHeader->topHashItem.txStatus );
+      SET_OFFSET(pContext->pBaseAddress, &pManager->pHeader->topHashItem.txStatus );
    (*ppHeader)->topTreeNode.myParentOffset = PSON_NULL_OFFSET;
    
 
@@ -198,7 +198,7 @@ bool qsrCreateMem( qsrMemoryManager   * pManager,
       /* The error is set in the function itself */
       return false;
    }
-   (*ppHeader)->processMgrOffset = SET_OFFSET(g_pBaseAddr,  processManager );
+   (*ppHeader)->processMgrOffset = SET_OFFSET(pContext->pBaseAddress, processManager );
 
    /* And finish with setting up the version (and eventually some "magic */
    /* cookie" to identify the file?) */
@@ -314,7 +314,7 @@ bool qsrOpenMem( qsrMemoryManager   * pManager,
    }
 
    /* Sets the global base address */
-   g_pBaseAddr = (unsigned char *) pManager->pMemoryAddress;
+   pContext->pBaseAddress = (unsigned char *) pManager->pMemoryAddress;
   
    return true;
 }

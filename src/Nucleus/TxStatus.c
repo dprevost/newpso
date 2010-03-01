@@ -30,7 +30,7 @@ void psonTxStatusDump( psonTxStatus       * pStatus,
 {
    DO_INDENT( pContext, indent );
    fprintf( pContext->tracefp, "psonTXStatus (%p) offset = "PSO_PTRDIFF_T_FORMAT"\n",
-      pStatus, SET_OFFSET(g_pBaseAddr, pStatus) );
+      pStatus, SET_OFFSET(pContext->pBaseAddress, pStatus) );
    if ( pStatus == NULL ) return;
 
    DO_INDENT( pContext, indent + 2 );
