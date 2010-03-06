@@ -23,7 +23,7 @@
 #include <libxml/xmlschemas.h>
 #include <libxml/xmlschemastypes.h>
 
-#include "Quasar/Config.h"
+#include "Quasar/ShMemConfig.h"
 #include "Quasar/quasarErrors.h"
 
 extern psocErrMsgHandle g_qsrErrorHandle;

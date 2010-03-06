@@ -416,6 +416,8 @@ return 0; }
    # ------------------------------------------
    
    try:
+      outlibscore = subprocess.Popen(["wx-config", "--libs", "--version=2.8", "core"],
+         stdout=subprocess.PIPE).communicate()[0]
       outlibs = subprocess.Popen(["wx-config", "--libs", "--version=2.8"],
          stdout=subprocess.PIPE).communicate()[0]
       outflags = subprocess.Popen(["wx-config", "--cxxflags", "--version=2.8"],
@@ -427,6 +429,7 @@ return 0; }
    
    conf.env['CXXFLAGS_WX']  = outflags.split()
    conf.env['LINKFLAGS_WX'] = outlibs.split()
+   conf.env['LINKFLAGS_WX_CORE'] = outlibscore.split()
         
    # ------------------------------------------
    

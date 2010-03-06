@@ -28,7 +28,7 @@
 #include "Quasar/Acceptor.h"
 #include "Quasar/ShMemHandler.h"
 #include "Quasar/LogMsg.h"
-#include "Quasar/Config.h"
+#include "Quasar/ShMemConfig.h"
 #include "Common/ErrorHandler.h"
 
 BEGIN_C_DECLS

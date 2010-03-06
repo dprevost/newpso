@@ -15,7 +15,7 @@
 quasar_list = [
         'quasarErrorHandler.c',
         'Acceptor.c',
-        'Config.c',
+        'ShMemConfig.c',
         'LogMsg.c',
         'MemoryManager.c',
         'qsrMain.c',
@@ -39,7 +39,7 @@ def build(bld):
       includes     = '.. ../include',
       uselib_local = 'Common Nucleus',
       lib          = bld.env['CMOCKERY'],
-      uselib       = 'LIBXML-2.0',
+      uselib       = ['LIBXML-2.0', 'WX_CORE'],
       option_file  = 'quasarOptions.xml',
       xml_file     = 'quasarErrors.xml',
       target       = 'quasar')

@@ -68,10 +68,10 @@ void qsrLogMsgFini( qsrLogMsg * pLog )
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined ( WIN32 )
-int qsrLogMsgInstall( qsrLogMsg * pLog,
-                       const char * progName, 
-                       const char * msgPathName,
-                       int          numCategories )
+int qsrLogMsgInstall( qsrLogMsg  * pLog,
+                      const char * progName, 
+                      const char * msgPathName,
+                      int          numCategories )
 {
    HKEY hKey; 
    char buffer[MAX_PATH]; 
