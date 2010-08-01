@@ -1,0 +1,16 @@
+/Makefile
+/Makefile.in
+/Debug2005
+/Release2005
+/Commit
+/CreateFolder
+/CreateObject
+/CreateObjectMap
+/Destroy
+/ErrorMsg
+/Exit
+/GetInfo
+/Init
+/LastError
+/Rollback
+/Status

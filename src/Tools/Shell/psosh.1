@@ -1,0 +1,110 @@
+'\" -*- coding: iso-8859-1 -*-
+.if \n(.g .ds T< \\FC
+.if \n(.g .ds T> \\F[\n[.fam]]
+.de URL
+\\$2 \(la\\$1\(ra\\$3
+..
+.if \n(.g .mso www.tmac
+.TH psosh 1 "27 January 2009" Photon "User Commands"
+.SH NAME
+psosh \- starts a pseudo-shell to access Photon data
+.SH SYNOPSIS
+.SS "GETTING (MINIMAL) HELP:"
+\*(T<\fBpsosh \-h|\-\-help|\-?\fR\*(T>
+.SS "RUNNING NORMALLY:"
+\*(T<\fBpsosh \-a|\-\-address\fR\*(T> \fIquasar_address \fR
+.SH DESCRIPTION
+psosh is a pseudo-shell allowing access to the data in the 
+shared-memory used by the Photon software.
+.PP
+This program supports a very limited number of standard Bourne shell commands 
+(and a few equivalent DOS commands). See the section 
+\fBCOMMANDS\fR
+for a list of supported commands (and syntax).
+.SH OPTIONS
+.TP 
+\*(T<\fB\-a\fR\*(T>, \*(T<\fB\-\-address\fR\*(T> \fIquasar_address\fR
+The TCP port for the Photon server (quasar).
+.TP 
+\*(T<\fB\-h\fR\*(T>, \*(T<\fB\-?\fR\*(T>, \*(T<\fB\-\-help\fR\*(T>
+Minimal help including a list of supported commands.
+.SH COMMANDS
+The syntax of the commands is simpler than the equivalent Bourne shell 
+commands - most commands take no options.
+.PP
+Names of objects (data containers) can be either absolute (starting with /)
+or relative to the current folder (see the \fBcd
+\fRcommand for an explanation on how to change the current folder).
+.TP 
+\fBcat\fR \fIobject_name\fR
+Display the content of the object named object_name. The data is
+formatted using the metadata information of the object and is
+displayed as a comma separated list.
+.TP 
+\fBcd\fR \fI[folder_name]\fR
+Without a name, change the current folder to "/". Change the current 
+folder to folder_name.
+.TP 
+\fBcp\fR \fIsource_name dest_name\fR
+Copy the source_name object to the dest_name object.
+
+\fBWarning: \fR
+dest_name is not overwritten if it already exists.
+.TP 
+\fBdel/rm\fR \fIobject_name\fR
+Delete the data container named object_name.
+.TP 
+\fBdir/ls\fR \fI[folder_name]\fR
+Without a name, list the objects of the current folder. List the 
+objects of the folder folder_name.
+.TP 
+\fBecho \fR\fI[key] data > object_name \fR
+Insert a record into the data container named \fIobject_name
+\fR\&. 
+The key should be used for hash
+maps (if the key exists, the data will be replaced instead of being
+inserted).
+
+The data should be a list of comma-separated values. The whole list
+must be quoted using apostrophes.
+
+Note: binary data should be entered using an hexadecimal format (the
+binary data can start with the optional prefix "0x").
+.TP 
+\fBexit/quit\fR
+Exit the program.
+.TP 
+\fBfree\fR
+Display the amount of used/free memory (main allocator).
+.TP 
+\fBhelp/man\fR
+Display the current list of commands.
+.TP 
+\fBmkdir\fR \fIfolder_name\fR
+Create a new folder.
+.TP 
+\fBpwd\fR
+Display the current folder.
+.TP 
+\fBrmdir\fR \fIfolder_name\fR
+Delete the folder named folder_name.
+.TP 
+\fBstat\fR \fIobject_name\fR
+Show the status of the object named \fIobject_name\fR.
+.TP 
+\fBtouch -h|-q\fR \fIobject_name\fR
+Create a new object named object_name of the specified type:
+
+-h or --hashmap: a hash map
+.br
+-q or --queue: a FIFO queue
+.TP 
+\fBtouch -x|--xml\fR \fIxml_text\fR
+Create a new object using the provided xml text (the xml is of course
+based on the XSD schema for Photon).
+
+Note: the xml text must be quoted, using apostrophes.
+.SH "REPORTING BUGS"
+Report bugs to <dprevost@photonsoftware.org>.
+.SH COPYRIGHT
+Copyright \(co 2008 Daniel Pr\('evost.

@@ -1,0 +1,108 @@
+###########################################################################
+#
+# Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+#  
+# This file is free software; as a special exception the author gives
+# unlimited permission to copy and/or distribute it, with or without 
+# modifications, as long as this notice is preserved.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+###########################################################################
+#
+# Defines the main macros.
+#
+###########################################################################
+
+LINK32=link.exe
+
+DIR_RELEASE = .\Release2005
+DIR_DEBUG   = .\Debug2005
+DLL_RELEASE = ..\Release2005
+DLL_DEBUG   = ..\Debug2005
+
+CLEANFILES = *~ *.dep *.plg *.ncb
+
+W32_SYS_LIBS = kernel32.lib ws2_32.lib
+
+LDD_FLAGS_RELEASE = $(W32_SYS_LIBS) photonCommon.lib photonNucleus.lib /nologo /dll /incremental:no        /MANIFEST /machine:I386 /out:"$(DIR_RELEASE)\photon.dll" /implib:"$(DIR_RELEASE)\photon.lib" /libpath:"$(DLL_RELEASE)"
+LDD_FLAGS_DEBUG   = $(W32_SYS_LIBS) photonCommon.lib photonNucleus.lib /nologo /dll /incremental:no /debug /MANIFEST /machine:I386 /out:"$(DIR_DEBUG)\photon.dll"   /implib:"$(DIR_DEBUG)\photon.lib"   /libpath:"$(DLL_DEBUG)"
+
+CFLAGS_RELEASE= /O2 /Ob1 /I ".." /I "..\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_USRDLL" /D "BUILD_PHOTON_API" /D "BUILD_PHOTON" /D "_VC80_UPGRADE=0x0600" /D "_WINDLL" /D "_MBCS" /GF /FD /EHsc       /MD /Gy /Fp"$(DIR_RELEASE)\\API.pch" /Fo"$(DIR_RELEASE)\\" /Fd"$(DIR_RELEASE)\\" /W4 /nologo /c     /TC /errorReport:prompt
+CFLAGS_DEBUG  = /Od      /I ".." /I "..\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_USRDLL" /D "BUILD_PHOTON_API" /D "BUILD_PHOTON" /D "_VC80_UPGRADE=0x0600" /D "_WINDLL" /D "_MBCS" /Gm     /EHsc /RTC1 /MDd    /Fp"$(DIR_DEBUG)\\API.pch"   /Fo"$(DIR_DEBUG)\\"   /Fd"$(DIR_DEBUG)\\"   /W4 /nologo /c /Zi /TC /errorReport:prompt
+
+OBJS_RELEASE=                               \
+        "$(DIR_RELEASE)\api.obj"            \
+        "$(DIR_RELEASE)\CommonObject.obj"   \
+        "$(DIR_RELEASE)\Connector.obj"      \
+        "$(DIR_RELEASE)\DataDefinition.obj" \
+        "$(DIR_RELEASE)\FastMap.obj"        \
+        "$(DIR_RELEASE)\Folder.obj"         \
+        "$(DIR_RELEASE)\HashMap.obj"        \
+        "$(DIR_RELEASE)\KeyDefinition.obj"  \
+        "$(DIR_RELEASE)\Lifo.obj"           \
+        "$(DIR_RELEASE)\Process.obj"        \
+        "$(DIR_RELEASE)\Queue.obj"          \
+        "$(DIR_RELEASE)\Session.obj"        \
+        "$(DIR_RELEASE)\Standalone.obj"     
+
+OBJS_DEBUG = $(OBJS_RELEASE:.\Release2005\=.\Debug2005\)
+
+###########################################################################
+#
+# Defines the rules.
+#
+###########################################################################
+
+.c{$(DIR_RELEASE)}.obj::
+	$(CPP) $(CFLAGS_RELEASE) $< 
+
+.c{$(DIR_DEBUG)}.obj::
+	$(CPP) $(CFLAGS_DEBUG) $< 
+
+all: $(DIR_RELEASE) $(DIR_RELEASE)\photon.dll $(DIR_DEBUG) $(DIR_DEBUG)\photon.dll
+
+"$(DIR_RELEASE)\photon.dll" : "$(DIR_RELEASE)" $(OBJS_RELEASE)
+   -del $(DLL_RELEASE)\photon.dll
+	-del $(DLL_RELEASE)\photon.lib
+	$(LINK32) $(LDD_FLAGS_RELEASE) $(OBJS_RELEASE)
+	mt.exe -manifest $(DIR_RELEASE)\photon.dll.manifest -outputresource:$(DIR_RELEASE)\photon.dll;2
+   copy $(DIR_RELEASE)\photon.dll $(DLL_RELEASE)
+	copy $(DIR_RELEASE)\photon.lib $(DLL_RELEASE)
+
+"$(DIR_DEBUG)\photon.dll" : "$(DIR_DEBUG)" $(OBJS_DEBUG)
+   -del $(DLL_DEBUG)\photon.dll
+	-del $(DLL_DEBUG)\photon.lib
+	$(LINK32) $(LDD_FLAGS_DEBUG) $(OBJS_DEBUG)
+	mt.exe -manifest $(DIR_DEBUG)\photon.dll.manifest -outputresource:$(DIR_DEBUG)\photon.dll;2
+   copy $(DIR_DEBUG)\photon.dll $(DLL_DEBUG)
+	copy $(DIR_DEBUG)\photon.lib $(DLL_DEBUG)
+
+###########################################################################
+#
+# The targets
+#
+###########################################################################
+
+check: all
+	cd Tests && nmake -f Makefile.win32 check VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+
+checkdebug: all
+	cd Tests && nmake -f Makefile.win32 checkdebug VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+
+"$(DIR_RELEASE)" :
+	if not exist "$(DIR_RELEASE)/$(NULL)" mkdir "$(DIR_RELEASE)"
+
+"$(DIR_DEBUG)" :
+	if not exist "$(DIR_DEBUG)/$(NULL)" mkdir "$(DIR_DEBUG)"
+   
+clean: 
+	cd Tests && nmake -f Makefile.win32 clean && cd ..
+	-@erase /Q $(DIR_DEBUG)
+	-@rmdir /Q $(DIR_DEBUG)
+	-@erase /Q $(DIR_RELEASE)
+	-@rmdir /Q $(DIR_RELEASE)
+	-@erase /Q $(CLEANFILES)
+

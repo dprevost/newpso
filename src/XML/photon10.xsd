@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:md="http://photonsoftware.org/photon_meta"
+targetNamespace="http://photonsoftware.org/photon"
+xmlns="http://photonsoftware.org/photon"
+elementFormDefault="qualified">
+
+<!-- Copyright (C) 2008-2009 Daniel Prevost <dprevost@photonsoftware.org>
+
+     This file is part of Photon (photonsoftware.org).
+
+     This file may be distributed and/or modified under the terms of the
+     GNU General Public License version 2 or version 3 as published by the 
+     Free Software Foundation and appearing in the file COPYING.GPL2 and 
+     COPYING.GPL3 included in the packaging of this software.
+
+     Licensees holding a valid Photon Commercial license can use this file 
+     in accordance with the terms of their license.
+
+     This software is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+-->
+
+<xs:import
+  namespace="http://photonsoftware.org/photon_meta"
+  schemaLocation="photon_meta10.xsd">
+</xs:import>
+
+<!-- Define our simple types first -->
+
+<!-- Definition of complex types starts here -->
+
+<xs:complexType name="queueRecordType">
+  <xs:sequence>
+    <xs:element name="item" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+  </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="hashRecordType">
+  <xs:sequence>
+    <xs:element name="key"  type="xs:string"/>
+    <xs:element name="item" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+  </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="queueType">
+  <xs:complexContent>
+    <xs:extension base="md:queueType">
+      <xs:sequence>
+        <xs:element name="record" type="queueRecordType" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:extension>
+  </xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="hashmapType">
+  <xs:complexContent>
+    <xs:extension base="md:hashmapType">
+      <xs:sequence>
+        <xs:element name="record"    type="hashRecordType"   minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:extension>
+  </xs:complexContent>
+</xs:complexType>
+
+<!-- Definitions of our elements -->
+
+<xs:element name="queue" type="queueType">
+  <xs:unique name="queueUnique">
+    <xs:selector xpath="*"/>
+    <xs:field xpath="@name"/>
+  </xs:unique>
+</xs:element>
+
+<xs:element name="hashmap" type="hashmapType">
+  <xs:unique name="hashUnique">
+    <xs:selector xpath="*"/>
+    <xs:field xpath="@name"/>
+  </xs:unique>
+</xs:element>
+
+<xs:element name="folder">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="folder"/>
+        <xs:element ref="queue"/>
+        <xs:element ref="hashmap"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="name" type="md:objString" use="required"/>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="photon">
+  <xs:complexType>
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="folder"/>
+      <xs:element ref="queue"/>
+      <xs:element ref="hashmap"/>
+    </xs:choice>
+  </xs:complexType>
+</xs:element>
+
+</xs:schema>

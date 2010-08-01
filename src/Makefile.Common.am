@@ -1,0 +1,22 @@
+# Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+#  
+# This file is free software; as a special exception the author gives
+# unlimited permission to copy and/or distribute it, with or without 
+# modifications, as long as this notice is preserved.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+# In this file we put rules that are common to all Makefile.am. This will
+# avoid having to modify these numerous files (a bit more than 20 of them 
+# currently and more to follow when new tests will be added).
+
+AM_CPPFLAGS = -I$(top_srcdir)/src         \
+              -I$(top_srcdir)/src/include \
+              -Wall
+
+if COND_USE_DBC
+   AM_CPPFLAGS += -DUSE_DBC
+endif
+

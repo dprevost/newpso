@@ -32,7 +32,7 @@ BEGIN_C_DECLS
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 #if defined(_WIN32)
-extern const char * MYCPU;
+extern const char * BUILD_CPU;
 extern const char * MYCC;
 extern const char * MYCXX;
 #endif

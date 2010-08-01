@@ -1,0 +1,6 @@
+/buildDeb.sh
+/control
+/photon.spec
+/*.deb
+/*.rpm
+/Output

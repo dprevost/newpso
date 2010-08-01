@@ -1,0 +1,20 @@
+Package: @PACKAGE_TARNAME@
+Version: @PACKAGE_VERSION@
+Section: devel
+Priority: optional
+Architecture: @architecture@
+Depends: libc6
+Suggests: 
+Conflicts: 
+Installed-Size: @SIZE@
+Maintainer: @PACKAGE_BUGREPORT@
+Description: Development tool providing queues, maps in shared memory and more.
+ Photon is a development tool for complex server applications. It provides
+ data containers like queues and hash maps shared amongst processes,
+ in virtual memory.
+ .
+ Photon as a fast development tool: instead of having one complex multi-threaded
+ application doing multiple tasks, it is much simpler to create a bunch of
+ programs each doing its own single task. All the programs communicate with
+ each other (as needed) using the shared objects in the Virtual Data Space.
+

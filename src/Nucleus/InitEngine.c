@@ -28,7 +28,7 @@
 psocErrMsgHandle g_psoErrorHandle = PSOC_NO_ERRHANDLER;
 
 #if defined(_WIN32)
-const char * MYCPU = "i386";
+const char * BUILD_CPU = "i386";
 const char * MYCC  = "cl.exe.";
 const char * MYCXX = "cl.exe";
 #endif

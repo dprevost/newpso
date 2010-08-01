@@ -1,0 +1,72 @@
+###########################################################################
+#
+# Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+#  
+# This file is free software; as a special exception the author gives
+# unlimited permission to copy and/or distribute it, with or without 
+# modifications, as long as this notice is preserved.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+
+DIR_RELEASE = .\Release2005
+DIR_DEBUG   = .\Debug2005
+
+###########################################################################
+#
+# The targets
+#
+###########################################################################
+
+all: "$(DIR_RELEASE)" "$(DIR_DEBUG)"
+	cd Errors   && nmake -f Makefile.win32 && cd ..
+	cd Common   && nmake -f Makefile.win32 && cd ..
+	cd Nucleus  && nmake -f Makefile.win32 && cd ..
+	cd Quasar   && nmake -f Makefile.win32 && cd ..
+	cd API      && nmake -f Makefile.win32 && cd ..
+	cd C++      && nmake -f Makefile.win32 && cd ..
+	cd XML      && nmake -f Makefile.win32 && cd ..
+	cd Tests    && nmake -f Makefile.win32 && cd ..
+	cd Tools    && nmake -f Makefile.win32 && cd ..
+   
+check: "$(DIR_RELEASE)" "$(DIR_DEBUG)"
+	cd Errors   && nmake -f Makefile.win32 check VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd Common   && nmake -f Makefile.win32 check VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd Nucleus  && nmake -f Makefile.win32 check VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd Quasar   && nmake -f Makefile.win32 check VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd API      && nmake -f Makefile.win32 check VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd C++      && nmake -f Makefile.win32 check VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd XML      && nmake -f Makefile.win32 check VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd Tests    && nmake -f Makefile.win32 check VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd Tools    && nmake -f Makefile.win32 check VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+
+checkdebug: "$(DIR_RELEASE)" "$(DIR_DEBUG)"
+	cd Errors   && nmake -f Makefile.win32 checkdebug VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd Common   && nmake -f Makefile.win32 checkdebug VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd Nucleus  && nmake -f Makefile.win32 checkdebug VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd Quasar   && nmake -f Makefile.win32 checkdebug VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd API      && nmake -f Makefile.win32 checkdebug VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd C++      && nmake -f Makefile.win32 checkdebug VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd XML      && nmake -f Makefile.win32 checkdebug VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd Tests    && nmake -f Makefile.win32 checkdebug VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+	cd Tools    && nmake -f Makefile.win32 checkdebug VBS_VERBOSE=$(VBS_VERBOSE) && cd ..
+
+clean: 
+	cd Errors   && nmake -f Makefile.win32 clean && cd ..
+	cd Common   && nmake -f Makefile.win32 clean && cd ..
+	cd Nucleus  && nmake -f Makefile.win32 clean && cd ..
+	cd Quasar   && nmake -f Makefile.win32 clean && cd ..
+	cd API      && nmake -f Makefile.win32 clean && cd ..
+	cd C++      && nmake -f Makefile.win32 clean && cd ..
+	cd XML      && nmake -f Makefile.win32 clean && cd ..
+	cd Tests    && nmake -f Makefile.win32 clean && cd ..
+	cd Tools    && nmake -f Makefile.win32 clean && cd ..
+
+"$(DIR_RELEASE)" :
+	if not exist "$(DIR_RELEASE)" mkdir "$(DIR_RELEASE)"
+
+"$(DIR_DEBUG)" :
+	if not exist "$(DIR_DEBUG)" mkdir "$(DIR_DEBUG)"
+

@@ -1,0 +1,59 @@
+Photon Software -- History of visible changes.
+
+Copyright (C) 2006-2008, Daniel Prevost <dprevost@photonsoftware.org>
+See the end for copying conditions.
+
+Please send photon bug reports to support@photonsoftware.org
+or use Photon' tracker at http://photonsoftware.org/mantis/ .
+
+Version 0.1
+
+    *   Data components:
+          o Folders (to hold the other data components)
+          o Hash Maps
+          o Queues (FIFO only)
+    * Transactions
+    * C API
+    * Man pages for the C API
+    * i18n (internationalization)
+
+Version 0.2
+
+    * C++ API
+    * Some crash-recovery features at startup
+    * Better isolation policy at startup
+    * A pseudo-shell utility (vdssh)
+
+Version 0.3
+
+    * The project was renamed to photon
+    * LIFO queues
+    * XML to describe content of data components
+    * Fast Maps (a read-only version of the hash maps)
+    
+Version 0.4
+
+    * Transactions are now fully atomic.
+    * Ticket 13 is resolved (severe issue with locking).
+    * The API can be used standalone (without quasar running), as long
+      as there is an existing shared-memory backstore file.
+    * Quasar can be used to create/verify a backstore file and then exit
+      (with the new -e, --exit option). This can be use to prepare the
+      software to be used standalone.
+
+-------------------------------------------------------
+
+Copying information:
+
+Copyright (C) 2006-2008, Daniel Prevost <dprevost@photonsoftware.org>
+
+   Permission is granted to anyone to make or distribute verbatim copies
+   of this document as received, in any medium, provided that the
+   copyright notice and this permission notice are preserved,
+   thus giving the recipient permission to redistribute in turn.
+
+   Permission is granted to distribute modified versions
+   of this document, or of portions of it,
+   under the above conditions, provided also that they
+   carry prominent notices stating who last changed them.
+

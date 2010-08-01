@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE options SYSTEM 
+             "/usr/local/share/xml/errorParser/errorParserOptions22.dtd">
+
+<!-- 
+   This xml file provides the options to the errorParser program.
+   
+   Why a file? The number of options was getting too large. Using a file
+   makes it easier to manage all these options and it will also make 
+   easier to add new options in the future (as needed). 
+   [Since changing options is usually something that will be done rarely
+   once you are satisfy with the results, storing the options in a file 
+   makes it easier to reuse the same options, evidently]
+   
+   Why xml? Easier to program (libxml2 does the parsing) and easy to
+   provide default values for some elements.
+   
+-->
+
+<options version="2.2">
+
+  <general_options>
+    <!-- Prefix to be used for the error codes (enum or #define). -->
+    <prefix_error_no_namespace> PSO </prefix_error_no_namespace>
+    <selected_lang xml:lang="en" />
+    <!-- How to handle the error message. The problem: the generated C strings
+         will be use, eventually, by standard C/C++ libraries and some 
+         sequence of characters could have some bad side effects, possibly
+         including security issues.
+         The defaults:
+           - escape sequences are not permitted (a more fine grain approach
+             could be written if the need arise).
+           - quotes (' and ") are allowed (and will be escaped as needed) 
+           - The % symbol. No default. I recommend the textual "percent" 
+             (% is the most problematic one, IMHO. %d %p, etc are interpreted
+             differently by libc (printf()) and the iostream library (cout) -->
+    <message percent="percent"/>
+  </general_options>
+  
+  <header_file>
+    <!-- The name of the enum. If absent, #define will be generated instead. -->
+    <header_enum> psoErrors </header_enum>
+    <!-- Name of the output dir for the error header file. If absent, the 
+         current directory will be used.
+       
+         Alternatively, you can put the directory directly in the header_name 
+         element. But if you do, the "GUARD" will use that directory name. -->
+    <header_dirname> ../include/photon </header_dirname>
+    <!-- The file name for the .h file which will hold the errors. -->
+    <header_name> psoErrors.h </header_name>
+  </header_file>
+  
+  <errmsg_files>
+    <!-- Name of the output dir for the code to retrieve the error messages. 
+         If absent, the current directory will be used.
+
+         Alternatively, you can put the directory directly in the 
+         "errmsg_*_name" elements. If you do, the "GUARD" will use that 
+         directory name and the .c file will include the header using the 
+         full name (errmsg_header_name) -->
+    <errmsg_dirname> ../Nucleus </errmsg_dirname>
+    <!-- The file name for the .h file for the code to retrieve the error 
+         messages. -->
+    <errmsg_header_name> psoErrorHandler.h </errmsg_header_name>
+    <!-- The file name for the .c file for the code to retrieve the error 
+         messages. -->
+    <errmsg_c_fullname> ../Nucleus/psoErrorHandler.c </errmsg_c_fullname>
+    <!-- Prefix to be used for all variables in the code to retrieve the 
+         error messages -->
+    <errmsg_options build_dll="yes"/>
+    <errmsg_prefix_var> pson </errmsg_prefix_var>
+  </errmsg_files>
+
+  <!-- Optional section for creating an enum for C# -->
+  <csharp>
+    <!-- Full or relative path to the generated C# code -->
+    <cs_filename> ../CS/PhotonLib/Errors.cs </cs_filename>
+    <cs_enum_name> PhotonErrors </cs_enum_name>
+    <!-- The namespace is optional -->
+    <cs_namespace> Photon </cs_namespace>
+  </csharp>
+
+  <!-- Optional section for Python (extension module) -->
+  <ext_python>
+    <ext_py_dirname> ../Python/src </ext_py_dirname>
+    <ext_py_filename> errors.h </ext_py_filename>
+  </ext_python>
+
+  <!-- Optional section for creating an enum for Java. This feature 
+       requires Java 5.0. -->
+  <java>
+    <java_filename>
+      ../Java/java_src/org/photon/PhotonErrors.java
+    </java_filename>
+    <java_enum_name> PhotonErrors </java_enum_name>
+    <java_package> org.photon </java_package>
+  </java>
+
+</options>
+

@@ -1,0 +1,75 @@
+###########################################################################
+#
+# Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+#  
+# This file is free software; as a special exception the author gives
+# unlimited permission to copy and/or distribute it, with or without 
+# modifications, as long as this notice is preserved.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+###########################################################################
+
+VBS_VERBOSE=1
+
+CLEANFILES = *~
+
+DIR_RELEASE = .\Release2005
+DIR_DEBUG   = .\Debug2005
+DLL_RELEASE = ..\Release2005
+DLL_DEBUG   = ..\Debug2005
+
+W32_SYS_LIBS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+LDD_FLAGS = $(W32_SYS_LIBS)     photoncpp.lib photon.lib photonNucleus.lib photonCommon.lib /nologo /IGNORE:4089 /subsystem:console /machine:I386 /libpath:"$(DLL_RELEASE)" 
+LDD_FLAGS_DEBUG=$(W32_SYS_LIBS) photoncpp.lib photon.lib photonNucleus.lib photonCommon.lib /nologo /IGNORE:4089 /subsystem:console /machine:I386 /libpath:"$(DLL_DEBUG)" 
+
+CFLAGS_DEBUG=   /nologo /MDd /W3 /Zi /I ".." /I "../include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fo"$(DIR_DEBUG)\\" 
+CFLAGS_RELEASE= /nologo /MD  /W3 /O2 /I ".." /I "../include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fo"$(DIR_RELEASE)\\" 
+CPPFLAGS_DEBUG=   $(CFLAGS_DEBUG)   /EHsc
+CPPFLAGS_RELEASE= $(CFLAGS_RELEASE) /EHsc
+
+.c{$(DIR_RELEASE)}.exe:
+	$(CPP) $(CFLAGS_RELEASE) $< /link $(LDD_FLAGS) /out:"$@"
+
+.cpp{$(DIR_RELEASE)}.exe:
+	$(CPP) $(CPPFLAGS_RELEASE) $< /link $(LDD_FLAGS) /out:"$@"
+
+.c{$(DIR_DEBUG)}.exe:
+	$(CPP) $(CFLAGS_DEBUG) $< /link $(LDD_FLAGS_DEBUG) /out:"$@"
+
+.cpp{$(DIR_DEBUG)}.exe:
+	$(CPP) $(CPPFLAGS_DEBUG) $< /link $(LDD_FLAGS_DEBUG) /out:"$@"
+
+"$(DIR_RELEASE)" :
+	if not exist "$(DIR_RELEASE)/" mkdir "$(DIR_RELEASE)"
+
+"$(DIR_DEBUG)" :
+	if not exist "$(DIR_DEBUG)/" mkdir "$(DIR_DEBUG)"
+
+###########################################################################
+
+all: 
+
+check_PROGRAMS =                         \
+        $(DIR_RELEASE)\TransactionHashMap.exe \
+        $(DIR_RELEASE)\TransactionQueue.exe   \
+        $(DIR_RELEASE)\InjectErrorsShMem.exe  \
+        $(DIR_RELEASE)\OutOfMemory.exe        
+
+check_PROGRAMS_DEBUG = $(check_PROGRAMS:.\Release2005\=.\Debug2005\)
+
+check: $(DIR_RELEASE) $(check_PROGRAMS)
+	cscript RunTests.vbs --path=$(DIR_RELEASE) --dllpath=$(DLL_RELEASE) $(VBS_VERBOSE)
+
+checkdebug: $(DIR_DEBUG) $(check_PROGRAMS_DEBUG) 
+	cscript RunTests.vbs --path=$(DIR_DEBUG) --dllpath=$(DLL_DEBUG) $(VBS_VERBOSE)
+
+clean: 
+	-@erase /Q $(DIR_DEBUG)
+	-@rmdir /Q $(DIR_DEBUG)
+	-@erase /Q $(DIR_RELEASE)
+	-@rmdir /Q $(DIR_RELEASE)
+	-@erase /Q $(CLEANFILES)
+

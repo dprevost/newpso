@@ -1,0 +1,10 @@
+/build
+/dist
+/Makefile
+/MANIFEST
+/pso.so
+/autom4te.cache
+/config.log
+/config.status
+/configure
+

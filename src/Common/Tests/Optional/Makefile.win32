@@ -1,0 +1,73 @@
+# Copyright (C) 2006-2009 Daniel Prevost <dprevost@photonsoftware.org>
+#  
+# This file is free software; as a special exception the author gives
+# unlimited permission to copy and/or distribute it, with or without 
+# modifications, as long as this notice is preserved.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+# To use this makefile with VS 2008, you must change the macros defined here
+# AND the macro check_PROGRAMS_DEBUG near the end of this file
+
+include ..\Makefile.inc.Win32.2005
+
+RELEASE = Release2005
+DEBUG = Debug2005
+DLL_RELEASE = ..\..\..\Release2005
+DLL_DEBUG = ..\..\..\Debug2005
+
+all: 
+
+CLEANFILES = *~ 
+check_PROGRAMS =                            \
+        $(DIR_RELEASE)\ProcessLockShouldFail.exe \
+        $(DIR_RELEASE)\ThreadLockShouldFail.exe  
+
+check_PROGRAMS_DEBUG = $(check_PROGRAMS:.\Release2005\=.\Debug2005\)
+
+# -----------------------------------------
+
+check: $(DIR_RELEASE) $(check_PROGRAMS) 
+	cscript RunTests.vbs --path=$(DIR_RELEASE) --dllpath=$(DLL_RELEASE) $(VBS_VERBOSE)
+
+$(DIR_RELEASE)\Barrier.obj: ..\ThreadLock\Barrier.h ..\ThreadLock\Barrier.c
+	$(CPP) /c $(CFLAGS_RELEASE) ..\ThreadLock\Barrier.c 
+   
+$(DIR_RELEASE)\ThreadWrap.obj: ..\ThreadLock\ThreadWrap.h ..\ThreadLock\ThreadWrap.c
+	$(CPP) /c $(CFLAGS_RELEASE) ..\ThreadLock\ThreadWrap.c 
+
+.\Debug\Barrier.obj: ..\ThreadLock\Barrier.h ..\ThreadLock\Barrier.c
+	$(CPP) /c $(CFLAGS_DEBUG) ..\ThreadLock\Barrier.c 
+   
+.\Debug\ThreadWrap.obj: ..\ThreadLock\ThreadWrap.h ..\ThreadLock\ThreadWrap.c
+	$(CPP) /c $(CFLAGS_DEBUG) ..\ThreadLock\ThreadWrap.c 
+
+$(DIR_RELEASE)\ThreadLockShouldFail.exe: $(DIR_RELEASE)\ThreadWrap.obj $(DIR_RELEASE)\Barrier.obj ThreadLockShouldFail.c
+	$(CPP) $(CFLAGS_RELEASE) ThreadLockShouldFail.c $(DIR_RELEASE)\ThreadWrap.obj $(DIR_RELEASE)\Barrier.obj /link $(LDD_FLAGS) /out:"$@"
+
+.\Debug\ThreadLockShouldFail.exe: .\Debug\ThreadWrap.obj .\Debug\Barrier.obj ThreadLockShouldFail.c
+	$(CPP) $(CFLAGS_DEBUG) ThreadLockShouldFail.c .\Debug\ThreadWrap.obj .\Debug\Barrier.obj /link $(LDD_FLAGS_DEBUG) /out:"$@"
+
+checkdebug: $(DIR_DEBUG) $(check_PROGRAMS_DEBUG) 
+	cscript RunTests.vbs --path=$(DIR_DEBUG) --dllpath=$(DLL_DEBUG) $(VBS_VERBOSE)
+
+clean: 
+	-@erase /Q $(DIR_DEBUG)\ProcessLockShouldFail.exe
+	-@rmdir /Q $(DIR_DEBUG)\ProcessLockShouldFail
+	-@erase /Q $(DIR_DEBUG)\ThreadLockShouldFail.exe
+	-@rmdir /Q $(DIR_DEBUG)\ThreadLockShouldFail
+	-@erase /Q $(DIR_DEBUG)
+	-@rmdir /Q $(DIR_DEBUG)
+	-@erase /Q $(DIR_RELEASE)\ProcessLockShouldFail.exe
+	-@rmdir /Q $(DIR_RELEASE)\ProcessLockShouldFail
+	-@erase /Q $(DIR_RELEASE)\LockShouldFail.exe
+	-@rmdir /Q $(DIR_RELEASE)\LockShouldFail
+	-@erase /Q $(DIR_RELEASE)
+	-@rmdir /Q $(DIR_RELEASE)
+	-@erase /Q ProjectFiles\*.dep
+	-@erase /Q ProjectFiles\*.plg
+	-@erase /Q ProjectFiles\*.mak
+	-@erase /Q $(CLEANFILES)
+

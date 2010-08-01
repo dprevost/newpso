@@ -17,7 +17,7 @@ APPNAME='Photon'
 srcdir = '.'
 blddir = 'build'
 
-import Options, UnitTest
+import Options, unittestw
 #import Utils #,
 #import Build
 from Configure import conf
@@ -60,7 +60,7 @@ def configure(conf):
 
    conf.check_java_class('org.junit.Assert')
 
-   conf.check_tool('UnitTest')
+   conf.check_tool('unittest')
    conf.check_tool('misc')
    conf.check_tool('doxygen', tooldir='Configure')
    conf.check_tool('errorparser', tooldir='Configure')

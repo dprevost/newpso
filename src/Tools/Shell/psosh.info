@@ -1,0 +1,170 @@
+This is psosh.info, produced by makeinfo version 4.11 from psosh.texi.
+
+START-INFO-DIR-ENTRY
+* psosh: (psosh).               starts a pseudo-shell to access Photon data
+END-INFO-DIR-ENTRY
+
+
+File: psosh.info,  Node: Top,  Up: (dir)
+
+psosh
+*****
+
+
+
+Name
+****
+
+psosh -- starts a pseudo-shell to access Photon data
+
+
+
+Synopsis
+********
+
+
+
+Getting (minimal) help:
+=======================
+
+`psosh -h|--help|-?'
+
+
+
+Running normally:
+=================
+
+`psosh -a|--address' _quasar_address _
+
+
+
+DESCRIPTION
+***********
+
+psosh is a pseudo-shell allowing access to the data in the
+shared-memory used by the Photon software.
+
+   This program supports a very limited number of standard Bourne shell
+commands (and a few equivalent DOS commands). See the section *COMMANDS*
+for a list of supported commands (and syntax).
+
+
+
+OPTIONS
+*******
+
+`-a', `--address' QUASAR_ADDRESS
+     The TCP port for the Photon server (quasar).
+
+`-h', `-?', `--help'
+     Minimal help including a list of supported commands.
+
+
+Commands
+********
+
+The syntax of the commands is simpler than the equivalent Bourne shell
+commands - most commands take no options.
+
+   Names of objects (data containers) can be either absolute (starting
+with /) or relative to the current folder (see the *cd * command for an
+explanation on how to change the current folder).
+
+*cat* OBJECT_NAME
+     Display the content of the object named object_name. The data is
+     formatted using the metadata information of the object and is
+     displayed as a comma separated list.
+
+*cd*
+     Without a name, change the current folder to "/". Change the
+     current folder to folder_name.
+
+*cp*  SOURCE_NAME DEST_NAME
+     Copy the source_name object to the dest_name object.
+
+     *Warning:  * dest_name is not overwritten if it already exists.
+
+*del/rm*  OBJECT_NAME
+     Delete the data container named object_name.
+
+*dir/ls*
+     Without a name, list the objects of the current folder. List the
+     objects of the folder folder_name.
+
+*echo * DATA > OBJECT_NAME
+     Insert a record into the data container named _ object_name _.
+     The key should be used for hash maps (if the key exists, the data
+     will be replaced instead of being inserted).
+
+     The data should be a list of comma-separated values. The whole list
+     must be quoted using apostrophes.
+
+     Note: binary data should be entered using an hexadecimal format
+     (the binary data can start with the optional prefix "0x").
+
+*exit/quit*
+     Exit the program.
+
+*free*
+     Display the amount of used/free memory (main allocator).
+
+*help/man*
+     Display the current list of commands.
+
+*mkdir*  FOLDER_NAME
+     Create a new folder.
+
+*pwd*
+     Display the current folder.
+
+*rmdir*  FOLDER_NAME
+     Delete the folder named folder_name.
+
+*stat*  OBJECT_NAME
+     Show the status of the object named _object_name_.
+
+*touch -h|-q*  OBJECT_NAME
+     Create a new object named object_name of the specified type:
+
+     -h or -hashmap: a hash map
+     -q or -queue: a FIFO queue
+
+*touch -x|-xml*  XML_TEXT
+     Create a new object using the provided xml text (the xml is of
+     course based on the XSD schema for Photon).
+
+     Note: the xml text must be quoted, using apostrophes.
+
+
+REPORTING BUGS
+**************
+
+Report bugs to <dprevost@photonsoftware.org>.
+
+
+
+COPYRIGHT
+*********
+
+Copyright (C) 2008 Daniel Prévost.
+
+
+
+Tag Table:
+Node: Top189
+Ref: name246
+Ref: synopsis313
+Ref: Getting [minimal] help;334
+Ref: Running normally;407
+Ref: DESCRIPTION486
+Ref: OPTIONS809
+Ref: Commands992
+Ref: REPORTING BUGS3193
+Ref: COPYRIGHT3272
+
+End Tag Table
+
+
+Local Variables:
+coding: iso-8859-1
+End:
