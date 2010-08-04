@@ -29,13 +29,13 @@ SUBDIRS =             \
         Nucleus       \
         Quasar        \
         API           \
-        C++           \
         $(MAYBE_Java) \
         include       \
         XML           \
         Tests         \
         Tools         
 
+#        C++           
 #        Proto         
 
 EXAMPLES_FILES =                                      \

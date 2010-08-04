@@ -10,8 +10,8 @@
 
 CLEANFILES = *~
 
-EXTRA_DIST =                 \
-        Makefile.win32       
+EXTRA_DIST =           \
+        Makefile.win32 
 
 # The 'doc' subdir must be placed after 'src' since some of the 
 # documentation and man pages are generated automatically when

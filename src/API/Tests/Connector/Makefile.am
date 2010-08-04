@@ -14,12 +14,7 @@ include $(top_srcdir)/src/Makefile.Common.am
 
 CLEANFILES = *~ core
 
-check_PROGRAMS =           \
-        ConnectNullAddress \
-        ConnectNullAnswer  \
-        ConnectNullConn    \
-        ConnectNullError   \
-        ConnectPass        
+check_PROGRAMS = Connect      
 
 ConnectNullConn_SOURCES = ConnectNullConn.c
 
@@ -36,7 +31,7 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)
 
-TESTS = RunTests.sh
+TESTS = Connect
 
 XFAIL_TESTS = 
 

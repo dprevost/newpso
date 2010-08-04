@@ -42,11 +42,11 @@
 #  define PSO_INVALID_SOCKET -1
 #endif
 
-#define QUASAR_DIR  @QUASAR_DIR@
+#define QUASAR_DIR  "@abs_top_builddir@"
 #if defined WIN32
-const char * quasarName = @QUASAR_DIR@ "\\quasar.exe";
+const char * quasarName = "@top_builddir@" "\\quasar.exe";
 #else
-const char * quasarName = @QUASAR_DIR@ "/quasar";
+const char * quasarName = "@top_builddir@" "/src/Quasar/quasar";
 #endif
 
 #define QUASAR_PORT 10701
@@ -136,8 +136,8 @@ bool startQuasar()
    ok = psocRemoveDir( "/tmp/photon", &g_errorHandle );
 
    mkdir( "/tmp/photon", 0700 );
-   system( "cp @SRC_DIR@/src/Quasar/quasar_config.example.xml /tmp/photon" );
-   system( "cp @SRC_DIR@/src/Quasar/quasar_config.xsd         /tmp/photon" );
+   system( "cp @top_srcdir@/src/Quasar/quasar_config.example.xml /tmp/photon" );
+   system( "cp @top_srcdir@/src/Quasar/quasar_config.xsd         /tmp/photon" );
    
    /* Launch the child */
 #if defined(_WIN32)

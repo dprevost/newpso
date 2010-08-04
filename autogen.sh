@@ -12,6 +12,21 @@
 
 ##########################################################################
 
+target="Debug"
+if [ "$1" = "" ] ; then
+   echo "Usage: ./autogen.sh Debug | Release "
+   exit 1
+elif [ "$1" = "Debug" ] ; then
+   echo "Building for target $1"
+elif [ "$1" = "Release" ] ; then
+   echo "Building for target $1"
+else
+   echo "Usage: ./autogen.sh Debug | Release "
+   exit 1
+fi
+
+target=$1
+
 # Test our version of automake - we need at least 1.5 for nobase_ 
 # although the code was always tested with 1.7 or greater. 
  
@@ -42,9 +57,9 @@ echo "-----------------------------------------------"
 echo "Cleanup phase - Warning messages are normal" 
 echo "------------------------------------------------"
 
-if [ -f Makefile ] 
+if [ -f $target/Makefile ] 
 then 
-  make distclean
+  cd $target; make distclean; cd ..
 fi
 
 rm -f config.cache
@@ -59,6 +74,10 @@ echo "-----------------------------------------------"
 
 ##########################################################################
 
+if [ ! -d $target ] ; then
+  mkdir $target
+fi
+
 echo "libtoolize"
 libtoolize -f
 echo "- aclocal -I m4"
@@ -70,8 +89,9 @@ autoheader
 echo "- automake -a --foreign"
 automake -a --foreign
 echo "- ./configure"
-./configure
+cd $target && ../configure --enable-$target && cd ..
+
 echo "- running the python autogen.sh"
-cd src/Python; ./autogen.sh; cd -
+#cd src/Python; ./autogen.sh; cd -
 
 exit

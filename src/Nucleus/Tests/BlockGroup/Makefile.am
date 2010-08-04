@@ -14,22 +14,9 @@ include $(top_srcdir)/src/Makefile.Common.am
 
 CLEANFILES = *~ core
 
-check_PROGRAMS =        \
-        FiniNullGroup   \
-        FiniPass        \
-        InitInvalidType \
-        InitNullGroup   \
-        InitNullOffset  \
-        InitPass        \
-        InitZeroPages   
-
-FiniNullGroup_SOURCES   = FiniNullGroup.c
-FiniPass_SOURCES        = FiniPass.c
-InitInvalidType_SOURCES = InitInvalidType.c
-InitNullGroup_SOURCES   = InitNullGroup.c
-InitNullOffset_SOURCES  = InitNullOffset.c
-InitPass_SOURCES        = InitPass.c
-InitZeroPages_SOURCES   = InitZeroPages.c
+check_PROGRAMS = \
+        Fini     \
+        Init     
 
 EXTRA_DIST =           \
         Makefile.win32 \
@@ -41,21 +28,11 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)             
 
-TESTS =                 \
-        FiniNullGroup   \
-        FiniPass        \
-        InitInvalidType \
-        InitNullGroup   \
-        InitNullOffset  \
-        InitPass        \
-        InitZeroPages   
+TESTS =      \
+        Fini \
+        Init 
 
-XFAIL_TESTS =           \
-        FiniNullGroup   \
-        InitInvalidType \
-        InitNullGroup   \
-        InitNullOffset  \
-        InitZeroPages   
+XFAIL_TESTS = 
 
 LDADD = $(top_builddir)/src/Nucleus/libNucleus.la \
         $(top_builddir)/src/Common/libCommon.la   

@@ -14,56 +14,13 @@ include $(top_srcdir)/src/Makefile.Common.am
 
 CLEANFILES = *~ core
 
-check_PROGRAMS =             \
-        FiniNullBitmap       \
-        FiniPass             \
-        GetLengthPass        \
-        GetLengthPowerOfTwo7 \
-        GetLengthPowerOfTwo9 \
-        GetLengthZeroLength  \
-        GetLengthZeroGranu   \
-        InitNullBitmap       \
-        InitNullOffset       \
-        InitPass             \
-        InitPowerOfTwo7      \
-        InitPowerOfTwo9      \
-        InitZeroGranu        \
-        InitZeroLength       \
-        IsFreeNullBitmap     \
-        IsFreeNullOffset     \
-        IsFreePass           \
-        SetAllocNullBitmap   \
-        SetAllocNullOffset   \
-        SetAllocPass         \
-        SetAllocZeroLength   \
-        SetFreeNullBitmap    \
-        SetFreeNullOffset    \
-        SetFreePass          
-
-FiniNullBitmap_SOURCES       = FiniNullBitmap.c
-FiniPass_SOURCES             = FiniPass.c
-GetLengthPass_SOURCES        = GetLengthPass.c
-GetLengthPowerOfTwo7_SOURCES = GetLengthPowerOfTwo7.c
-GetLengthPowerOfTwo9_SOURCES = GetLengthPowerOfTwo9.c
-GetLengthZeroGranu_SOURCES   = GetLengthZeroGranu.c
-GetLengthZeroLength_SOURCES  = GetLengthZeroLength.c
-InitNullBitmap_SOURCES       = InitNullBitmap.c
-InitNullOffset_SOURCES       = InitNullOffset.c
-InitPass_SOURCES             = InitPass.c
-InitPowerOfTwo7_SOURCES      = InitPowerOfTwo7.c
-InitPowerOfTwo9_SOURCES      = InitPowerOfTwo9.c
-InitZeroGranu_SOURCES        = InitZeroGranu.c
-InitZeroLength_SOURCES       = InitZeroLength.c
-IsFreeNullBitmap_SOURCES     = IsFreeNullBitmap.c
-IsFreeNullOffset_SOURCES     = IsFreeNullOffset.c
-IsFreePass_SOURCES           = IsFreePass.c
-SetAllocNullBitmap_SOURCES   = SetAllocNullBitmap.c
-SetAllocNullOffset_SOURCES   = SetAllocNullOffset.c
-SetAllocPass_SOURCES         = SetAllocPass.c
-SetAllocZeroLength_SOURCES   = SetAllocZeroLength.c
-SetFreeNullBitmap_SOURCES    = SetFreeNullBitmap.c
-SetFreeNullOffset_SOURCES    = SetFreeNullOffset.c
-SetFreePass_SOURCES          = SetFreePass.c
+check_PROGRAMS =  \
+        Fini      \
+        GetLength \
+        Init      \
+        IsFree    \
+        SetAlloc  \
+        SetFree             
 
 EXTRA_DIST =           \
         Makefile.win32 \
@@ -75,51 +32,15 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)             
 
-TESTS =                      \
-        FiniNullBitmap       \
-        FiniPass             \
-        GetLengthPass        \
-        GetLengthPowerOfTwo7 \
-        GetLengthPowerOfTwo9 \
-        GetLengthZeroGranu   \
-        GetLengthZeroLength  \
-        InitNullBitmap       \
-        InitNullOffset       \
-        InitPass             \
-        InitPowerOfTwo7      \
-        InitPowerOfTwo9      \
-        InitZeroGranu        \
-        InitZeroLength       \
-        IsFreeNullBitmap     \
-        IsFreeNullOffset     \
-        IsFreePass           \
-        SetAllocNullBitmap   \
-        SetAllocNullOffset   \
-        SetAllocPass         \
-        SetAllocZeroLength   \
-        SetFreeNullBitmap    \
-        SetFreeNullOffset    \
-        SetFreePass          
+TESTS =           \
+        Fini      \
+        GetLength \
+        Init      \
+        IsFree    \
+        SetAlloc  \
+        SetFree             
 
-XFAIL_TESTS =                \
-        FiniNullBitmap       \
-        GetLengthPowerOfTwo7 \
-        GetLengthPowerOfTwo9 \
-        GetLengthZeroGranu   \
-        GetLengthZeroLength  \
-        InitNullBitmap       \
-        InitNullOffset       \
-        InitPowerOfTwo7      \
-        InitPowerOfTwo9      \
-        InitZeroGranu        \
-        InitZeroLength       \
-        IsFreeNullBitmap     \
-        IsFreeNullOffset     \
-        SetAllocNullBitmap   \
-        SetAllocNullOffset   \
-        SetAllocZeroLength   \
-        SetFreeNullBitmap    \
-        SetFreeNullOffset    
+XFAIL_TESTS = 
 
 LDADD = $(top_builddir)/src/Nucleus/libNucleus.la \
         $(top_builddir)/src/Common/libCommon.la

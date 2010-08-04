@@ -14,44 +14,13 @@ include $(top_srcdir)/src/Makefile.Common.am
 
 CLEANFILES = *~ core
 
-check_PROGRAMS =           \
-        AddNullContext     \
-        AddNullManager     \
-        AddNullProcess     \
-        AddPass            \
-        AddZeroPid         \
-        FindNullContext    \
-        FindNullManager    \
-        FindNullProcess    \
-        FindPass           \
-        FindZeroPid        \
-        InitNullContext    \
-        InitNullManager    \
-        InitPass           \
-        RemoveNullContext  \
-        RemoveNullManager  \
-        RemoveNullProcess  \
-        RemovePass         
+check_PROGRAMS = \
+        Add      \
+        Find     \
+        Init     \
+        Remove   
 
 COMMON_HEADER = procMgrTest.h
-
-AddNullContext_SOURCES      = $(COMMON_HEADER) AddNullContext.c
-AddNullManager_SOURCES      = $(COMMON_HEADER) AddNullManager.c
-AddNullProcess_SOURCES      = $(COMMON_HEADER) AddNullProcess.c
-AddPass_SOURCES             = $(COMMON_HEADER) AddPass.c
-AddZeroPid_SOURCES          = $(COMMON_HEADER) AddZeroPid.c
-FindNullContext_SOURCES     = $(COMMON_HEADER) FindNullContext.c
-FindNullManager_SOURCES     = $(COMMON_HEADER) FindNullManager.c
-FindNullProcess_SOURCES     = $(COMMON_HEADER) FindNullProcess.c
-FindPass_SOURCES            = $(COMMON_HEADER) FindPass.c
-FindZeroPid_SOURCES         = $(COMMON_HEADER) FindZeroPid.c
-InitNullContext_SOURCES     = $(COMMON_HEADER) InitNullContext.c
-InitNullManager_SOURCES     = $(COMMON_HEADER) InitNullManager.c
-InitPass_SOURCES            = $(COMMON_HEADER) InitPass.c
-RemoveNullContext_SOURCES   = $(COMMON_HEADER) RemoveNullContext.c
-RemoveNullManager_SOURCES   = $(COMMON_HEADER) RemoveNullManager.c
-RemoveNullProcess_SOURCES   = $(COMMON_HEADER) RemoveNullProcess.c
-RemovePass_SOURCES          = $(COMMON_HEADER) RemovePass.c
 
 EXTRA_DIST =           \
         Makefile.win32 \
@@ -63,39 +32,13 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)             
 
-TESTS =                    \
-        AddNullContext     \
-        AddNullManager     \
-        AddNullProcess     \
-        AddPass            \
-        AddZeroPid         \
-        FindNullContext    \
-        FindNullManager    \
-        FindNullProcess    \
-        FindPass           \
-        FindZeroPid        \
-        InitNullContext    \
-        InitNullManager    \
-        InitPass           \
-        RemoveNullContext  \
-        RemoveNullManager  \
-        RemoveNullProcess  \
-        RemovePass         
+TESTS =        \
+        Add    \
+        Find   \
+        Init   \
+        Remove 
 
-XFAIL_TESTS =              \
-        AddNullContext     \
-        AddNullManager     \
-        AddNullProcess     \
-        AddZeroPid         \
-        FindNullContext    \
-        FindNullManager    \
-        FindNullProcess    \
-        FindZeroPid        \
-        InitNullContext    \
-        InitNullManager    \
-        RemoveNullContext  \
-        RemoveNullManager  \
-        RemoveNullProcess  
+XFAIL_TESTS = 
 
 LDADD = $(top_builddir)/src/Nucleus/libNucleus.la \
         $(top_builddir)/src/Common/libCommon.la

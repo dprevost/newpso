@@ -14,56 +14,14 @@ include $(top_srcdir)/src/Makefile.Common.am
 
 CLEANFILES = *~ core
 
-check_PROGRAMS =          \
-        CloseInvalidSig   \
-        CloseNullDir      \
-        ClosePass         \
-        FiniInvalidSig    \
-        FiniNullDir       \
-        FiniPass          \
-        GetNextInvalidSig \
-        GetNextNoOpen     \
-        GetNextNoSuchDir  \
-        GetNextNullDir    \
-        GetNextNullError  \
-        GetNextNullpDir   \
-        GetNextPass       \
-        InitNullDir       \
-        InitPass          \
-        OpenCallTwice     \
-        OpenInvalidSig    \
-        OpenNoInit        \
-        OpenNoSuchDir     \
-        OpenNullDir       \
-        OpenNullDirname   \
-        OpenNullError     \
-        OpenPass          \
-        Tests             
-
-CloseInvalidSig_SOURCES   = CloseInvalidSig.c
-CloseNullDir_SOURCES      = CloseNullDir.c
-ClosePass_SOURCES         = ClosePass.c
-FiniInvalidSig_SOURCES    = FiniInvalidSig.c
-FiniNullDir_SOURCES       = FiniNullDir.c
-FiniPass_SOURCES          = FiniPass.c
-GetNextInvalidSig_SOURCES = GetNextInvalidSig.c
-GetNextNoOpen_SOURCES     = GetNextNoOpen.c
-GetNextNoSuchDir_SOURCES  = GetNextNoSuchDir.c
-GetNextNullDir_SOURCES    = GetNextNullDir.c
-GetNextNullError_SOURCES  = GetNextNullError.c
-GetNextNullpDir_SOURCES   = GetNextNullpDir.c
-GetNextPass_SOURCES       = GetNextPass.c
-InitNullDir_SOURCES       = InitNullDir.c
-InitPass_SOURCES          = InitPass.c
-OpenCallTwice_SOURCES     = OpenCallTwice.c
-OpenInvalidSig_SOURCES    = OpenInvalidSig.c
-OpenNoInit_SOURCES        = OpenNoInit.c
-OpenNoSuchDir_SOURCES     = OpenNoSuchDir.c
-OpenNullDir_SOURCES       = OpenNullDir.c
-OpenNullDirname_SOURCES   = OpenNullDirname.c
-OpenNullError_SOURCES     = OpenNullError.c
-OpenPass_SOURCES          = OpenPass.c
-Tests_SOURCES             = Tests.c
+check_PROGRAMS =  \
+        Close     \
+        Fini      \
+        GetNext   \
+        Init      \
+        Open      \
+        RemoveDir \
+        Tests     
 
 EXTRA_DIST =           \
         Makefile.win32 \
@@ -75,49 +33,16 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)             
 
-TESTS =                   \
-        CloseInvalidSig   \
-        CloseNullDir      \
-        ClosePass         \
-        FiniInvalidSig    \
-        FiniNullDir       \
-        FiniPass          \
-        GetNextInvalidSig \
-        GetNextNoOpen     \
-        GetNextNoSuchDir  \
-        GetNextNullDir    \
-        GetNextNullError  \
-        GetNextNullpDir   \
-        GetNextPass       \
-        InitNullDir       \
-        InitPass          \
-        OpenCallTwice     \
-        OpenInvalidSig    \
-        OpenNoInit        \
-        OpenNoSuchDir     \
-        OpenNullDir       \
-        OpenNullDirname   \
-        OpenNullError     \
-        OpenPass          \
-        Tests             
+TESTS =           \
+        Close     \
+        Fini      \
+        GetNext   \
+        Init      \
+        Open      \
+        RemoveDir \
+        Tests     
 
-XFAIL_TESTS =             \
-        CloseInvalidSig   \
-        CloseNullDir      \
-        FiniInvalidSig    \
-        FiniNullDir       \
-        GetNextInvalidSig \
-        GetNextNoOpen     \
-        GetNextNullDir    \
-        GetNextNullError  \
-        GetNextNullpDir   \
-        InitNullDir       \
-        OpenCallTwice     \
-        OpenInvalidSig    \
-        OpenNoInit        \
-        OpenNullDir       \
-        OpenNullDirname   \
-        OpenNullError     
+XFAIL_TESTS = 
 
 LDADD = $(top_builddir)/src/Common/libCommon.la
 

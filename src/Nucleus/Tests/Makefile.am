@@ -26,7 +26,6 @@ SUBDIRS =              \
         MemAlloc       \
         MemBitmap      \
         MemObject      \
-        Optional       \
         Process        \
         ProcessManager \
         Queue          \
@@ -34,10 +33,9 @@ SUBDIRS =              \
         TopFolder      \
         Transaction    
 
-check_PROGRAMS =         \
-        LinkNodeNULLInit \
-        LinkNodeNULLTest \
-        LinkNodeTestTest 
+#        Optional       
+
+check_PROGRAMS = LinkNode
 
 LinkNodeNULLInit_SOURCES = LinkNodeNULLInit.c
 LinkNodeNULLTest_SOURCES = LinkNodeNULLTest.c
@@ -55,14 +53,9 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)             
 
-TESTS =                  \
-        LinkNodeNULLInit \
-        LinkNodeNULLTest \
-        LinkNodeTestTest 
+TESTS = LinkNode
 
-XFAIL_TESTS =            \
-        LinkNodeNULLInit \
-        LinkNodeNULLTest 
+XFAIL_TESTS = 
 
 LDADD = $(top_builddir)/src/Nucleus/libNucleus.la \
         $(top_builddir)/src/Common/libCommon.la

@@ -14,44 +14,12 @@ include $(top_srcdir)/src/Makefile.Common.am
 
 CLEANFILES = *~ core
 
-check_PROGRAMS =         \
-        CloseNullAlloc   \
-        CloseNullError   \
-        ClosePass        \
-        FreeNullAlloc    \
-        FreeNullError    \
-        FreeNullPtr      \
-        FreePass         \
-        FreeZeroLength   \
-        InitNullAddress  \
-        InitNullAlloc    \
-        InitNullError    \
-        InitPass         \
-        InitSmallLength  \
-        IsPageFreeTest   \
-        MallocNullAlloc  \
-        MallocNullError  \
-        MallocPass       \
-        MallocZeroLength
-
-CloseNullAlloc_SOURCES   = CloseNullAlloc.c
-CloseNullError_SOURCES   = CloseNullError.c
-ClosePass_SOURCES        = ClosePass.c
-FreeNullAlloc_SOURCES    = FreeNullAlloc.c
-FreeNullError_SOURCES    = FreeNullError.c
-FreeNullPtr_SOURCES      = FreeNullPtr.c
-FreePass_SOURCES         = FreePass.c
-FreeZeroLength_SOURCES   = FreeZeroLength.c
-InitNullAddress_SOURCES  = InitNullAddress.c
-InitNullAlloc_SOURCES    = InitNullAlloc.c
-InitNullError_SOURCES    = InitNullError.c
-InitPass_SOURCES         = InitPass.c
-InitSmallLength_SOURCES  = InitSmallLength.c
-IsPageFreeTest_SOURCES   = IsPageFreeTest.c
-MallocNullAlloc_SOURCES  = MallocNullAlloc.c
-MallocNullError_SOURCES  = MallocNullError.c
-MallocPass_SOURCES       = MallocPass.c
-MallocZeroLength_SOURCES = MallocZeroLength.c
+check_PROGRAMS =   \
+        Close      \
+        Free       \
+        Init       \
+        IsPageFree \
+        Malloc     
 
 EXTRA_DIST =           \
         Makefile.win32 \
@@ -64,39 +32,13 @@ TESTS_ENVIRONMENT =                  \
         PYTHON=$(PYTHON)             
 
 TESTS =                  \
-        CloseNullAlloc   \
-        CloseNullError   \
-        ClosePass        \
-        FreeNullAlloc    \
-        FreeNullError    \
-        FreeNullPtr      \
-        FreePass         \
-        FreeZeroLength   \
-        InitNullAddress  \
-        InitNullAlloc    \
-        InitNullError    \
-        InitPass         \
-        InitSmallLength  \
-        IsPageFreeTest   \
-        MallocNullAlloc  \
-        MallocNullError  \
-        MallocPass       \
-        MallocZeroLength
+        Close      \
+        Free       \
+        Init       \
+        IsPageFree \
+        Malloc     
 
-XFAIL_TESTS =            \
-        CloseNullAlloc   \
-        CloseNullError   \
-        FreeNullAlloc    \
-        FreeNullError    \
-        FreeNullPtr      \
-        FreeZeroLength   \
-        InitNullAddress  \
-        InitNullAlloc    \
-        InitNullError    \
-        InitSmallLength  \
-        MallocNullAlloc  \
-        MallocNullError  \
-        MallocZeroLength
+XFAIL_TESTS = 
 
 LDADD = $(top_builddir)/src/Nucleus/libNucleus.la \
         $(top_builddir)/src/Common/libCommon.la

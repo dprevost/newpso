@@ -14,22 +14,7 @@ include $(top_srcdir)/src/Makefile.Common.am
 
 CLEANFILES = *~ core
 
-check_PROGRAMS =        \
-        CloseNullObject \
-        ClosePass       \
-        OpenNullName    \
-        OpenNullObject  \
-        OpenPass        \
-        OpenWrongType   \
-        OpenZeroLength  
-
-CloseNullObject_SOURCES = CloseNullObject.c
-ClosePass_SOURCES       = ClosePass.c
-OpenNullName_SOURCES    = OpenNullName.c
-OpenNullObject_SOURCES  = OpenNullObject.c
-OpenPass_SOURCES        = OpenPass.c
-OpenWrongType_SOURCES   = OpenWrongType.c
-OpenZeroLength_SOURCES  = OpenZeroLength.c
+check_PROGRAMS = Close Open     
 
 EXTRA_DIST =           \
         Makefile.win32 \
@@ -44,7 +29,7 @@ TESTS_ENVIRONMENT =                  \
         verbose=0                    \
         PYTHON=$(PYTHON)
 
-TESTS = RunTests.sh 
+TESTS = Close Open
 
 XFAIL_TESTS = 
 

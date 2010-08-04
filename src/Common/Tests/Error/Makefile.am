@@ -14,68 +14,17 @@ include $(top_srcdir)/src/Makefile.Common.am
 
 CLEANFILES = *~ core
 
-check_PROGRAMS =              \
-        AddHandlerNullDef     \
-        AddHandlerNullHandler \
-        AddHandlerNullName    \
-        AddHandlerPass        \
-        AnyErrorNullError     \
-        AnyErrorPass          \
-        ChainErrorNullDef     \
-        ChainErrorNullHandler \
-        ChainErrorInvalidSig  \
-        ChainErrorNoSetError  \
-        ChainErrorTooMany     \
-        ChainErrorPass        \
-        FiniInvalidSig        \
-        FiniNullError         \
-        FiniPass              \
-        GetErrorInvalidSig    \
-        GetErrorNullError     \
-        GetErrorNullMsg       \
-        GetErrorZeroLength    \
-        GetLastNullError      \
-        GetLastPass           \
-        GetLengthNullError    \
-        GetLengthPass         \
-        InitNoInitDefs        \
-        InitNullError         \
-        InitPass              \
-        SetErrorInvalidSig    \
-        SetErrorInvalidValue  \
-        SetErrorNullError     \
-        Tests                 
-
-AddHandlerNullDef_SOURCES     = AddHandlerNullDef.c
-AddHandlerNullHandler_SOURCES = AddHandlerNullHandler.c
-AddHandlerNullName_SOURCES    = AddHandlerNullName.c
-AddHandlerPass_SOURCES        = AddHandlerPass.c
-AnyErrorNullError_SOURCES     = AnyErrorNullError.c
-AnyErrorPass_SOURCES          = AnyErrorPass.c
-ChainErrorNullDef_SOURCES     = ChainErrorNullDef.c
-ChainErrorNullHandler_SOURCES = ChainErrorNullHandler.c
-ChainErrorInvalidSig_SOURCES  = ChainErrorInvalidSig.c
-ChainErrorNoSetError_SOURCES  = ChainErrorNoSetError.c
-ChainErrorTooMany_SOURCES     = ChainErrorTooMany.c
-ChainErrorPass_SOURCES        = ChainErrorPass.c
-FiniInvalidSig_SOURCES        = FiniInvalidSig.c
-FiniNullError_SOURCES         = FiniNullError.c
-FiniPass_SOURCES              = FiniPass.c
-GetErrorInvalidSig_SOURCES    = GetErrorInvalidSig.c
-GetErrorNullError_SOURCES     = GetErrorNullError.c
-GetErrorNullMsg_SOURCES       = GetErrorNullMsg.c
-GetErrorZeroLength_SOURCES    = GetErrorZeroLength.c
-GetLastNullError_SOURCES      = GetLastNullError.c
-GetLastPass_SOURCES           = GetLastPass.c
-GetLengthNullError_SOURCES    = GetLengthNullError.c
-GetLengthPass_SOURCES         = GetLengthPass.c
-InitNoInitDefs_SOURCES        = InitNoInitDefs.c
-InitNullError_SOURCES         = InitNullError.c
-InitPass_SOURCES              = InitPass.c
-SetErrorInvalidSig_SOURCES    = SetErrorInvalidSig.c
-SetErrorInvalidValue_SOURCES  = SetErrorInvalidValue.c
-SetErrorNullError_SOURCES     = SetErrorNullError.c
-Tests_SOURCES                 = Tests.c
+check_PROGRAMS =   \
+        AddHandler \
+        AnyError   \
+        ChainError \
+        Fini       \
+        GetError   \
+        GetLast    \
+        GetLength  \
+        Init       \
+        SetError   \
+        Tests      
 
 EXTRA_DIST =           \
         Makefile.win32 \
@@ -87,61 +36,19 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)             
 
-TESTS =                       \
-        AddHandlerNullDef     \
-        AddHandlerNullHandler \
-        AddHandlerNullName    \
-        AddHandlerPass        \
-        AnyErrorNullError     \
-        AnyErrorPass          \
-        ChainErrorNullDef     \
-        ChainErrorNullHandler \
-        ChainErrorInvalidSig  \
-        ChainErrorNoSetError  \
-        ChainErrorTooMany     \
-        ChainErrorPass        \
-        FiniInvalidSig        \
-        FiniNullError         \
-        FiniPass              \
-        GetErrorInvalidSig    \
-        GetErrorNullError     \
-        GetErrorNullMsg       \
-        GetErrorZeroLength    \
-        GetLastNullError      \
-        GetLastPass           \
-        GetLengthNullError    \
-        GetLengthPass         \
-        InitNoInitDefs        \
-        InitNullError         \
-        InitPass              \
-        SetErrorInvalidSig    \
-        SetErrorInvalidValue  \
-        SetErrorNullError     \
-        Tests                 
+TESTS =            \
+        AddHandler \
+        AnyError   \
+        ChainError \
+        Fini       \
+        GetError   \
+        GetLast    \
+        GetLength  \
+        Init       \
+        SetError   \
+        Tests      
 
-XFAIL_TESTS =                 \
-        AddHandlerNullDef     \
-        AddHandlerNullHandler \
-        AddHandlerNullName    \
-        AnyErrorNullError     \
-        ChainErrorNullDef     \
-        ChainErrorNullHandler \
-        ChainErrorInvalidSig  \
-        ChainErrorNoSetError  \
-        ChainErrorTooMany     \
-        FiniInvalidSig        \
-        FiniNullError         \
-        GetErrorInvalidSig    \
-        GetErrorNullError     \
-        GetErrorNullMsg       \
-        GetErrorZeroLength    \
-        GetLastNullError      \
-        GetLengthNullError    \
-        InitNoInitDefs        \
-        InitNullError         \
-        SetErrorInvalidSig    \
-        SetErrorInvalidValue  \
-        SetErrorNullError     
+XFAIL_TESTS =  
 
 LDADD = $(top_builddir)/src/Common/libCommon.la
 

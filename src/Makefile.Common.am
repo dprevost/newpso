@@ -14,7 +14,9 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/src         \
               -I$(top_srcdir)/src/include \
-              -Wall
+              -I$(top_builddir)/src       
+
+#              -Wall
 
 if COND_USE_DBC
    AM_CPPFLAGS += -DUSE_DBC

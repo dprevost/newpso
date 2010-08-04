@@ -14,88 +14,29 @@ include $(top_srcdir)/src/Makefile.Common.am
 
 CLEANFILES = *~ core
 
-check_PROGRAMS =            \
-        Close               \
-        Create              \
-        Delete              \
-        Definition          \
-        Edit                \
-        Empty               \
-        FirstNullData       \
-        FirstNullDataLength \
-        FirstNullHandle     \
-        FirstNullKey        \
-        FirstNullKeyLength  \
-        FirstPass           \
-        FirstWrongHandle    \
-        Get                 \
-        GetFirst            \
-        GetNext             \
-        Insert              \
-        NextNoFirst         \
-        NextNullData        \
-        NextNullDataLength  \
-        NextNullHandle      \
-        NextNullKey         \
-        NextNullKeyLength   \
-        NextPass            \
-        NextWrongHandle     \
-        OpenNoSession       \
-        OpenPass            \
-        RecordDef           \
-        Replace             \
-        ResetNullMap        \
-        ResetPass           \
-        ResetWrongType      \
-        RetrieveNullData    \
-        RetrieveNullHandle  \
-        RetrieveNullKey     \
-        RetrieveNullLength  \
-        RetrievePass        \
-        RetrieveWrongHandle \
-        RetrieveZeroLength  \
-        Status              \
-        Tests               
-
-Close_SOURCES               = Close.c
-Create_SOURCES              = Create.c
-Delete_SOURCES              = Delete.c
-Definition_SOURCES          = Definition.c
-Edit_SOURCES                = Edit.c
-Empty_SOURCES               = Empty.c
-FirstNullData_SOURCES       = FirstNullData.c
-FirstNullDataLength_SOURCES = FirstNullDataLength.c
-FirstNullHandle_SOURCES     = FirstNullHandle.c
-FirstNullKey_SOURCES        = FirstNullKey.c
-FirstNullKeyLength_SOURCES  = FirstNullKeyLength.c
-FirstPass_SOURCES           = FirstPass.c
-FirstWrongHandle_SOURCES    = FirstWrongHandle.c
-Get_SOURCES                 = Get.c
-GetFirst_SOURCES            = GetFirst.c
-GetNext_SOURCES             = GetNext.c
-Insert_SOURCES              = Insert.c
-NextNoFirst_SOURCES         = NextNoFirst.c
-NextNullData_SOURCES        = NextNullData.c
-NextNullDataLength_SOURCES  = NextNullDataLength.c
-NextNullHandle_SOURCES      = NextNullHandle.c
-NextNullKey_SOURCES         = NextNullKey.c
-NextNullKeyLength_SOURCES   = NextNullKeyLength.c
-NextPass_SOURCES            = NextPass.c
-NextWrongHandle_SOURCES     = NextWrongHandle.c
-OpenNoSession_SOURCES       = OpenNoSession.c
-OpenPass_SOURCES            = OpenPass.c
-RecordDef_SOURCES           = RecordDef.c
-Replace_SOURCES             = Replace.c
-ResetPass_SOURCES           = ResetPass.c
-RetrieveNullData_SOURCES    = RetrieveNullData.c
-RetrieveNullHandle_SOURCES  = RetrieveNullHandle.c
-RetrieveNullKey_SOURCES     = RetrieveNullKey.c
-RetrieveNullLength_SOURCES  = RetrieveNullLength.c
-RetrievePass_SOURCES        = RetrievePass.c
-RetrieveWrongHandle_SOURCES = RetrieveWrongHandle.c
-RetrieveZeroLength_SOURCES  = RetrieveZeroLength.c
-Status_SOURCES              = Status.c
-Tests_SOURCES               = Tests.c
+check_PROGRAMS =      \
+        Close         \
+        Create        \
+        Delete        \
+        Definition    \
+        DefLength     \
+        Delete        \
+        Edit          \
+        Empty         \
+        First         \
+        Get           \
+        GetFirst      \
+        GetNext       \
+        Insert        \
+        KeyDefinition \
+        KeyDefLength  \
+        Next          \
+        Open          \
+        Replace       \
+        Reset         \
+        Retrieve      \
+        Status        \
+        Tests         
 
 EXTRA_DIST =           \
         Makefile.win32 \
@@ -110,7 +51,29 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)
 
-TESTS = RunTests.sh
+TESTS =               \
+        Close         \
+        Create        \
+        Delete        \
+        Definition    \
+        DefLength     \
+        Delete        \
+        Edit          \
+        Empty         \
+        First         \
+        Get           \
+        GetFirst      \
+        GetNext       \
+        Insert        \
+        KeyDefinition \
+        KeyDefLength  \
+        Next          \
+        Open          \
+        Replace       \
+        Reset         \
+        Retrieve      \
+        Status        \
+        Tests         
 
 XFAIL_TESTS = 
 

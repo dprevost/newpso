@@ -18,58 +18,21 @@ CLEANFILES = *~ core
 # gcc compiler. Useful for debugging, once in a while...
 # AM_CPPFLAGS += -save-temps
 
-check_PROGRAMS =             \
-        AcquireInvalidSig    \
-        AcquireNullLock      \
-        AcquirePass          \
-        AcquireZeroValue     \
-        FiniInvalidSig       \
-        FiniNullLock         \
-        FiniPass             \
-        InitNullLock         \
-        InitPass             \
-        IsItLockedInvalidSig \
-        IsItLockedNullLock   \
-        IsItLockedPass       \
-        LockConcurrency      \
-        LockTests            \
-        ReleaseInvalidSig    \
-        ReleaseNullLock      \
-        ReleasePass          \
-        TestPidInvalidSig    \
-        TestPidNullLock      \
-        TestPidPass          \
-        TestPidZeroPid       \
-        TryAcqInvalidSig     \
-        TryAcqNullLock       \
-        TryAcqPass           \
-        TryAcqZeroValue 
-
-AcquireInvalidSig_SOURCES    = AcquireInvalidSig.c
-AcquireNullLock_SOURCES      = AcquireNullLock.c
-AcquirePass_SOURCES          = AcquirePass.c
-AcquireZeroValue_SOURCES     = AcquireZeroValue.c
-FiniInvalidSig_SOURCES       = FiniInvalidSig.c
-FiniNullLock_SOURCES         = FiniNullLock.c
-FiniPass_SOURCES             = FiniPass.c
-InitNullLock_SOURCES         = InitNullLock.c
-InitPass_SOURCES             = InitPass.c
-IsItLockedInvalidSig_SOURCES = IsItLockedInvalidSig.c
-IsItLockedNullLock_SOURCES   = IsItLockedNullLock.c
-IsItLockedPass_SOURCES       = IsItLockedPass.c
-LockConcurrency_SOURCES      = LockConcurrency.c
-LockTests_SOURCES            = LockTests.c
-ReleaseInvalidSig_SOURCES    = ReleaseInvalidSig.c
-ReleaseNullLock_SOURCES      = ReleaseNullLock.c
-ReleasePass_SOURCES          = ReleasePass.c
-TestPidInvalidSig_SOURCES    = TestPidInvalidSig.c
-TestPidNullLock_SOURCES      = TestPidNullLock.c
-TestPidPass_SOURCES          = TestPidPass.c
-TestPidZeroPid_SOURCES       = TestPidZeroPid.c
-TryAcqInvalidSig_SOURCES     = TryAcqInvalidSig.c
-TryAcqNullLock_SOURCES       = TryAcqNullLock.c
-TryAcqPass_SOURCES           = TryAcqPass.c
-TryAcqZeroValue_SOURCES      = TryAcqZeroValue.c
+check_PROGRAMS =           \
+        Acquire            \
+        Fini               \
+        Init               \
+        IsItLocked         \
+        LockConcurrency    \
+        LockConcurrencyStd \
+        LockConcurrencyTry \
+        LockShouldFail     \
+        LockShouldFailStd  \
+        LockShouldFailTry  \
+        LockTests          \
+        Release            \
+        TestPid            \
+        TryAcq             
 
 EXTRA_DIST =                  \
         LockConcurrency.sh    \
@@ -84,50 +47,24 @@ TESTS_ENVIRONMENT =                  \
         PYTHON=$(PYTHON)             
 
 TESTS =                       \
-        AcquireInvalidSig     \
-        AcquireNullLock       \
-        AcquirePass           \
-        AcquireZeroValue      \
-        FiniInvalidSig        \
-        FiniNullLock          \
-        FiniPass              \
-        InitNullLock          \
-        InitPass              \
-        IsItLockedInvalidSig  \
-        IsItLockedNullLock    \
-        IsItLockedPass        \
-        LockConcurrency.sh    \
-        LockConcurrencyTry.sh \
-        LockTests             \
-        ReleaseInvalidSig     \
-        ReleaseNullLock       \
-        ReleasePass           \
-        TestPidInvalidSig     \
-        TestPidNullLock       \
-        TestPidPass           \
-        TestPidZeroPid        \
-        TryAcqInvalidSig      \
-        TryAcqNullLock        \
-        TryAcqPass            \
-        TryAcqZeroValue       
+        Acquire            \
+        Fini               \
+        Init               \
+        IsItLocked         \
+        LockConcurrency    \
+        LockShouldFail     \
+        LockTests          \
+        Release            \
+        TestPid            \
+        TryAcq             
 
-XFAIL_TESTS =                \
-        AcquireInvalidSig    \
-        AcquireNullLock      \
-        AcquireZeroValue     \
-        FiniInvalidSig       \
-        FiniNullLock         \
-        InitNullLock         \
-        IsItLockedInvalidSig \
-        IsItLockedNullLock   \
-        ReleaseInvalidSig    \
-        ReleaseNullLock      \
-        TestPidInvalidSig    \
-        TestPidNullLock      \
-        TestPidZeroPid       \
-        TryAcqInvalidSig     \
-        TryAcqNullLock       \
-        TryAcqZeroValue      
+#        LockConcurrencyStd 
+#        LockConcurrencyTry 
+#        LockShouldFail     
+#        LockShouldFailStd  
+#        LockShouldFailTry  
+
+XFAIL_TESTS = 
 
 LDADD = $(top_builddir)/src/Common/libCommon.la
 

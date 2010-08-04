@@ -20,40 +20,16 @@ THREAD_TEST_CODE =   \
         ThreadWrap.c \
         ThreadWrap.h 
 
-check_PROGRAMS =          \
-        AcquireInvalidSig \
-        AcquireNullLock   \
-        AcquirePass       \
-        FiniInvalidSig    \
-        FiniNullLock      \
-        FiniPass          \
-        InitNullLock      \
-        InitPass          \
-        LockConcurrency   \
-        LockTests         \
-        ReleaseInvalidSig \
-        ReleaseNullLock   \
-        ReleasePass       \
-        TryAcqInvalidSig  \
-        TryAcqNullLock    \
-        TryAcqPass        
+check_PROGRAMS =        \
+        Acquire         \
+        Fini            \
+        Init            \
+        LockConcurrency \
+        LockTests       \
+        Release         \
+        TryAcq          
 
-AcquireInvalidSig_SOURCES    = AcquireInvalidSig.c
-AcquireNullLock_SOURCES      = AcquireNullLock.c
-AcquirePass_SOURCES          = AcquirePass.c
-FiniInvalidSig_SOURCES       = FiniInvalidSig.c
-FiniNullLock_SOURCES         = FiniNullLock.c
-FiniPass_SOURCES             = FiniPass.c
-InitNullLock_SOURCES         = InitNullLock.c
-InitPass_SOURCES             = InitPass.c
 LockConcurrency_SOURCES      = LockConcurrency.c $(THREAD_TEST_CODE)
-LockTests_SOURCES            = LockTests.c
-ReleaseInvalidSig_SOURCES    = ReleaseInvalidSig.c
-ReleaseNullLock_SOURCES      = ReleaseNullLock.c
-ReleasePass_SOURCES          = ReleasePass.c
-TryAcqInvalidSig_SOURCES     = TryAcqInvalidSig.c
-TryAcqNullLock_SOURCES       = TryAcqNullLock.c
-TryAcqPass_SOURCES           = TryAcqPass.c
 
 EXTRA_DIST =                  \
         LockConcurrency.sh    \
@@ -67,35 +43,16 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)             
 
-TESTS =                       \
-        AcquireInvalidSig     \
-        AcquireNullLock       \
-        AcquirePass           \
-        FiniInvalidSig        \
-        FiniNullLock          \
-        FiniPass              \
-        InitNullLock          \
-        InitPass              \
-        ReleaseInvalidSig     \
-        ReleaseNullLock       \
-        ReleasePass           \
-        TryAcqInvalidSig      \
-        TryAcqNullLock        \
-        TryAcqPass            \
-        LockConcurrency.sh    \
-        LockConcurrencyTry.sh \
-        LockTests             
+TESTS =                 \
+        Acquire         \
+        Fini            \
+        Init            \
+        Release         \
+        TryAcq          \
+        LockConcurrency \
+        LockTests       
 
-XFAIL_TESTS =             \
-        AcquireInvalidSig \
-        AcquireNullLock   \
-        FiniInvalidSig    \
-        FiniNullLock      \
-        InitNullLock      \
-        ReleaseInvalidSig \
-        ReleaseNullLock   \
-        TryAcqInvalidSig  \
-        TryAcqNullLock    
+XFAIL_TESTS = 
 
 LDADD = $(top_builddir)/src/Common/libCommon.la
 

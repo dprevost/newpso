@@ -25,7 +25,7 @@
 #############################################################################
 
 AC_INIT([Photon Software],
-        [0.5.0],
+        [0.6.0],
         [Daniel Prevost <dprevost@photonsoftware.org>],
         [photon])
 
@@ -468,6 +468,7 @@ AC_CONFIG_SUBDIRS(src/Python)
 AC_CONFIG_FILES([
    doc/doxyfile.photon_c
    doc/doxyfile.photon_cpp
+   src/API/Tests/quasar-run.h
    src/include/Doxygen/pso_c
    src/include/Doxygen/DataDefBuilderODBC
    src/include/Doxygen/DataDefBuilderUser
