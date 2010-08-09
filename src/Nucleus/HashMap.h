@@ -101,15 +101,6 @@ bool psonHashMapDelete( psonHashMap        * pHashMap,
                         uint32_t             keyLength, 
                         psonSessionContext * pContext );
 
-/*
- * Only delete if there is zero access to the item. This is used for the
- * data definitions and key definitions.
- */
-bool psonHashMapDeleteZero( psonHashMap        * pHashMap,
-                            const void         * key,
-                            uint32_t             keyLength, 
-                            psonSessionContext * pContext );
-
 #if defined(PSO_USE_TRACE)
 void psonHashMapDump( psonHashMap        * pHashMap,
                       int                  indent,

@@ -135,14 +135,17 @@ bool startQuasar()
    
    ok = psocRemoveDir( "/tmp/photon", &g_errorHandle );
 
-   mkdir( "/tmp/photon", 0700 );
-   system( "cp @top_srcdir@/src/Quasar/quasar_config.example.xml /tmp/photon" );
-   system( "cp @top_srcdir@/src/Quasar/quasar_config.xsd         /tmp/photon" );
+   ok = mkdir( "/tmp/photon", 0700 );
+   if ( ok != 0 ) return false;
+   ok = system( "cp @top_srcdir@/src/Quasar/quasar_config.example.xml /tmp/photon" );
+   if ( ok != 0 ) return false;
+   ok = system( "cp @top_srcdir@/src/Quasar/quasar_config.xsd         /tmp/photon" );
+   if ( ok != 0 ) return false;
    
    /* Launch the child */
 #if defined(_WIN32)
    pid = _spawnl( _P_NOWAIT, quasarName, quasarName, "-c", "/tmp/photon/quasar_config.example.xml", NULL ); 
-   assert_true( pid > 0 );
+   if ( pid <= 0 ) return false;
    g_spawnPid = pid;
 #else
    pid = fork();

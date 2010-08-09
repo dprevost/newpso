@@ -12,7 +12,7 @@
 # overwrite any macros set in the common file
 include $(top_srcdir)/src/Makefile.Common.am
 
-CLEANFILES = *~ core
+CLEANFILES = $(srcdir)/*~ core
 
 SUBDIRS =              \
         Api            \

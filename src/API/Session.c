@@ -24,8 +24,6 @@
 #include "API/Process.h"
 #include "API/ShMem.h"
 #include "API/CommonObject.h"
-#include "API/DataDefinition.h"
-#include "API/KeyDefinition.h"
 #include "Nucleus/MemoryHeader.h"
 #include "Nucleus/MemoryAllocator.h"
 #include "Nucleus/Process.h"

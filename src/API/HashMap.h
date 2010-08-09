@@ -25,7 +25,6 @@
 
 #include "API/CommonObject.h"
 #include "Nucleus/HashMap.h"
-#include "API/DataDefinition.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

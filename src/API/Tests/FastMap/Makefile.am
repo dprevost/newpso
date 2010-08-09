@@ -12,12 +12,11 @@
 # overwrite any macros set in the common file
 include $(top_srcdir)/src/Makefile.Common.am
 
-CLEANFILES = *~ core
+CLEANFILES = $(srcdir)/*~ core
 
 check_PROGRAMS =      \
         Close         \
         Create        \
-        Delete        \
         Definition    \
         DefLength     \
         Delete        \
@@ -40,7 +39,6 @@ check_PROGRAMS =      \
 
 EXTRA_DIST =           \
         Makefile.win32 \
-        RunTests.sh    \
         RunTests.vbs   
 
 TESTS_ENVIRONMENT =                  \
@@ -54,7 +52,6 @@ TESTS_ENVIRONMENT =                  \
 TESTS =               \
         Close         \
         Create        \
-        Delete        \
         Definition    \
         DefLength     \
         Delete        \
@@ -80,4 +77,6 @@ XFAIL_TESTS =
 LDADD = $(top_builddir)/src/API/libphoton.la        \
         $(top_builddir)/src/Nucleus/libNucleus.la \
         $(top_builddir)/src/Common/libCommon.la   
+        
+#        /usr/local/lib/libcmockery.la
 

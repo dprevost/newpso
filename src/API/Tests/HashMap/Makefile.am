@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2009 Daniel Prevost <dprevost@photonsoftware.org>
+# Copyright (C) 2007-2010 Daniel Prevost <dprevost@photonsoftware.org>
 #  
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without 
@@ -12,84 +12,30 @@
 # overwrite any macros set in the common file
 include $(top_srcdir)/src/Makefile.Common.am
 
-CLEANFILES = *~ core
+CLEANFILES = $(srcdir)/*~ core
 
-check_PROGRAMS =            \
-        Close               \
-        Create              \
-        Delete              \
-        Definition          \
-        FirstNullData       \
-        FirstNullDataLength \
-        FirstNullHandle     \
-        FirstNullKey        \
-        FirstNullKeyLength  \
-        FirstPass           \
-        FirstWrongHandle    \
-        Get                 \
-        GetFirst            \
-        GetNext             \
-        Insert              \
-        NextNoFirst         \
-        NextNullData        \
-        NextNullDataLength  \
-        NextNullHandle      \
-        NextNullKey         \
-        NextNullKeyLength   \
-        NextPass            \
-        NextWrongHandle     \
-        OpenNoSession       \
-        OpenPass            \
-        RecordDef           \
-        Replace             \
-        RetrieveNullData    \
-        RetrieveNullHandle  \
-        RetrieveNullKey     \
-        RetrieveNullLength  \
-        RetrievePass        \
-        RetrieveWrongHandle \
-        RetrieveZeroLength  \
-        Status              
-
-Close_SOURCES               = Close.c
-Create_SOURCES              = Create.c
-Delete_SOURCES              = Delete.c
-Definition_SOURCES          = Definition.c
-FirstNullData_SOURCES       = FirstNullData.c
-FirstNullDataLength_SOURCES = FirstNullDataLength.c
-FirstNullHandle_SOURCES     = FirstNullHandle.c
-FirstNullKey_SOURCES        = FirstNullKey.c
-FirstNullKeyLength_SOURCES  = FirstNullKeyLength.c
-FirstPass_SOURCES           = FirstPass.c
-FirstWrongHandle_SOURCES    = FirstWrongHandle.c
-Get_SOURCES                 = Get.c
-GetFirst_SOURCES            = GetFirst.c
-GetNext_SOURCES             = GetNext.c
-Insert_SOURCES              = Insert.c
-NextNoFirst_SOURCES         = NextNoFirst.c
-NextNullData_SOURCES        = NextNullData.c
-NextNullDataLength_SOURCES  = NextNullDataLength.c
-NextNullHandle_SOURCES      = NextNullHandle.c
-NextNullKey_SOURCES         = NextNullKey.c
-NextNullKeyLength_SOURCES   = NextNullKeyLength.c
-NextPass_SOURCES            = NextPass.c
-NextWrongHandle_SOURCES     = NextWrongHandle.c
-OpenNoSession_SOURCES       = OpenNoSession.c
-OpenPass_SOURCES            = OpenPass.c
-RecordDef_SOURCES           = RecordDef.c
-Replace_SOURCES             = Replace.c
-RetrieveNullData_SOURCES    = RetrieveNullData.c
-RetrieveNullHandle_SOURCES  = RetrieveNullHandle.c
-RetrieveNullKey_SOURCES     = RetrieveNullKey.c
-RetrieveNullLength_SOURCES  = RetrieveNullLength.c
-RetrievePass_SOURCES        = RetrievePass.c
-RetrieveWrongHandle_SOURCES = RetrieveWrongHandle.c
-RetrieveZeroLength_SOURCES  = RetrieveZeroLength.c
-Status_SOURCES              = Status.c
+check_PROGRAMS =      \
+        Close         \
+        Create        \
+        Definition    \
+        DefLength     \
+        Delete        \
+        First         \
+        Get           \
+        GetFirst      \
+        GetNext       \
+        Insert        \
+        KeyDefinition \
+        KeyDefLength  \
+        Next          \
+        Open          \
+        OpenNoSession \
+        Replace       \
+        Retrieve      \
+        Status        
 
 EXTRA_DIST =           \
         Makefile.win32 \
-        RunTests.sh    \
         RunTests.vbs   
 
 TESTS_ENVIRONMENT =                  \
@@ -100,7 +46,25 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)
 
-TESTS = RunTests.sh
+TESTS =               \
+        Close         \
+        Create        \
+        Definition    \
+        DefLength     \
+        Delete        \
+        First         \
+        Get           \
+        GetFirst      \
+        GetNext       \
+        Insert        \
+        KeyDefinition \
+        KeyDefLength  \
+        Next          \
+        Open          \
+        OpenNoSession \
+        Replace       \
+        Retrieve      \
+        Status        
 
 XFAIL_TESTS = 
 

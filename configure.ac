@@ -160,6 +160,18 @@ AC_CHECK_HEADERS(timers.h) # for Tru64
 AC_HEADER_DIRENT 
 AC_HEADER_STDBOOL
 
+AC_CHECK_HEADERS(google/cmockery.h, [], [],
+     [[
+     #include <stdarg.h>
+     #include <stddef.h>
+     #include <setjmp.h>
+     #ifdef HAVE_GOOGLE_CMOCKEY_H
+     # include <google/cmockery.h>
+     #endif
+     ]])
+
+AC_SEARCH_LIBS(assert_false,cmockery)
+
 ##############################
 #                            #
 # Section - checks for types #

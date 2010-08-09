@@ -12,12 +12,9 @@
 # overwrite any macros set in the common file
 include $(top_srcdir)/src/Makefile.Common.am
 
-CLEANFILES = *~ core
+CLEANFILES = $(srcdir)/*~ core
 
-check_PROGRAMS =        \
-        ListTest
-
-ListTest_SOURCES = ListTest.c
+check_PROGRAMS = ListTest
 
 EXTRA_DIST =           \
         Makefile.win32 \
@@ -31,8 +28,7 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)
 
-TESTS =          \
-        ListTest 
+TESTS = ListTest 
 
 XFAIL_TESTS = 
 

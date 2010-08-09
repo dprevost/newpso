@@ -12,68 +12,26 @@
 # overwrite any macros set in the common file
 include $(top_srcdir)/src/Makefile.Common.am
 
-CLEANFILES = *~ core
+CLEANFILES = $(srcdir)/*~ core
 
-check_PROGRAMS =          \
-        Close             \
-        Create            \
-        Definition        \
-        FirstNullData     \
-        FirstNullHandle   \
-        FirstNullLength   \
-        FirstPass         \
-        FirstWrongHandle  \
-        GetFirst          \
-        GetNext           \
-        NextNoFirst       \
-        NextNullData      \
-        NextNullHandle    \
-        NextNullLength    \
-        NextPass          \
-        NextWrongHandle   \
-        OpenNoSession     \
-        OpenPass          \
-        Pop               \
-        Push              \
-        RecordDef         \
-        RemoveNullData    \
-        RemoveNullHandle  \
-        RemoveNullLength  \
-        RemovePass        \
-        RemoveWrongHandle \
-        Status            
-
-Close_SOURCES             = Close.c
-Create_SOURCES            = Create.c
-Definition_SOURCES        = Definition.c
-FirstNullData_SOURCES     = FirstNullData.c
-FirstNullHandle_SOURCES   = FirstNullHandle.c
-FirstNullLength_SOURCES   = FirstNullLength.c
-FirstPass_SOURCES         = FirstPass.c
-FirstWrongHandle_SOURCES  = FirstWrongHandle.c
-GetFirst_SOURCES          = GetFirst.c
-GetNext_SOURCES           = GetNext.c
-NextNoFirst_SOURCES       = NextNoFirst.c
-NextNullData_SOURCES      = NextNullData.c
-NextNullHandle_SOURCES    = NextNullHandle.c
-NextNullLength_SOURCES    = NextNullLength.c
-NextPass_SOURCES          = NextPass.c
-NextWrongHandle_SOURCES   = NextWrongHandle.c
-OpenNoSession_SOURCES     = OpenNoSession.c
-OpenPass_SOURCES          = OpenPass.c
-Pop_SOURCES               = Pop.c
-Push_SOURCES              = Push.c
-RecordDef_SOURCES         = RecordDef.c
-RemoveNullData_SOURCES    = RemoveNullData.c
-RemoveNullHandle_SOURCES  = RemoveNullHandle.c
-RemoveNullLength_SOURCES  = RemoveNullLength.c
-RemovePass_SOURCES        = RemovePass.c
-RemoveWrongHandle_SOURCES = RemoveWrongHandle.c
-Status_SOURCES            = Status.c
+check_PROGRAMS =      \
+        Close         \
+        Create        \
+        Definition    \
+        DefLength     \
+        First         \
+        GetFirst      \
+        GetNext       \
+        Next          \
+        Open          \
+        OpenNoSession \
+        Pop           \
+        Push          \
+        Remove        \
+        Status        
 
 EXTRA_DIST =           \
         Makefile.win32 \
-        RunTests.sh    \
         RunTests.vbs   
 
 TESTS_ENVIRONMENT =                  \
@@ -84,7 +42,21 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)             
 
-TESTS = RunTests.sh
+TESTS =               \
+        Close         \
+        Create        \
+        Definition    \
+        DefLength     \
+        First         \
+        GetFirst      \
+        GetNext       \
+        Next          \
+        Open          \
+        OpenNoSession \
+        Pop           \
+        Push          \
+        Remove        \
+        Status        
 
 XFAIL_TESTS = 
 

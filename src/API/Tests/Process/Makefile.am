@@ -12,40 +12,16 @@
 # overwrite any macros set in the common file
 include $(top_srcdir)/src/Makefile.Common.am
 
-CLEANFILES = *~ core
+CLEANFILES = $(srcdir)/*~ core
 
-check_PROGRAMS =         \
-        CloseNullContext \
-        CloseNullProcess \
-        ClosePass        \
-        FiniNullProcess  \
-        FiniPass         \
-        InitNullAddr     \
-        InitNullProcess  \
-        InitPass         \
-        InitWrongAddr    \
-        OpenNullContext  \
-        OpenNullFilename \
-        OpenNullProcess  \
-        OpenPass         
-
-CloseNullContext_SOURCES = CloseNullContext.c
-CloseNullProcess_SOURCES = CloseNullProcess.c
-ClosePass_SOURCES        = ClosePass.c
-FiniNullProcess_SOURCES  = FiniNullProcess.c
-FiniPass_SOURCES         = FiniPass.c
-InitNullAddr_SOURCES     = InitNullAddr.c
-InitNullProcess_SOURCES  = InitNullProcess.c
-InitPass_SOURCES         = InitPass.c
-InitWrongAddr_SOURCES    = InitWrongAddr.c
-OpenNullContext_SOURCES  = OpenNullContext.c
-OpenNullFilename_SOURCES = OpenNullFilename.c
-OpenNullProcess_SOURCES  = OpenNullProcess.c
-OpenPass_SOURCES         = OpenPass.c
+check_PROGRAMS = \
+        Close    \
+        Fini     \
+        Init     \
+        Open     
 
 EXTRA_DIST =           \
         Makefile.win32 \
-        RunTests.sh    \
         RunTests.vbs   
 
 TESTS_ENVIRONMENT =                  \
@@ -56,11 +32,13 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)             
 
-TESTS = RunTests.sh
+TESTS =       \
+        Close \
+        Fini  \
+        Init  \
+        Open  
 
-XFAIL_TESTS =            \
-        InitNullAddr     \
-        InitNullProcess  
+XFAIL_TESTS = 
 
 LDADD = $(top_builddir)/src/API/libphoton.la        \
         $(top_builddir)/src/Nucleus/libNucleus.la \

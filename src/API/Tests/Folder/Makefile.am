@@ -12,40 +12,26 @@
 # overwrite any macros set in the common file
 include $(top_srcdir)/src/Makefile.Common.am
 
-CLEANFILES = *~ core
+CLEANFILES = $(srcdir)/*~ core
 
-check_PROGRAMS =     \
-        Close        \
-        CreateFolder \
-        CreateMap    \
-        CreateQueue  \
-        Destroy      \
-        GetDataDef   \
-        GetDef       \
-        GetFirst     \
-        GetKeyDef    \
-        GetNext      \
-        OpenNoSess   \
-        Open         \
-        Status       
-
-Close_SOURCES        = Close.c
-CreateFolder_SOURCES = CreateFolder.c
-CreateMap_SOURCES    = CreateMap.c
-CreateQueue_SOURCES  = CreateQueue.c
-Destroy_SOURCES      = Destroy.c
-GetDataDef_SOURCES   = GetDataDef.c
-GetDef_SOURCES       = GetDef.c
-GetFirst_SOURCES     = GetFirst.c
-GetKeyDef_SOURCES    = GetKeyDef.c
-GetNext_SOURCES      = GetNext.c
-OpenNoSess_SOURCES   = OpenNoSess.c
-Open_SOURCES         = Open.c
-Status_SOURCES       = Status.c
+check_PROGRAMS =         \
+        Close            \
+        CreateFolder     \
+        CreateMap        \
+        CreateQueue      \
+        Destroy          \
+        GetDefinition    \
+        GetDefLength     \
+        GetFirst         \
+        GetKeyDefinition \
+        GetKeyDefLength  \
+        GetNext          \
+        Open             \
+        OpenNoSess       \
+        Status           
 
 EXTRA_DIST =           \
         Makefile.win32 \
-        RunTests.sh    \
         RunTests.vbs   
 
 TESTS_ENVIRONMENT =                  \
@@ -56,7 +42,21 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)
 
-TESTS = RunTests.sh
+TESTS =                  \
+        Close            \
+        CreateFolder     \
+        CreateMap        \
+        CreateQueue      \
+        Destroy          \
+        GetDefinition    \
+        GetDefLength     \
+        GetFirst         \
+        GetKeyDefinition \
+        GetKeyDefLength  \
+        GetNext          \
+        Open             \
+        OpenNoSess       \
+        Status           
 
 XFAIL_TESTS = 
 

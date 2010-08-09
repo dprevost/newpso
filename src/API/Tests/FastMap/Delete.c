@@ -35,19 +35,9 @@ void setup_test()
 void teardown_test()
 {
    int errcode;
-   PSO_HANDLE sessionHandle;
+   PSO_HANDLE sessionHandle, shmemHandle;
    
    errcode = psoInitSession( shmemHandle, &sessionHandle );
-   ASSERT_END_CLEAN( errcode == PSO_OK );
-
-   errcode = psoaDataDefDestroy( sessionHandle,
-                                 "api_fastmap_delete",
-                                 strlen("api_fastmap_delete") );
-   ASSERT_END_CLEAN( errcode == PSO_OK );
-
-   errcode = psoaKeyDefDestroy( sessionHandle,
-                                "api_fastmap_delete",
-                                strlen("api_fastmap_delete") );
    ASSERT_END_CLEAN( errcode == PSO_OK );
 
    errcode = psoDestroyObject( sessionHandle,

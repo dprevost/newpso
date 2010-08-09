@@ -49,7 +49,8 @@ void teardown_test()
 
 void test_pass( void ** state )
 {
-   PSO_HANDLE sessionHandle, objHandle;
+#if defined(PSO_UNIT_TESTS)
+   PSO_HANDLE sessionHandle, objHandle, shmemHandle;
    int errcode;
    struct dummy * data1 = NULL;
    char key[] = "My Key";
@@ -126,6 +127,9 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
 
    psoExit();
+
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

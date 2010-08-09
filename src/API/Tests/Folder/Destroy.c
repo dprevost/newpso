@@ -40,6 +40,7 @@ void teardown_test()
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, folderHandle;
    PSO_HANDLE objHandle, sessionHandle2;
    PSO_HANDLE shmemHandle;
@@ -153,6 +154,9 @@ void test_pass( void ** state )
                                      "test1",
                                      strlen("test1") );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
+
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

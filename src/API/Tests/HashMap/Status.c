@@ -41,6 +41,7 @@ void teardown_test()
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    PSO_HANDLE shmemHandle;
    int errcode;
@@ -126,6 +127,9 @@ void test_pass( void ** state )
    assert_false( status.freeBytes == 0 || status.freeBytes >=PSON_BLOCK_SIZE );
    
    psoExit();
+
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

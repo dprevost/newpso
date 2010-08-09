@@ -31,7 +31,7 @@
 #
 # --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
-ok_programs="ExitPass InitPass"
+ok_programs="Exit Init"
 
 fail_programs=""
 

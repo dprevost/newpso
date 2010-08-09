@@ -37,10 +37,6 @@ SUBDIRS =              \
 
 check_PROGRAMS = LinkNode
 
-LinkNodeNULLInit_SOURCES = LinkNodeNULLInit.c
-LinkNodeNULLTest_SOURCES = LinkNodeNULLTest.c
-LinkNodeTestTest_SOURCES = LinkNodeTestTest.c
-
 EXTRA_DIST =               \
         EngineTestCommon.h \
         Makefile.win32     \

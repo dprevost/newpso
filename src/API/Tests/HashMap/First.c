@@ -55,6 +55,7 @@ void teardown_test()
 
 void test_null_data( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    PSO_HANDLE shmemHandle;
    int errcode;
@@ -105,12 +106,15 @@ void test_null_data( void ** state )
                                             &keyLength, 
                                             NULL,
                                             &bufferLength ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_datalength( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    PSO_HANDLE shmemHandle;
    int errcode;
@@ -161,12 +165,15 @@ void test_null_datalength( void ** state )
                                             &keyLength, 
                                             &buffer,
                                             NULL ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_handle( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    PSO_HANDLE shmemHandle;
    int errcode;
@@ -217,12 +224,15 @@ void test_null_handle( void ** state )
                                             &keyLength, 
                                             &buffer,
                                             &bufferLength ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_key( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    PSO_HANDLE shmemHandle;
    int errcode;
@@ -273,12 +283,15 @@ void test_null_key( void ** state )
                                             &keyLength, 
                                             &buffer,
                                             &bufferLength ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_keylength( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    PSO_HANDLE shmemHandle;
    int errcode;
@@ -329,12 +342,15 @@ void test_null_keylength( void ** state )
                                             NULL, 
                                             &buffer,
                                             &bufferLength ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_wrong_handle( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    PSO_HANDLE shmemHandle;
    int errcode;
@@ -385,12 +401,15 @@ void test_wrong_handle( void ** state )
                                             &keyLength,
                                             &buffer,
                                             &bufferLength ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    PSO_HANDLE shmemHandle;
    int errcode;
@@ -442,6 +461,8 @@ void test_pass( void ** state )
    assert_true( memcmp( buffer, data, 7 ) == 0 );
    
    psoExit();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

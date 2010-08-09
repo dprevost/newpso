@@ -36,15 +36,16 @@ ok_programs=$ok_programs"CreateFolder "
 ok_programs=$ok_programs"CreateMap "
 ok_programs=$ok_programs"CreateQueue "
 ok_programs=$ok_programs"Destroy "
-ok_programs=$ok_programs"GetDataDef "
-ok_programs=$ok_programs"GetDef "
+ok_programs=$ok_programs"GetDefinition "
+ok_programs=$ok_programs"GetDefLength "
 ok_programs=$ok_programs"GetFirst "
-ok_programs=$ok_programs"GetKeyDef "
+ok_programs=$ok_programs"GetKeyDefinition "
+ok_programs=$ok_programs"GetKeyDefLength "
 ok_programs=$ok_programs"GetNext "
 ok_programs=$ok_programs"Open "
 ok_programs=$ok_programs"Status "
 
-fail_programs=$fail_programs"OpenNoSess "
+#fail_programs=$fail_programs"OpenNoSess "
 
 test_dir=src/API/Tests/Folder
 num_tests=0

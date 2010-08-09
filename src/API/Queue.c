@@ -24,7 +24,6 @@
 #include "API/Session.h"
 #include <photon/psoErrors.h>
 #include "API/CommonObject.h"
-#include "API/DataDefinition.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

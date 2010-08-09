@@ -25,7 +25,6 @@
 
 #include "API/CommonObject.h"
 #include "Nucleus/Queue.h"
-#include "API/DataDefinition.h"
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 

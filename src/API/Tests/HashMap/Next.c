@@ -56,6 +56,7 @@ void teardown_test()
 
 void test_no_first( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    int errcode;
    const char * key1  = "My Key1";
@@ -114,12 +115,15 @@ void test_no_first( void ** state )
                                            &keyLength, 
                                            &buffer,
                                            &bufferLength ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_data( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    int errcode;
    const char * key1  = "My Key1";
@@ -182,12 +186,15 @@ void test_null_data( void ** state )
                                            &keyLength, 
                                            NULL,
                                            &bufferLength ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_datalength( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    int errcode;
    const char * key1  = "My Key1";
@@ -250,12 +257,15 @@ void test_null_datalength( void ** state )
                                            &keyLength, 
                                            &buffer,
                                            NULL ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_handle( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    int errcode;
    const char * key1  = "My Key1";
@@ -318,12 +328,15 @@ void test_null_handle( void ** state )
                                            &keyLength, 
                                            &buffer,
                                            &bufferLength ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_key( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    int errcode;
    const char * key1  = "My Key1";
@@ -386,12 +399,15 @@ void test_null_key( void ** state )
                                            &keyLength, 
                                            &buffer,
                                            &bufferLength ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_keylength( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    int errcode;
    const char * key1  = "My Key1";
@@ -454,12 +470,15 @@ void test_null_keylength( void ** state )
                                            NULL, 
                                            &buffer,
                                            &bufferLength ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_wrong_handle( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    int errcode;
    const char * key1  = "My Key1";
@@ -522,12 +541,15 @@ void test_wrong_handle( void ** state )
                                            &keyLength, 
                                            &buffer,
                                            &bufferLength ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle, sessionHandle;
    int errcode;
    const char * key1  = "My Key1";
@@ -593,6 +615,8 @@ void test_pass( void ** state )
 //      ERROR_EXIT( expectedToPass, NULL, ; );
 
    psoExit();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -12,70 +12,31 @@
 # overwrite any macros set in the common file
 include $(top_srcdir)/src/Makefile.Common.am
 
-CLEANFILES = *~ core
+CLEANFILES = $(srcdir)/*~ core
 
-check_PROGRAMS =            \
-        CloseNullSession    \
-        Close               \
-        CloseObjNullObject  \
-        CloseObjNullSession \
-        CloseObjPass        \
-        Commit              \
-        CreateFolder        \
-        CreateMap           \
-        CreateQueue         \
-        DataDefinition      \
-        Definition          \
-        Destroy             \
-        ErrorMsg            \
-        ExitPass            \
-        ExitWithOpenObjects \
-        GetInfo             \
-        Init                \
-        KeyDefinition       \
-        LastError           \
-        OpenObjNotCreated   \
-        OpenObjNullName     \
-        OpenObjNullObject   \
-        OpenObjNullSession  \
-        OpenObjPass         \
-        OpenObjWrongType    \
-        OpenObjZeroLength   \
-        Rollback            \
-        Status              
-
-CloseNullSession_SOURCES    = CloseNullSession.c
-Close_SOURCES               = Close.c
-CloseObjNullObject_SOURCES  = CloseObjNullObject.c
-CloseObjNullSession_SOURCES = CloseObjNullSession.c
-CloseObjPass_SOURCES        = CloseObjPass.c
-Commit_SOURCES              = Commit.c
-CreateFolder_SOURCES        = CreateFolder.c
-CreateMap_SOURCES           = CreateMap.c
-CreateQueue_SOURCES         = CreateQueue.c
-DataDefinition_SOURCES      = DataDefinition.c
-Definition_SOURCES          = Definition.c
-Destroy_SOURCES             = Destroy.c
-ErrorMsg_SOURCES            = ErrorMsg.c
-ExitPass_SOURCES            = ExitPass.c
-ExitWithOpenObjects_SOURCES = ExitWithOpenObjects.c
-GetInfo_SOURCES             = GetInfo.c
-Init_SOURCES                = Init.c
-KeyDefinition_SOURCES       = KeyDefinition.c
-LastError_SOURCES           = LastError.c
-OpenObjNotCreated_SOURCES   = OpenObjNotCreated.c
-OpenObjNullName_SOURCES     = OpenObjNullName.c
-OpenObjNullObject_SOURCES   = OpenObjNullObject.c
-OpenObjNullSession_SOURCES  = OpenObjNullSession.c
-OpenObjPass_SOURCES         = OpenObjPass.c
-OpenObjWrongType_SOURCES    = OpenObjWrongType.c
-OpenObjZeroLength_SOURCES   = OpenObjZeroLength.c
-Rollback_SOURCES            = Rollback.c
-Status_SOURCES              = Status.c
+check_PROGRAMS =      \
+        Close         \
+        CloseObj      \
+        Commit        \
+        CreateFolder  \
+        CreateMap     \
+        CreateQueue   \
+        Definition    \
+        DefLength     \
+        Destroy       \
+        ErrorMsg      \
+        Exit          \
+        GetInfo       \
+        Init          \
+        KeyDefinition \
+        KeyDefLength  \
+        LastError     \
+        OpenObj       \
+        Rollback      \
+        Status        
 
 EXTRA_DIST =           \
         Makefile.win32 \
-        RunTests.sh    \
         RunTests.vbs   
 
 TESTS_ENVIRONMENT =                  \
@@ -86,7 +47,26 @@ TESTS_ENVIRONMENT =                  \
         verbose=1                    \
         PYTHON=$(PYTHON)             
 
-TESTS = RunTests.sh
+TESTS =               \
+        Close         \
+        CloseObj      \
+        Commit        \
+        CreateFolder  \
+        CreateMap     \
+        CreateQueue   \
+        Definition    \
+        DefLength     \
+        Destroy       \
+        ErrorMsg      \
+        Exit          \
+        GetInfo       \
+        Init          \
+        KeyDefinition \
+        KeyDefLength  \
+        LastError     \
+        OpenObj       \
+        Rollback      \
+        Status        
 
 XFAIL_TESTS =                  
 

@@ -41,6 +41,7 @@ void teardown_test()
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE objHandle,  sessionHandle;
    PSO_HANDLE objHandle2, sessionHandle2;
    PSO_HANDLE shmemHandle;
@@ -141,6 +142,8 @@ void test_pass( void ** state )
    psoRollback( sessionHandle );
 
    psoExit();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

@@ -16,11 +16,8 @@ CLEANFILES = *~ core
 
 check_PROGRAMS = Connect      
 
-ConnectNullConn_SOURCES = ConnectNullConn.c
-
 EXTRA_DIST =           \
         Makefile.win32 \
-        RunTests.sh    \
         RunTests.vbs   
 
 TESTS_ENVIRONMENT =                  \
