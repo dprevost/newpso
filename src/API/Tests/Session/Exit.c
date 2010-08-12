@@ -40,6 +40,7 @@ void teardown_test()
 
 void test_open_objs( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    PSO_HANDLE shmemHandle;
    int errcode;
@@ -69,12 +70,15 @@ void test_open_objs( void ** state )
    assert_true( errcode == PSO_OK );
    
    psoExit();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    PSO_HANDLE shmemHandle;
    int errcode;
@@ -100,6 +104,8 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_OK );
 
    psoExit();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

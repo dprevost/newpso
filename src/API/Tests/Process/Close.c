@@ -49,6 +49,7 @@ void teardown_test()
 
 void test_null_context( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    psoaProcess process;
    int errcode;
    bool ok;
@@ -62,12 +63,15 @@ void test_null_context( void ** state )
    assert_true( errcode == PSO_OK );
 
    expect_assert_failure( psoaCloseMemory( &process, NULL ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_process( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    psoaProcess process;
    int errcode;
    bool ok;
@@ -86,12 +90,15 @@ void test_null_process( void ** state )
    psocInitErrorHandler( &context.errorHandler );
 
    expect_assert_failure( psoaCloseMemory( NULL, &context ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    psoaProcess process;
    int errcode;
    psonSessionContext context;
@@ -112,6 +119,8 @@ void test_pass( void ** state )
 
    /* Cannot call psoaProcessFini since it calls CloseMemory()  */
    psoaDisconnect( &process.connector, &context.errorHandler );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

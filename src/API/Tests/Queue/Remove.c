@@ -43,6 +43,7 @@ void teardown_test()
 
 void test_null_data( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -83,12 +84,15 @@ void test_null_data( void ** state )
    assert_true( errcode == PSO_OK );
    
    expect_assert_failure( psoaQueueRemove( objHandle, NULL, &length ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_handle( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -130,12 +134,15 @@ void test_null_handle( void ** state )
    assert_true( errcode == PSO_OK );
    
    expect_assert_failure( psoaQueueRemove( NULL, &buffer, &length ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_length( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -176,12 +183,15 @@ void test_null_length( void ** state )
    assert_true( errcode == PSO_OK );
    
    expect_assert_failure( psoaQueueRemove( objHandle, &buffer, NULL ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_wrong_handle( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -226,12 +236,15 @@ void test_wrong_handle( void ** state )
    assert_true( errcode == PSO_OK );
    
    expect_assert_failure( psoaQueueRemove( sessionHandle, &buffer, &length ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -282,6 +295,8 @@ void test_pass( void ** state )
    psoDestroyObject( sessionHandle, "/api_queue_remove_pass", strlen("/api_queue_remove_pass") );
    psoCommit( sessionHandle );
    psoExit();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

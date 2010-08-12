@@ -43,6 +43,7 @@ void teardown_test()
 
 void test_null_data( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -80,12 +81,15 @@ void test_null_data( void ** state )
    assert_true( errcode == PSO_OK );
 
    expect_assert_failure( psoaLifoFirst( objHandle, NULL, &length ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_handle( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -124,12 +128,15 @@ void test_null_handle( void ** state )
    assert_true( errcode == PSO_OK );
 
    expect_assert_failure( psoaLifoFirst( NULL, &buffer, &length ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_length( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -167,12 +174,15 @@ void test_null_length( void ** state )
    assert_true( errcode == PSO_OK );
 
    expect_assert_failure( psoaLifoFirst( objHandle, &buffer, NULL ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_wrong_handle( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -211,12 +221,15 @@ void test_wrong_handle( void ** state )
    assert_true( errcode == PSO_OK );
 
    expect_assert_failure( psoaLifoFirst( sessionHandle, &buffer, &length ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -259,6 +272,8 @@ void test_pass( void ** state )
    assert_true( memcmp( buffer, data1, strlen(data1) ) == 0 );
    
    psoExit();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

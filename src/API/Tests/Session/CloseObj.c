@@ -43,6 +43,7 @@ void teardown_test()
 
 void test_null_object( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    int errcode;
    struct psoaCommonObject object;
@@ -68,12 +69,15 @@ void test_null_object( void ** state )
 
    expect_assert_failure( psoaSessionCloseObj( (psoaSession *) sessionHandle,
                                                NULL ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_session( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    int errcode;
    struct psoaCommonObject object;
@@ -98,12 +102,15 @@ void test_null_session( void ** state )
    assert_true( errcode == PSO_OK );
 
    expect_assert_failure( psoaSessionCloseObj( NULL, &object ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    int errcode;
    struct psoaCommonObject object;
@@ -132,6 +139,8 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_OK );
 
    psoExit();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

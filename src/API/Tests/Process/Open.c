@@ -47,6 +47,7 @@ void teardown_test()
 
 void test_null_context( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    psoaProcess process;
    int errcode;
    psonSessionContext context;
@@ -64,12 +65,15 @@ void test_null_context( void ** state )
    psocInitErrorHandler( &context.errorHandler );
    
    expect_assert_failure( psoaOpenMemory( &process, "dummy", 100, NULL ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_filename( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    psoaProcess process;
    int errcode;
    psonSessionContext context;
@@ -87,12 +91,15 @@ void test_null_filename( void ** state )
    psocInitErrorHandler( &context.errorHandler );
    
    expect_assert_failure( psoaOpenMemory( &process, NULL, 100, &context ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_process( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    psoaProcess process;
    int errcode;
    psonSessionContext context;
@@ -110,12 +117,15 @@ void test_null_process( void ** state )
    psocInitErrorHandler( &context.errorHandler );
    
    expect_assert_failure( psoaOpenMemory( NULL, "dummy", 100, &context ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    psoaProcess process;
    int errcode;
    psonSessionContext context;
@@ -137,6 +147,8 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_BACKSTORE_FILE_MISSING );
 
    psoaProcessFini();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

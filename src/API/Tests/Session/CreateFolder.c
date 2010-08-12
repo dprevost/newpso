@@ -40,6 +40,7 @@ void teardown_test()
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    PSO_HANDLE shmemHandle;
    int errcode;
@@ -85,6 +86,8 @@ void test_pass( void ** state )
                               "/api_session_create_folder",
                               strlen("/api_session_create_folder") );
    assert_true( errcode == PSO_SESSION_IS_TERMINATED );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

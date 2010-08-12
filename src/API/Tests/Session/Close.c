@@ -44,6 +44,7 @@ void teardown_test()
 
 void test_null_session( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    int errcode;
    
@@ -54,12 +55,15 @@ void test_null_session( void ** state )
    assert_true( errcode == PSO_OK );
    
    expect_assert_failure( psoaCloseSession( NULL ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    int errcode;
    psoaSession * pSession;
@@ -89,6 +93,8 @@ void test_pass( void ** state )
    assert_true( ok );
    
    psoExit();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

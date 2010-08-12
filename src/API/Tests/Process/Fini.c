@@ -39,6 +39,7 @@ void teardown_test()
 
 void test_null_process( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    psoaProcess process;
    int errcode;
    bool ok;
@@ -53,12 +54,15 @@ void test_null_process( void ** state )
 
    g_processInstance = NULL;
    expect_assert_failure( psoaProcessFini() );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    psoaProcess process;
    int errcode;
    bool ok;
@@ -72,6 +76,8 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_OK );
    
    psoaProcessFini();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

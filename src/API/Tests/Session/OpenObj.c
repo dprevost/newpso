@@ -44,6 +44,7 @@ void teardown_test()
 
 void test_not_created( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    int errcode;
    struct psoaCommonObject object;
@@ -63,12 +64,15 @@ void test_not_created( void ** state )
    assert_true( errcode == PSO_NO_SUCH_OBJECT );
 
    psoExit();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_name( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    int errcode;
    struct psoaCommonObject object;
@@ -90,12 +94,15 @@ void test_null_name( void ** state )
                                               NULL,
                                               strlen("/asoono"),
                                               &object ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_object( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    int errcode;
    
@@ -116,12 +123,15 @@ void test_null_object( void ** state )
                                               "/api_session_openobj_null_object",
                                               strlen("/api_session_openobj_null_object"),
                                               NULL ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_session( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    int errcode;
    struct psoaCommonObject object;
@@ -143,12 +153,15 @@ void test_null_session( void ** state )
                                               "/api_session_openobj_null_session",
                                               strlen("/api_session_openobj_null_session"),
                                               &object ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_wrong_type( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    int errcode;
    struct psoaCommonObject object;
@@ -170,12 +183,15 @@ void test_wrong_type( void ** state )
                                               "/api_session_openobj_wrong_type",
                                               strlen("/api_session_openobj_wrong_type"),
                                               &object ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_zero_length( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    int errcode;
    struct psoaCommonObject object;
@@ -197,12 +213,15 @@ void test_zero_length( void ** state )
                                               "/api_session_openobj_zero_length",
                                               0,
                                               &object ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    int errcode;
    struct psoaCommonObject object;
@@ -227,6 +246,8 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_OK );
 
    psoExit();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

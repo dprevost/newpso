@@ -42,6 +42,7 @@ void teardown_test()
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    int i;
    unsigned int sum1 = 0, sum2 = 0;
 
@@ -111,6 +112,8 @@ void test_pass( void ** state )
    } while ( psoaListReadersPeakNext( &list, dummy, &dummy ) );
    
    assert_true( sum2 == list.currentSize );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

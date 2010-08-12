@@ -39,6 +39,7 @@ void teardown_test()
 
 void test_null_address( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    psoaProcess process;
    int errcode;
    bool ok;
@@ -49,19 +50,25 @@ void test_null_address( void ** state )
    memset( &process, 0, sizeof(psoaProcess) );
    
    expect_assert_failure( psoaProcessInit( &process, NULL, "" ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_null_process( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    expect_assert_failure( psoaProcessInit( NULL, "10701", "" ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_wrong_address( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    psoaProcess process;
    int errcode;
    bool ok;
@@ -74,12 +81,15 @@ void test_wrong_address( void ** state )
    /* try something junk... */   
    errcode = psoaProcessInit( &process, "abcdef", NULL );
    assert_true( errcode == PSO_INVALID_QUASAR_ADDRESS );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    psoaProcess process;
    int errcode;
    bool ok;
@@ -93,6 +103,8 @@ void test_pass( void ** state )
    assert_true( errcode == PSO_OK );
    
    psoaProcessFini();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

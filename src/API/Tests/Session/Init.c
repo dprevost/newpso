@@ -40,6 +40,7 @@ void teardown_test()
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle;
    PSO_HANDLE shmemHandle;
    int errcode;
@@ -66,6 +67,8 @@ void test_pass( void ** state )
 
    errcode = psoInitSession( shmemHandle, &sessionHandle );
    assert_true( errcode == PSO_PROCESS_NOT_INITIALIZED );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */

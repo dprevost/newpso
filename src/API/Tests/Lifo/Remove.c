@@ -43,6 +43,7 @@ void teardown_test()
 
 void test_NullData( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -83,12 +84,15 @@ void test_NullData( void ** state )
    assert_true( errcode == PSO_OK );
    
    expect_assert_failure( psoaLifoRemove( objHandle, NULL, &length ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_NullHandle( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -130,12 +134,15 @@ void test_NullHandle( void ** state )
    assert_true( errcode == PSO_OK );
    
    expect_assert_failure( psoaLifoRemove( NULL, &buffer, &length ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_NullLength( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -176,12 +183,15 @@ void test_NullLength( void ** state )
    assert_true( errcode == PSO_OK );
    
    expect_assert_failure( psoaLifoRemove( objHandle, &buffer, NULL ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_WrongHandle( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -226,12 +236,15 @@ void test_WrongHandle( void ** state )
    assert_true( errcode == PSO_OK );
    
    expect_assert_failure( psoaLifoRemove( sessionHandle, &buffer, &length ) );
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
 
 void test_pass( void ** state )
 {
+#if defined(PSO_UNIT_TESTS)
    PSO_HANDLE sessionHandle, objHandle;
    int errcode;
    const char * data1 = "My Data1";
@@ -282,6 +295,8 @@ void test_pass( void ** state )
    psoDestroyObject( sessionHandle, "/api_lifo_remove_pass", strlen("/api_lifo_remove_pass") );
    psoCommit( sessionHandle );
    psoExit();
+#endif
+   return;
 }
 
 /* --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-- */
