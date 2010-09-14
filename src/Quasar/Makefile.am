@@ -29,17 +29,18 @@ OUTPUT_FILES =               \
         quasarErrorHandler.h 
 
 if COND_USE_DOCBOOK2XMAN
-quasar.1: quasar.xml
-	docbook2x-man --encoding=iso-8859-1 quasar.xml
+quasar.1: $(top_srcdir)/src/Quasar/quasar.xml
+	docbook2x-man --encoding=iso-8859-1 $(top_srcdir)/src/Quasar/quasar.xml
 endif
 if COND_USE_DOCBOOK2MAN
-quasar.1: quasar.xml
-	db2x_docbook2man --encoding=iso-8859-1 quasar.xml
+quasar.1: $(top_srcdir)/src/Quasar/quasar.xml
+	db2x_docbook2man --encoding=iso-8859-1 $(top_srcdir)/src/Quasar/quasar.xml
 endif
 
 if COND_USE_ERRORPARSER
-$(OUTPUT_FILES): quasarOptions.xml quasarErrors.xml
-	errorParser --options quasarOptions.xml quasarErrors.xml
+$(OUTPUT_FILES): $(top_srcdir)/src/Quasar/quasarOptions.xml $(top_srcdir)/src/Quasar/quasarErrors.xml
+	errorParser --options $(top_srcdir)/src/Quasar/quasarOptions.xml $(top_srcdir)/src/Quasar/quasarErrors.xml
+	echo "ok !"
 endif
 
 EXTRA_DIST =                 \

@@ -38,6 +38,8 @@ class KeyDefinition;
 // --+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--
 
 /**
+ * \defgroup pso::Folder
+ *
  * Folders allow the organization of the data containers in a tree-like
  * structure (similar to a filesystem).
  *
